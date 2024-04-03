@@ -31,55 +31,13 @@ import {
 import Home from 'screens/Home';
 import { mainRoutes } from 'screens/navigation/mainRoutes';
 
-
-// type SectionProps = PropsWithChildren<{
-//   title: string;
-// }>;
-// 
-// function Section({ children, title }: SectionProps): React.JSX.Element {
-//   const isDarkMode = useColorScheme() === 'dark';
-//   return (
-//     <View style={styles.sectionContainer}>
-//       <Text
-//         style={[
-//           styles.sectionTitle,
-//           {
-//             color: isDarkMode ? Colors.white : Colors.black,
-//           },
-//         ]}>
-//         {title}
-//       </Text>
-//       <Text
-//         style={[
-//           styles.sectionDescription,
-//           {
-//             color: isDarkMode ? Colors.light : Colors.dark,
-//           },
-//         ]}>
-//         {children}
-//       </Text>
-//     </View>
-//   );
-// }
-
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
 const MainScreen = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
-    // screenOptions={({ route }) => ({
-    //   tabBarLabel: route.name,
-    //   tabBarActiveBackgroundColor: 'skyblue',
-    //   tabBarInactiveBackgroundColor: '#c6cbef',
-    //   tabBarActiveTintColor: 'blue',
-    //   tabBarInactiveTintColor: '#fff',
-    //   // tabBarLabelPosition: 'beside-icon',
-    //   tabBarLabelPosition: 'below-icon',
-    //   headerShown: false
-    // })}
-    >
+      initialRouteName="Home">
       {mainRoutes.map(route => (
         <Tab.Screen
           key={`screen-${route.name}`}
@@ -89,8 +47,9 @@ const MainScreen = () => {
             tabBarIcon: ({ focused }) => {
               return (
                 <Image
+                  testID={`tabIcon-${route.name}`}
                   source={focused ? route.activeIcon : route.inactiveIcon}
-                  style={{width:20, height:20}}
+                  style={{ width: 20, height: 20 }}
                 />
               )
             }
@@ -111,10 +70,10 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen 
-          name='Main' 
+        <Stack.Screen
+          name='Main'
           component={MainScreen}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

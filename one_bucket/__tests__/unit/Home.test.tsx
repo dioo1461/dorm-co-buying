@@ -12,6 +12,6 @@ describe('Home', () => {
 
     it('displays title properly', () => {
         const screen = render(<Home/>)
-        const title = screen.getByText('Home')
+        const title = screen.getByText('home')
     })
 })
