@@ -30,6 +30,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Home from 'screens/Home';
 import { mainRoutes } from 'screens/navigation/mainRoutes';
+import { darkColors, lightColors } from 'constants/colors';
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -44,6 +45,10 @@ const MainScreen = () => {
           name={route.name}
           component={route.component}
           options={{
+            // headerStyle: {
+            //   backgroundColor: colors.ICON_BG
+            // },
+            // headerTintColor: colors.ICON_TEXT,
             tabBarIcon: ({ focused }) => {
               return (
                 <Image
@@ -62,11 +67,7 @@ const MainScreen = () => {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+  const colors = isDarkMode ? darkColors : lightColors
   return (
     <NavigationContainer>
       <Stack.Navigator>
