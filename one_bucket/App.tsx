@@ -31,6 +31,7 @@ import {
 import Home from 'screens/Home';
 import { mainRoutes } from 'screens/navigation/mainRoutes';
 import { darkColors, lightColors } from 'constants/colors';
+import Signup from 'screens/Signup';
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -68,13 +69,24 @@ const MainScreen = () => {
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const colors = isDarkMode ? darkColors : lightColors
+  var isLoggedIn = false
   return (
+    isLoggedIn ?
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name='Main'
           component={MainScreen}
           options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+    :
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name='Signup'
+          component={Signup}
         />
       </Stack.Navigator>
     </NavigationContainer>
