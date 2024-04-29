@@ -1,12 +1,9 @@
-import { Text, View } from "react-native"
+import { Text, View } from 'react-native'
 
 const Home = (): React.JSX.Element => {
-    
     return (
         <View>
-            <Text>
-                home
-            </Text>
+            <Text>home</Text>
         </View>
     )
 }
