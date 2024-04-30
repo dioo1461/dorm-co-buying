@@ -11,7 +11,7 @@ import {
 } from '@react-navigation/bottom-tabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import type { PropsWithChildren } from 'react'
 import {
     Image,
@@ -37,6 +37,7 @@ import { darkColors, lightColors } from 'constants/colors'
 import Login from 'screens/Login'
 import Signup from 'screens/Signup'
 import SetProfile from '@/screens/SetProfile'
+import { checkAccessTokenAvailable } from '@/utils/accessTokenMethods'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -75,9 +76,18 @@ const MainScreen = () => {
 }
 
 function App(): React.JSX.Element {
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
-    var isLoggedIn = false
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const isLoggedIn = await checkAccessTokenAvailable()
+            setIsLoggedIn(isLoggedIn)
+        }
+
+        checkLoginStatus()
+    }, [])
+
     return isLoggedIn ? (
         <NavigationContainer>
             <Stack.Navigator>

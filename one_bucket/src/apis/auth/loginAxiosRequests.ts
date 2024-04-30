@@ -16,7 +16,7 @@ export const requestLogin = async (data: Object) => {
         })
         .catch(error => {
             // 401 unauthorized
-            return error
+            return false
         })
 }
 

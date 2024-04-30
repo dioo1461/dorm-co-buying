@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { storeAccessToken } from '@/utils/accessTokenMethods'
 
 const Login = () => {
     const [id, setId] = React.useState('')
@@ -22,7 +23,9 @@ const Login = () => {
             password: password,
         }
         const result = await requestLogin(loginForm)
-        console.log(result)
+        if (result) {
+        } else {
+        }
     }
 
     const handleForgotPassword = () => {}
