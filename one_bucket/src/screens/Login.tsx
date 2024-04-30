@@ -10,8 +10,6 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { tempAxios } from '@/utils/axiosFactory'
-import { BASE_URL } from '@env'
 
 const Login = () => {
     const [id, setId] = React.useState('')
@@ -19,16 +17,11 @@ const Login = () => {
     const navigation = stackNavigation()
 
     const handleLogin = async () => {
-        // console.log(BASE_URL)
         const loginForm = {
             username: id,
             password: password,
         }
         const result = await requestLogin(loginForm)
-        // const result = await tempAxios.post(
-        //     'http://3.34.149.168:8080/sign-in',
-        //     loginForm,
-        // )
         console.log(result)
     }
 
