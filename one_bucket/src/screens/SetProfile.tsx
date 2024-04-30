@@ -10,6 +10,10 @@ import {
     StyleSheet,
 } from 'react-native'
 import CheckBox from '@react-native-community/checkbox'
+import { NavigationProp } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { RootStackParamList } from '@/screens/navigation/NativeStackNavigation'
+import { submitSignupForm } from '@/apis/auth/signupAxiosRequests'
 
 const SetProfile = () => {
     const [nickname, setNickname] = React.useState('')
@@ -18,9 +22,17 @@ const SetProfile = () => {
     ) // Store image URI
     const [bio, setBio] = React.useState('')
     const [isDorm, setIsDorm] = React.useState(false) // Default to false (not living in dorm)
+    const { params } = useRoute<RouteProp<RootStackParamList>>()
 
-    const handleProfileSetup = () => {
-        // Handle profile setup logic
+    const handleProfileSetup = async () => {
+        const signUpForm = {
+            username: params?.id,
+            password: params?.password,
+            nickName: nickname,
+        }
+        console.log(signUpForm)
+        const result = await submitSignupForm(signUpForm)
+        console.log(result)
     }
 
     const toggleCheckbox = () => {

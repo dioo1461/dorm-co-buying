@@ -1,14 +1,16 @@
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { useNavigation } from '@react-navigation/native'
-import React from 'react'
+import React, { useState } from 'react'
 import { View, TextInput, Button } from 'react-native'
 
 const Signup = () => {
-    const [phoneNumber, setPhoneNumber] = React.useState('')
-    const [fullName, setFullName] = React.useState('')
-    const [schoolName, setSchoolName] = React.useState('')
-    const [email, setEmail] = React.useState('')
-    const [verificationCode, setVerificationCode] = React.useState('')
-    const navigation = useNavigation()
+    const [id, setId] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('')
+    const [schoolName, setSchoolName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [verificationCode, setVerificationCode] = useState('')
+    const navigation = stackNavigation()
 
     const handlePersonalVerification = () => {
         // Handle personal verification logic
@@ -21,15 +23,17 @@ const Signup = () => {
     return (
         <View>
             {/* Personal Verification */}
+            <TextInput placeholder='아이디' value={id} onChangeText={setId} />
+            <TextInput
+                placeholder='비밀번호'
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+            />
             <TextInput
                 placeholder='전화번호'
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
-            />
-            <TextInput
-                placeholder='이름'
-                value={fullName}
-                onChangeText={setFullName}
             />
 
             {/* School Verification */}
@@ -53,7 +57,15 @@ const Signup = () => {
             />
             <Button
                 title='다음'
-                onPress={() => navigation.navigate('SetProfile', { id: 2 })}
+                onPress={() =>
+                    navigation.navigate('SetProfile', {
+                        id: id,
+                        password: password,
+                        phoneNumber: phoneNumber,
+                        schoolName: schoolName,
+                        email: email,
+                    })
+                }
             />
         </View>
     )

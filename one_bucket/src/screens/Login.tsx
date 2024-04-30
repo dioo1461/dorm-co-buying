@@ -8,13 +8,29 @@ import {
     StyleSheet,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { requestLogin } from '@/apis/auth/loginAxiosRequests'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { tempAxios } from '@/utils/axiosFactory'
+import { BASE_URL } from '@env'
 
 const Login = () => {
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
 
-    const handleLogin = () => {}
+    const handleLogin = async () => {
+        // console.log(BASE_URL)
+        const loginForm = {
+            username: id,
+            password: password,
+        }
+        const result = await requestLogin(loginForm)
+        // const result = await tempAxios.post(
+        //     'http://3.34.149.168:8080/sign-in',
+        //     loginForm,
+        // )
+        console.log(result)
+    }
 
     const handleForgotPassword = () => {}
 
@@ -38,7 +54,7 @@ const Login = () => {
             <Button title='로그인' onPress={handleLogin} />
             <Button
                 title='회원가입'
-                onPress={() => navigation.navigate('Signup', { id: 1 })}
+                onPress={() => navigation.navigate('Signup')}
             />
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity onPress={handleForgotPassword}>
