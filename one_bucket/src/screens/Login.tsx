@@ -12,12 +12,13 @@ import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { storeAccessToken } from '@/utils/accessTokenMethods'
 import { AppContext } from '@/contexts/AppContext'
+import Toast from 'react-native-toast-message'
 
 const Login = () => {
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
     const navigation = stackNavigation()
-    const { _, onLogInSuccess } = useContext(AppContext)
+    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
 
     const handleLogin = async () => {
         const loginForm = {
@@ -28,6 +29,7 @@ const Login = () => {
         if (result) {
             onLogInSuccess()
         } else {
+            onLoginFailure()
         }
     }
 

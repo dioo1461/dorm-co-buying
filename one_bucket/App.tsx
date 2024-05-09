@@ -43,6 +43,7 @@ import {
 } from '@/utils/accessTokenMethods'
 import { AppContext } from '@/contexts/AppContext'
 import SplashScreen from 'react-native-splash-screen'
+import Toast from 'react-native-toast-message'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -85,13 +86,28 @@ function App(): React.JSX.Element {
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
 
-    const onLogout = async () => {
+    const onLogOut = async () => {
         await removeAccessToken()
         setIsLoggedIn(false)
+        Toast.show({
+            type: 'success',
+            text1: '로그아웃에 성공하였습니다.',
+        })
     }
 
     const onLogInSuccess = async () => {
         setIsLoggedIn(await checkAccessTokenAvailable())
+        Toast.show({
+            type: 'success',
+            text1: '로그인에 성공하였습니다.',
+        })
+    }
+
+    const onLoginFailure = async () => {
+        Toast.show({
+            type: 'error',
+            text1: '로그인에 실패하였습니다.',
+        })
     }
 
     useEffect(() => {
@@ -115,30 +131,34 @@ function App(): React.JSX.Element {
     }, [])
 
     return (
-        <AppContext.Provider value={{ onLogout, onLogInSuccess }}>
-            {isLoggedIn ? (
-                <NavigationContainer>
-                    <Stack.Navigator>
-                        <Stack.Screen
-                            name='Main'
-                            component={MainScreen}
-                            options={{ headerShown: false }}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
-            ) : (
-                <NavigationContainer>
-                    <Stack.Navigator initialRouteName='Login'>
-                        <Stack.Screen name='Login' component={Login} />
-                        <Stack.Screen name='Signup' component={Signup} />
-                        <Stack.Screen
-                            name='SetProfile'
-                            component={SetProfile}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
-            )}
-        </AppContext.Provider>
+        <>
+            <AppContext.Provider
+                value={{ onLogOut, onLogInSuccess, onLoginFailure }}>
+                {isLoggedIn ? (
+                    <NavigationContainer>
+                        <Stack.Navigator>
+                            <Stack.Screen
+                                name='Main'
+                                component={MainScreen}
+                                options={{ headerShown: false }}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                ) : (
+                    <NavigationContainer>
+                        <Stack.Navigator initialRouteName='Login'>
+                            <Stack.Screen name='Login' component={Login} />
+                            <Stack.Screen name='Signup' component={Signup} />
+                            <Stack.Screen
+                                name='SetProfile'
+                                component={SetProfile}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                )}
+            </AppContext.Provider>
+            <Toast position='bottom' bottomOffset={40} visibilityTime={1000} />
+        </>
     )
 }
 

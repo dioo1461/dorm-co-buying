@@ -1,3 +1,13 @@
 import React, { createContext } from 'react'
 
-export const AppContext = createContext<any>({})
+interface AppContextInterface {
+    onLogOut: () => void
+    onLogInSuccess: () => void
+    onLoginFailure: () => void
+}
+
+export const AppContext = createContext<AppContextInterface>({
+    onLogOut: () => {},
+    onLogInSuccess: () => {},
+    onLoginFailure: () => {},
+})
