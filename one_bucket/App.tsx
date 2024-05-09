@@ -38,6 +38,7 @@ import Login from 'screens/Login'
 import Signup from 'screens/Signup'
 import SetProfile from '@/screens/SetProfile'
 import { checkAccessTokenAvailable } from '@/utils/accessTokenMethods'
+import { AppContext } from '@/contexts/AppContext'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -79,6 +80,11 @@ function App(): React.JSX.Element {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
+
+    const onLogout = () => {
+        setIsLoggedIn(false)
+    }
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             const isLoggedIn = await checkAccessTokenAvailable()
@@ -86,26 +92,33 @@ function App(): React.JSX.Element {
         }
 
         checkLoginStatus()
-    }, [])
+    }, [isLoggedIn])
 
-    return isLoggedIn ? (
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen
-                    name='Main'
-                    component={MainScreen}
-                    options={{ headerShown: false }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
-    ) : (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName='Login'>
-                <Stack.Screen name='Login' component={Login} />
-                <Stack.Screen name='Signup' component={Signup} />
-                <Stack.Screen name='SetProfile' component={SetProfile} />
-            </Stack.Navigator>
-        </NavigationContainer>
+    return (
+        <AppContext.Provider value={onLogout}>
+            {isLoggedIn ? (
+                <NavigationContainer>
+                    <Stack.Navigator>
+                        <Stack.Screen
+                            name='Main'
+                            component={MainScreen}
+                            options={{ headerShown: false }}
+                        />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            ) : (
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName='Login'>
+                        <Stack.Screen name='Login' component={Login} />
+                        <Stack.Screen name='Signup' component={Signup} />
+                        <Stack.Screen
+                            name='SetProfile'
+                            component={SetProfile}
+                        />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            )}
+        </AppContext.Provider>
     )
 }
 
