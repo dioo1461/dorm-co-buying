@@ -24,14 +24,14 @@ export const checkUsernameUnique = async (username: String) => {
 }
 
 /**  */
-export const submitSignupForm = async (data: Object) => {
+export const submitSignupForm = async (data: Object): Promise<boolean> => {
     return await defaultAxios
         .post('/register/base', data)
         .then(res => {
             return true
         })
         .catch(err => {
-            return err
+            return false
         })
 }
 

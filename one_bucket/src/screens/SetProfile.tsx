@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
     View,
     TextInput,
@@ -14,6 +14,10 @@ import { NavigationProp } from '@react-navigation/native'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { RootStackParamList } from '@/screens/navigation/NativeStackNavigation'
 import { submitSignupForm } from '@/apis/auth/signupAxiosRequests'
+import Toast from 'react-native-toast-message'
+import { requestLogin } from '@/apis/auth/loginAxiosRequests'
+import Signup from '@/screens/Signup'
+import { AppContext } from '@/contexts/AppContext'
 
 const SetProfile = () => {
     const [nickname, setNickname] = React.useState('')
@@ -23,6 +27,7 @@ const SetProfile = () => {
     const [bio, setBio] = React.useState('')
     const [isDorm, setIsDorm] = React.useState(false) // Default to false (not living in dorm)
     const { params } = useRoute<RouteProp<RootStackParamList>>()
+    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
 
     const handleProfileSetup = async () => {
         const signUpForm = {
@@ -30,9 +35,27 @@ const SetProfile = () => {
             password: params?.password,
             nickName: nickname,
         }
-        console.log(signUpForm)
         const result = await submitSignupForm(signUpForm)
-        console.log(result)
+        if (result) {
+            Toast.show({
+                type: 'success',
+                text1: '회원가입에 성공하였습니다.',
+            })
+            const loginResult = await requestLogin({
+                username: signUpForm.username,
+                password: signUpForm.password,
+            })
+            if (loginResult) {
+                onLogInSuccess()
+            } else {
+                onLoginFailure()
+            }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: '회원가입에 실패하였습니다.',
+            })
+        }
     }
 
     const toggleCheckbox = () => {
