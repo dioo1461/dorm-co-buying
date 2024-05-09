@@ -39,6 +39,7 @@ import Signup from 'screens/Signup'
 import SetProfile from '@/screens/SetProfile'
 import { checkAccessTokenAvailable } from '@/utils/accessTokenMethods'
 import { AppContext } from '@/contexts/AppContext'
+import SplashScreen from 'react-native-splash-screen'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -93,6 +94,18 @@ function App(): React.JSX.Element {
 
         checkLoginStatus()
     }, [isLoggedIn])
+
+    useEffect(() => {
+        const ac = new AbortController()
+
+        setTimeout(() => {
+            SplashScreen.hide()
+        }, 1000)
+
+        return function cleanup() {
+            ac.abort()
+        }
+    }, [])
 
     return (
         <AppContext.Provider value={onLogout}>

@@ -3,7 +3,8 @@
         "baseUrl": "./src",
         "paths": {
             "@/*": ["./*"],
-            "@const/*": ["const/*"]
+            "@const/*": ["const/*"],
+            "@icons/*": ["assets/icons/*"]
         }
     },
     "extends": "@react-native/typescript-config/tsconfig.json"
