@@ -37,7 +37,10 @@ import { darkColors, lightColors } from 'constants/colors'
 import Login from 'screens/Login'
 import Signup from 'screens/Signup'
 import SetProfile from '@/screens/SetProfile'
-import { checkAccessTokenAvailable } from '@/utils/accessTokenMethods'
+import {
+    checkAccessTokenAvailable,
+    removeAccessToken,
+} from '@/utils/accessTokenMethods'
 import { AppContext } from '@/contexts/AppContext'
 import SplashScreen from 'react-native-splash-screen'
 
@@ -82,14 +85,18 @@ function App(): React.JSX.Element {
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
 
-    const onLogout = () => {
+    const onLogout = async () => {
+        await removeAccessToken()
         setIsLoggedIn(false)
+    }
+
+    const onLogInSuccess = async () => {
+        setIsLoggedIn(await checkAccessTokenAvailable())
     }
 
     useEffect(() => {
         const checkLoginStatus = async () => {
-            const isLoggedIn = await checkAccessTokenAvailable()
-            setIsLoggedIn(isLoggedIn)
+            setIsLoggedIn(await checkAccessTokenAvailable())
         }
 
         checkLoginStatus()
@@ -108,7 +115,7 @@ function App(): React.JSX.Element {
     }, [])
 
     return (
-        <AppContext.Provider value={onLogout}>
+        <AppContext.Provider value={{ onLogout, onLogInSuccess }}>
             {isLoggedIn ? (
                 <NavigationContainer>
                     <Stack.Navigator>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
     View,
     TextInput,
@@ -11,11 +11,13 @@ import { useNavigation } from '@react-navigation/native'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { storeAccessToken } from '@/utils/accessTokenMethods'
+import { AppContext } from '@/contexts/AppContext'
 
 const Login = () => {
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
     const navigation = stackNavigation()
+    const { _, onLogInSuccess } = useContext(AppContext)
 
     const handleLogin = async () => {
         const loginForm = {
@@ -24,6 +26,7 @@ const Login = () => {
         }
         const result = await requestLogin(loginForm)
         if (result) {
+            onLogInSuccess()
         } else {
         }
     }

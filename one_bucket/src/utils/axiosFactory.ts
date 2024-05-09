@@ -5,7 +5,13 @@ import { BASE_URL } from '@env'
 
 export const createAxios = (options: AxiosRequestConfig = {}) => {
     // console.log(BASE_URL)
-    return axios.create({ baseURL: BASE_URL, ...options })
+    return axios.create({
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+        },
+        baseURL: BASE_URL,
+        ...options,
+    })
 }
 
 export const createAuthAxios = (options: AxiosRequestConfig = {}) => {
