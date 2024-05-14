@@ -48,50 +48,50 @@ import Toast from 'react-native-toast-message'
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
-const MainScreen = () => {
-    return (
-        <Tab.Navigator initialRouteName='Home'>
-            {mainRoutes.map(route => (
-                <Tab.Screen
-                    key={`screen-${route.name}`}
-                    name={route.name}
-                    component={route.component}
-                    options={{
-                        // headerStyle: {
-                        //   backgroundColor: colors.ICON_BG
-                        // },
-                        // headerTintColor: colors.ICON_TEXT,
-                        tabBarIcon: ({ focused }) => {
-                            return (
-                                <Image
-                                    testID={`tabIcon-${route.name}`}
-                                    source={
-                                        focused
-                                            ? route.activeIcon
-                                            : route.inactiveIcon
-                                    }
-                                    style={{ width: 20, height: 20 }}
-                                />
-                            )
-                        },
-                    }}
-                />
-            ))}
-        </Tab.Navigator>
-    )
-}
-
 function App(): React.JSX.Element {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
+
+    const MainScreen = () => {
+        return (
+            <Tab.Navigator initialRouteName='Home'>
+                {mainRoutes.map(route => (
+                    <Tab.Screen
+                        key={`screen-${route.name}`}
+                        name={route.name}
+                        component={route.component}
+                        options={{
+                            headerStyle: {
+                                backgroundColor: colors.ICON_BG,
+                            },
+                            headerTintColor: colors.ICON_TEXT,
+                            tabBarIcon: ({ focused }) => {
+                                return (
+                                    <Image
+                                        testID={`tabIcon-${route.name}`}
+                                        source={
+                                            focused
+                                                ? route.activeIcon
+                                                : route.inactiveIcon
+                                        }
+                                        style={{ width: 20, height: 20 }}
+                                    />
+                                )
+                            },
+                        }}
+                    />
+                ))}
+            </Tab.Navigator>
+        )
+    }
 
     const onLogOut = async () => {
         await removeAccessToken()
         setIsLoggedIn(false)
         Toast.show({
             type: 'success',
-            text1: '로그아웃에 성공하였습니다.',
+            text1: '성공적으로 로그아웃하였습니다.',
         })
     }
 
@@ -99,7 +99,7 @@ function App(): React.JSX.Element {
         setIsLoggedIn(await checkAccessTokenAvailable())
         Toast.show({
             type: 'success',
-            text1: '로그인에 성공하였습니다.',
+            text1: '성공적으로 로그인하였습니다.',
         })
     }
 

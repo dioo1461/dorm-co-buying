@@ -10,7 +10,7 @@ import Mypage from 'screens/Mypage'
 
 export const mainRoutes = [
     {
-        name: '홈',
+        name: '한바구니',
         component: Home,
         inactiveIcon: require('res/mipmap/tab/icon_home_inactive.png'),
         activeIcon: require('res/mipmap/tab/icon_home_active.png'),
