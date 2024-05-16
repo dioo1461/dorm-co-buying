@@ -52,7 +52,7 @@ const Tab = createBottomTabNavigator()
 function App(): React.JSX.Element {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
-    const colors = isDarkMode ? darkColors : lightColors
+    const themeColor = isDarkMode ? darkColors : lightColors
 
     const MainScreen: React.FC = () => {
         return (
@@ -64,9 +64,9 @@ function App(): React.JSX.Element {
                         component={route.component}
                         options={{
                             headerStyle: {
-                                backgroundColor: colors.ICON_BG,
+                                backgroundColor: themeColor.ICON_BG,
                             },
-                            headerTintColor: colors.ICON_TEXT,
+                            headerTintColor: themeColor.ICON_TEXT,
                             tabBarIcon: ({ focused }) => {
                                 return (
                                     <Image
@@ -134,7 +134,12 @@ function App(): React.JSX.Element {
     return (
         <>
             <AppContext.Provider
-                value={{ onLogOut, onLogInSuccess, onLoginFailure }}>
+                value={{
+                    onLogOut,
+                    onLogInSuccess,
+                    onLoginFailure,
+                    themeColor,
+                }}>
                 {isLoggedIn ? (
                     <NavigationContainer>
                         <Stack.Navigator>

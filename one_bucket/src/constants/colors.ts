@@ -14,7 +14,7 @@ export const baseColors = {
     RED: '#FF0000',
 }
 
-type Icolor = {
+export type Icolor = {
     BG: string
     ICON_BG: string
     ICON_TEXT: string
