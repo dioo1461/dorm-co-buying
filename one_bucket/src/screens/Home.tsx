@@ -2,7 +2,7 @@ import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
-import React, { useContext } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 import {
     View,
     Text,
@@ -10,6 +10,7 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    FlatList,
 } from 'react-native'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
@@ -17,6 +18,32 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 const Home: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { themeColor } = useContext(AppContext)
+    const [data, setData] = useState([
+        'post1',
+        'post2',
+        'post3',
+        'post4',
+        'post5',
+        'post6',
+        'post7',
+        'post8',
+        'post9',
+    ])
+    const flatListRef = useRef<FlatList>(null)
+
+    const renderItem = ({ item }: { item: string }) => (
+        <View style={styles.post}>
+            <Text>{item}</Text>
+        </View>
+    )
+
+    const onScrollEnd = (event: any) => {
+        const offsetX = event.nativeEvent.contentOffset.x
+        const contentWidth = event.nativeEvent.contentSize.width
+        if (offsetX >= contentWidth - SCREEN_WIDTH) {
+            flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
+        }
+    }
 
     return (
         <>
@@ -44,115 +71,49 @@ const Home: React.FC = (): React.JSX.Element => {
                             추천 거래글
                         </Text>
                     </View>
-                    <ScrollView
-                        pagingEnabled
+                    <FlatList
+                        ref={flatListRef}
+                        data={data}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
                         horizontal
+                        pagingEnabled
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.post_list}>
-                        <View style={styles.post}>
-                            <Text>post1</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post2</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post3</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post4</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post5</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post6</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post7</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post8</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post9</Text>
-                        </View>
-                    </ScrollView>
+                        onMomentumScrollEnd={onScrollEnd}
+                        contentContainerStyle={styles.post_list}
+                    />
                     <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 쓴 거래글
                         </Text>
                     </View>
-                    <ScrollView
-                        pagingEnabled
+                    <FlatList
+                        ref={flatListRef}
+                        data={data}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
                         horizontal
+                        pagingEnabled
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.post_list}>
-                        <View style={styles.post}>
-                            <Text>post1</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post2</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post3</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post4</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post5</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post6</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post7</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post8</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post9</Text>
-                        </View>
-                    </ScrollView>
+                        onMomentumScrollEnd={onScrollEnd}
+                        contentContainerStyle={styles.post_list}
+                    />
                     <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 참여한 거래글
                         </Text>
                     </View>
-                    <ScrollView
-                        pagingEnabled
+                    <FlatList
+                        ref={flatListRef}
+                        data={data}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
                         horizontal
+                        pagingEnabled
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.post_list}>
-                        <View style={styles.post}>
-                            <Text>post1</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post2</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post3</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post4</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post5</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post6</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post7</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post8</Text>
-                        </View>
-                        <View style={styles.post}>
-                            <Text>post9</Text>
-                        </View>
-                    </ScrollView>
+                        onMomentumScrollEnd={onScrollEnd}
+                        contentContainerStyle={styles.post_list}
+                    />
                 </View>
             </ScrollView>
             <TouchableOpacity
