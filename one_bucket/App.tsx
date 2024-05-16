@@ -45,6 +45,7 @@ import { AppContext } from '@/hooks/contexts/AppContext'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
+import strings from '@/constants/strings'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -149,18 +150,25 @@ function App(): React.JSX.Element {
                                 options={{ headerShown: false }}
                             />
                             <Stack.Screen
-                                name='PostGroupPurchase'
+                                name={strings.postGroupPurchaseScreenName}
                                 component={PostGroupPurchase}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>
                 ) : (
                     <NavigationContainer>
-                        <Stack.Navigator initialRouteName='Login'>
-                            <Stack.Screen name='Login' component={Login} />
-                            <Stack.Screen name='Signup' component={Signup} />
+                        <Stack.Navigator
+                            initialRouteName={strings.loginScreenName}>
                             <Stack.Screen
-                                name='SetProfile'
+                                name={strings.loginScreenName}
+                                component={Login}
+                            />
+                            <Stack.Screen
+                                name={strings.signUpScreenName}
+                                component={Signup}
+                            />
+                            <Stack.Screen
+                                name={strings.setProfileScreenName}
                                 component={SetProfile}
                             />
                         </Stack.Navigator>

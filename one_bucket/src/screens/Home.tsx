@@ -1,4 +1,5 @@
 import { baseColors } from '@/constants/colors'
+import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import React, { useContext } from 'react'
@@ -156,7 +157,9 @@ const Home: React.FC = (): React.JSX.Element => {
             </ScrollView>
             <TouchableOpacity
                 style={[styles.fab, { backgroundColor: themeColor.ICON_BG }]}
-                onPress={() => navigation.navigate('PostGroupPurchase')}>
+                onPress={() =>
+                    navigation.navigate(strings.postGroupPurchaseScreenName)
+                }>
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </>
