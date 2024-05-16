@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { storeAccessToken } from '@/utils/accessTokenMethods'
-import { AppContext } from '@/contexts/AppContext'
+import { AppContext } from '@/hooks/contexts/AppContext'
 import Toast from 'react-native-toast-message'
 
 const Login = () => {

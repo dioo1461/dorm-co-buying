@@ -9,7 +9,7 @@ import {
     BottomTabNavigationOptions,
     createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, NavigationProp } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useState, useEffect } from 'react'
 import type { PropsWithChildren } from 'react'
@@ -41,9 +41,10 @@ import {
     checkAccessTokenAvailable,
     removeAccessToken,
 } from '@/utils/accessTokenMethods'
-import { AppContext } from '@/contexts/AppContext'
+import { AppContext } from '@/hooks/contexts/AppContext'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
+import PostGroupPurchase from '@/screens/PostGroupPurchase'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -53,7 +54,7 @@ function App(): React.JSX.Element {
     const isDarkMode = useColorScheme() === 'dark'
     const colors = isDarkMode ? darkColors : lightColors
 
-    const MainScreen = () => {
+    const MainScreen: React.FC = () => {
         return (
             <Tab.Navigator initialRouteName='Home'>
                 {mainRoutes.map(route => (
@@ -141,6 +142,10 @@ function App(): React.JSX.Element {
                                 name='Main'
                                 component={MainScreen}
                                 options={{ headerShown: false }}
+                            />
+                            <Stack.Screen
+                                name='PostGroupPurchase'
+                                component={PostGroupPurchase}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>

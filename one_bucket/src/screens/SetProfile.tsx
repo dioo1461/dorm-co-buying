@@ -17,7 +17,7 @@ import { submitSignupForm } from '@/apis/auth/signupAxiosRequests'
 import Toast from 'react-native-toast-message'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import Signup from '@/screens/Signup'
-import { AppContext } from '@/contexts/AppContext'
+import { AppContext } from '@/hooks/contexts/AppContext'
 
 const SetProfile = () => {
     const [nickname, setNickname] = React.useState('')
