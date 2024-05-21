@@ -1,6 +1,6 @@
 const strings = {
     // navigation screen names
-    homeScreenName: '한바구니',
+    homeScreenName: '홈',
     chatScreenName: '채팅',
     myPageScreenName: 'MY',
 

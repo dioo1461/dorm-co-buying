@@ -35,7 +35,7 @@ import Home from 'screens/Home'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 import { darkColors, lightColors } from 'constants/colors'
 import Login from 'screens/Login'
-import Signup from 'screens/Signup'
+import SignUp from '@/screens/SignUp'
 import SetProfile from '@/screens/SetProfile'
 import {
     checkAccessTokenAvailable,
@@ -165,7 +165,7 @@ function App(): React.JSX.Element {
                             />
                             <Stack.Screen
                                 name={strings.signUpScreenName}
-                                component={Signup}
+                                component={SignUp}
                             />
                             <Stack.Screen
                                 name={strings.setProfileScreenName}

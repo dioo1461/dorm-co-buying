@@ -16,7 +16,7 @@ import { RootStackParamList } from '@/screens/navigation/NativeStackNavigation'
 import { submitSignupForm } from '@/apis/auth/signupAxiosRequests'
 import Toast from 'react-native-toast-message'
 import { requestLogin } from '@/apis/auth/loginAxiosRequests'
-import Signup from '@/screens/Signup'
+import Signup from '@/screens/SignUp'
 import { AppContext } from '@/hooks/contexts/AppContext'
 
 const SetProfile = () => {

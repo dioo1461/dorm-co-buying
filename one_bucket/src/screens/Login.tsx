@@ -55,7 +55,7 @@ const Login = () => {
             <Button title='로그인' onPress={handleLogin} />
             <Button
                 title='회원가입'
-                onPress={() => navigation.navigate('Signup')}
+                onPress={() => navigation.navigate('SignUp')}
             />
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity onPress={handleForgotPassword}>
