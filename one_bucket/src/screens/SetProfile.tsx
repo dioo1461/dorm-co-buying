@@ -19,7 +19,7 @@ import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import Signup from '@/screens/SignUp'
 import { AppContext } from '@/hooks/contexts/AppContext'
 
-const SetProfile = () => {
+const SetProfile: React.FC = (): React.JSX.Element => {
     const [nickname, setNickname] = React.useState('')
     const [profilePicture, setProfilePicture] = React.useState<string | null>(
         null,

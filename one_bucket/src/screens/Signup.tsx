@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { View, TextInput, Button } from 'react-native'
 
-const SignUp = () => {
+const SignUp: React.FC = (): React.JSX.Element => {
     const [id, setId] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [schoolName, setSchoolName] = useState('')

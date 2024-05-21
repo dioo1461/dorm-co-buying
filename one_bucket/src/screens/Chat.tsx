@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native'
 
-const Chat = (): React.JSX.Element => {
+const Chat: React.FC = (): React.JSX.Element => {
     return (
         <View>
             <Text>chat</Text>

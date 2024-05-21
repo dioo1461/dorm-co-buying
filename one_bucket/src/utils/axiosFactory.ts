@@ -14,6 +14,11 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
     })
 }
 
+/**
+ * Creates an instance of Axios with authentication headers.
+ * @param options - Additional options for Axios.
+ * @returns An instance of Axios with authentication headers.
+ */
 export const createAuthAxios = (options: AxiosRequestConfig = {}) => {
     const token = getAccessToken()
     const authAxios = axios.create({

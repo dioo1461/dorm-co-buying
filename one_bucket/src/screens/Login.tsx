@@ -14,12 +14,18 @@ import { storeAccessToken } from '@/utils/accessTokenMethods'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import Toast from 'react-native-toast-message'
 
-const Login = () => {
+/**
+ * Renders the Login screen.
+ */
+const Login: React.FC = () => {
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
     const navigation = stackNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
 
+    /**
+     * Handles the login process.
+     */
     const handleLogin = async () => {
         const loginForm = {
             username: id,
@@ -33,8 +39,14 @@ const Login = () => {
         }
     }
 
+    /**
+     * Handles the forgot password action.
+     */
     const handleForgotPassword = () => {}
 
+    /**
+     * Handles the Google login action.
+     */
     const handleGoogleLogin = () => {}
 
     return (

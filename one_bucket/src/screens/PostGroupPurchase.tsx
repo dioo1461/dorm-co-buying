@@ -8,8 +8,7 @@ import {
     Image,
     Button,
     ScrollView,
-    Keyboard,
-    KeyboardEvent,
+    Touchable,
 } from 'react-native'
 import {
     launchImageLibrary,
@@ -18,7 +17,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 
-const PostGroupPurchase: React.FC = () => {
+const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     const [imageUri, setImageUri] = useState<string | null>(null)
     const [siteLink, setSiteLink] = useState('')
     const [item, setItem] = useState('')
@@ -46,29 +45,6 @@ const PostGroupPurchase: React.FC = () => {
             }
         })
     }
-
-    useEffect(() => {
-        const onKeyboardShow = (event: KeyboardEvent) => {
-            setKeyboardHeight(event.endCoordinates.height)
-        }
-        const onKeyboardHide = () => {
-            setKeyboardHeight(0)
-        }
-
-        const keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            onKeyboardShow,
-        )
-        const keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            onKeyboardHide,
-        )
-
-        return () => {
-            keyboardDidShowListener.remove()
-            keyboardDidHideListener.remove()
-        }
-    }, [])
 
     return (
         <View style={styles.container}>

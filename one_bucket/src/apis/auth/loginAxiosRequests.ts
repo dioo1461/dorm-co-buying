@@ -20,6 +20,13 @@ export const requestLogin = async (data: Object) => {
         })
 }
 
+/**
+ * Checks if the provided password is valid.
+ *
+ * @param {string} password - The password to be checked.
+ * @returns {Promise<boolean>} - A promise that resolves to `true` if the password is valid, otherwise `false`.
+ * @throws {Error} - If an error occurs during the API request.
+ */
 export const checkPassword = async (password: String) => {
     return authAxios
         .post('/auth/check-password', { password: password })
