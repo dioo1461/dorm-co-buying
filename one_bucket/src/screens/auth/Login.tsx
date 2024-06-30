@@ -2,9 +2,11 @@ import { requestLogin } from '@/apis/auth/loginAxiosRequests'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native'
-import BouncyCheckbox from 'react-native-bouncy-checkbox'
+import BouncyCheckbox, {
+    BouncyCheckboxHandle,
+} from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const Login = () => {
@@ -14,6 +16,8 @@ const Login = () => {
     const [isAutoLogin, setIsAutoLogin] = React.useState(false)
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     const navigation = stackNavigation()
+
+    let bouncyCheckboxRef = useRef<BouncyCheckboxHandle>(null)
 
     const handleLogin = async () => {
         const loginForm = {
@@ -65,13 +69,23 @@ const Login = () => {
                 <View style={styles.autoLoginContainer}>
                     <View style={{ width: '5%' }}>
                         <BouncyCheckbox
+                            ref={bouncyCheckboxRef}
                             size={25}
                             fillColor={themeColor.ICON_BG}
-                            onPress={() => setIsAutoLogin(!isAutoLogin)}
+                            onPress={isAutoLogin =>
+                                setIsAutoLogin(!isAutoLogin)
+                            }
                         />
                     </View>
                     <View>
-                        <Text style={styles.checkboxLabel}>자동 로그인</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                bouncyCheckboxRef.current?.onCheckboxPress()
+                            }}>
+                            <Text style={styles.checkboxLabel}>
+                                자동 로그인
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 <View style={styles.loginButtonContainer}>
