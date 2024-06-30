@@ -1,5 +1,6 @@
 export const schoolColors = {
     HONGIK_NAVY: '#002c62',
+    HONGIK_DARK_NABY: '#001f4d',
     HONGIK_TEXT: '#FFFFFF',
 }
 
@@ -7,6 +8,7 @@ export const baseColors = {
     WHITE: '#FFFFFF',
     BLACK: '#000000',
     SCHOOL_BG: schoolColors.HONGIK_NAVY,
+    SCHOOL_BG_DARK: schoolColors.HONGIK_NAVY,
     SCHOOL_TEXT: schoolColors.HONGIK_TEXT,
     GRAY_1: '#F0F0F0',
     GRAY_2: '#D9D9D9',
@@ -17,6 +19,7 @@ export const baseColors = {
 export type Icolor = {
     BG: string
     ICON_BG: string
+    ICON_BG_DARK: string
     ICON_TEXT: string
     TEXT_PRIMARY: string
     TEXT_SECONDARY: string
@@ -30,6 +33,7 @@ export type Icolor = {
 export const lightColors: Icolor = {
     BG: baseColors.WHITE,
     ICON_BG: baseColors.SCHOOL_BG,
+    ICON_BG_DARK: baseColors.SCHOOL_BG_DARK,
     ICON_TEXT: baseColors.SCHOOL_TEXT,
     TEXT_PRIMARY: baseColors.BLACK,
     TEXT_SECONDARY: baseColors.GRAY_3,
@@ -43,6 +47,7 @@ export const lightColors: Icolor = {
 export const darkColors: Icolor = {
     BG: baseColors.WHITE,
     ICON_BG: baseColors.SCHOOL_BG,
+    ICON_BG_DARK: baseColors.SCHOOL_BG_DARK,
     ICON_TEXT: baseColors.SCHOOL_TEXT,
     TEXT_PRIMARY: baseColors.BLACK,
     TEXT_SECONDARY: baseColors.GRAY_3,

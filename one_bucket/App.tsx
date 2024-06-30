@@ -5,47 +5,26 @@
  * @format
  */
 
-import {
-    BottomTabNavigationOptions,
-    createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs'
-import { NavigationContainer, NavigationProp } from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import React, { useState, useEffect } from 'react'
-import type { PropsWithChildren } from 'react'
-import {
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    useColorScheme,
-    View,
-} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Image, StyleSheet, useColorScheme } from 'react-native'
 
-import {
-    Colors,
-    DebugInstructions,
-    Header,
-    LearnMoreLinks,
-    ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen'
-import Home from 'screens/Home'
-import { mainRoutes } from 'screens/navigation/mainRoutes'
-import { darkColors, lightColors } from 'constants/colors'
-import Login from 'screens/Login'
-import SignUp from '@/screens/SignUp'
-import SetProfile from '@/screens/SetProfile'
+import strings from '@/constants/strings'
+import { AppContext } from '@/hooks/contexts/AppContext'
+import PostGroupPurchase from '@/screens/PostGroupPurchase'
+import Login from '@/screens/auth/Login'
+import SetProfile from '@/screens/auth/SetProfile'
+import SignUp from '@/screens/auth/SignUp'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,
 } from '@/utils/accessTokenMethods'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
-import PostGroupPurchase from '@/screens/PostGroupPurchase'
-import strings from '@/constants/strings'
+import { mainRoutes } from 'screens/navigation/mainRoutes'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -142,7 +121,7 @@ function App(): React.JSX.Element {
                     themeColor,
                 }}>
                 {isLoggedIn ? (
-                    <NavigationContainer>
+                    <NavigationContainer theme={navTheme}>
                         <Stack.Navigator>
                             <Stack.Screen
                                 name='Main'
@@ -156,8 +135,9 @@ function App(): React.JSX.Element {
                         </Stack.Navigator>
                     </NavigationContainer>
                 ) : (
-                    <NavigationContainer>
+                    <NavigationContainer theme={navTheme}>
                         <Stack.Navigator
+                            screenOptions={{ headerShown: false }}
                             initialRouteName={strings.loginScreenName}>
                             <Stack.Screen
                                 name={strings.loginScreenName}
@@ -198,5 +178,13 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
 })
+
+const navTheme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        background: 'white',
+    },
+}
 
 export default App
