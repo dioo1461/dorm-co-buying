@@ -12,6 +12,7 @@ const Login = () => {
     const { themeColor } = useContext(AppContext)
     const [password, setPassword] = React.useState('')
     const [isAutoLogin, setIsAutoLogin] = React.useState(false)
+    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     const navigation = stackNavigation()
 
     const handleLogin = async () => {
@@ -21,7 +22,9 @@ const Login = () => {
         }
         const result = await requestLogin(loginForm)
         if (result) {
+            onLogInSuccess()
         } else {
+            onLoginFailure()
         }
     }
 
@@ -92,7 +95,7 @@ const Login = () => {
                 <View style={[styles.signUpButtonContainer]}>
                     <TouchableOpacity
                         style={styles.signUpButton}
-                        onPress={handleForgotPassword}>
+                        onPress={() => navigation.navigate('SignUp')}>
                         <Text
                             style={{
                                 fontSize: 16,
