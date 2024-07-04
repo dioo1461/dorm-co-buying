@@ -45,7 +45,7 @@ const Login = () => {
                     alignItems: 'center',
                     marginBottom: 50,
                 }}>
-                <Image source={require('@/res/drawable/login_logo.png')} />
+                <Image source={require('@/assets/drawable/login_logo.png')} />
             </View>
             <View
                 style={{
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     input: {
         width: '90%',
         borderBottomWidth: 1,
-        borderBottomColor: 'gray',
+        borderBottomColor: baseColors.GRAY_1,
         padding: 10,
         marginStart: 20,
         marginEnd: 20,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         borderRadius: 5,
-        backgroundColor: baseColors.GRAY_1,
+        backgroundColor: baseColors.GRAY_3,
     },
     linkTextContainer: {
         flexDirection: 'row',

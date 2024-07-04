@@ -10,9 +10,9 @@ export const baseColors = {
     SCHOOL_BG: schoolColors.HONGIK_NAVY,
     SCHOOL_BG_DARK: schoolColors.HONGIK_NAVY,
     SCHOOL_TEXT: schoolColors.HONGIK_TEXT,
-    GRAY_1: '#F0F0F0',
+    GRAY_1: '#808080',
     GRAY_2: '#D9D9D9',
-    GRAY_3: '#818181',
+    GRAY_3: '#F0F0F0',
     RED: '#FF0000',
 }
 

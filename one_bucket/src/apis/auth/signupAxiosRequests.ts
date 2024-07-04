@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { authAxios, defaultAxios } from 'utils/axiosFactory'
 
 export const checkEmailUnique = async (email: String) => {
