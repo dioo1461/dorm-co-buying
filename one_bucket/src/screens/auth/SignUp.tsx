@@ -37,12 +37,21 @@ const SignUp = () => {
     }
 
     const handlePhoneNumberSubmit = () => {
-        if (phoneNumber.length >= 10) {
+        if (validatePhoneNumber(phoneNumber) === true) {
             navigation.navigate('SignUp_2', {
                 phoneNumber: phoneNumber,
             })
         } else {
             Alert.alert('휴대폰 번호를 정확히 입력해주세요.')
+        }
+    }
+
+    const validatePhoneNumber = (number: string) => {
+        // TODO : 최초 세자리 (010, 011, ...) validation 구현
+        if (number.replaceAll('-', '').length >= 10) {
+            return true
+        } else {
+            return false
         }
     }
 
