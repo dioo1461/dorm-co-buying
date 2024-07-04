@@ -1,3 +1,4 @@
+import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import {
@@ -9,72 +10,53 @@ import {
     View,
 } from 'react-native'
 
-const SignUpScreen = () => {
+const SignUp = () => {
     const navigation = useNavigation()
 
     return (
-        <View style={styles.container}>
+        <View style={signUpHeaderStyles.container}>
             <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                style={styles.backButton}>
+                style={signUpHeaderStyles.backButton}>
                 <Image
                     source={require('@/assets/drawable/ic-arrow-outline.png')}
                 />
             </TouchableOpacity>
-            <Text style={styles.step}>1. 본인 인증</Text>
-            <Text style={styles.title}>
-                {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
-            </Text>
-            <Text style={styles.subStep}>2. 학교 인증</Text>
-            <Text style={styles.subStep}>3. 이메일 및 비밀번호 설정</Text>
-            <Text style={styles.subStep}>4. 프로필 정보 입력</Text>
-            <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="'-' 없이 입력"
-                keyboardType='phone-pad'
-            />
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>인증번호 발송</Text>
-            </TouchableOpacity>
+            <View>
+                <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
+                <Text style={signUpHeaderStyles.title}>
+                    {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
+                </Text>
+                <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
+                <Text style={signUpHeaderStyles.subStep}>
+                    3. 이메일 및 비밀번호 설정
+                </Text>
+                <Text style={signUpHeaderStyles.subStep}>
+                    4. 프로필 정보 입력
+                </Text>
+                <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
+            </View>
+            <View>
+                <TextInput
+                    style={styles.input}
+                    placeholder="'-' 없이 입력"
+                    keyboardType='number-pad'
+                />
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('SignUp_2')}>
+                    <Text style={styles.buttonText}>인증번호 발송</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingTop: 40,
-        backgroundColor: 'white',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 40,
-        left: 20,
-        zIndex: 10,
-    },
-    step: {
-        marginTop: 60,
-        color: 'blue',
-        fontSize: 16,
-        fontFamily: 'NanumGothic',
-        marginBottom: 10,
-    },
-    title: {
-        fontSize: 30,
-        color: 'black',
-        fontFamily: 'NanumGothic',
-        marginBottom: 20,
-    },
-    subStep: {
-        fontSize: 16,
-        color: 'gray',
-        marginBottom: 10,
-    },
     phoneLabel: {
         fontSize: 18,
-        fontWeight: 'bold',
+        color: 'black',
+        fontFamily: 'NanumGothic-Bold',
         marginTop: 30,
         marginBottom: 10,
     },
@@ -94,8 +76,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 16,
-        fontWeight: 'bold',
     },
 })
 
-export default SignUpScreen
+export default SignUp

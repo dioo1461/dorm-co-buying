@@ -1,4 +1,4 @@
-export const schoolColors = {
+const schoolColors = {
     HONGIK_NAVY: '#002c62',
     HONGIK_DARK_NABY: '#001f4d',
     HONGIK_TEXT: '#FFFFFF',
@@ -16,7 +16,7 @@ export const baseColors = {
     RED: '#FF0000',
 }
 
-export type Icolor = {
+type Icolor = {
     BG: string
     ICON_BG: string
     ICON_BG_DARK: string

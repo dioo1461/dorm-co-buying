@@ -15,8 +15,8 @@ import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import Login from '@/screens/auth/Login'
-import SetProfile from '@/screens/auth/SetProfile'
 import SignUp from '@/screens/auth/SignUp'
+import SignUp_2 from '@/screens/auth/SignUp_2'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,
@@ -144,12 +144,12 @@ function App(): React.JSX.Element {
                                 component={Login}
                             />
                             <Stack.Screen
-                                name={strings.signUpScreenName}
+                                name={strings.signUp_1ScreenName}
                                 component={SignUp}
                             />
                             <Stack.Screen
-                                name={strings.setProfileScreenName}
-                                component={SetProfile}
+                                name={strings.signUp_2ScreenName}
+                                component={SignUp_2}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>
