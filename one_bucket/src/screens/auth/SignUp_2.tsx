@@ -1,7 +1,8 @@
 import { baseColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/contexts/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     Image,
     Keyboard,
@@ -14,6 +15,7 @@ import {
 
 const SignUp_2 = () => {
     const dummyVerificationCode = '000000'
+    const { onPhoneVerificationFailure } = useContext(AppContext)
 
     const [phoneNumber, setPhoneNumber] = useState('')
     const navigation = useNavigation()
@@ -40,6 +42,7 @@ const SignUp_2 = () => {
                 Keyboard.dismiss()
             } else {
                 refreshCodeInput()
+                onPhoneVerificationFailure()
             }
         }
     }, [nextIndex, verificationCode])

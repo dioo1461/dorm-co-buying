@@ -91,6 +91,13 @@ function App(): React.JSX.Element {
         })
     }
 
+    const onPhoneVerificationFailure = async () => {
+        Toast.show({
+            type: 'error',
+            text1: '인증번호가 일치하지 않습니다. 다시 시도해 주세요.',
+        })
+    }
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             setIsLoggedIn(await checkAccessTokenAvailable())
@@ -118,6 +125,7 @@ function App(): React.JSX.Element {
                     onLogOut,
                     onLogInSuccess,
                     onLoginFailure,
+                    onPhoneVerificationFailure,
                     themeColor,
                 }}>
                 {isLoggedIn ? (
