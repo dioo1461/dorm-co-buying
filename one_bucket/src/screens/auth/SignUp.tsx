@@ -1,7 +1,8 @@
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
-import React from 'react'
+import React, { useState } from 'react'
 import {
+    Alert,
     Image,
     StyleSheet,
     Text,
@@ -12,6 +13,38 @@ import {
 
 const SignUp = () => {
     const navigation = useNavigation()
+    const [phoneNumber, setPhoneNumber] = useState('')
+
+    const handlePhoneNumberChange = (text: string) => {
+        const cleaned = text.replace(/[^0-9]/g, '') // Remove non-numeric characters
+        let formatted = cleaned
+
+        if (cleaned.length > 3 && cleaned.length <= 6) {
+            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`
+        } else if (cleaned.length > 6 && cleaned.length < 11) {
+            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(
+                3,
+                6,
+            )}-${cleaned.slice(6, 11)}`
+        } else if (cleaned.length >= 11) {
+            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(
+                3,
+                7,
+            )}-${cleaned.slice(7, 11)}`
+        }
+
+        setPhoneNumber(formatted)
+    }
+
+    const handlePhoneNumberSubmit = () => {
+        if (phoneNumber.length >= 10) {
+            navigation.navigate('SignUp_2', {
+                phoneNumber: phoneNumber,
+            })
+        } else {
+            Alert.alert('휴대폰 번호를 정확히 입력해주세요.')
+        }
+    }
 
     return (
         <View style={signUpHeaderStyles.container}>
@@ -39,12 +72,14 @@ const SignUp = () => {
             <View>
                 <TextInput
                     style={styles.input}
+                    onChangeText={handlePhoneNumberChange}
+                    value={phoneNumber}
                     placeholder="'-' 없이 입력"
                     keyboardType='number-pad'
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate('SignUp_2')}>
+                    onPress={handlePhoneNumberSubmit}>
                     <Text style={styles.buttonText}>인증번호 발송</Text>
                 </TouchableOpacity>
             </View>
@@ -56,6 +91,7 @@ const styles = StyleSheet.create({
     phoneLabel: {
         fontSize: 18,
         color: 'black',
+        alignSelf: 'center',
         fontFamily: 'NanumGothic-Bold',
         marginTop: 30,
         marginBottom: 10,
@@ -64,7 +100,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
         paddingBottom: 8,
-        fontSize: 16,
+        fontSize: 20,
+        textAlign: 'center',
         marginBottom: 30,
     },
     button: {

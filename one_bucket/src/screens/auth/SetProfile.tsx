@@ -1,19 +1,9 @@
-import React from 'react'
-import {
-    View,
-    TextInput,
-    Button,
-    Image,
-    TouchableOpacity,
-    Text,
-    Pressable,
-    StyleSheet,
-} from 'react-native'
-import CheckBox from '@react-native-community/checkbox'
-import { NavigationProp } from '@react-navigation/native'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { RootStackParamList } from '@/screens/navigation/NativeStackNavigation'
 import { submitSignupForm } from '@/apis/auth/signupAxiosRequests'
+import { RootStackParamList } from '@/screens/navigation/NativeStackNavigation'
+import CheckBox from '@react-native-community/checkbox'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import React from 'react'
+import { Button, Image, StyleSheet, Text, TextInput, View } from 'react-native'
 
 const SetProfile = () => {
     const [nickname, setNickname] = React.useState('')
@@ -22,7 +12,9 @@ const SetProfile = () => {
     ) // Store image URI
     const [bio, setBio] = React.useState('')
     const [isDorm, setIsDorm] = React.useState(false) // Default to false (not living in dorm)
-    const { params } = useRoute<RouteProp<RootStackParamList>>()
+
+    type SetProfileRouteProp = RouteProp<RootStackParamList, 'SetProfile'>
+    const { params } = useRoute<SetProfileRouteProp>()
 
     const handleProfileSetup = async () => {
         const signUpForm = {

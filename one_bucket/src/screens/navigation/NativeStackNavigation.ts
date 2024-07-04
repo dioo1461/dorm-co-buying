@@ -6,9 +6,11 @@ export type RootStackParamList = {
     SetProfile: {
         id: string
         password: string
-        phoneNumber: string
         schoolName: string
         email: string
+    }
+    SignUp2: {
+        phoneNumber: string
     }
 }
 

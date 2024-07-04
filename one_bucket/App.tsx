@@ -16,7 +16,7 @@ import { AppContext } from '@/hooks/contexts/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
-import SignUp_2 from '@/screens/auth/SignUp_2'
+import SignUp_2 from '@/screens/auth/SignUp2'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,

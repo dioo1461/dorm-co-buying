@@ -1,7 +1,7 @@
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
-import { useNavigation } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     Image,
@@ -12,10 +12,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp_2 = () => {
+const SignUp2 = () => {
     const dummyVerificationCode = '000000'
     const { onPhoneVerificationFailure } = useContext(AppContext)
+
+    type SignUp2RouteProp = RouteProp<RootStackParamList, 'SignUp2'>
+    const { params } = useRoute<SignUp2RouteProp>()
 
     const [phoneNumber, setPhoneNumber] = useState('')
     const navigation = useNavigation()
@@ -33,7 +37,6 @@ const SignUp_2 = () => {
 
     useEffect(() => {
         // input code의 입력에 대한 처리
-        console.log(verificationCode.join(''))
         if (nextIndex < 6) {
             inputRef.current[nextIndex]?.focus()
         }
@@ -59,6 +62,22 @@ const SignUp_2 = () => {
         // TODO : 인증번호 발송 API 호출
     }
 
+    const maskPhoneNumber = (phoneNumber: string) => {
+        const phoneParts = phoneNumber.split('-')
+        if (phoneParts.length !== 3) {
+            // 전화번호 형식이 올바르지 않을 경우
+            return phoneNumber
+        }
+
+        const firstPart = phoneParts[0]
+
+        // 마지막 두 자리를 제외하고 마스킹
+        // 긍정형 후방 탐색(?<=...)과 긍정형 전방 탐색(?=..)을 사용하여 구현
+        const secondPart = phoneParts[1].replace(/.(?<=...)/g, '*')
+        const thirdPart = phoneParts[2].replace(/.(?=..)/g, '*')
+        return `${firstPart} - ${secondPart} - ${thirdPart}`
+    }
+
     return (
         <View style={signUpHeaderStyles.container}>
             <TouchableOpacity
@@ -82,7 +101,9 @@ const SignUp_2 = () => {
                 </Text>
             </View>
             <View style={styles.verificationContainer}>
-                <Text style={styles.phoneNumber}>010 - 43** - **61</Text>
+                <Text style={styles.phoneNumber}>
+                    {maskPhoneNumber(params?.phoneNumber)}
+                </Text>
                 <Text style={styles.infoText}>
                     번호로 발송된 인증번호를 입력해 주세요.
                 </Text>
@@ -178,4 +199,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default SignUp_2
+export default SignUp2
