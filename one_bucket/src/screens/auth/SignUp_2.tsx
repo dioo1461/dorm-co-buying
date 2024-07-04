@@ -1,9 +1,10 @@
 import { baseColors } from '@/constants/colors'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Image,
+    Keyboard,
     StyleSheet,
     Text,
     TextInput,
@@ -12,12 +13,47 @@ import {
 } from 'react-native'
 
 const SignUp_2 = () => {
-    const [phoneNumber, setPhoneNumber] = useState('')
-    const [verificationCode, setVerificationCode] = useState('')
-    const navigation = useNavigation()
+    const dummyVerificationCode = '000000'
 
-    const handleSendCode = () => {
-        // 인증번호 발송 로직 추가
+    const [phoneNumber, setPhoneNumber] = useState('')
+    const navigation = useNavigation()
+    const inputRef = useRef<(TextInput | null)[]>([])
+    const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
+    const [nextIndex, setNextIndex] = useState(0)
+
+    useEffect(() => {
+        // 키패드 팝업이 되지 않는 문제를 해결하기 위해, 렌더링이 완료된 후
+        // 포커스를 설정하는 requestAnimationFrame 메서드 사용
+        requestAnimationFrame(() => {
+            inputRef.current[0]?.focus()
+        })
+    }, [])
+
+    useEffect(() => {
+        // input code의 입력에 대한 처리
+        console.log(verificationCode.join(''))
+        if (nextIndex < 6) {
+            inputRef.current[nextIndex]?.focus()
+        }
+        if (verificationCode.join('').length == 6) {
+            if (verificationCode.join('') === dummyVerificationCode) {
+                Keyboard.dismiss()
+            } else {
+                refreshCodeInput()
+            }
+        }
+    }, [nextIndex, verificationCode])
+
+    const refreshCodeInput = () => {
+        inputRef.current.map(input => {
+            input?.clear()
+            verificationCode.fill('')
+        })
+        inputRef.current[0]?.focus()
+    }
+
+    const handleCodeVerification = () => {
+        // TODO : 인증번호 발송 API 호출
     }
 
     return (
@@ -54,12 +90,18 @@ const SignUp_2 = () => {
                         .map((_, index) => (
                             <TextInput
                                 key={index}
+                                ref={el => (inputRef.current[index] = el)}
                                 style={styles.codeInput}
-                                value={verificationCode[index] || ''}
                                 onChangeText={text => {
-                                    let newCode = verificationCode.split('')
-                                    newCode[index] = text
-                                    setVerificationCode(newCode.join(''))
+                                    if (text == '') {
+                                        // 숫자를 지운 경우
+                                        verificationCode[index] = ''
+                                        setNextIndex(index - 1)
+                                    } else {
+                                        // 숫자를 입력한 경우
+                                        verificationCode[index] = text
+                                        setNextIndex(index + 1)
+                                    }
                                 }}
                                 keyboardType='numeric'
                                 maxLength={1}
@@ -68,7 +110,7 @@ const SignUp_2 = () => {
                 </View>
                 <TouchableOpacity
                     style={styles.resendButton}
-                    onPress={handleSendCode}>
+                    onPress={refreshCodeInput}>
                     <Image
                         source={require('@/assets/drawable/ic-refresh-gray.png')}
                     />
@@ -87,7 +129,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: baseColors.GRAY_1,
         fontFamily: 'NanumGothic',
-        marginTop: 30,
+        marginTop: 16,
         marginBottom: 6,
     },
     infoText: {
