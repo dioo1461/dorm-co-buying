@@ -11,7 +11,7 @@ import {
     View,
 } from 'react-native'
 
-const SignUp = () => {
+const SignUp3 = () => {
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('')
 
@@ -38,7 +38,7 @@ const SignUp = () => {
 
     const handlePhoneNumberSubmit = () => {
         if (validatePhoneNumber(phoneNumber) === true) {
-            navigation.navigate('SignUp2', {
+            navigation.navigate('SignUp_2', {
                 phoneNumber: phoneNumber,
             })
         } else {
@@ -125,4 +125,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default SignUp
+export default SignUp3

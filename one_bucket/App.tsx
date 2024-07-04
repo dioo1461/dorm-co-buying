@@ -16,7 +16,9 @@ import { AppContext } from '@/hooks/contexts/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
-import SignUp_2 from '@/screens/auth/SignUp2'
+import SignUp2 from '@/screens/auth/SignUp2'
+import SignUp3 from '@/screens/auth/SignUp3'
+import SignUp4 from '@/screens/auth/SignUp4'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,
@@ -152,12 +154,20 @@ function App(): React.JSX.Element {
                                 component={Login}
                             />
                             <Stack.Screen
-                                name={strings.signUp_1ScreenName}
+                                name={strings.signUp1ScreenName}
                                 component={SignUp}
                             />
                             <Stack.Screen
-                                name={strings.signUp_2ScreenName}
-                                component={SignUp_2}
+                                name={strings.signUp2ScreenName}
+                                component={SignUp2}
+                            />
+                            <Stack.Screen
+                                name={strings.signUp3ScreenName}
+                                component={SignUp3}
+                            />
+                            <Stack.Screen
+                                name={strings.signUp4ScreenName}
+                                component={SignUp4}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>

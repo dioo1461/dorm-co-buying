@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp2 = () => {
+const SignUp4 = () => {
     const dummyVerificationCode = '000000'
     const { onPhoneVerificationFailure } = useContext(AppContext)
 
@@ -40,12 +40,9 @@ const SignUp2 = () => {
         if (nextIndex < 6) {
             inputRef.current[nextIndex]?.focus()
         }
-        const code = verificationCode.join('')
-        if (code.length == 6) {
-            if (VerifyCode(code)) {
-                refreshCodeInput()
+        if (verificationCode.join('').length == 6) {
+            if (verificationCode.join('') === dummyVerificationCode) {
                 Keyboard.dismiss()
-                navigation.navigate('SignUp3')
             } else {
                 refreshCodeInput()
                 onPhoneVerificationFailure()
@@ -61,12 +58,8 @@ const SignUp2 = () => {
         inputRef.current[0]?.focus()
     }
 
-    const VerifyCode = (code: string) => {
-        if (code === dummyVerificationCode) {
-            return true
-        } else {
-            return false
-        }
+    const handleCodeVerification = () => {
+        // TODO : 인증번호 발송 API 호출
     }
 
     const maskPhoneNumber = (phoneNumber: string) => {
@@ -206,4 +199,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default SignUp2
+export default SignUp4

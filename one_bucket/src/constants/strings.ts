@@ -5,9 +5,10 @@ const strings = {
     myPageScreenName: 'MY',
 
     loginScreenName: 'Login',
-    signUp_1ScreenName: 'SignUp',
-    signUp_2ScreenName: 'SignUp_2',
-    signUp_3ScreenName: 'SignUp_3',
+    signUp1ScreenName: 'SignUp',
+    signUp2ScreenName: 'SignUp2',
+    signUp3ScreenName: 'SignUp3',
+    signUp4ScreenName: 'SignUp4',
 
     postGroupPurchaseScreenName: '공동구매 글 작성',
 }
