@@ -18,10 +18,10 @@ const SignUp4 = () => {
     const dummyVerificationCode = '000000'
     const { onPhoneVerificationFailure } = useContext(AppContext)
 
-    type SignUp2RouteProp = RouteProp<RootStackParamList, 'SignUp2'>
-    const { params } = useRoute<SignUp2RouteProp>()
+    type SignUp3RouteProp = RouteProp<RootStackParamList, 'SignUp3'>
+    const { params } = useRoute<SignUp3RouteProp>()
 
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [schoolEmail, setschoolEmail] = useState('')
     const navigation = useNavigation()
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
@@ -62,20 +62,8 @@ const SignUp4 = () => {
         // TODO : 인증번호 발송 API 호출
     }
 
-    const maskPhoneNumber = (phoneNumber: string) => {
-        const phoneParts = phoneNumber.split('-')
-        if (phoneParts.length !== 3) {
-            // 전화번호 형식이 올바르지 않을 경우
-            return phoneNumber
-        }
-
-        const firstPart = phoneParts[0]
-
-        // 마지막 두 자리를 제외하고 마스킹
-        // 긍정형 후방 탐색(?<=...)과 긍정형 전방 탐색(?=..)을 사용하여 구현
-        const secondPart = phoneParts[1].replace(/.(?<=...)/g, '*')
-        const thirdPart = phoneParts[2].replace(/.(?=..)/g, '*')
-        return `${firstPart} - ${secondPart} - ${thirdPart}`
+    const maskSchoolEmail = (schoolEmail: string) => {
+        return schoolEmail.replace(/(?<=.{3})./g, '*')
     }
 
     return (
@@ -87,7 +75,7 @@ const SignUp4 = () => {
                     source={require('@/assets/drawable/ic-arrow-outline.png')}
                 />
             </TouchableOpacity>
-            <View>
+            <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
                     {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
@@ -101,8 +89,8 @@ const SignUp4 = () => {
                 </Text>
             </View>
             <View style={styles.verificationContainer}>
-                <Text style={styles.phoneNumber}>
-                    {maskPhoneNumber(params?.phoneNumber)}
+                <Text style={styles.schoolEmail}>
+                    {maskSchoolEmail(params?.schoolEmail)}
                 </Text>
                 <Text style={styles.infoText}>
                     번호로 발송된 인증번호를 입력해 주세요.
@@ -149,7 +137,7 @@ const SignUp4 = () => {
 }
 
 const styles = StyleSheet.create({
-    phoneNumber: {
+    schoolEmail: {
         fontSize: 14,
         color: baseColors.GRAY_1,
         fontFamily: 'NanumGothic',

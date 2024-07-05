@@ -12,6 +12,9 @@ export type RootStackParamList = {
     SignUp2: {
         phoneNumber: string
     }
+    SignUp3: {
+        schoolEmail: string
+    }
 }
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>

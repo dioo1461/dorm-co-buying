@@ -16,7 +16,7 @@ const SignUp = () => {
     const [phoneNumber, setPhoneNumber] = useState('')
 
     const handlePhoneNumberChange = (text: string) => {
-        const cleaned = text.replace(/[^0-9]/g, '') // Remove non-numeric characters
+        const cleaned = text.replaceAll(/[^0-9]/g, '') // Remove non-numeric characters
         let formatted = cleaned
 
         if (cleaned.length > 3 && cleaned.length <= 6) {
@@ -64,7 +64,7 @@ const SignUp = () => {
                     source={require('@/assets/drawable/ic-arrow-outline.png')}
                 />
             </TouchableOpacity>
-            <View>
+            <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
                     {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
@@ -76,9 +76,9 @@ const SignUp = () => {
                 <Text style={signUpHeaderStyles.subStep}>
                     4. 프로필 정보 입력
                 </Text>
-                <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
             </View>
             <View>
+                <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
                 <TextInput
                     style={styles.input}
                     onChangeText={handlePhoneNumberChange}

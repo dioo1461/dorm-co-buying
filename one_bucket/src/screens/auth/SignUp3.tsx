@@ -13,46 +13,28 @@ import {
 
 const SignUp3 = () => {
     const navigation = useNavigation()
-    const [phoneNumber, setPhoneNumber] = useState('')
+    const [schoolEmail, setSchoolEmail] = useState('')
 
-    const handlePhoneNumberChange = (text: string) => {
-        const cleaned = text.replace(/[^0-9]/g, '') // Remove non-numeric characters
+    const handleSchoolEmailChange = (text: string) => {
+        // SQL Injection 방지
+        const cleaned = text.replaceAll(/[;'"%_&|^#*!<>=?\\\s]/g, '')
         let formatted = cleaned
-
-        if (cleaned.length > 3 && cleaned.length <= 6) {
-            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`
-        } else if (cleaned.length > 6 && cleaned.length < 11) {
-            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(
-                3,
-                6,
-            )}-${cleaned.slice(6, 11)}`
-        } else if (cleaned.length >= 11) {
-            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(
-                3,
-                7,
-            )}-${cleaned.slice(7, 11)}`
-        }
-
-        setPhoneNumber(formatted)
+        setSchoolEmail(formatted)
     }
 
-    const handlePhoneNumberSubmit = () => {
-        if (validatePhoneNumber(phoneNumber) === true) {
-            navigation.navigate('SignUp_2', {
-                phoneNumber: phoneNumber,
+    const handleSchoolEmailSubmit = () => {
+        if (validateEmail(schoolEmail) === true) {
+            navigation.navigate('SignUp4', {
+                schoolEmail: schoolEmail,
             })
         } else {
-            Alert.alert('휴대폰 번호를 정확히 입력해주세요.')
+            Alert.alert('유효한 메일 주소를 입력해주세요.')
         }
     }
 
-    const validatePhoneNumber = (number: string) => {
-        // TODO : 최초 세자리 (010, 011, ...) validation 구현
-        if (number.replaceAll('-', '').length >= 10) {
-            return true
-        } else {
-            return false
-        }
+    const validateEmail = (number: string) => {
+        // TODO : 이메일 validation 구현
+        return true
     }
 
     return (
@@ -64,32 +46,34 @@ const SignUp3 = () => {
                     source={require('@/assets/drawable/ic-arrow-outline.png')}
                 />
             </TouchableOpacity>
-            <View>
-                <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
+            <View style={signUpHeaderStyles.headerContainer}>
+                <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
+                <Text style={signUpHeaderStyles.currentStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
-                    {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
+                    {`이용자님의 재학생 여부를\n인증해 주세요.`}
                 </Text>
-                <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.subStep}>
                     3. 이메일 및 비밀번호 설정
                 </Text>
                 <Text style={signUpHeaderStyles.subStep}>
                     4. 프로필 정보 입력
                 </Text>
-                <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
+                <Text style={styles.schoolEmailLabel}>
+                    학교 이메일 주소 입력
+                </Text>
             </View>
             <View>
                 <TextInput
                     style={styles.input}
-                    onChangeText={handlePhoneNumberChange}
-                    value={phoneNumber}
-                    placeholder="'-' 없이 입력"
-                    keyboardType='number-pad'
+                    onChangeText={handleSchoolEmailChange}
+                    value={schoolEmail}
+                    placeholder='B912345@mail.hongik.ac.kr'
+                    keyboardType='email-address'
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={handlePhoneNumberSubmit}>
-                    <Text style={styles.buttonText}>인증번호 발송</Text>
+                    onPress={handleSchoolEmailSubmit}>
+                    <Text style={styles.buttonText}>인증 코드 발송</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -97,7 +81,7 @@ const SignUp3 = () => {
 }
 
 const styles = StyleSheet.create({
-    phoneLabel: {
+    schoolEmailLabel: {
         fontSize: 18,
         color: 'black',
         alignSelf: 'center',
@@ -108,9 +92,8 @@ const styles = StyleSheet.create({
     input: {
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
-        paddingBottom: 8,
-        fontSize: 20,
-        textAlign: 'center',
+        paddingBottom: 4,
+        fontSize: 16,
         marginBottom: 30,
     },
     button: {

@@ -94,7 +94,7 @@ const SignUp2 = () => {
                     source={require('@/assets/drawable/ic-arrow-outline.png')}
                 />
             </TouchableOpacity>
-            <View>
+            <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
                     {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}

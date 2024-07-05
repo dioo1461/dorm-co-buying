@@ -100,6 +100,13 @@ function App(): React.JSX.Element {
         })
     }
 
+    const onSchoolEmailVerificationFailure = async () => {
+        Toast.show({
+            type: 'error',
+            text1: '인증 코드가 일치하지 않습니다. 다시 시도해 주세요.',
+        })
+    }
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             setIsLoggedIn(await checkAccessTokenAvailable())
@@ -128,6 +135,7 @@ function App(): React.JSX.Element {
                     onLogInSuccess,
                     onLoginFailure,
                     onPhoneVerificationFailure,
+                    onSchoolEmailVerificationFailure,
                     themeColor,
                 }}>
                 {isLoggedIn ? (
