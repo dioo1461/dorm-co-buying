@@ -16,7 +16,7 @@ const SignUp3 = () => {
     const [schoolEmail, setSchoolEmail] = useState('')
 
     const handleSchoolEmailChange = (text: string) => {
-        // SQL Injection 방지
+        // SQL Injection 방지를 위해 특수문자 제거
         const cleaned = text.replaceAll(/[;'"%_&|^#*!<>=?\\\s]/g, '')
         let formatted = cleaned
         setSchoolEmail(formatted)

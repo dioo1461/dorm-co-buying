@@ -16,7 +16,7 @@ import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const SignUp4 = () => {
     const dummyVerificationCode = '000000'
-    const { onPhoneVerificationFailure } = useContext(AppContext)
+    const { onSchoolEmailVerificationFailure } = useContext(AppContext)
 
     type SignUp3RouteProp = RouteProp<RootStackParamList, 'SignUp3'>
     const { params } = useRoute<SignUp3RouteProp>()
@@ -45,7 +45,7 @@ const SignUp4 = () => {
                 Keyboard.dismiss()
             } else {
                 refreshCodeInput()
-                onPhoneVerificationFailure()
+                onSchoolEmailVerificationFailure()
             }
         }
     }, [nextIndex, verificationCode])
@@ -63,7 +63,19 @@ const SignUp4 = () => {
     }
 
     const maskSchoolEmail = (schoolEmail: string) => {
-        return schoolEmail.replace(/(?<=.{3})./g, '*')
+        const [localPart, domain] = schoolEmail.split('@')
+
+        const maskedLocalPart = localPart
+            .split('')
+            .map((char, index) => {
+                if (index === 0 || index === localPart.length - 1) {
+                    return char
+                }
+                return '*'
+            })
+            .join('')
+
+        return `${maskedLocalPart}@${domain}`
     }
 
     return (
@@ -93,9 +105,9 @@ const SignUp4 = () => {
                     {maskSchoolEmail(params?.schoolEmail)}
                 </Text>
                 <Text style={styles.infoText}>
-                    번호로 발송된 인증번호를 입력해 주세요.
+                    이메일로 발송된 인증 코드를 입력해 주세요.
                 </Text>
-                <Text style={styles.inputLabel}>인증번호 입력</Text>
+                <Text style={styles.inputLabel}>인증 코드 입력</Text>
                 <View style={styles.codeInputContainer}>
                     {Array(6)
                         .fill(0)
@@ -126,7 +138,9 @@ const SignUp4 = () => {
                     <Image
                         source={require('@/assets/drawable/ic-refresh-gray.png')}
                     />
-                    <Text style={styles.resendButtonText}>인증번호 재발송</Text>
+                    <Text style={styles.resendButtonText}>
+                        인증 코드 재발송
+                    </Text>
                 </TouchableOpacity>
                 <Text style={styles.infoText}>
                     30초 후에 다시 시도해 주세요.
