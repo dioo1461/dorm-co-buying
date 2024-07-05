@@ -1,5 +1,5 @@
-import { defaultAxios, authAxios } from 'utils/axiosFactory'
 import { storeAccessToken, storeRefreshToken } from 'utils/accessTokenMethods'
+import { authAxios, defaultAxios } from 'utils/axiosFactory'
 
 /** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장
  * @returns: 요청 성공시 true, 요청 실패시 false 반환

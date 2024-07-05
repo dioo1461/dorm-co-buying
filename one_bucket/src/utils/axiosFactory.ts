@@ -1,14 +1,10 @@
+import { BASE_URL } from '@env'
 import axios, { AxiosRequestConfig } from 'axios'
 import { getAccessToken } from './accessTokenMethods'
-import { useState } from 'react'
-import { BASE_URL } from '@env'
 
 export const createAxios = (options: AxiosRequestConfig = {}) => {
-    // console.log(BASE_URL)
+    console.log(`base-url: ${BASE_URL}`)
     return axios.create({
-        headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-        },
         baseURL: BASE_URL,
         ...options,
     })
