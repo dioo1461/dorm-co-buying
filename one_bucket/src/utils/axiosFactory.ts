@@ -3,7 +3,6 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { getAccessToken } from './accessTokenMethods'
 
 export const createAxios = (options: AxiosRequestConfig = {}) => {
-    console.log(`base-url: ${BASE_URL}`)
     return axios.create({
         baseURL: BASE_URL,
         ...options,

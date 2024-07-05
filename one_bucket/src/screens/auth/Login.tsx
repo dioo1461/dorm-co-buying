@@ -1,4 +1,4 @@
-import { requestLogin } from '@/apis/auth/loginAxiosRequests'
+import { requestLogin } from '@/apis/auth/loginService'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
@@ -83,7 +83,7 @@ const Login = () => {
                                 bouncyCheckboxRef.current?.onCheckboxPress()
                             }}>
                             <Text style={styles.checkboxLabel}>
-                                자동 로그인
+                                로그인 상태 유지
                             </Text>
                         </TouchableOpacity>
                     </View>

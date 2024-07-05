@@ -1,3 +1,4 @@
+import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { authAxios, defaultAxios } from 'utils/axiosFactory'
 
 export const checkEmailUnique = async (email: String) => {
@@ -23,9 +24,11 @@ export const checkUsernameUnique = async (username: String) => {
 }
 
 /**  */
-export const submitSignupForm = async (data: Object): Promise<boolean> => {
+export const submitSignupForm = async (
+    data: SignUpRequestBody,
+): Promise<boolean> => {
     return await defaultAxios
-        .post('/register/base', data)
+        .post('/register', data)
         .then(res => {
             return true
         })
@@ -34,6 +37,6 @@ export const submitSignupForm = async (data: Object): Promise<boolean> => {
         })
 }
 
-export const updateAuthInfo = async (data: Object) => {
+export const updateAuthInfo = async (data: SignUpRequestBody) => {
     return await authAxios.patch('/users', data).then(res => {})
 }
