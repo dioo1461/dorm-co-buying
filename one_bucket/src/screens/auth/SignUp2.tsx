@@ -87,13 +87,15 @@ const SignUp2 = () => {
 
     return (
         <View style={signUpHeaderStyles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={signUpHeaderStyles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
-            </TouchableOpacity>
+            <View>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={signUpHeaderStyles.backButton}>
+                    <Image
+                        source={require('@/assets/drawable/ic-arrow-outline.png')}
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.title}>

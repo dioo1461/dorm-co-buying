@@ -12,9 +12,6 @@ export const signUpHeaderStyles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 40,
-        left: 20,
-        zIndex: 10,
     },
     title: {
         fontSize: 26,
@@ -25,12 +22,12 @@ export const signUpHeaderStyles = StyleSheet.create({
     },
     currentStep: {
         color: baseColors.SCHOOL_BG,
-        fontSize: 14,
+        fontSize: 12,
         fontFamily: 'NanumGothic',
         marginBottom: 10,
     },
     subStep: {
-        fontSize: 14,
+        fontSize: 12,
         color: baseColors.GRAY_1,
         fontFamily: 'NanumGothic',
         marginBottom: 10,

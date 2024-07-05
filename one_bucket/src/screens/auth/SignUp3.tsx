@@ -1,9 +1,12 @@
+import { lightColors } from '@/constants/colors'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import {
     Alert,
     Image,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -16,10 +19,8 @@ const SignUp3 = () => {
     const [schoolEmail, setSchoolEmail] = useState('')
 
     const handleSchoolEmailChange = (text: string) => {
-        // SQL Injection 방지를 위해 특수문자 제거
-        const cleaned = text.replaceAll(/[;'"%_&|^#*!<>=?\\\s]/g, '')
-        let formatted = cleaned
-        setSchoolEmail(formatted)
+        const cleaned = StringFilter.sqlFilter(text)
+        setSchoolEmail(cleaned)
     }
 
     const handleSchoolEmailSubmit = () => {
@@ -38,14 +39,19 @@ const SignUp3 = () => {
     }
 
     return (
-        <View style={signUpHeaderStyles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={signUpHeaderStyles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
-            </TouchableOpacity>
+        <ScrollView style={signUpHeaderStyles.container}>
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.goBack()
+                        navigation.goBack()
+                    }}
+                    style={signUpHeaderStyles.backButton}>
+                    <Image
+                        source={require('@/assets/drawable/ic-arrow-outline.png')}
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.currentStep}>2. 학교 인증</Text>
@@ -58,17 +64,18 @@ const SignUp3 = () => {
                 <Text style={signUpHeaderStyles.subStep}>
                     4. 프로필 정보 입력
                 </Text>
+            </View>
+            <View>
                 <Text style={styles.schoolEmailLabel}>
                     학교 이메일 주소 입력
                 </Text>
-            </View>
-            <View>
                 <TextInput
                     style={styles.input}
                     onChangeText={handleSchoolEmailChange}
                     value={schoolEmail}
                     placeholder='B912345@mail.hongik.ac.kr'
                     keyboardType='email-address'
+                    autoFocus={true}
                 />
                 <TouchableOpacity
                     style={styles.button}
@@ -76,7 +83,7 @@ const SignUp3 = () => {
                     <Text style={styles.buttonText}>인증 코드 발송</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     button: {
-        backgroundColor: '#0A3D62',
+        backgroundColor: lightColors.ICON_BG,
         paddingVertical: 15,
         borderRadius: 5,
         alignItems: 'center',

@@ -19,6 +19,8 @@ import SignUp from '@/screens/auth/SignUp'
 import SignUp2 from '@/screens/auth/SignUp2'
 import SignUp3 from '@/screens/auth/SignUp3'
 import SignUp4 from '@/screens/auth/SignUp4'
+import SignUp5 from '@/screens/auth/SignUp5'
+import SignUp6 from '@/screens/auth/SignUp6'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,
@@ -176,6 +178,14 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.signUp4ScreenName}
                                 component={SignUp4}
+                            />
+                            <Stack.Screen
+                                name={strings.signUp5ScreenName}
+                                component={SignUp5}
+                            />
+                            <Stack.Screen
+                                name={strings.signUp6ScreenName}
+                                component={SignUp6}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>

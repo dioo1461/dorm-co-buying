@@ -1,3 +1,4 @@
+import { lightColors } from '@/constants/colors'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -57,13 +58,15 @@ const SignUp = () => {
 
     return (
         <View style={signUpHeaderStyles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={signUpHeaderStyles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
-            </TouchableOpacity>
+            <View>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={signUpHeaderStyles.backButton}>
+                    <Image
+                        source={require('@/assets/drawable/ic-arrow-outline.png')}
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={signUpHeaderStyles.headerContainer}>
                 <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
@@ -114,7 +117,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     button: {
-        backgroundColor: '#0A3D62',
+        backgroundColor: lightColors.ICON_BG,
         paddingVertical: 15,
         borderRadius: 5,
         alignItems: 'center',

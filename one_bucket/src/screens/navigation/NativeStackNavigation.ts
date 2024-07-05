@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
 export type RootStackParamList = {
-    SignUp: undefined
     SetProfile: {
         id: string
         password: string
@@ -12,8 +11,12 @@ export type RootStackParamList = {
     SignUp2: {
         phoneNumber: string
     }
-    SignUp3: {
+    SignUp4: {
         schoolEmail: string
+    }
+    SignUp6: {
+        email: string
+        password: string
     }
 }
 

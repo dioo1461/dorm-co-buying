@@ -9,6 +9,8 @@ const strings = {
     signUp2ScreenName: 'SignUp2',
     signUp3ScreenName: 'SignUp3',
     signUp4ScreenName: 'SignUp4',
+    signUp5ScreenName: 'SignUp5',
+    signUp6ScreenName: 'SignUp6',
 
     postGroupPurchaseScreenName: '공동구매 글 작성',
 }

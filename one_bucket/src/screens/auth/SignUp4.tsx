@@ -18,10 +18,9 @@ const SignUp4 = () => {
     const dummyVerificationCode = '000000'
     const { onSchoolEmailVerificationFailure } = useContext(AppContext)
 
-    type SignUp3RouteProp = RouteProp<RootStackParamList, 'SignUp3'>
-    const { params } = useRoute<SignUp3RouteProp>()
+    type SignUp4RouteProp = RouteProp<RootStackParamList, 'SignUp4'>
+    const { params } = useRoute<SignUp4RouteProp>()
 
-    const [schoolEmail, setschoolEmail] = useState('')
     const navigation = useNavigation()
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
@@ -42,7 +41,9 @@ const SignUp4 = () => {
         }
         if (verificationCode.join('').length == 6) {
             if (verificationCode.join('') === dummyVerificationCode) {
+                refreshCodeInput()
                 Keyboard.dismiss()
+                navigation.navigate('SignUp5')
             } else {
                 refreshCodeInput()
                 onSchoolEmailVerificationFailure()
@@ -80,19 +81,21 @@ const SignUp4 = () => {
 
     return (
         <View style={signUpHeaderStyles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={signUpHeaderStyles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
-            </TouchableOpacity>
+            <View>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={signUpHeaderStyles.backButton}>
+                    <Image
+                        source={require('@/assets/drawable/ic-arrow-outline.png')}
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={signUpHeaderStyles.headerContainer}>
-                <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
+                <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
+                <Text style={signUpHeaderStyles.currentStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.title}>
-                    {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
+                    {`이용자님의 재학생 여부를\n인증해 주세요.`}
                 </Text>
-                <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.subStep}>
                     3. 이메일 및 비밀번호 설정
                 </Text>
