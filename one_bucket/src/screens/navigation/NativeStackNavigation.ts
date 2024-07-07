@@ -15,6 +15,10 @@ export type RootStackParamList = {
         email: string
         password: string
     }
+    SignUp7: {
+        email: string
+        password: string
+    }
 }
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>

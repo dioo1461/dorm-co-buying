@@ -83,7 +83,8 @@ const SignUp5 = () => {
                     <Text style={styles.label}>비밀번호 입력</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={() => setPassword(password)}
+                        onChangeText={password => setPassword(password)}
+                        value={password}
                         placeholder='비밀번호'
                         keyboardType='default'
                         secureTextEntry={true}

@@ -1,9 +1,11 @@
+import { submitSignupForm } from '@/apis/auth/signUpService'
 import { baseColors, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/contexts/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
     Image,
     KeyboardAvoidingView,
@@ -23,6 +25,8 @@ const SignUp6 = () => {
     const [bio, setBio] = useState('')
     const [isDormitory, setIsDormitory] = useState(false)
 
+    const { onSignUpFailure } = useContext(AppContext)
+
     type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
     const { params } = useRoute<SignUp6RouteProp>()
 
@@ -31,7 +35,22 @@ const SignUp6 = () => {
         setNickName(cleaned)
     }
 
-    const handleFormSubmit = () => {}
+    const handleFormSubmit = async () => {
+        const signUpForm = {
+            username: params.email,
+            password: params.password,
+            nickname: nickName,
+        }
+        const result = await submitSignupForm(signUpForm)
+        if (result) {
+            navigation.navigate('SignUp7', {
+                email: params.email,
+                password: params.password,
+            })
+        } else {
+            onSignUpFailure()
+        }
+    }
 
     return (
         <KeyboardAvoidingView

@@ -4,6 +4,9 @@ import { getAccessToken } from './accessTokenMethods'
 
 export const createAxios = (options: AxiosRequestConfig = {}) => {
     return axios.create({
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+        },
         baseURL: BASE_URL,
         ...options,
     })

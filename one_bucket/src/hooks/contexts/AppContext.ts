@@ -7,6 +7,7 @@ interface AppContextInterface {
     onLoginFailure: () => void
     onPhoneVerificationFailure: () => void
     onSchoolEmailVerificationFailure: () => void
+    onSignUpFailure: () => void
     themeColor: Icolor
 }
 
@@ -16,5 +17,6 @@ export const AppContext = createContext<AppContextInterface>({
     onLoginFailure: () => {},
     onPhoneVerificationFailure: () => {},
     onSchoolEmailVerificationFailure: () => {},
+    onSignUpFailure: () => {},
     themeColor: lightColors,
 })

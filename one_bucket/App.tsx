@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import { Image, StyleSheet, useColorScheme } from 'react-native'
+import { Image, useColorScheme } from 'react-native'
 
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
@@ -21,6 +21,7 @@ import SignUp3 from '@/screens/auth/SignUp3'
 import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
+import SignUp7 from '@/screens/auth/SignUp7'
 import {
     checkAccessTokenAvailable,
     removeAccessToken,
@@ -109,6 +110,15 @@ function App(): React.JSX.Element {
         })
     }
 
+    const onSignUpFailure = async () => {
+        Toast.show({
+            type: 'error',
+            text1: '서버와의 통신에 오류가 발생했습니다.',
+            text2: '잠시 후 다시 시도해 주세요.',
+            visibilityTime: 2500,
+        })
+    }
+
     useEffect(() => {
         const checkLoginStatus = async () => {
             setIsLoggedIn(await checkAccessTokenAvailable())
@@ -138,6 +148,7 @@ function App(): React.JSX.Element {
                     onLoginFailure,
                     onPhoneVerificationFailure,
                     onSchoolEmailVerificationFailure,
+                    onSignUpFailure,
                     themeColor,
                 }}>
                 {isLoggedIn ? (
@@ -187,6 +198,10 @@ function App(): React.JSX.Element {
                                 name={strings.signUp6ScreenName}
                                 component={SignUp6}
                             />
+                            <Stack.Screen
+                                name={strings.signUp7ScreenName}
+                                component={SignUp7}
+                            />
                         </Stack.Navigator>
                     </NavigationContainer>
                 )}
@@ -195,25 +210,6 @@ function App(): React.JSX.Element {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    sectionContainer: {
-        marginTop: 32,
-        paddingHorizontal: 24,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: '600',
-    },
-    sectionDescription: {
-        marginTop: 8,
-        fontSize: 18,
-        fontWeight: '400',
-    },
-    highlight: {
-        fontWeight: '700',
-    },
-})
 
 const navTheme = {
     ...DefaultTheme,
