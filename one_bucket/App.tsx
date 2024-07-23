@@ -14,6 +14,7 @@ import { Image, useColorScheme } from 'react-native'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
+import ProfileDetails from '@/screens/ProfileDetails'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
 import SignUp2 from '@/screens/auth/SignUp2'
@@ -162,6 +163,10 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.postGroupPurchaseScreenName}
                                 component={PostGroupPurchase}
+                            />
+                            <Stack.Screen
+                                name={strings.profileDetailsScreenName}
+                                component={ProfileDetails}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>

@@ -15,7 +15,7 @@ import {
     View,
 } from 'react-native'
 
-const SignUp5 = () => {
+const SignUp5: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

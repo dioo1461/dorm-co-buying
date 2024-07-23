@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp2 = () => {
+const SignUp2: React.FC = (): React.JSX.Element => {
     const dummyVerificationCode = '000000'
     const { onPhoneVerificationFailure } = useContext(AppContext)
 

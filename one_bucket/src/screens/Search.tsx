@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native'
 
-const Search = (): React.JSX.Element => {
+const Search: React.FC = (): React.JSX.Element => {
     return (
         <View>
             <Text>search</Text>

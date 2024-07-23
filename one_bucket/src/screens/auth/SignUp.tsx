@@ -12,7 +12,7 @@ import {
     View,
 } from 'react-native'
 
-const SignUp = () => {
+const SignUp: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('')
 

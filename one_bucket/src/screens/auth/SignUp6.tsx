@@ -19,7 +19,7 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp6 = () => {
+const SignUp6: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [nickName, setNickName] = useState('')
     const [bio, setBio] = useState('')

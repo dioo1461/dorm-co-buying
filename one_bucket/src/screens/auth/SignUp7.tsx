@@ -6,7 +6,7 @@ import React, { useContext } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp7 = () => {
+const SignUp7: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
