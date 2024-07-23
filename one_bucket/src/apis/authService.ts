@@ -1,6 +1,20 @@
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
+import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { storeAccessToken, storeRefreshToken } from 'utils/accessTokenMethods'
-import { authAxios, defaultAxios } from 'utils/axiosFactory'
+import { defaultAxios } from 'utils/axiosFactory'
+
+export const submitSignupForm = async (
+    data: SignUpRequestBody,
+): Promise<boolean> => {
+    return await defaultAxios
+        .post('/register', data)
+        .then(res => {
+            return true
+        })
+        .catch(err => {
+            return false
+        })
+}
 
 /** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장
  * @returns: 요청 성공시 true, 요청 실패시 false 반환
@@ -21,23 +35,13 @@ export const requestLogin = async (data: LoginRequestBody) => {
         })
 }
 
-/**
- * Checks if the provided password is valid.
- *
- * @param {string} password - The password to be checked.
- * @returns {Promise<boolean>} - A promise that resolves to `true` if the password is valid, otherwise `false`.
- * @throws {Error} - If an error occurs during the API request.
- */
-export const checkPassword = async (password: String) => {
-    return authAxios
-        .post('/auth/check-password', { password: password })
-        .then(res => {
-            if (res.data) {
-                return true
-            }
-            return false
+export const getNickname = async (id: string) => {
+    return defaultAxios
+        .get(`/member/${id}/nickname`)
+        .then(response => {
+            return response.data
         })
-        .catch(err => {
-            throw err
+        .catch(error => {
+            return ''
         })
 }

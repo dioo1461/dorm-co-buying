@@ -1,14 +1,13 @@
+import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
-import { useContext } from 'react'
-import React from 'react'
+import React, { useContext } from 'react'
 import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-    Dimensions,
     Button,
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
@@ -38,10 +37,10 @@ const Mypage = (): React.JSX.Element => {
                 </View>
                 <View style={styles.payMoneyButtonsContainer}>
                     <TouchableOpacity style={styles.payMoneyButton}>
-                        <Text style={styles.payMoneyButtonText}>+ 충전</Text>
+                        <Text style={styles.payMoneyButtonText}>충전</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.payMoneyButton}>
-                        <Text style={styles.payMoneyButtonText}>↻ 반환</Text>
+                        <Text style={styles.payMoneyButtonText}>반환</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#003366',
+        backgroundColor: baseColors.SCHOOL_BG,
     },
     headerTitle: {
         fontSize: 18,
@@ -130,7 +129,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     payMoneyButton: {
-        backgroundColor: '#003366',
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: baseColors.SCHOOL_BG,
         borderRadius: 8,
         paddingVertical: 8,
         paddingHorizontal: 16,
@@ -147,12 +148,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 16,
         borderWidth: 1,
-        borderColor: '#003366',
+        borderColor: baseColors.SCHOOL_BG,
     },
     activityTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#003366',
+        color: baseColors.SCHOOL_BG,
         marginBottom: 8,
     },
     activityItem: {

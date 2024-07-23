@@ -1,4 +1,4 @@
-import { requestLogin } from '@/apis/auth/loginService'
+import { requestLogin } from '@/apis/authService'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'

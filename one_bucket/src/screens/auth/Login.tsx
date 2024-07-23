@@ -1,4 +1,4 @@
-import { requestLogin } from '@/apis/auth/loginService'
+import { requestLogin } from '@/apis/authService'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'

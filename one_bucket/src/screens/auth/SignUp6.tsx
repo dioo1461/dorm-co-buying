@@ -1,4 +1,4 @@
-import { submitSignupForm } from '@/apis/auth/signUpService'
+import { submitSignupForm } from '@/apis/authService'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
