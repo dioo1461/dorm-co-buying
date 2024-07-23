@@ -1,10 +1,12 @@
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { authAxios } from 'utils/axiosFactory'
+import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
+import { createAuthAxios } from 'utils/axiosFactory'
 
-/** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장
- * @returns: 요청 성공시 true, 요청 실패시 false 반환
+/**
+ * @returns:
  */
 export const getProfile = async (data: LoginRequestBody) => {
+    const authAxios = await createAuthAxios()
     return authAxios
         .post('/profile', data)
         .then(response => {
@@ -13,5 +15,22 @@ export const getProfile = async (data: LoginRequestBody) => {
         .catch(error => {
             // 401 unauthorized
             return false
+        })
+}
+
+/**
+ * @returns:
+ */
+export const getNickname = async () => {
+    const authAxios = await createAuthAxios()
+    return await authAxios
+        .get('/member/info')
+        .then(response => {
+            const data: GetMemberInfoResponse = response.data
+            return data.nickname
+        })
+        .catch(error => {
+            console.log(error)
+            return error
         })
 }

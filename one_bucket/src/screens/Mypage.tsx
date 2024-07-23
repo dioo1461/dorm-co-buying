@@ -1,6 +1,7 @@
+import { getNickname } from '@/apis/profileService'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/contexts/AppContext'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
     Button,
     Dimensions,
@@ -14,7 +15,20 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
+    const [nickName, setNickName] = useState('')
     const { onLogOut } = useContext(AppContext)
+
+    useEffect(() => {}, [nickName])
+
+    useEffect(() => {
+        const fetchNickName = async () => {
+            const response = await getNickname()
+            setNickName(response)
+        }
+
+        fetchNickName()
+    }, [])
+
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
@@ -23,7 +37,7 @@ const Mypage = (): React.JSX.Element => {
                     source={require('path/to/default/profile/image.png')} // 프로필 이미지 경로
                 /> */}
                 <View style={styles.profileTextContainer}>
-                    <Text style={styles.username}>user0123</Text>
+                    <Text style={styles.username}>{nickName}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
                 <TouchableOpacity onPress={() => {}}>

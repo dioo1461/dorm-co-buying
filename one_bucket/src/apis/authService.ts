@@ -1,17 +1,18 @@
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { storeAccessToken, storeRefreshToken } from 'utils/accessTokenMethods'
-import { defaultAxios } from 'utils/axiosFactory'
+import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 export const submitSignupForm = async (
     data: SignUpRequestBody,
 ): Promise<boolean> => {
-    return await defaultAxios
+    return await createAxios()
         .post('/register', data)
         .then(res => {
             return true
         })
-        .catch(err => {
+        .catch(error => {
+            // console.log(error)
             return false
         })
 }
@@ -20,7 +21,8 @@ export const submitSignupForm = async (
  * @returns: 요청 성공시 true, 요청 실패시 false 반환
  */
 export const requestLogin = async (data: LoginRequestBody) => {
-    return defaultAxios
+    const authAxios = await createAuthAxios()
+    return authAxios
         .post('/sign-in', data)
         .then(response => {
             storeAccessToken(response.data.accessToken)
@@ -30,18 +32,8 @@ export const requestLogin = async (data: LoginRequestBody) => {
             return true
         })
         .catch(error => {
+            // console.log(error)
             // 401 unauthorized
             return false
-        })
-}
-
-export const getNickname = async (id: string) => {
-    return defaultAxios
-        .get(`/member/${id}/nickname`)
-        .then(response => {
-            return response.data
-        })
-        .catch(error => {
-            return ''
         })
 }
