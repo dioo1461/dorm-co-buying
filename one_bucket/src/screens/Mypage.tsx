@@ -1,6 +1,8 @@
-import { getNickname } from '@/apis/profileService'
+import { getMemberInfo } from '@/apis/profileService'
 import { baseColors } from '@/constants/colors'
+import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
+import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
     Button,
@@ -18,12 +20,18 @@ const Mypage = (): React.JSX.Element => {
     const [nickName, setNickName] = useState('')
     const { onLogOut } = useContext(AppContext)
 
+    const navigation = useNavigation()
+
+    const handleProfileDetailNavigation = () => {
+        navigation.navigate(strings.profileDetailsScreenName)
+    }
+
     useEffect(() => {}, [nickName])
 
     useEffect(() => {
         const fetchNickName = async () => {
-            const response = await getNickname()
-            setNickName(response)
+            const response = await getMemberInfo()
+            setNickName(response.nickname)
         }
 
         fetchNickName()
@@ -40,7 +48,7 @@ const Mypage = (): React.JSX.Element => {
                     <Text style={styles.username}>{nickName}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={handleProfileDetailNavigation}>
                     <Text style={styles.profileLink}>프로필 보기</Text>
                 </TouchableOpacity>
             </View>

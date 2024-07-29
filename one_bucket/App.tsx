@@ -11,6 +11,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { Image, useColorScheme } from 'react-native'
 
+import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
@@ -23,10 +24,7 @@ import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
-import {
-    checkAccessTokenAvailable,
-    removeAccessToken,
-} from '@/utils/accessTokenMethods'
+import { removeAccessToken } from '@/utils/accessTokenMethods'
 import { darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
@@ -83,7 +81,7 @@ function App(): React.JSX.Element {
     }
 
     const onLogInSuccess = async () => {
-        setIsLoggedIn(await checkAccessTokenAvailable())
+        setIsLoggedIn(true)
         Toast.show({
             type: 'success',
             text1: '성공적으로 로그인하였습니다.',
@@ -91,6 +89,7 @@ function App(): React.JSX.Element {
     }
 
     const onLoginFailure = async () => {
+        setIsLoggedIn(false)
         Toast.show({
             type: 'error',
             text1: '로그인에 실패하였습니다.',
@@ -120,17 +119,28 @@ function App(): React.JSX.Element {
         })
     }
 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            setIsLoggedIn(await checkAccessTokenAvailable())
-        }
-
-        checkLoginStatus()
-    }, [isLoggedIn])
+    useEffect(() => {}, [isLoggedIn])
 
     useEffect(() => {
         const ac = new AbortController()
+        const checkLoginStatus = async () => {
+            var flag = false
+            getMemberInfo()
+                .then(response => {
+                    if (response) {
+                        flag = true
+                        // TODO: 프로필 정보 캐싱
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 401) {
+                        flag = false
+                    }
+                })
+            setIsLoggedIn(flag)
+        }
 
+        checkLoginStatus()
         setTimeout(() => {
             SplashScreen.hide()
         }, 1000)
@@ -167,6 +177,7 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.profileDetailsScreenName}
                                 component={ProfileDetails}
+                                options={{ headerShown: false }}
                             />
                         </Stack.Navigator>
                     </NavigationContainer>

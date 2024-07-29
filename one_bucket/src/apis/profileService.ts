@@ -21,13 +21,13 @@ export const getProfile = async (data: LoginRequestBody) => {
 /**
  * @returns:
  */
-export const getNickname = async () => {
+export const getMemberInfo = async () => {
     const authAxios = await createAuthAxios()
     return await authAxios
         .get('/member/info')
         .then(response => {
             const data: GetMemberInfoResponse = response.data
-            return data.nickname
+            return data
         })
         .catch(error => {
             console.log(error)

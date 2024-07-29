@@ -14,7 +14,6 @@ const strings = {
     signUp7ScreenName: 'SignUp7',
 
     postGroupPurchaseScreenName: '공동구매 글 작성',
-
     profileDetailsScreenName: 'ProfileDetails',
 }
 
