@@ -40,10 +40,6 @@ const Mypage = (): React.JSX.Element => {
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
-                {/* <Image
-                    style={styles.profileImage}
-                    source={require('path/to/default/profile/image.png')} // 프로필 이미지 경로
-                /> */}
                 <View style={styles.profileTextContainer}>
                     <Text style={styles.username}>{nickName}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>

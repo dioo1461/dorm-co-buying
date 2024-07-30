@@ -34,3 +34,20 @@ export const getMemberInfo = async () => {
             return error
         })
 }
+
+/**
+ * @returns:
+ */
+export const getProfileImage = async () => {
+    const authAxios = await createAuthAxios()
+    return await authAxios
+        .get('/profile/image')
+        .then(response => {
+            const data: GetMemberInfoResponse = response.data
+            return data
+        })
+        .catch(error => {
+            console.log(error)
+            return error
+        })
+}
