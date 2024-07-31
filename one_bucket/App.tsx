@@ -28,6 +28,7 @@ import { removeAccessToken } from '@/utils/accessTokenMethods'
 import { darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 
 const Stack = createStackNavigator()
@@ -37,6 +38,7 @@ function App(): React.JSX.Element {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
     const themeColor = isDarkMode ? darkColors : lightColors
+    const queryClient = new QueryClient()
 
     const MainScreen: React.FC = () => {
         return (
@@ -152,77 +154,83 @@ function App(): React.JSX.Element {
 
     return (
         <>
-            <AppContext.Provider
-                value={{
-                    onLogOut,
-                    onLogInSuccess,
-                    onLoginFailure,
-                    onPhoneVerificationFailure,
-                    onSchoolEmailVerificationFailure,
-                    onSignUpFailure,
-                    themeColor,
-                }}>
-                {isLoggedIn ? (
-                    <NavigationContainer theme={navTheme}>
-                        <Stack.Navigator>
-                            <Stack.Screen
-                                name='Main'
-                                component={MainScreen}
-                                options={{ headerShown: false }}
-                            />
-                            <Stack.Screen
-                                name={strings.postGroupPurchaseScreenName}
-                                component={PostGroupPurchase}
-                            />
-                            <Stack.Screen
-                                name={strings.profileDetailsScreenName}
-                                component={ProfileDetails}
-                                options={{ headerShown: false }}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
-                ) : (
-                    <NavigationContainer theme={navTheme}>
-                        <Stack.Navigator
-                            screenOptions={{ headerShown: false }}
-                            initialRouteName={strings.loginScreenName}>
-                            <Stack.Screen
-                                name={strings.loginScreenName}
-                                component={Login}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp1ScreenName}
-                                component={SignUp}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp2ScreenName}
-                                component={SignUp2}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp3ScreenName}
-                                component={SignUp3}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp4ScreenName}
-                                component={SignUp4}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp5ScreenName}
-                                component={SignUp5}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp6ScreenName}
-                                component={SignUp6}
-                            />
-                            <Stack.Screen
-                                name={strings.signUp7ScreenName}
-                                component={SignUp7}
-                            />
-                        </Stack.Navigator>
-                    </NavigationContainer>
-                )}
-            </AppContext.Provider>
-            <Toast position='bottom' bottomOffset={40} visibilityTime={1000} />
+            <QueryClientProvider client={queryClient}>
+                <AppContext.Provider
+                    value={{
+                        onLogOut,
+                        onLogInSuccess,
+                        onLoginFailure,
+                        onPhoneVerificationFailure,
+                        onSchoolEmailVerificationFailure,
+                        onSignUpFailure,
+                        themeColor,
+                    }}>
+                    {isLoggedIn ? (
+                        <NavigationContainer theme={navTheme}>
+                            <Stack.Navigator>
+                                <Stack.Screen
+                                    name='Main'
+                                    component={MainScreen}
+                                    options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                    name={strings.postGroupPurchaseScreenName}
+                                    component={PostGroupPurchase}
+                                />
+                                <Stack.Screen
+                                    name={strings.profileDetailsScreenName}
+                                    component={ProfileDetails}
+                                    options={{ headerShown: false }}
+                                />
+                            </Stack.Navigator>
+                        </NavigationContainer>
+                    ) : (
+                        <NavigationContainer theme={navTheme}>
+                            <Stack.Navigator
+                                screenOptions={{ headerShown: false }}
+                                initialRouteName={strings.loginScreenName}>
+                                <Stack.Screen
+                                    name={strings.loginScreenName}
+                                    component={Login}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp1ScreenName}
+                                    component={SignUp}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp2ScreenName}
+                                    component={SignUp2}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp3ScreenName}
+                                    component={SignUp3}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp4ScreenName}
+                                    component={SignUp4}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp5ScreenName}
+                                    component={SignUp5}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp6ScreenName}
+                                    component={SignUp6}
+                                />
+                                <Stack.Screen
+                                    name={strings.signUp7ScreenName}
+                                    component={SignUp7}
+                                />
+                            </Stack.Navigator>
+                        </NavigationContainer>
+                    )}
+                </AppContext.Provider>
+                <Toast
+                    position='bottom'
+                    bottomOffset={40}
+                    visibilityTime={1000}
+                />
+            </QueryClientProvider>
         </>
     )
 }

@@ -1,9 +1,10 @@
 import { getMemberInfo } from '@/apis/profileService'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
+import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { AppContext } from '@/hooks/contexts/AppContext'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import {
     Button,
     Dimensions,
@@ -13,12 +14,18 @@ import {
     View,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { useQuery } from 'react-query'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const [nickName, setNickName] = useState('')
+    // const [nickName, setNickName] = useState('')
     const { onLogOut } = useContext(AppContext)
+
+    const { data, isLoading, error } = useQuery<GetMemberInfoResponse>(
+        'memberInfo',
+        getMemberInfo,
+    )
 
     const navigation = useNavigation()
 
@@ -26,22 +33,25 @@ const Mypage = (): React.JSX.Element => {
         navigation.navigate(strings.profileDetailsScreenName)
     }
 
-    useEffect(() => {}, [nickName])
+    // useEffect(() => {}, [nickName])
 
-    useEffect(() => {
-        const fetchNickName = async () => {
-            const response = await getMemberInfo()
-            setNickName(response.nickname)
-        }
+    // useEffect(() => {
+    //     const fetchNickName = async () => {
+    //         const response = await getMemberInfo()
+    //         setNickName(response.nickname)
+    //     }
 
-        fetchNickName()
-    }, [])
+    //     fetchNickName()
+    // }, [])
+
+    if (isLoading) return <Text>Loading...</Text>
+    if (error) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profileTextContainer}>
-                    <Text style={styles.username}>{nickName}</Text>
+                    <Text style={styles.username}>{data!.nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
                 <TouchableOpacity onPress={handleProfileDetailNavigation}>
@@ -111,6 +121,7 @@ const styles = StyleSheet.create({
         marginLeft: 16,
     },
     username: {
+        color: 'black',
         fontSize: 18,
         fontWeight: 'bold',
     },

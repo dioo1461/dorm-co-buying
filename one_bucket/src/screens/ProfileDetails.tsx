@@ -4,6 +4,7 @@ import {
     Dimensions,
     Image,
     StyleSheet,
+    Text,
     TouchableOpacity,
     View,
 } from 'react-native'
@@ -22,20 +23,45 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     source={require('@/assets/drawable/ic-angle-left.png')}
                 />
             </TouchableOpacity>
+            <View style={styles.profileContainer}>
+                <View style={styles.profileTextContainer}>
+                    <Text style={styles.username}>홍길동</Text>
+                </View>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 16,
         paddingTop: 20,
         backgroundColor: 'white',
     },
     backButton: {
         width: 24,
         height: 24,
+        marginTop: 10,
         marginBottom: 20,
+    },
+    profileContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+    },
+    profileImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: 'gray',
+    },
+    profileTextContainer: {
+        flex: 1,
+        marginLeft: 16,
+    },
+    username: {
+        fontFamily: 'NanumGothic-Bold',
+        fontSize: 18,
     },
 })
 
