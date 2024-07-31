@@ -6,6 +6,7 @@ import { AppContext } from '@/hooks/contexts/AppContext'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext } from 'react'
 import {
+    ActivityIndicator,
     Button,
     Dimensions,
     StyleSheet,
@@ -44,7 +45,18 @@ const Mypage = (): React.JSX.Element => {
     //     fetchNickName()
     // }, [])
 
-    if (isLoading) return <Text>Loading...</Text>
+    if (isLoading)
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator size='large' color={baseColors.SCHOOL_BG} />
+            </View>
+        )
+
     if (error) return <Text>Error...</Text>
 
     return (
