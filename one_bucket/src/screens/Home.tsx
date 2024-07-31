@@ -53,18 +53,21 @@ const Home: React.FC = (): React.JSX.Element => {
                         <View style={styles.menu_S}>
                             <Text>홈</Text>
                         </View>
-                        <View style={styles.menu_L}>
-                            <Text>자유게시판</Text>
-                        </View>
-                        <View style={styles.menu_L}>
-                            <Text>거래게시판</Text>
-                        </View>
-                        <View style={styles.menu_L}>
-                            <Text>중고게시판</Text>
-                        </View>
-                        <View style={styles.menu_S}>
-                            <Text>설정</Text>
-                        </View>
+                        <TouchableOpacity>
+                            <View style={styles.menu_S}>
+                                <Text>거래게시판</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <View style={styles.menu_S}>
+                                <Text>중고게시판</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <View style={styles.menu_S}>
+                                <Text>자유게시판</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -84,7 +87,7 @@ const Home: React.FC = (): React.JSX.Element => {
                     />
                     <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-                            내가 쓴 거래글
+                            내가 참여한 거래글
                         </Text>
                     </View>
                     <FlatList
@@ -100,7 +103,7 @@ const Home: React.FC = (): React.JSX.Element => {
                     />
                     <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-                            내가 참여한 거래글
+                            내가 쓴 거래글
                         </Text>
                     </View>
                     <FlatList
@@ -135,14 +138,7 @@ const styles = StyleSheet.create({
     },
     menu_S: {
         height: 50,
-        width: 50,
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    menu_L: {
-        height: 50,
-        width: (SCREEN_WIDTH - 100) / 3,
+        width: SCREEN_WIDTH / 4,
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
