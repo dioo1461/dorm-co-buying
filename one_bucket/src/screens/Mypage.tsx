@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     Button,
     Dimensions,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -29,17 +30,6 @@ const Mypage = (): React.JSX.Element => {
         navigation.navigate(strings.profileDetailsScreenName)
     }
 
-    // useEffect(() => {}, [nickName])
-
-    // useEffect(() => {
-    //     const fetchNickName = async () => {
-    //         const response = await getMemberInfo()
-    //         setNickName(response.nickname)
-    //     }
-
-    //     fetchNickName()
-    // }, [])
-
     if (isLoading)
         return (
             <View
@@ -58,7 +48,12 @@ const Mypage = (): React.JSX.Element => {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profileTextContainer}>
-                    <Text style={styles.username}>{data!.nickname}</Text>
+                    {/* <CachedImage
+                        imageStyle={{}}
+                        image={data![1]}
+                        imageId='profile2'
+                    /> */}
+                    <Text style={styles.username}>{data![0].nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
                 <TouchableOpacity onPress={handleProfileDetailNavigation}>
@@ -69,12 +64,25 @@ const Mypage = (): React.JSX.Element => {
                 <View style={styles.payMoneyTextContainer}>
                     <Text style={styles.payMoneyLabel}>페이머니</Text>
                     <Text style={styles.payMoneyAmount}>12,000</Text>
+                    <TouchableOpacity style={styles.payMoneyDetailsButton}>
+                        <Image
+                            source={require('@/assets/drawable/ic-angle-right.png')}
+                        />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.payMoneyButtonsContainer}>
                     <TouchableOpacity style={styles.payMoneyButton}>
+                        <Image
+                            source={require('@/assets/drawable/ic-plus.png')}
+                            style={styles.payMoneyButtonImage}
+                        />
                         <Text style={styles.payMoneyButtonText}>충전</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.payMoneyButton}>
+                        <Image
+                            source={require('@/assets/drawable/ic-arrow-circle.png')}
+                            style={styles.payMoneyButtonImage}
+                        />
                         <Text style={styles.payMoneyButtonText}>반환</Text>
                     </TouchableOpacity>
                 </View>
@@ -141,7 +149,7 @@ const styles = StyleSheet.create({
     },
     payMoneyContainer: {
         backgroundColor: 'white',
-        padding: 16,
+        padding: 10,
         marginHorizontal: 16,
         borderRadius: 8,
         elevation: 3,
@@ -150,15 +158,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        padding: 8,
         marginBottom: 16,
     },
     payMoneyLabel: {
+        flex: 1,
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'NanumGothic-Bold',
+        color: 'black',
     },
     payMoneyAmount: {
+        flex: 1,
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'NanumGothic-Bold',
+        color: 'black',
+    },
+    payMoneyDetailsButton: {
+        flex: 1,
+        alignItems: 'flex-end',
+        width: 20,
+        height: 20,
     },
     payMoneyButtonsContainer: {
         flexDirection: 'row',
@@ -166,16 +185,24 @@ const styles = StyleSheet.create({
     },
     payMoneyButton: {
         flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: baseColors.SCHOOL_BG,
         borderRadius: 8,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        marginHorizontal: 8,
+        paddingVertical: 10,
+        marginHorizontal: 4,
+    },
+    payMoneyButtonImage: {
+        height: 16,
+        width: 16,
+        marginEnd: 4,
     },
     payMoneyButtonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 14,
+        fontFamily: 'NanumGothic',
+        marginEnd: 6,
     },
     activityContainer: {
         backgroundColor: 'white',

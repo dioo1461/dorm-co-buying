@@ -1,8 +1,10 @@
+import { baseColors } from '@/constants/colors'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import {
     Dimensions,
     Image,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -16,17 +18,53 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={styles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-angle-left.png')}
-                />
-            </TouchableOpacity>
-            <View style={styles.profileContainer}>
-                <View style={styles.profileTextContainer}>
-                    <Text style={styles.username}>홍길동</Text>
+            <View style={styles.backButtonContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Image
+                        source={require('@/assets/drawable/ic-angle-left.png')}
+                        style={styles.backButtonImage}
+                    />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.headerContainer}>
+                <View style={styles.profileImageContainer}>
+                    <Image
+                        source={require('@/assets/drawable/vector.png')}
+                        style={styles.profileImage}
+                    />
+                    <Text style={styles.nicknameText}>홍길동</Text>
                 </View>
+                <View style={styles.bioContainer}>
+                    <Image
+                        source={require('@/assets/drawable/postit.png')}
+                        style={styles.bioImage}
+                    />
+                </View>
+            </View>
+            <View style={styles.profilesContainer}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View>
+                        <Text style={styles.profileLabel}>이름</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileLabel}>성별</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileLabel}>생년월일</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileLabel}>학교명</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileLabel}>학부</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileLabel}>가입한 날짜</Text>
+                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                    </View>
+                </ScrollView>
+            </View>
+            <View style={styles.profileModifyButtonContainer}>
+                <TouchableOpacity style={styles.profileModifyButton}>
+                    <Text style={styles.profileModifyButtonText}>
+                        프로필 변경
+                    </Text>
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -34,34 +72,87 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingHorizontal: 16,
         paddingTop: 20,
         backgroundColor: 'white',
     },
-    backButton: {
+    backButtonContainer: {
+        flex: 1,
+        marginTop: 10,
+    },
+    backButtonImage: {
         width: 24,
         height: 24,
-        marginTop: 10,
-        marginBottom: 20,
     },
-    profileContainer: {
+    headerContainer: {
+        flex: 3,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         padding: 16,
     },
-    profileImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: 'gray',
-    },
-    profileTextContainer: {
+    profileImageContainer: {
         flex: 1,
-        marginLeft: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    username: {
+    profileImage: {
+        width: 84,
+        height: 96,
+        backgroundColor: 'gray',
+        borderRadius: 50,
+    },
+    nicknameText: {
         fontFamily: 'NanumGothic-Bold',
         fontSize: 18,
+        color: 'black',
+        marginTop: 16,
+    },
+    bioContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    bioImage: {
+        width: 159,
+        height: 192,
+    },
+    profilesContainer: {
+        flex: 8,
+        backgroundColor: 'white',
+        padding: 10,
+        marginHorizontal: 16,
+        borderRadius: 8,
+        elevation: 3,
+    },
+    profileLabel: {
+        fontSize: 16,
+        color: 'black',
+        fontFamily: 'NanumGothic-Bold',
+        marginTop: 10,
+    },
+    profileContext: {
+        fontSize: 18,
+        color: 'black',
+        fontFamily: 'NanumGothic-Bold',
+        marginTop: 10,
+        marginBottom: 16,
+        marginStart: 12,
+    },
+    profileModifyButtonContainer: {
+        flex: 2,
+        justifyContent: 'center',
+    },
+    profileModifyButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: baseColors.SCHOOL_BG,
+        borderRadius: 8,
+        paddingVertical: 16,
+        marginHorizontal: 4,
+    },
+    profileModifyButtonText: {
+        color: 'white',
+        fontSize: 14,
+        fontFamily: 'NanumGothic',
+        marginEnd: 6,
     },
 })
 

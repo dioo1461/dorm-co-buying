@@ -41,9 +41,9 @@ export const getMemberInfo = async () => {
 export const getProfileImage = async () => {
     const authAxios = await createAuthAxios()
     return await authAxios
-        .get('/profile/image')
+        .get('/profile/image', { responseType: 'blob' })
         .then(response => {
-            const data: GetMemberInfoResponse = response.data
+            const data = response.data
             return data
         })
         .catch(error => {

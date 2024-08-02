@@ -4,9 +4,24 @@ import { useQuery } from 'react-query'
 import { useProfileStore } from '../useStore/useProfileStore'
 
 export const queryGetMemberInfo = () => {
-    const data = useProfileStore.getState().memberInfo
-    console.log(typeof data)
-    return useQuery<GetMemberInfoResponse>(['memberInfo'], getMemberInfo)
+    const memberInfoData = useProfileStore.getState().memberInfo
+    // TODO: 캐싱 제대로 작동하는지 확인
+
+    const checkProfileImageCached = async () => {
+        const image: ArrayBuffer = await getProfileImage()
+        return image
+    }
+
+    return useQuery<[GetMemberInfoResponse, ArrayBuffer]>(
+        ['memberInfo', memberInfoData],
+        async () => {
+            const promise = await Promise.all([
+                getMemberInfo(),
+                checkProfileImageCached(),
+            ])
+            return promise
+        },
+    )
 }
 
 export const queryGetProfileImage = (token: string) => {

@@ -1,7 +1,8 @@
+import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { create } from 'zustand'
 
 interface ProfileStore {
-    memberInfo: any
+    memberInfo: GetMemberInfoResponse | null
     setMemberInfo: (memberInfo: any) => void
 }
 
