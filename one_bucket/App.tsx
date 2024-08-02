@@ -13,7 +13,7 @@ import { Image, useColorScheme } from 'react-native'
 
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Login from '@/screens/auth/Login'

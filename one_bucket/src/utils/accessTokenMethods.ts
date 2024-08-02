@@ -12,14 +12,6 @@ export const removeRefreshToken = () => {
     EncryptedStorage.removeItem(REFRESH_TOKEN_NAME)
 }
 
-export const checkAccessTokenAvailable = async () => {
-    if (await EncryptedStorage.getItem(ACCESS_TOKEN_NAME)) {
-        return true
-    } else {
-        return false
-    }
-}
-
 export const storeAccessToken = async (jwt: string) => {
     return EncryptedStorage.setItem(ACCESS_TOKEN_NAME, jwt)
 }

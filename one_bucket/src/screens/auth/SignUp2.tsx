@@ -1,5 +1,5 @@
 import { baseColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'

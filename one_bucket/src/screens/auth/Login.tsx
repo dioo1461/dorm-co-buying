@@ -1,6 +1,6 @@
 import { requestLogin } from '@/apis/authService'
 import { baseColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import React, { useContext, useRef } from 'react'
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -9,7 +9,7 @@ import BouncyCheckbox, {
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-const Login = () => {
+const Login: React.FC = (): React.JSX.Element => {
     const [id, setId] = React.useState('')
     const { themeColor } = useContext(AppContext)
     const [password, setPassword] = React.useState('')

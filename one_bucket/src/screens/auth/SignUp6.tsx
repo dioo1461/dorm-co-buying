@@ -1,6 +1,6 @@
 import { submitSignupForm } from '@/apis/authService'
 import { baseColors, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'

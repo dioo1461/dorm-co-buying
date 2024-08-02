@@ -1,6 +1,6 @@
 import { requestLogin } from '@/apis/authService'
 import { baseColors, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'

@@ -1,8 +1,7 @@
-import { getMemberInfo } from '@/apis/profileService'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
-import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
-import { AppContext } from '@/hooks/contexts/AppContext'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext } from 'react'
 import {
@@ -15,7 +14,6 @@ import {
     View,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { useQuery } from 'react-query'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -23,10 +21,7 @@ const Mypage = (): React.JSX.Element => {
     // const [nickName, setNickName] = useState('')
     const { onLogOut } = useContext(AppContext)
 
-    const { data, isLoading, error } = useQuery<GetMemberInfoResponse>(
-        'memberInfo',
-        getMemberInfo,
-    )
+    const { data, isLoading, error } = queryGetMemberInfo('')
 
     const navigation = useNavigation()
 
