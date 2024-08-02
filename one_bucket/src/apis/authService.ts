@@ -1,6 +1,6 @@
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
-import { storeAccessToken, storeRefreshToken } from 'utils/accessTokenMethods'
+import { setAccessToken, setRefreshToken } from 'utils/accessTokenMethods'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 export const submitSignupForm = async (
@@ -25,9 +25,9 @@ export const requestLogin = async (data: LoginRequestBody) => {
     return authAxios
         .post('/sign-in', data)
         .then(response => {
-            storeAccessToken(response.data.accessToken)
+            setAccessToken(response.data.accessToken)
             if (response.data.refreshToken) {
-                storeRefreshToken(response.data.refreshToken)
+                setRefreshToken(response.data.refreshToken)
             }
             return true
         })

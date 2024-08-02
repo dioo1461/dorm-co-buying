@@ -14,6 +14,7 @@ import { Image, useColorScheme } from 'react-native'
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
+import { useProfileStore } from '@/hooks/useStore/useProfileStore'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Login from '@/screens/auth/Login'
@@ -121,25 +122,22 @@ function App(): React.JSX.Element {
         })
     }
 
-    useEffect(() => {}, [isLoggedIn])
-
     useEffect(() => {
         const ac = new AbortController()
+
         const checkLoginStatus = async () => {
-            var flag = false
             getMemberInfo()
                 .then(response => {
                     if (response) {
-                        flag = true
-                        // TODO: 프로필 정보 캐싱
+                        setIsLoggedIn(true)
+                        // memberInfo를 profileStore에 저장
+                        useProfileStore.setState({ memberInfo: response })
                     }
                 })
                 .catch(error => {
                     if (error.response.status === 401) {
-                        flag = false
                     }
                 })
-            setIsLoggedIn(flag)
         }
 
         checkLoginStatus()

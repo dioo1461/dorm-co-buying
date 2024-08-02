@@ -21,7 +21,7 @@ const Mypage = (): React.JSX.Element => {
     // const [nickName, setNickName] = useState('')
     const { onLogOut } = useContext(AppContext)
 
-    const { data, isLoading, error } = queryGetMemberInfo('')
+    const { data, isLoading, error } = queryGetMemberInfo()
 
     const navigation = useNavigation()
 

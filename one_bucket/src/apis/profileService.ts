@@ -23,7 +23,7 @@ export const getProfile = async (data: LoginRequestBody) => {
  */
 export const getMemberInfo = async () => {
     const authAxios = await createAuthAxios()
-    return await authAxios
+    return authAxios
         .get('/member/info')
         .then(response => {
             const data: GetMemberInfoResponse = response.data

@@ -4,19 +4,19 @@ import EncryptedStorage from 'react-native-encrypted-storage'
 const ACCESS_TOKEN_NAME = 'accessToken'
 const REFRESH_TOKEN_NAME = 'refreshToken'
 
-export const removeAccessToken = () => {
-    EncryptedStorage.removeItem(ACCESS_TOKEN_NAME)
+export const removeAccessToken = async () => {
+    return EncryptedStorage.removeItem(ACCESS_TOKEN_NAME)
 }
 
-export const removeRefreshToken = () => {
-    EncryptedStorage.removeItem(REFRESH_TOKEN_NAME)
+export const removeRefreshToken = async () => {
+    return EncryptedStorage.removeItem(REFRESH_TOKEN_NAME)
 }
 
-export const storeAccessToken = async (jwt: string) => {
+export const setAccessToken = async (jwt: string) => {
     return EncryptedStorage.setItem(ACCESS_TOKEN_NAME, jwt)
 }
 
-export const storeRefreshToken = async (jwt: string) => {
+export const setRefreshToken = async (jwt: string) => {
     return EncryptedStorage.setItem(REFRESH_TOKEN_NAME, jwt)
 }
 
