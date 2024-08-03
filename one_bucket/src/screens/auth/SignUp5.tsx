@@ -82,7 +82,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
         setPasswordConfirmError(null)
     }
 
-    const handleNickNameChange = (text: string) => {
+    const handleNicknameChange = (text: string) => {
         if (emailError == signUpErrorMessage.duplicatedEmailOrNickname) {
             setNicknameError(null)
         }
@@ -273,7 +273,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     <Text style={styles.label}>닉네임 입력</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={handleNickNameChange}
+                        onChangeText={handleNicknameChange}
                         value={nickname}
                         placeholder='닉네임'
                         keyboardType='default'

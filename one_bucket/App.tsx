@@ -139,6 +139,7 @@ function App(): React.JSX.Element {
                 .then(response => {
                     if (response) {
                         setIsLoggedIn(true)
+                        SplashScreen.hide()
                         // memberInfo를 profileStore에 저장
                         console.log(`response: ${response}`)
                         useProfileStore.setState({ memberInfo: response })
@@ -150,16 +151,14 @@ function App(): React.JSX.Element {
                         error.response.status === 403
                     ) {
                         console.log(`error: ${error}`)
-
                         // TODO: refreshToken으로 accessToken 갱신
                     }
                 })
         }
 
         checkLoginStatus()
-        setTimeout(() => {
-            SplashScreen.hide()
-        }, 1000)
+
+        setTimeout(() => {}, 1000)
 
         return function cleanup() {
             ac.abort()

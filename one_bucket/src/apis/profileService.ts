@@ -28,7 +28,6 @@ export const getMemberInfo = async () => {
         .get('/member/info')
         .then(response => {
             const data: GetMemberInfoResponse = response.data
-            console.log(`data: ${data}`)
             return data
         })
         .catch(error => {
