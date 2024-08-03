@@ -16,7 +16,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -85,11 +84,11 @@ const Mypage = (): React.JSX.Element => {
             <View style={styles.activityContainer}>
                 <Text style={styles.activityTitle}>나의 활동</Text>
                 <TouchableOpacity style={styles.activityItem}>
-                    <Icon name='favorite' size={24} color='black' />
+                    {/* <Icon name='favorite' size={24} color='black' /> */}
                     <Text style={styles.activityText}>좋아요 누른 글</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.activityItem}>
-                    <Icon name='description' size={24} color='black' />
+                    {/* <Icon name='description' size={24} color='black' /> */}
                     <Text style={styles.activityText}>내가 쓴 글</Text>
                 </TouchableOpacity>
             </View>

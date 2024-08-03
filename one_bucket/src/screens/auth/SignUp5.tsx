@@ -178,7 +178,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         3. 인증 정보 설정
                     </Text>
                     <Text style={signUpStyles.title}>
-                        {`로그인 시 사용할\n인증 정보를 설정해 주세요.`}
+                        {`로그인 시 사용할 인증 정보를 설정해 주세요.`}
                     </Text>
                     <Text style={signUpStyles.subStep}>
                         4. 프로필 정보 입력

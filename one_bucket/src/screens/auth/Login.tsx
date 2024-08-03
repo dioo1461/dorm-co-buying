@@ -1,5 +1,5 @@
 import { requestLogin } from '@/apis/authService'
-import { baseColors } from '@/constants/colors'
+import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAccessToken } from '@/utils/accessTokenMethods'
@@ -12,7 +12,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const Login: React.FC = (): React.JSX.Element => {
     const [id, setId] = React.useState('')
-    const { themeColor } = useContext(AppContext)
+    // themeColor 임시 비활성화
+    // const { themeColor } = useContext(AppContext)
+    const themeColor = lightColors
     const [password, setPassword] = React.useState('')
     const [isAutoLogin, setIsAutoLogin] = React.useState(false)
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)

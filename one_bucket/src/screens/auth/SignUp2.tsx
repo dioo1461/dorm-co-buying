@@ -98,7 +98,7 @@ const SignUp2: React.FC = (): React.JSX.Element => {
             <View style={signUpStyles.headerContainer}>
                 <Text style={signUpStyles.currentStep}>1. 본인 인증</Text>
                 <Text style={signUpStyles.title}>
-                    {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
+                    {`한바구니를 이용하기 위해 본인인증이 필요해요.`}
                 </Text>
                 <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
                 <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
