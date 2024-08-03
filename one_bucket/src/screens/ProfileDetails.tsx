@@ -1,3 +1,4 @@
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors } from '@/constants/colors'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
@@ -20,10 +21,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <View style={styles.backButtonContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Image
-                        source={require('@/assets/drawable/ic-angle-left.png')}
-                        style={styles.backButtonImage}
-                    />
+                    <IcAngleLeft style={styles.backButtonImage} />
                 </TouchableOpacity>
             </View>
             <View style={styles.headerContainer}>

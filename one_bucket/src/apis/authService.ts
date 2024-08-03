@@ -13,7 +13,7 @@ export const submitSignupForm = async (
         })
         .catch(error => {
             // console.log(error)
-            return false
+            throw error
         })
 }
 

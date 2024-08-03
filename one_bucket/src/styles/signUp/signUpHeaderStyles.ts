@@ -4,11 +4,11 @@ import { StyleSheet } from 'react-native'
 export const signUpHeaderStyles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        paddingTop: 40,
+        paddingTop: 24,
         backgroundColor: 'white',
     },
     headerContainer: {
-        marginTop: 60,
+        marginTop: 50,
     },
     backButton: {
         position: 'absolute',

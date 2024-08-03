@@ -10,11 +10,11 @@ export const getProfile = async (data: LoginRequestBody) => {
     return authAxios
         .post('/profile', data)
         .then(response => {
-            return true
+            return response.data
         })
         .catch(error => {
             // 401 unauthorized
-            return false
+            throw error
         })
 }
 
@@ -27,11 +27,12 @@ export const getMemberInfo = async () => {
         .get('/member/info')
         .then(response => {
             const data: GetMemberInfoResponse = response.data
+            console.log(`data: ${data}`)
             return data
         })
         .catch(error => {
-            console.log(error)
-            return error
+            console.log(`getMemberInfo error: ${error}`)
+            throw error
         })
 }
 
@@ -41,13 +42,18 @@ export const getMemberInfo = async () => {
 export const getProfileImage = async () => {
     const authAxios = await createAuthAxios()
     return await authAxios
-        .get('/profile/image', { responseType: 'blob' })
+        .get('/profile/image', { responseType: 'arraybuffer' })
         .then(response => {
             const data = response.data
             return data
         })
         .catch(error => {
             console.log(error)
-            return error
+            throw error
         })
+}
+
+export const postProfile = async () => {
+    const authAxios = await createAuthAxios()
+    return await authAxios.post('/profile').then(response => {})
 }

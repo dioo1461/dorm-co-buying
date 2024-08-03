@@ -1,11 +1,11 @@
 import { requestLogin } from '@/apis/authService'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext } from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-
 const SignUp7: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
@@ -30,9 +30,7 @@ const SignUp7: React.FC = (): React.JSX.Element => {
             <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
+                <IcArrowLeft />
             </TouchableOpacity>
             <Text
                 style={

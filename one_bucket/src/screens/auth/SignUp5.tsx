@@ -1,3 +1,5 @@
+import Exclamation from '@/assets/drawable/exclamation.svg'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { lightColors } from '@/constants/colors'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { StringFilter } from '@/utils/StringFilter'
@@ -5,7 +7,6 @@ import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import {
     Alert,
-    Image,
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
@@ -14,11 +15,11 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-
 const SignUp5: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [nickname, setNickname] = useState('')
 
     const handleEmailChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
@@ -52,9 +53,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View>
@@ -62,10 +61,10 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
                     <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                     <Text style={signUpHeaderStyles.currentStep}>
-                        3. 이메일 및 비밀번호 설정
+                        3. 인증 정보 설정
                     </Text>
                     <Text style={signUpHeaderStyles.title}>
-                        {`로그인 시 사용할 이메일과\n비밀번호를 설정해 주세요.`}
+                        {`로그인 시 사용할\n인증 정보를 설정해 주세요.`}
                     </Text>
                     <Text style={signUpHeaderStyles.subStep}>
                         4. 프로필 정보 입력
@@ -80,6 +79,12 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         placeholder='이메일'
                         keyboardType='email-address'
                     />
+                    <View style={styles.errorLabelContainer}>
+                        <Exclamation width={20} height={20} />
+                        <Text style={styles.errorLabel}>
+                            중복된 이메일이 존재해요.
+                        </Text>
+                    </View>
                     <Text style={styles.label}>비밀번호 입력</Text>
                     <TextInput
                         style={styles.input}
@@ -88,6 +93,15 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         placeholder='비밀번호'
                         keyboardType='default'
                         secureTextEntry={true}
+                        scrollEnabled={false}
+                    />
+                    <Text style={styles.label}>닉네임 입력</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={nickname => setNickname(nickname)}
+                        value={nickname}
+                        placeholder='닉네임'
+                        keyboardType='default'
                         scrollEnabled={false}
                     />
                     <TouchableOpacity
@@ -109,22 +123,31 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
         fontFamily: 'NanumGothic-Bold',
-        marginTop: 30,
-        marginBottom: 10,
+        marginTop: 20,
+        marginBottom: 5,
     },
     input: {
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
         paddingBottom: 4,
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 10,
+    },
+    errorLabelContainer: {
+        flexDirection: 'row',
+    },
+    errorLabel: {
+        color: 'red',
+        fontSize: 12,
+        fontFamily: 'NanumGothic',
+        marginBottom: 5,
     },
     button: {
         backgroundColor: lightColors.ICON_BG,
         paddingVertical: 15,
         borderRadius: 5,
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 30,
     },
     buttonText: {
         color: 'white',

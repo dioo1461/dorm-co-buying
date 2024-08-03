@@ -1,10 +1,11 @@
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import IcRefresh from '@/assets/drawable/ic-refresh.svg'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
-    Image,
     Keyboard,
     StyleSheet,
     Text,
@@ -91,9 +92,7 @@ const SignUp2: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                     style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View style={signUpHeaderStyles.headerContainer}>
@@ -103,7 +102,7 @@ const SignUp2: React.FC = (): React.JSX.Element => {
                 </Text>
                 <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.subStep}>
-                    3. 이메일 및 비밀번호 설정
+                    3. 인증 정보 설정
                 </Text>
                 <Text style={signUpHeaderStyles.subStep}>
                     4. 프로필 정보 입력
@@ -144,9 +143,7 @@ const SignUp2: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     style={styles.resendButton}
                     onPress={refreshCodeInput}>
-                    <Image
-                        source={require('@/assets/drawable/ic-refresh-gray.png')}
-                    />
+                    <IcRefresh />
                     <Text style={styles.resendButtonText}>인증번호 재발송</Text>
                 </TouchableOpacity>
                 <Text style={styles.infoText}>

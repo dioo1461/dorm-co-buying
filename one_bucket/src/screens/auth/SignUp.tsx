@@ -1,10 +1,10 @@
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { lightColors } from '@/constants/colors'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import {
     Alert,
-    Image,
     StyleSheet,
     Text,
     TextInput,
@@ -62,9 +62,7 @@ const SignUp: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                     style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View style={signUpHeaderStyles.headerContainer}>
@@ -74,7 +72,7 @@ const SignUp: React.FC = (): React.JSX.Element => {
                 </Text>
                 <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                 <Text style={signUpHeaderStyles.subStep}>
-                    3. 이메일 및 비밀번호 설정
+                    3. 인증 정보 설정
                 </Text>
                 <Text style={signUpHeaderStyles.subStep}>
                     4. 프로필 정보 입력

@@ -1,4 +1,5 @@
 import { submitSignupForm } from '@/apis/authService'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
@@ -7,7 +8,6 @@ import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useState } from 'react'
 import {
-    Image,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,7 +18,6 @@ import {
     View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-
 const SignUp6: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [nickName, setNickName] = useState('')
@@ -62,9 +61,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View>
@@ -72,7 +69,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
                     <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
                     <Text style={signUpHeaderStyles.subStep}>
-                        3. 이메일 및 비밀번호 설정
+                        3. 인증 정보 설정
                     </Text>
                     <Text style={signUpHeaderStyles.currentStep}>
                         4. 프로필 정보 입력

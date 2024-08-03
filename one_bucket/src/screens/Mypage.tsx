@@ -1,3 +1,6 @@
+import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
+import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
+import IcPlus from '@/assets/drawable/ic-plus.svg'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
@@ -8,7 +11,6 @@ import {
     ActivityIndicator,
     Button,
     Dimensions,
-    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -65,24 +67,16 @@ const Mypage = (): React.JSX.Element => {
                     <Text style={styles.payMoneyLabel}>페이머니</Text>
                     <Text style={styles.payMoneyAmount}>12,000</Text>
                     <TouchableOpacity style={styles.payMoneyDetailsButton}>
-                        <Image
-                            source={require('@/assets/drawable/ic-angle-right.png')}
-                        />
+                        <IcAngleRight />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.payMoneyButtonsContainer}>
                     <TouchableOpacity style={styles.payMoneyButton}>
-                        <Image
-                            source={require('@/assets/drawable/ic-plus.png')}
-                            style={styles.payMoneyButtonImage}
-                        />
+                        <IcPlus style={styles.payMoneyButtonImage} />
                         <Text style={styles.payMoneyButtonText}>충전</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.payMoneyButton}>
-                        <Image
-                            source={require('@/assets/drawable/ic-arrow-circle.png')}
-                            style={styles.payMoneyButtonImage}
-                        />
+                        <IcArrowCircle style={styles.payMoneyButtonImage} />
                         <Text style={styles.payMoneyButtonText}>반환</Text>
                     </TouchableOpacity>
                 </View>

@@ -126,16 +126,23 @@ function App(): React.JSX.Element {
         const ac = new AbortController()
 
         const checkLoginStatus = async () => {
-            getMemberInfo()
+            await getMemberInfo()
                 .then(response => {
                     if (response) {
                         setIsLoggedIn(true)
                         // memberInfo를 profileStore에 저장
+                        console.log(`response: ${response}`)
                         useProfileStore.setState({ memberInfo: response })
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 401) {
+                    if (
+                        error.response.status === 401 ||
+                        error.response.status === 403
+                    ) {
+                        console.log(`error: ${error}`)
+
+                        // TODO: refreshToken으로 accessToken 갱신
                     }
                 })
         }
