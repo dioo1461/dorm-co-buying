@@ -1,16 +1,15 @@
-import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
-import { AppContext } from '@/hooks/contexts/AppContext'
-import { NavigationProp, useNavigation } from '@react-navigation/native'
-import React, { useContext, useState, useRef } from 'react'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { useNavigation } from '@react-navigation/native'
+import React, { useContext, useRef, useState } from 'react'
 import {
-    View,
-    Text,
     Dimensions,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
     FlatList,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')

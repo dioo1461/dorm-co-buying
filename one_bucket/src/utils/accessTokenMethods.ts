@@ -5,34 +5,26 @@ const ACCESS_TOKEN_NAME = 'accessToken'
 const REFRESH_TOKEN_NAME = 'refreshToken'
 
 export const removeAccessToken = async () => {
-    await EncryptedStorage.removeItem(ACCESS_TOKEN_NAME)
+    return EncryptedStorage.removeItem(ACCESS_TOKEN_NAME)
 }
 
-export const removeRefreshToken = () => {
-    EncryptedStorage.removeItem(REFRESH_TOKEN_NAME)
+export const removeRefreshToken = async () => {
+    return EncryptedStorage.removeItem(REFRESH_TOKEN_NAME)
 }
 
-export const checkAccessTokenAvailable = async () => {
-    if (await EncryptedStorage.getItem(ACCESS_TOKEN_NAME)) {
-        return true
-    } else {
-        return false
-    }
+export const setAccessToken = async (jwt: string) => {
+    return EncryptedStorage.setItem(ACCESS_TOKEN_NAME, jwt)
 }
 
-export const storeAccessToken = (jwt: string) => {
-    EncryptedStorage.setItem(ACCESS_TOKEN_NAME, jwt)
+export const setRefreshToken = async (jwt: string) => {
+    return EncryptedStorage.setItem(REFRESH_TOKEN_NAME, jwt)
 }
 
-export const storeRefreshToken = (jwt: string) => {
-    EncryptedStorage.setItem(REFRESH_TOKEN_NAME, jwt)
-}
-
-export const getAccessToken = () => {
+export const getAccessToken = async () => {
     return EncryptedStorage.getItem(ACCESS_TOKEN_NAME)
 }
 
-export const getRefreshToken = () => {
+export const getRefreshToken = async () => {
     return EncryptedStorage.getItem(REFRESH_TOKEN_NAME)
 }
 

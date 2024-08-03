@@ -1,17 +1,17 @@
 import { baseColors } from '@/constants/colors'
 import { StyleSheet } from 'react-native'
 
-export const signUpHeaderStyles = StyleSheet.create({
+export const signUpStyles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-        paddingTop: 40,
+        paddingTop: 24,
         backgroundColor: 'white',
     },
     headerContainer: {
-        marginTop: 60,
+        marginTop: 10,
     },
     backButton: {
-        position: 'absolute',
+        // position: 'absolute',
     },
     title: {
         fontSize: 26,

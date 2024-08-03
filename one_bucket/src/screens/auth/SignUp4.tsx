@@ -1,10 +1,11 @@
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import IcRefresh from '@/assets/drawable/ic-refresh.svg'
 import { baseColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
-import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
-    Image,
     Keyboard,
     StyleSheet,
     Text,
@@ -14,7 +15,7 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
-const SignUp4 = () => {
+const SignUp4: React.FC = (): React.JSX.Element => {
     const dummyVerificationCode = '000000'
     const { onSchoolEmailVerificationFailure } = useContext(AppContext)
 
@@ -80,28 +81,22 @@ const SignUp4 = () => {
     }
 
     return (
-        <View style={signUpHeaderStyles.container}>
+        <View style={signUpStyles.container}>
             <View>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
-                    style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    style={signUpStyles.backButton}>
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
-            <View style={signUpHeaderStyles.headerContainer}>
-                <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
-                <Text style={signUpHeaderStyles.currentStep}>2. 학교 인증</Text>
-                <Text style={signUpHeaderStyles.title}>
+            <View style={signUpStyles.headerContainer}>
+                <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
+                <Text style={signUpStyles.currentStep}>2. 학교 인증</Text>
+                <Text style={signUpStyles.title}>
                     {`이용자님의 재학생 여부를\n인증해 주세요.`}
                 </Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    3. 이메일 및 비밀번호 설정
-                </Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    4. 프로필 정보 입력
-                </Text>
+                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
             </View>
             <View style={styles.verificationContainer}>
                 <Text style={styles.schoolEmail}>
@@ -138,9 +133,7 @@ const SignUp4 = () => {
                 <TouchableOpacity
                     style={styles.resendButton}
                     onPress={refreshCodeInput}>
-                    <Image
-                        source={require('@/assets/drawable/ic-refresh-gray.png')}
-                    />
+                    <IcRefresh />
                     <Text style={styles.resendButtonText}>
                         인증 코드 재발송
                     </Text>

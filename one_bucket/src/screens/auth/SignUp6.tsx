@@ -1,13 +1,14 @@
-import { submitSignupForm } from '@/apis/auth/signUpService'
+import { postProfile } from '@/apis/profileService'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
-import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
-    Image,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -18,83 +19,79 @@ import {
     View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-
-const SignUp6 = () => {
+const SignUp6: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const [nickName, setNickName] = useState('')
-    const [bio, setBio] = useState('')
-    const [isDormitory, setIsDormitory] = useState(false)
+    const { onSignUpSuccess } = useContext(AppContext)
 
-    const { onSignUpFailure } = useContext(AppContext)
+    const [name, setName] = useState('tUser')
+    const [gender, setGender] = useState('man')
+    const [age, setAge] = useState(0)
+    const [bio, setBio] = useState('')
+    const [birth, setBirth] = useState('')
+
+    const [isDormitory, setIsDormitory] = useState(false)
 
     type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
     const { params } = useRoute<SignUp6RouteProp>()
 
-    const handleNickNameChange = (text: string) => {
+    const handleNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
-        setNickName(cleaned)
+        setName(cleaned)
     }
 
-    const handleFormSubmit = async () => {
-        const signUpForm = {
-            username: params.email,
-            password: params.password,
-            nickname: nickName,
+    const handleSubmit = async () => {
+        // const result = await submitSignupForm(signUpForm)
+        const form: AddProfileRequestBody = {
+            name: name,
+            gender: gender,
+            age: age,
+            description: bio,
+            birth: birth,
         }
-        const result = await submitSignupForm(signUpForm)
-        if (result) {
-            navigation.navigate('SignUp7', {
-                email: params.email,
-                password: params.password,
+        postProfile(form)
+            .then(res => {
+                navigation.navigate('SignUp7')
             })
-        } else {
-            onSignUpFailure()
-        }
+            .catch(err => {
+                console.log(err)
+            })
     }
+
+    useEffect(() => {
+        onSignUpSuccess()
+    }, [])
 
     return (
         <KeyboardAvoidingView
-            style={signUpHeaderStyles.container}
+            style={signUpStyles.container}
             behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
             <View>
                 <TouchableOpacity
                     onPress={() => {
                         navigation.goBack()
                     }}
-                    style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    style={signUpStyles.backButton}>
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View>
-                <View style={signUpHeaderStyles.headerContainer}>
-                    <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
-                    <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
-                    <Text style={signUpHeaderStyles.subStep}>
-                        3. 이메일 및 비밀번호 설정
-                    </Text>
-                    <Text style={signUpHeaderStyles.currentStep}>
+                <View style={signUpStyles.headerContainer}>
+                    <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
+                    <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
+                    <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                    <Text style={signUpStyles.currentStep}>
                         4. 프로필 정보 입력
                     </Text>
-                    <Text style={signUpHeaderStyles.title}>
+                    <Text style={signUpStyles.title}>
                         {`이용자님의 프로필 정보를\n입력해 주세요.`}
                     </Text>
                 </View>
                 <ScrollView>
-                    <Text style={styles.label}>닉네임 입력</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleNickNameChange}
-                        value={nickName}
-                        placeholder='닉네임'
-                        keyboardType='default'
-                    />
                     <Text style={styles.label}>자기소개</Text>
                     <TextInput
                         style={styles.bioInput}
                         onChangeText={() => setBio(bio)}
-                        placeholder='간단한 자기소개 글을 작성해 주세요.'
+                        placeholder='간단한 자기소개를 작성해 주세요.'
                         keyboardType='default'
                         multiline={true}
                         numberOfLines={3}
@@ -117,7 +114,7 @@ const SignUp6 = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={handleFormSubmit}>
+                        onPress={handleSubmit}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>

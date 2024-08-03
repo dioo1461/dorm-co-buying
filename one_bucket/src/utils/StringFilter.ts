@@ -8,10 +8,14 @@ export class StringFilter {
     }
 
     static removeSpecials(text: string) {
-        return text.replaceAll(/[^\w]/g, '')
+        return text.replaceAll(/[^\wㄱ-힣]/g, '')
     }
 
     static numericFilter(text: string) {
         return text.replaceAll(/[^0-9]/g, '')
+    }
+
+    static alphabetFilter(text: string) {
+        return text.replaceAll(/[^a-zA-Z]/g, '')
     }
 }

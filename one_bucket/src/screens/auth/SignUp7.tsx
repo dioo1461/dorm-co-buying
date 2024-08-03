@@ -1,28 +1,17 @@
-import { requestLogin } from '@/apis/auth/loginService'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/contexts/AppContext'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { RouteProp, useNavigation } from '@react-navigation/native'
 import React, { useContext } from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-
-const SignUp7 = () => {
+const SignUp7: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
-    const { params } = useRoute<SignUp7RouteProp>()
 
     const handleLogin = async () => {
-        const loginForm = {
-            username: params.email,
-            password: params.password,
-        }
-        const result = await requestLogin(loginForm)
-        if (result) {
-            onLogInSuccess()
-        } else {
-            onLoginFailure()
-        }
+        onLogInSuccess()
     }
 
     return (
@@ -30,14 +19,12 @@ const SignUp7 = () => {
             <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}>
-                <Image
-                    source={require('@/assets/drawable/ic-arrow-outline.png')}
-                />
+                <IcArrowLeft />
             </TouchableOpacity>
             <Text
                 style={
                     styles.title1
-                }>{`한바구니의 회원이 되신 것을\n진심으로 환영합니다!`}</Text>
+                }>{`한바구니에 오신 것을\n환영합니다!`}</Text>
             <Text style={styles.subtitle}>
                 {`이제 한바구니의 서비스를 모두\n이용하실 수 있습니다.`}
             </Text>

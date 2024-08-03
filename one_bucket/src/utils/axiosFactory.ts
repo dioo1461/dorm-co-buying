@@ -17,8 +17,8 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
  * @param options - Additional options for Axios.
  * @returns An instance of Axios with authentication headers.
  */
-export const createAuthAxios = (options: AxiosRequestConfig = {}) => {
-    const token = getAccessToken()
+export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
+    const token = await getAccessToken()
     const authAxios = axios.create({
         headers: { Authorization: 'Bearer ' + token },
         baseURL: BASE_URL,
@@ -37,10 +37,3 @@ export const createAuthAxios = (options: AxiosRequestConfig = {}) => {
     )
     return authAxios
 }
-
-export const updateAuthAxiosJwt = (token: String) => {
-    authAxios.defaults.headers['Authorization'] = `Bearer ${token}`
-}
-
-export const defaultAxios = createAxios()
-export const authAxios = createAuthAxios()

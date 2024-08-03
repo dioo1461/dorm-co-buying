@@ -1,10 +1,10 @@
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { lightColors } from '@/constants/colors'
-import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import {
     Alert,
-    Image,
     StyleSheet,
     Text,
     TextInput,
@@ -12,7 +12,7 @@ import {
     View,
 } from 'react-native'
 
-const SignUp = () => {
+const SignUp: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('')
 
@@ -57,28 +57,22 @@ const SignUp = () => {
     }
 
     return (
-        <View style={signUpHeaderStyles.container}>
+        <View style={signUpStyles.container}>
             <View>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
-                    style={signUpHeaderStyles.backButton}>
-                    <Image
-                        source={require('@/assets/drawable/ic-arrow-outline.png')}
-                    />
+                    style={signUpStyles.backButton}>
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
-            <View style={signUpHeaderStyles.headerContainer}>
-                <Text style={signUpHeaderStyles.currentStep}>1. 본인 인증</Text>
-                <Text style={signUpHeaderStyles.title}>
+            <View style={signUpStyles.headerContainer}>
+                <Text style={signUpStyles.currentStep}>1. 본인 인증</Text>
+                <Text style={signUpStyles.title}>
                     {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
                 </Text>
-                <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    3. 이메일 및 비밀번호 설정
-                </Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    4. 프로필 정보 입력
-                </Text>
+                <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
+                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
             </View>
             <View>
                 <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
