@@ -1,4 +1,4 @@
-export interface SignInResponse {
+export interface LoginResponse {
     grantType: string
     accessToken: string
     refreshToken: string

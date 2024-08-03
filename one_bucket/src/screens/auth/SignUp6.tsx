@@ -1,8 +1,7 @@
-import { submitSignupForm } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
@@ -35,46 +34,34 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     }
 
     const handleFormSubmit = async () => {
-        const signUpForm = {
-            username: params.email,
-            password: params.password,
-            nickname: nickName,
-        }
-        const result = await submitSignupForm(signUpForm)
-        if (result) {
-            navigation.navigate('SignUp7', {
-                email: params.email,
-                password: params.password,
-            })
-        } else {
-            onSignUpFailure()
-        }
+        // const result = await submitSignupForm(signUpForm)
+        navigation.navigate('SignUp7', {
+            email: params.accessToken,
+        })
     }
 
     return (
         <KeyboardAvoidingView
-            style={signUpHeaderStyles.container}
+            style={signUpStyles.container}
             behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
             <View>
                 <TouchableOpacity
                     onPress={() => {
                         navigation.goBack()
                     }}
-                    style={signUpHeaderStyles.backButton}>
+                    style={signUpStyles.backButton}>
                     <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View>
-                <View style={signUpHeaderStyles.headerContainer}>
-                    <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
-                    <Text style={signUpHeaderStyles.subStep}>2. 학교 인증</Text>
-                    <Text style={signUpHeaderStyles.subStep}>
-                        3. 인증 정보 설정
-                    </Text>
-                    <Text style={signUpHeaderStyles.currentStep}>
+                <View style={signUpStyles.headerContainer}>
+                    <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
+                    <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
+                    <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                    <Text style={signUpStyles.currentStep}>
                         4. 프로필 정보 입력
                     </Text>
-                    <Text style={signUpHeaderStyles.title}>
+                    <Text style={signUpStyles.title}>
                         {`이용자님의 프로필 정보를\n입력해 주세요.`}
                     </Text>
                 </View>

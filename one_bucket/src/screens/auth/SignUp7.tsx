@@ -1,7 +1,7 @@
-import { requestLogin } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
+import { setAccessToken } from '@/utils/accessTokenMethods'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -13,16 +13,8 @@ const SignUp7: React.FC = (): React.JSX.Element => {
     const { params } = useRoute<SignUp7RouteProp>()
 
     const handleLogin = async () => {
-        const loginForm = {
-            username: params.email,
-            password: params.password,
-        }
-        const result = await requestLogin(loginForm)
-        if (result) {
-            onLogInSuccess()
-        } else {
-            onLoginFailure()
-        }
+        await setAccessToken(params.accessToken)
+        onLogInSuccess()
     }
 
     return (

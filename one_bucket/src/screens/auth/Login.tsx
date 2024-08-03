@@ -2,6 +2,7 @@ import { requestLogin } from '@/apis/authService'
 import { baseColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { setAccessToken } from '@/utils/accessTokenMethods'
 import React, { useContext, useRef } from 'react'
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native'
 import BouncyCheckbox, {
@@ -24,12 +25,14 @@ const Login: React.FC = (): React.JSX.Element => {
             username: id,
             password: password,
         }
-        const result = await requestLogin(loginForm)
-        if (result) {
-            onLogInSuccess()
-        } else {
-            onLoginFailure()
-        }
+        requestLogin(loginForm)
+            .then(res => {
+                setAccessToken(res.accessToken)
+                onLogInSuccess()
+            })
+            .catch(err => {
+                onLoginFailure()
+            })
     }
 
     const handleForgotPassword = () => {}
@@ -109,7 +112,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 <View style={[styles.signUpButtonContainer]}>
                     <TouchableOpacity
                         style={styles.signUpButton}
-                        onPress={() => navigation.navigate('SignUp')}>
+                        onPress={() => navigation.navigate('SignUp5')}>
                         <Text
                             style={{
                                 fontSize: 16,

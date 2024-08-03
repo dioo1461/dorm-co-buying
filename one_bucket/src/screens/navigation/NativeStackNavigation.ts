@@ -12,12 +12,12 @@ export type RootStackParamList = {
     }
     SignUp5: undefined
     SignUp6: {
-        email: string
-        password: string
+        accessToken: string
+        refreshToken: string
     }
     SignUp7: {
-        email: string
-        password: string
+        accessToken: string
+        refreshToken: string
     }
 }
 

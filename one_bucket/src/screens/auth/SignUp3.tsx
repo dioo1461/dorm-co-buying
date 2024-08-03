@@ -1,6 +1,6 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { lightColors } from '@/constants/colors'
-import { signUpHeaderStyles } from '@/styles/signUp/signUpHeaderStyles'
+import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -39,29 +39,25 @@ const SignUp3: React.FC = (): React.JSX.Element => {
     }
 
     return (
-        <ScrollView style={signUpHeaderStyles.container}>
+        <ScrollView style={signUpStyles.container}>
             <View>
                 <TouchableOpacity
                     onPress={() => {
                         navigation.goBack()
                         navigation.goBack()
                     }}
-                    style={signUpHeaderStyles.backButton}>
+                    style={signUpStyles.backButton}>
                     <IcArrowLeft />
                 </TouchableOpacity>
             </View>
-            <View style={signUpHeaderStyles.headerContainer}>
-                <Text style={signUpHeaderStyles.subStep}>1. 본인 인증</Text>
-                <Text style={signUpHeaderStyles.currentStep}>2. 학교 인증</Text>
-                <Text style={signUpHeaderStyles.title}>
+            <View style={signUpStyles.headerContainer}>
+                <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
+                <Text style={signUpStyles.currentStep}>2. 학교 인증</Text>
+                <Text style={signUpStyles.title}>
                     {`이용자님의 재학생 여부를\n인증해 주세요.`}
                 </Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    3. 인증 정보 설정
-                </Text>
-                <Text style={signUpHeaderStyles.subStep}>
-                    4. 프로필 정보 입력
-                </Text>
+                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
             </View>
             <View>
                 <Text style={styles.schoolEmailLabel}>
