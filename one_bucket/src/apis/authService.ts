@@ -3,9 +3,7 @@ import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { LoginResponse } from '@/data/response/LogInResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
-export const submitSignupForm = async (
-    data: SignUpRequestBody,
-): Promise<any> => {
+export const postSignupForm = async (data: SignUpRequestBody): Promise<any> => {
     return await createAxios()
         .post('/register', data)
         .then(res => {

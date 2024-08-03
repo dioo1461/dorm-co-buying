@@ -113,6 +113,15 @@ function App(): React.JSX.Element {
         })
     }
 
+    const onSignUpSuccess = async () => {
+        Toast.show({
+            type: 'success',
+            text1: '계정 생성이 완료되었습니다!',
+            text2: '이제 세부 프로필 정보 기입을 진행해 주세요.',
+            visibilityTime: 2500,
+        })
+    }
+
     const onSignUpFailure = async () => {
         Toast.show({
             type: 'error',
@@ -167,6 +176,7 @@ function App(): React.JSX.Element {
                         onLoginFailure,
                         onPhoneVerificationFailure,
                         onSchoolEmailVerificationFailure,
+                        onSignUpSuccess,
                         onSignUpFailure,
                         themeColor,
                     }}>

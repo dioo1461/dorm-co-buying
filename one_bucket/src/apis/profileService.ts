@@ -1,3 +1,4 @@
+import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { createAuthAxios } from 'utils/axiosFactory'
@@ -53,7 +54,14 @@ export const getProfileImage = async () => {
         })
 }
 
-export const postProfile = async () => {
+export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
-    return await authAxios.post('/profile').then(response => {})
+    return authAxios
+        .post('/profile/update', data)
+        .then(response => {
+            return response
+        })
+        .catch(err => {
+            throw err
+        })
 }

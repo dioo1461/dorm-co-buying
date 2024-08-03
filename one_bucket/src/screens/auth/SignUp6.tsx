@@ -1,11 +1,13 @@
+import { postProfile } from '@/apis/profileService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, lightColors } from '@/constants/colors'
+import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
     KeyboardAvoidingView,
     Platform,
@@ -19,26 +21,45 @@ import {
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 const SignUp6: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const [nickName, setNickName] = useState('')
-    const [bio, setBio] = useState('')
-    const [isDormitory, setIsDormitory] = useState(false)
+    const { onSignUpSuccess } = useContext(AppContext)
 
-    const { onSignUpFailure } = useContext(AppContext)
+    const [name, setName] = useState('tUser')
+    const [gender, setGender] = useState('man')
+    const [age, setAge] = useState(0)
+    const [bio, setBio] = useState('')
+    const [birth, setBirth] = useState('')
+
+    const [isDormitory, setIsDormitory] = useState(false)
 
     type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
     const { params } = useRoute<SignUp6RouteProp>()
 
-    const handleNickNameChange = (text: string) => {
+    const handleNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
-        setNickName(cleaned)
+        setName(cleaned)
     }
 
-    const handleFormSubmit = async () => {
+    const handleSubmit = async () => {
         // const result = await submitSignupForm(signUpForm)
-        navigation.navigate('SignUp7', {
-            email: params.accessToken,
-        })
+        const form: AddProfileRequestBody = {
+            name: name,
+            gender: gender,
+            age: age,
+            description: bio,
+            birth: birth,
+        }
+        postProfile(form)
+            .then(res => {
+                navigation.navigate('SignUp7')
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
+
+    useEffect(() => {
+        onSignUpSuccess()
+    }, [])
 
     return (
         <KeyboardAvoidingView
@@ -66,19 +87,11 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </Text>
                 </View>
                 <ScrollView>
-                    <Text style={styles.label}>닉네임 입력</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleNickNameChange}
-                        value={nickName}
-                        placeholder='닉네임'
-                        keyboardType='default'
-                    />
                     <Text style={styles.label}>자기소개</Text>
                     <TextInput
                         style={styles.bioInput}
                         onChangeText={() => setBio(bio)}
-                        placeholder='간단한 자기소개 글을 작성해 주세요.'
+                        placeholder='간단한 자기소개를 작성해 주세요.'
                         keyboardType='default'
                         multiline={true}
                         numberOfLines={3}
@@ -101,7 +114,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={handleFormSubmit}>
+                        onPress={handleSubmit}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>

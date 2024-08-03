@@ -1,4 +1,4 @@
-import { requestLogin, submitSignupForm } from '@/apis/authService'
+import { postSignupForm, requestLogin } from '@/apis/authService'
 import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors } from '@/constants/colors'
@@ -7,6 +7,7 @@ import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { setAccessToken } from '@/utils/accessTokenMethods'
 import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useRef, useState } from 'react'
@@ -38,6 +39,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const [nicknameError, setNicknameError] = useState<string | null>(null)
 
     const scrollViewRef = useRef<ScrollView>(null)
+    const passwordRef = useRef<TextInput>(null)
     const passwordConfirmRef = useRef<TextInput>(null)
 
     const handleEmailChange = (text: string) => {
@@ -93,7 +95,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
         setNicknameError(null)
     }
 
-    const handleSignUpFormSubmit = async () => {
+    const handleSubmit = async () => {
         if (!validateEmail(email)) {
             Alert.alert('유효한 메일 주소를 입력해주세요.')
             return
@@ -104,7 +106,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
             password: password,
             nickname: nickname,
         }
-        submitSignupForm(form)
+        postSignupForm(form)
             .then(res => {
                 const loginForm: LoginRequestBody = {
                     username: email,
@@ -113,6 +115,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
 
                 requestLogin(loginForm)
                     .then(res => {
+                        setAccessToken(res.accessToken)
                         navigation.navigate('SignUp6', {
                             accessToken: res.accessToken,
                         })
@@ -139,6 +142,18 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const validateEmail = (number: string) => {
         // TODO : 이메일 validation 구현
         return true
+    }
+
+    const onPasswordReEnterButtonPress = () => {
+        handleScrollViewSwipe(0)
+        passwordRef.current?.focus()
+        setPassword('')
+        setPasswordConfirm('')
+    }
+
+    const onPasswordInputBlur = () => {
+        handleScrollViewSwipe(1)
+        passwordConfirmRef.current?.focus()
     }
 
     return (
@@ -195,13 +210,10 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         <View style={{ width: ScreenWidth - 40 }}>
                             <Text style={styles.label}>비밀번호 입력</Text>
                             <TextInput
+                                ref={passwordRef}
                                 style={styles.input}
                                 onChangeText={handlePasswordChange}
-                                onBlur={() => {
-                                    handleScrollViewSwipe(1)
-                                    passwordConfirmRef.current?.focus()
-                                    setPasswordConfirm('')
-                                }}
+                                onBlur={onPasswordInputBlur}
                                 value={password}
                                 placeholder='비밀번호'
                                 keyboardType='default'
@@ -229,7 +241,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                 <Text style={styles.label}>비밀번호 확인</Text>
                                 <TouchableOpacity
                                     style={styles.pwReEnterButton}
-                                    onPress={() => handleScrollViewSwipe(0)}>
+                                    onPress={onPasswordReEnterButtonPress}>
                                     <Text style={styles.pwReEnterButtonText}>
                                         재입력
                                     </Text>
@@ -305,7 +317,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             },
                             styles.button,
                         ]}
-                        onPress={handleSignUpFormSubmit}>
+                        onPress={handleSubmit}>
                         <Text style={styles.buttonText}>다음</Text>
                     </TouchableOpacity>
                 </View>

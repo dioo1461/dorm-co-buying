@@ -11,14 +11,8 @@ export type RootStackParamList = {
         schoolEmail: string
     }
     SignUp5: undefined
-    SignUp6: {
-        accessToken: string
-        refreshToken: string
-    }
-    SignUp7: {
-        accessToken: string
-        refreshToken: string
-    }
+    SignUp6: undefined
+    SignUp7: undefined
 }
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>

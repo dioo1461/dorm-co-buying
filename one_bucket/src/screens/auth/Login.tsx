@@ -112,7 +112,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 <View style={[styles.signUpButtonContainer]}>
                     <TouchableOpacity
                         style={styles.signUpButton}
-                        onPress={() => navigation.navigate('SignUp5')}>
+                        onPress={() => navigation.navigate('SignUp')}>
                         <Text
                             style={{
                                 fontSize: 16,
