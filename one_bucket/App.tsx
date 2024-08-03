@@ -141,7 +141,6 @@ function App(): React.JSX.Element {
                         setIsLoggedIn(true)
                         SplashScreen.hide()
                         // memberInfo를 profileStore에 저장
-                        console.log(`response: ${response}`)
                         useProfileStore.setState({ memberInfo: response })
                     }
                 })
@@ -150,7 +149,7 @@ function App(): React.JSX.Element {
                         error.response.status === 401 ||
                         error.response.status === 403
                     ) {
-                        console.log(`error: ${error}`)
+                        console.log(`App - checkLoginStatus error: ${error}`)
                         // TODO: refreshToken으로 accessToken 갱신
                     }
                 })

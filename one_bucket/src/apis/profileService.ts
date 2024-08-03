@@ -1,15 +1,14 @@
 import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { createAuthAxios } from 'utils/axiosFactory'
 
 /**
  * @returns:
  */
-export const getProfile = async (data: LoginRequestBody) => {
+export const getProfile = async () => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post('/profile', data)
+        .get('/profile')
         .then(response => {
             return response.data
         })

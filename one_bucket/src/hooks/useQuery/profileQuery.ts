@@ -1,5 +1,10 @@
-import { getMemberInfo, getProfileImage } from '@/apis/profileService'
+import {
+    getMemberInfo,
+    getProfile,
+    getProfileImage,
+} from '@/apis/profileService'
 import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
+import { GetProfileResponse } from '@/data/response/GetProfileResponse'
 import { useQuery } from 'react-query'
 import { useProfileStore } from '../useStore/useProfileStore'
 
@@ -22,6 +27,10 @@ export const queryGetMemberInfo = () => {
             return promise
         },
     )
+}
+
+export const queryGetProfile = () => {
+    return useQuery<GetProfileResponse>(['profile'], getProfile)
 }
 
 export const queryGetProfileImage = (token: string) => {

@@ -25,12 +25,15 @@ const Mypage = (): React.JSX.Element => {
     const { onLogOut } = useContext(AppContext)
 
     const { data, isLoading, error } = queryGetMemberInfo()
+    const [memberInfo, profileImage] = data ? data : [null, null]
 
     const navigation = useNavigation()
 
     const handleProfileDetailNavigation = () => {
         navigation.navigate(strings.profileDetailsScreenName)
     }
+
+    if (error) return <Text>Error...</Text>
 
     if (isLoading)
         return (
@@ -44,8 +47,6 @@ const Mypage = (): React.JSX.Element => {
             </View>
         )
 
-    if (error) return <Text>Error...</Text>
-
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
@@ -55,7 +56,7 @@ const Mypage = (): React.JSX.Element => {
                         image={data![1]}
                         imageId='profile2'
                     /> */}
-                    <Text style={styles.username}>{data![0].nickname}</Text>
+                    <Text style={styles.username}>{memberInfo!.nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
                 <TouchableOpacity onPress={handleProfileDetailNavigation}>
