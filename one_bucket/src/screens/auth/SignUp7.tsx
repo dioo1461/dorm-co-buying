@@ -19,7 +19,7 @@ const SignUp7: React.FC = (): React.JSX.Element => {
             <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}>
-                <IcArrowLeft />
+                <IcArrowLeft fill={baseColors.GRAY_1} />
             </TouchableOpacity>
             <Text
                 style={

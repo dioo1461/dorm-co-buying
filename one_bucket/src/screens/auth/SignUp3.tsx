@@ -1,5 +1,5 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { lightColors } from '@/constants/colors'
+import { baseColors, lightColors } from '@/constants/colors'
 import { signUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
@@ -47,7 +47,7 @@ const SignUp3: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft />
+                    <IcArrowLeft fill={baseColors.GRAY_1} />
                 </TouchableOpacity>
             </View>
             <View style={signUpStyles.headerContainer}>

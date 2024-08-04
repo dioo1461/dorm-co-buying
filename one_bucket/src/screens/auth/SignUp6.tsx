@@ -71,7 +71,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft />
+                    <IcArrowLeft fill={baseColors.GRAY_1} />
                 </TouchableOpacity>
             </View>
             <View>

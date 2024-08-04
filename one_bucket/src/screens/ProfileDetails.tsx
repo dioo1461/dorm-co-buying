@@ -62,7 +62,10 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <View style={styles.backButtonContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <IcAngleLeft style={styles.backButtonImage} />
+                    <IcAngleLeft
+                        style={styles.backButtonImage}
+                        fill={baseColors.GRAY_1}
+                    />
                 </TouchableOpacity>
             </View>
             <View style={styles.headerContainer}>

@@ -9,7 +9,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import { Image, useColorScheme } from 'react-native'
+import {
+    Image,
+    Text,
+    TouchableOpacity,
+    useColorScheme,
+    View,
+} from 'react-native'
 
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
@@ -53,6 +59,7 @@ function App(): React.JSX.Element {
                             headerStyle: {
                                 backgroundColor: themeColor.ICON_BG,
                             },
+                            headerRight: route.headerRight,
                             headerTintColor: themeColor.ICON_TEXT,
                             tabBarIcon: ({ focused }) => {
                                 return (
@@ -187,6 +194,25 @@ function App(): React.JSX.Element {
                                     options={{ headerShown: false }}
                                 />
                                 <Stack.Screen
+                                    options={{
+                                        headerStyle: {
+                                            backgroundColor: themeColor.ICON_BG,
+                                        },
+                                        headerTintColor: themeColor.ICON_TEXT,
+                                        headerRight: () => (
+                                            <View>
+                                                <TouchableOpacity>
+                                                    <Text
+                                                        style={{
+                                                            color: 'white',
+                                                            marginEnd: 16,
+                                                        }}>
+                                                        임시저장
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        ),
+                                    }}
                                     name={strings.postGroupPurchaseScreenName}
                                     component={PostGroupPurchase}
                                 />

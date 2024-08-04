@@ -67,7 +67,7 @@ const Mypage = (): React.JSX.Element => {
                     <Text style={styles.payMoneyLabel}>페이머니</Text>
                     <Text style={styles.payMoneyAmount}>12,000</Text>
                     <TouchableOpacity style={styles.payMoneyDetailsButton}>
-                        <IcAngleRight />
+                        <IcAngleRight fill={baseColors.GRAY_1} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.payMoneyButtonsContainer}>

@@ -167,7 +167,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft />
+                    <IcArrowLeft fill={baseColors.GRAY_1} />
                 </TouchableOpacity>
             </View>
             <View>
@@ -198,7 +198,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             { opacity: emailError ? 1 : 0 },
                             styles.errorLabelContainer,
                         ]}>
-                        <Exclamation style={styles.exclamation} />
+                        <Exclamation fill='red' style={styles.exclamation} />
                         <Text style={styles.errorLabel}>{emailError}</Text>
                     </View>
                     <ScrollView
@@ -225,7 +225,10 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     { opacity: passwordError ? 1 : 0 },
                                     styles.errorLabelContainer,
                                 ]}>
-                                <Exclamation style={styles.exclamation} />
+                                <Exclamation
+                                    fill='red'
+                                    style={styles.exclamation}
+                                />
                                 <Text style={styles.errorLabel}>
                                     {passwordError}
                                 </Text>
@@ -262,7 +265,10 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     { opacity: passwordConfirmError ? 1 : 0 },
                                     styles.errorLabelContainer,
                                 ]}>
-                                <Exclamation style={styles.exclamation} />
+                                <Exclamation
+                                    fill='red'
+                                    style={styles.exclamation}
+                                />
                                 <Text style={styles.errorLabel}>
                                     {passwordConfirmError}
                                 </Text>
@@ -284,7 +290,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             { opacity: nicknameError ? 1 : 0 },
                             styles.errorLabelContainer,
                         ]}>
-                        <Exclamation style={styles.exclamation} />
+                        <Exclamation fill='red' style={styles.exclamation} />
                         <Text style={styles.errorLabel}>{nicknameError}</Text>
                     </View>
 
