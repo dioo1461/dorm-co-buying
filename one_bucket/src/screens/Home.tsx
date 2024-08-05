@@ -15,6 +15,8 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): React.JSX.Element => {
+    
+    
     const navigation = useNavigation()
     const { themeColor } = useContext(AppContext)
     const [data, setData] = useState([
@@ -44,31 +46,16 @@ const Home: React.FC = (): React.JSX.Element => {
         }
     }
 
-    return (
-        <>
-            <ScrollView style={{ flex: 1 }}>
-                <View style={{ flex: 1, backgroundColor: 'white' }}>
-                    <View style={styles.menu}>
-                        <View style={styles.menu_S}>
-                            <Text>홈</Text>
-                        </View>
-                        <TouchableOpacity>
-                            <View style={styles.menu_S}>
-                                <Text>거래게시판</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.menu_S}>
-                                <Text>중고게시판</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.menu_S}>
-                                <Text>자유게시판</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.title}>
+    const [board, setBoard] = useState(0);
+    const home = () => setBoard(0);
+    const trade = () => setBoard(1);
+    const used = () => setBoard(2);
+    const free = () => setBoard(3);
+
+    const showBoard = () => {
+        if (board === 0) return (
+            <View>
+                <View style={styles.title}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             추천 거래글
                         </Text>
@@ -116,8 +103,172 @@ const Home: React.FC = (): React.JSX.Element => {
                         onMomentumScrollEnd={onScrollEnd}
                         contentContainerStyle={styles.post_list}
                     />
+            </View>
+        )
+        if (board === 1) return (
+            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post1</Text></View>
+                <View style={styles.post_thumb}><Text>img1</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post2</Text></View>
+                <View style={styles.post_thumb}><Text>img2</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post3</Text></View>
+                <View style={styles.post_thumb}><Text>img3</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post4</Text></View>
+                <View style={styles.post_thumb}><Text>img4</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post5</Text></View>
+                <View style={styles.post_thumb}><Text>img5</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post6</Text></View>
+                <View style={styles.post_thumb}><Text>img6</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post7</Text></View>
+                <View style={styles.post_thumb}><Text>img7</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post8</Text></View>
+                <View style={styles.post_thumb}><Text>img8</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post9</Text></View>
+                <View style={styles.post_thumb}><Text>img9</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post10</Text></View>
+                <View style={styles.post_thumb}><Text>img10</Text></View>
                 </View>
             </ScrollView>
+        )
+        if (board === 2) return (
+            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post1</Text></View>
+                <View style={styles.post_thumb}><Text>img1</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post2</Text></View>
+                <View style={styles.post_thumb}><Text>img2</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post3</Text></View>
+                <View style={styles.post_thumb}><Text>img3</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post4</Text></View>
+                <View style={styles.post_thumb}><Text>img4</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post5</Text></View>
+                <View style={styles.post_thumb}><Text>img5</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post6</Text></View>
+                <View style={styles.post_thumb}><Text>img6</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post7</Text></View>
+                <View style={styles.post_thumb}><Text>img7</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post8</Text></View>
+                <View style={styles.post_thumb}><Text>img8</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post9</Text></View>
+                <View style={styles.post_thumb}><Text>img9</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post10</Text></View>
+                <View style={styles.post_thumb}><Text>img10</Text></View>
+                </View>
+            </ScrollView>
+        )
+        if (board === 3) return (
+            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post1</Text></View>
+                <View style={styles.post_thumb}><Text>img1</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post2</Text></View>
+                <View style={styles.post_thumb}><Text>img2</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post3</Text></View>
+                <View style={styles.post_thumb}><Text>img3</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post4</Text></View>
+                <View style={styles.post_thumb}><Text>img4</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post5</Text></View>
+                <View style={styles.post_thumb}><Text>img5</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post6</Text></View>
+                <View style={styles.post_thumb}><Text>img6</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post7</Text></View>
+                <View style={styles.post_thumb}><Text>img7</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post8</Text></View>
+                <View style={styles.post_thumb}><Text>img8</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post9</Text></View>
+                <View style={styles.post_thumb}><Text>img9</Text></View>
+                </View>
+                <View style={styles.post_vert}>
+                <View style={styles.post_cont}><Text>post10</Text></View>
+                <View style={styles.post_thumb}><Text>img10</Text></View>
+                </View>
+            </ScrollView>
+        )
+        return null;
+    }
+
+    return (
+        <>
+            <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, backgroundColor: 'white' }}>
+                    <View style={styles.menu}>
+                        <TouchableOpacity onPress={home}>
+                            <View style={{...styles.menu_S, backgroundColor: board==0 ? "yellow" : "white"}}>
+                                <Text>홈</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={trade}>
+                            <View style={{...styles.menu_S, backgroundColor: board==1 ? "yellow" : "white"}}>
+                                <Text>거래게시판</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={used}>
+                            <View style={{...styles.menu_S, backgroundColor: board==2 ? "yellow" : "white"}}>
+                                <Text>중고게시판</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={free}>
+                            <View style={{...styles.menu_S, backgroundColor: board==3 ? "yellow" : "white"}}>
+                                <Text>자유게시판</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View>{showBoard()}</View>
+                </View>
+            </View>
             <TouchableOpacity
                 style={[styles.fab, { backgroundColor: themeColor.ICON_BG }]}
                 onPress={() =>
@@ -157,6 +308,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    post_list_vert:{
+        backgroundColor: "white",
+      },
+      post_vert:{
+        height: SCREEN_HEIGHT/8,
+        backgroundColor: "blue",
+        flexDirection: "row",
+      },
+      post_cont:{
+        height: SCREEN_HEIGHT/8,
+        width: (SCREEN_WIDTH)-(SCREEN_HEIGHT/8),
+        backgroundColor: "white",
+        justifyContent: "center",
+      },
+      post_thumb:{
+        height: SCREEN_HEIGHT/8,
+        width: SCREEN_HEIGHT/8,
+        backgroundColor: "gray",
+        justifyContent: "center",
+        alignItems: "center",
+      },
     fab: {
         position: 'absolute',
         width: 56,
