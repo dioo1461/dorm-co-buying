@@ -29,6 +29,7 @@ const Home: React.FC = (): React.JSX.Element => {
         'post7',
         'post8',
         'post9',
+        'post10'
     ])
     const flatListRef = useRef<FlatList>(null)
 
@@ -106,136 +107,74 @@ const Home: React.FC = (): React.JSX.Element => {
             </View>
         )
         if (board === 1) return (
-            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post1</Text></View>
-                <View style={styles.post_thumb}><Text>img1</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post2</Text></View>
-                <View style={styles.post_thumb}><Text>img2</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post3</Text></View>
-                <View style={styles.post_thumb}><Text>img3</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post4</Text></View>
-                <View style={styles.post_thumb}><Text>img4</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post5</Text></View>
-                <View style={styles.post_thumb}><Text>img5</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post6</Text></View>
-                <View style={styles.post_thumb}><Text>img6</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post7</Text></View>
-                <View style={styles.post_thumb}><Text>img7</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post8</Text></View>
-                <View style={styles.post_thumb}><Text>img8</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post9</Text></View>
-                <View style={styles.post_thumb}><Text>img9</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post10</Text></View>
-                <View style={styles.post_thumb}><Text>img10</Text></View>
-                </View>
-            </ScrollView>
+            <FlatList
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.post_list}
+                numColumns={3}
+            />
         )
         if (board === 2) return (
-            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post1</Text></View>
-                <View style={styles.post_thumb}><Text>img1</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post2</Text></View>
-                <View style={styles.post_thumb}><Text>img2</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post3</Text></View>
-                <View style={styles.post_thumb}><Text>img3</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post4</Text></View>
-                <View style={styles.post_thumb}><Text>img4</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post5</Text></View>
-                <View style={styles.post_thumb}><Text>img5</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post6</Text></View>
-                <View style={styles.post_thumb}><Text>img6</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post7</Text></View>
-                <View style={styles.post_thumb}><Text>img7</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post8</Text></View>
-                <View style={styles.post_thumb}><Text>img8</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post9</Text></View>
-                <View style={styles.post_thumb}><Text>img9</Text></View>
-                </View>
-                <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post10</Text></View>
-                <View style={styles.post_thumb}><Text>img10</Text></View>
-                </View>
-            </ScrollView>
+            <FlatList
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.post_list}
+                numColumns={3}
+            />
         )
         if (board === 3) return (
             <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post1</Text></View>
-                <View style={styles.post_thumb}><Text>img1</Text></View>
+                    <View style={styles.post_cont}><Text>post1</Text></View>
+                    <View style={styles.post_thumb}><Text>img1</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post2</Text></View>
-                <View style={styles.post_thumb}><Text>img2</Text></View>
+                    <View style={styles.post_cont}><Text>post2</Text></View>
+                    <View style={styles.post_thumb}><Text>img2</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post3</Text></View>
-                <View style={styles.post_thumb}><Text>img3</Text></View>
+                    <View style={styles.post_cont}><Text>post3</Text></View>
+                    <View style={styles.post_thumb}><Text>img3</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post4</Text></View>
-                <View style={styles.post_thumb}><Text>img4</Text></View>
+                    <View style={styles.post_cont}><Text>post4</Text></View>
+                    <View style={styles.post_thumb}><Text>img4</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post5</Text></View>
-                <View style={styles.post_thumb}><Text>img5</Text></View>
+                    <View style={styles.post_cont}><Text>post5</Text></View>
+                    <View style={styles.post_thumb}><Text>img5</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post6</Text></View>
-                <View style={styles.post_thumb}><Text>img6</Text></View>
+                    <View style={styles.post_cont}><Text>post6</Text></View>
+                    <View style={styles.post_thumb}><Text>img6</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post7</Text></View>
-                <View style={styles.post_thumb}><Text>img7</Text></View>
+                    <View style={styles.post_cont}><Text>post7</Text></View>
+                    <View style={styles.post_thumb}><Text>img7</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post8</Text></View>
-                <View style={styles.post_thumb}><Text>img8</Text></View>
+                    <View style={styles.post_cont}><Text>post8</Text></View>
+                    <View style={styles.post_thumb}><Text>img8</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post9</Text></View>
-                <View style={styles.post_thumb}><Text>img9</Text></View>
+                    <View style={styles.post_cont}><Text>post9</Text></View>
+                    <View style={styles.post_thumb}><Text>img9</Text></View>
                 </View>
                 <View style={styles.post_vert}>
-                <View style={styles.post_cont}><Text>post10</Text></View>
-                <View style={styles.post_thumb}><Text>img10</Text></View>
+                    <View style={styles.post_cont}><Text>post10</Text></View>
+                    <View style={styles.post_thumb}><Text>img10</Text></View>
                 </View>
-            </ScrollView>
+          </ScrollView> 
         )
         return null;
     }
@@ -310,25 +249,26 @@ const styles = StyleSheet.create({
     },
     post_list_vert:{
         backgroundColor: "white",
-      },
-      post_vert:{
+    },
+    post_vert:{
         height: SCREEN_HEIGHT/8,
         backgroundColor: "blue",
         flexDirection: "row",
-      },
-      post_cont:{
+    },
+    post_cont:{
         height: SCREEN_HEIGHT/8,
         width: (SCREEN_WIDTH)-(SCREEN_HEIGHT/8),
         backgroundColor: "white",
         justifyContent: "center",
-      },
-      post_thumb:{
+        paddingHorizontal: 20,
+    },
+    post_thumb:{
         height: SCREEN_HEIGHT/8,
         width: SCREEN_HEIGHT/8,
         backgroundColor: "gray",
         justifyContent: "center",
         alignItems: "center",
-      },
+    },
     fab: {
         position: 'absolute',
         width: 56,
