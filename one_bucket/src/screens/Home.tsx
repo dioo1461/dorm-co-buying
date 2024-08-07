@@ -34,7 +34,7 @@ const Home: React.FC = (): React.JSX.Element => {
     const flatListRef = useRef<FlatList>(null)
 
     const renderItem = ({ item }: { item: string }) => (
-        <View style={styles.post}>
+        <View style={styles.postBox}>
             <Text>{item}</Text>
         </View>
     )
@@ -56,7 +56,7 @@ const Home: React.FC = (): React.JSX.Element => {
     const showBoard = () => {
         if (board === 0) return (
             <View>
-                <View style={styles.title}>
+                <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             추천 거래글
                         </Text>
@@ -70,9 +70,9 @@ const Home: React.FC = (): React.JSX.Element => {
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.homePostlist}
                     />
-                    <View style={styles.title}>
+                    <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 참여한 거래글
                         </Text>
@@ -86,9 +86,9 @@ const Home: React.FC = (): React.JSX.Element => {
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.homePostlist}
                     />
-                    <View style={styles.title}>
+                    <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 쓴 거래글
                         </Text>
@@ -102,7 +102,7 @@ const Home: React.FC = (): React.JSX.Element => {
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.homePostlist}
                     />
             </View>
         )
@@ -115,7 +115,7 @@ const Home: React.FC = (): React.JSX.Element => {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.post_list}
+                contentContainerStyle={styles.homePostlist}
                 numColumns={3}
             />
         )
@@ -128,51 +128,51 @@ const Home: React.FC = (): React.JSX.Element => {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.post_list}
+                contentContainerStyle={styles.homePostlist}
                 numColumns={3}
             />
         )
         if (board === 3) return (
-            <ScrollView pagingEnabled contentContainerStyle={styles.post_list_vert}>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post1</Text></View>
-                    <View style={styles.post_thumb}><Text>img1</Text></View>
+            <ScrollView pagingEnabled contentContainerStyle={styles.freePostlist}>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post1</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img1</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post2</Text></View>
-                    <View style={styles.post_thumb}><Text>img2</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post2</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img2</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post3</Text></View>
-                    <View style={styles.post_thumb}><Text>img3</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post3</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img3</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post4</Text></View>
-                    <View style={styles.post_thumb}><Text>img4</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post4</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img4</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post5</Text></View>
-                    <View style={styles.post_thumb}><Text>img5</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post5</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img5</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post6</Text></View>
-                    <View style={styles.post_thumb}><Text>img6</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post6</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img6</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post7</Text></View>
-                    <View style={styles.post_thumb}><Text>img7</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post7</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img7</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post8</Text></View>
-                    <View style={styles.post_thumb}><Text>img8</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post8</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img8</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post9</Text></View>
-                    <View style={styles.post_thumb}><Text>img9</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post9</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img9</Text></View>
                 </View>
-                <View style={styles.post_vert}>
-                    <View style={styles.post_cont}><Text>post10</Text></View>
-                    <View style={styles.post_thumb}><Text>img10</Text></View>
+                <View style={styles.postVert}>
+                    <View style={styles.postVert_cont}><Text>post10</Text></View>
+                    <View style={styles.postVert_thumb}><Text>img10</Text></View>
                 </View>
           </ScrollView> 
         )
@@ -183,24 +183,24 @@ const Home: React.FC = (): React.JSX.Element => {
         <>
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
-                    <View style={styles.menu}>
+                    <View style={styles.upperMenuFrame}>
                         <TouchableOpacity onPress={home}>
-                            <View style={{...styles.menu_S, backgroundColor: board==0 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "yellow" : "white"}}>
                                 <Text>홈</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={trade}>
-                            <View style={{...styles.menu_S, backgroundColor: board==1 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "yellow" : "white"}}>
                                 <Text>거래게시판</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={used}>
-                            <View style={{...styles.menu_S, backgroundColor: board==2 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "yellow" : "white"}}>
                                 <Text>중고게시판</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
-                            <View style={{...styles.menu_S, backgroundColor: board==3 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==3 ? "yellow" : "white"}}>
                                 <Text>자유게시판</Text>
                             </View>
                         </TouchableOpacity>
@@ -220,49 +220,49 @@ const Home: React.FC = (): React.JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-    menu: {
+    upperMenuFrame: {
         height: 50,
         backgroundColor: 'gray',
         flexDirection: 'row',
     },
-    menu_S: {
+    upperMenu: {
         height: 50,
         width: SCREEN_WIDTH / 4,
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    title: {
+    homeTitle: {
         height: 30,
         backgroundColor: 'white',
         marginStart: 14,
     },
-    post_list: {
+    homePostlist: {
         backgroundColor: 'white',
     },
-    post: {
+    postBox: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 1.3,
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    post_list_vert:{
+    freePostlist:{
         backgroundColor: "white",
     },
-    post_vert:{
+    postVert:{
         height: SCREEN_HEIGHT/8,
         backgroundColor: "blue",
         flexDirection: "row",
     },
-    post_cont:{
+    postVert_cont:{
         height: SCREEN_HEIGHT/8,
         width: (SCREEN_WIDTH)-(SCREEN_HEIGHT/8),
         backgroundColor: "white",
         justifyContent: "center",
         paddingHorizontal: 20,
     },
-    post_thumb:{
+    postVert_thumb:{
         height: SCREEN_HEIGHT/8,
         width: SCREEN_HEIGHT/8,
         backgroundColor: "gray",
