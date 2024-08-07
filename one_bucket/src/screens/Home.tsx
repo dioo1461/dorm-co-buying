@@ -16,7 +16,6 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): React.JSX.Element => {
     
-    
     const navigation = useNavigation()
     const { themeColor } = useContext(AppContext)
     const [data, setData] = useState([
@@ -33,9 +32,29 @@ const Home: React.FC = (): React.JSX.Element => {
     ])
     const flatListRef = useRef<FlatList>(null)
 
-    const renderItem = ({ item }: { item: string }) => (
+    const renderItem_Box = ({ item }: { item: string }) => (
         <View style={styles.postBox}>
-            <Text>{item}</Text>
+            <View style={styles.postBox_thumbFrame}>
+                <View style={styles.postBox_thumb}>
+                    <Text>{item}</Text>
+                </View>
+            </View>
+            <View style={styles.postBox_cont}>
+                <Text>{item}</Text>
+            </View>
+        </View>
+    )
+
+    const renderItem_Horz = ({ item }: { item: string }) => (
+        <View style={styles.postHorz}>
+            <View style={styles.postHorz_cont}>
+                <Text>{item}</Text>
+            </View>
+            <View style={styles.postHorz_thumbFrame}>
+                <View style={styles.postHorz_thumb}>
+                    <Text>{item}</Text>
+                </View>
+            </View>
         </View>
     )
 
@@ -64,13 +83,13 @@ const Home: React.FC = (): React.JSX.Element => {
                     <FlatList
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.homePostlist}
+                        contentContainerStyle={styles.postList}
                     />
                     <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -80,13 +99,13 @@ const Home: React.FC = (): React.JSX.Element => {
                     <FlatList
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.homePostlist}
+                        contentContainerStyle={styles.postList}
                     />
                     <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
@@ -94,87 +113,60 @@ const Home: React.FC = (): React.JSX.Element => {
                         </Text>
                     </View>
                     <FlatList
+                        key={'home'}
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.homePostlist}
+                        contentContainerStyle={styles.postList}
                     />
             </View>
         )
         if (board === 1) return (
             <FlatList
+                key={'trade'}
                 ref={flatListRef}
                 data={data}
-                renderItem={renderItem}
+                renderItem={renderItem_Box}
                 keyExtractor={(item, index) => index.toString()}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.homePostlist}
+                contentContainerStyle={styles.postList}
                 numColumns={3}
             />
         )
         if (board === 2) return (
             <FlatList
+                key={'used'}    
                 ref={flatListRef}
                 data={data}
-                renderItem={renderItem}
+                renderItem={renderItem_Box}
                 keyExtractor={(item, index) => index.toString()}
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.homePostlist}
+                contentContainerStyle={styles.postList}
                 numColumns={3}
             />
         )
         if (board === 3) return (
-            <ScrollView pagingEnabled contentContainerStyle={styles.freePostlist}>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post1</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img1</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post2</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img2</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post3</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img3</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post4</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img4</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post5</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img5</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post6</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img6</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post7</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img7</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post8</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img8</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post9</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img9</Text></View>
-                </View>
-                <View style={styles.postVert}>
-                    <View style={styles.postVert_cont}><Text>post10</Text></View>
-                    <View style={styles.postVert_thumb}><Text>img10</Text></View>
-                </View>
-          </ScrollView> 
+            <FlatList
+                key={'free'}
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem_Horz}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.postList}
+                numColumns={1}
+            /> 
         )
         return null;
     }
@@ -237,37 +229,63 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginStart: 14,
     },
-    homePostlist: {
+    postList: {
         backgroundColor: 'white',
     },
     postBox: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 1.3,
-        backgroundColor: 'white',
-        justifyContent: 'center',
+        backgroundColor: 'blue',
         alignItems: 'center',
     },
-    freePostlist:{
+    postBox_thumbFrame:{
+        width: SCREEN_WIDTH / 3,
+        height: SCREEN_WIDTH / 3,
+        backgroundColor: 'white',
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    postBox_thumb:{
+        width: (SCREEN_WIDTH / 3) - 5,
+        height: (SCREEN_WIDTH / 3) - 5,
+        backgroundColor: 'white',
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        borderWidth: 0.5,
+    },
+    postBox_cont:{
+        width: SCREEN_WIDTH / 3,
+        height: (SCREEN_WIDTH / 3) * 0.3,
         backgroundColor: "white",
     },
-    postVert:{
+    postHorz:{
         height: SCREEN_HEIGHT/8,
-        backgroundColor: "blue",
+        backgroundColor: "white",
         flexDirection: "row",
     },
-    postVert_cont:{
+    postHorz_cont:{
         height: SCREEN_HEIGHT/8,
         width: (SCREEN_WIDTH)-(SCREEN_HEIGHT/8),
         backgroundColor: "white",
         justifyContent: "center",
         paddingHorizontal: 20,
     },
-    postVert_thumb:{
+    postHorz_thumbFrame:{
         height: SCREEN_HEIGHT/8,
         width: SCREEN_HEIGHT/8,
-        backgroundColor: "gray",
+        backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
+    },
+    postHorz_thumb:{
+        height: SCREEN_HEIGHT/8-5,
+        width: SCREEN_HEIGHT/8-5,
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        borderWidth: 0.5,
     },
     fab: {
         position: 'absolute',
