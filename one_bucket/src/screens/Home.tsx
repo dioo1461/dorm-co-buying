@@ -38,6 +38,9 @@ const Home: React.FC = (): React.JSX.Element => {
                 <View style={styles.postBox_thumb}>
                     <Text>{item}</Text>
                 </View>
+                <View style={styles.postBox_part}>
+                    <Text>0/0</Text>
+                </View>
             </View>
             <View style={styles.postBox_cont}>
                 <Text>{item}</Text>
@@ -177,22 +180,22 @@ const Home: React.FC = (): React.JSX.Element => {
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
                     <View style={styles.upperMenuFrame}>
                         <TouchableOpacity onPress={home}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "lightblue" : "white"}}>
                                 <Text>홈</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={trade}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "lightblue" : "white"}}>
                                 <Text>거래게시판</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={used}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "lightblue" : "white"}}>
                                 <Text>중고게시판</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==3 ? "yellow" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==3 ? "lightblue" : "white"}}>
                                 <Text>자유게시판</Text>
                             </View>
                         </TouchableOpacity>
@@ -223,6 +226,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
+        borderBottomWidth: 0.5,
     },
     homeTitle: {
         height: 30,
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     postBox: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 1.3,
-        backgroundColor: 'blue',
+        backgroundColor: 'white',
         alignItems: 'center',
     },
     postBox_thumbFrame:{
@@ -248,11 +252,22 @@ const styles = StyleSheet.create({
     postBox_thumb:{
         width: (SCREEN_WIDTH / 3) - 5,
         height: (SCREEN_WIDTH / 3) - 5,
-        backgroundColor: 'white',
+        backgroundColor: 'lightgray',
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 10,
-        borderWidth: 0.5,
+        borderWidth: 0,
+    },
+    postBox_part:{
+        width: 50,
+        height: 20,
+        marginTop: -20,
+        marginLeft: (SCREEN_WIDTH / 6) + 10,
+        backgroundColor: "lightblue",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 5,
+        borderWidth: 0.3,
     },
     postBox_cont:{
         width: SCREEN_WIDTH / 3,
@@ -260,32 +275,32 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
     },
     postHorz:{
-        height: SCREEN_HEIGHT/8,
+        height: SCREEN_HEIGHT / 8,
         backgroundColor: "white",
         flexDirection: "row",
     },
     postHorz_cont:{
-        height: SCREEN_HEIGHT/8,
-        width: (SCREEN_WIDTH)-(SCREEN_HEIGHT/8),
+        height: SCREEN_HEIGHT / 8,
+        width: (SCREEN_WIDTH) - (SCREEN_HEIGHT / 8),
         backgroundColor: "white",
         justifyContent: "center",
         paddingHorizontal: 20,
     },
     postHorz_thumbFrame:{
-        height: SCREEN_HEIGHT/8,
-        width: SCREEN_HEIGHT/8,
+        height: SCREEN_HEIGHT / 8,
+        width: SCREEN_HEIGHT / 8,
         backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
     },
     postHorz_thumb:{
-        height: SCREEN_HEIGHT/8-5,
-        width: SCREEN_HEIGHT/8-5,
-        backgroundColor: "white",
+        height: (SCREEN_HEIGHT / 8) - 5,
+        width: (SCREEN_HEIGHT / 8) - 5,
+        backgroundColor: "lightgray",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 10,
-        borderWidth: 0.5,
+        borderWidth: 0,
     },
     fab: {
         position: 'absolute',
