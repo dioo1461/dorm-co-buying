@@ -39,7 +39,7 @@ const Home: React.FC = (): React.JSX.Element => {
                     <Text>{item}</Text>
                 </View>
                 <View style={styles.postBox_part}>
-                    <Text>0/0</Text>
+                    <Text>0/10</Text>
                 </View>
             </View>
             <View style={styles.postBox_cont}>
@@ -178,7 +178,7 @@ const Home: React.FC = (): React.JSX.Element => {
         <>
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
-                    <View style={styles.upperMenuFrame}>
+                    <View style={styles.upperFrame}>
                         <TouchableOpacity onPress={home}>
                             <View style={{...styles.upperMenu, backgroundColor: board==0 ? "lightblue" : "white"}}>
                                 <Text>홈</Text>
@@ -186,12 +186,12 @@ const Home: React.FC = (): React.JSX.Element => {
                         </TouchableOpacity>
                         <TouchableOpacity onPress={trade}>
                             <View style={{...styles.upperMenu, backgroundColor: board==1 ? "lightblue" : "white"}}>
-                                <Text>거래게시판</Text>
+                                <Text>공동구매</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={used}>
                             <View style={{...styles.upperMenu, backgroundColor: board==2 ? "lightblue" : "white"}}>
-                                <Text>중고게시판</Text>
+                                <Text>중고거래</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
@@ -215,9 +215,9 @@ const Home: React.FC = (): React.JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-    upperMenuFrame: {
+    upperFrame: {
         height: 50,
-        backgroundColor: 'gray',
+        backgroundColor: 'white',
         flexDirection: 'row',
     },
     upperMenu: {
@@ -273,6 +273,7 @@ const styles = StyleSheet.create({
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 0.3,
         backgroundColor: "white",
+        paddingHorizontal: 10,
     },
     postHorz:{
         height: SCREEN_HEIGHT / 8,
