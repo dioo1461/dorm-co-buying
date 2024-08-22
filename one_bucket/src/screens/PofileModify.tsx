@@ -1,6 +1,5 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors } from '@/constants/colors'
-import { Gender } from '@/data/response/GetProfileResponse'
 import {
     queryGetMemberInfo,
     queryGetProfile,
@@ -10,7 +9,6 @@ import React from 'react'
 import {
     ActivityIndicator,
     Image,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -72,64 +70,11 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     />
                 </TouchableOpacity>
             </View>
-            <View style={styles.headerContainer}>
-                <View style={styles.profileImageContainer}>
-                    <Image
-                        source={require('@/assets/drawable/vector.png')}
-                        style={styles.profileImage}
-                    />
-                    <Text style={styles.nicknameText}>
-                        {memberInfoData![0].nickname}
-                    </Text>
-                </View>
-                <View style={styles.bioContainer}>
-                    <Image
-                        source={require('@/assets/drawable/postit.png')}
-                        style={styles.bioImage}
-                    />
-                    <ScrollView
-                        style={styles.bioTextScrollView}
-                        showsVerticalScrollIndicator={false}>
-                        <Text style={styles.bioText}>
-                            ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
-                        </Text>
-                    </ScrollView>
-                </View>
-            </View>
-            <View style={styles.profilesContainer}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View>
-                        <Text style={styles.profileLabel}>이름</Text>
-                        <Text style={styles.profileContext}>
-                            {profileData!.name}
-                        </Text>
-                        <Text style={styles.profileLabel}>성별</Text>
-                        <Text style={styles.profileContext}>
-                            {Gender[profileData!.gender]}
-                        </Text>
-                        <Text style={styles.profileLabel}>생년월일</Text>
-                        <Text style={styles.profileContext}>
-                            {profileData!.birth}
-                        </Text>
-                        <Text style={styles.profileLabel}>학교명</Text>
-                        <Text style={styles.profileContext}>홍대</Text>
-                        <Text style={styles.profileLabel}>학부</Text>
-                        <Text style={styles.profileContext}>ㅎㅇ</Text>
-                        <Text style={styles.profileLabel}>가입한 날짜</Text>
-                        <Text style={styles.profileContext}>
-                            {formattedCreateDate}
-                        </Text>
-                    </View>
-                </ScrollView>
-            </View>
-            <View style={styles.profileModifyButtonContainer}>
-                <TouchableOpacity
-                    style={styles.profileModifyButton}
-                    onPress={onProfileModifyButtonClick}>
-                    <Text style={styles.profileModifyButtonText}>
-                        프로필 변경
-                    </Text>
-                </TouchableOpacity>
+            <View>
+                <Image
+                    source={require('@/assets/drawable/vector.png')}
+                    style={styles.profileImage}
+                />
             </View>
         </View>
     )
