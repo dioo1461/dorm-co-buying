@@ -93,6 +93,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1 }}
                     style={styles.imageScrollViewContainer}>
                     {imageUriList.map((uri, index) => (
                         <View key={index} style={styles.imageContainer}>
