@@ -21,6 +21,7 @@ import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { useProfileStore } from '@/hooks/useStore/useProfileStore'
+import ProfileModify from '@/screens/PofileModify'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Login from '@/screens/auth/Login'
@@ -152,6 +153,7 @@ function App(): React.JSX.Element {
                     }
                 })
                 .catch(error => {
+                    setIsLoggedIn(false)
                     if (
                         error.response.status === 401 ||
                         error.response.status === 403
@@ -219,6 +221,11 @@ function App(): React.JSX.Element {
                                 <Stack.Screen
                                     name={strings.profileDetailsScreenName}
                                     component={ProfileDetails}
+                                    options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                    name={strings.profileModifyScreenName}
+                                    component={ProfileModify}
                                     options={{ headerShown: false }}
                                 />
                             </Stack.Navigator>

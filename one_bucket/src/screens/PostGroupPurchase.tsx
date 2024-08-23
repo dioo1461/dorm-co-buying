@@ -1,3 +1,4 @@
+import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors } from '@/constants/colors'
@@ -22,6 +23,7 @@ import {
 
 const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     const [imageUri, setImageUri] = useState<string | null>(null)
+    const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [item, setItem] = useState('')
     const [price, setPrice] = useState('')
@@ -42,21 +44,25 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
 
     const navigation = useNavigation()
 
-    const selectImage = () => {
+    const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
-            selectionLimit: 1,
+            selectionLimit: 10 - imageUriList.length,
         }
 
         launchImageLibrary(options, response => {
-            if (
-                response.assets &&
-                response.assets.length > 0 &&
-                response.assets[0].uri
-            ) {
-                setImageUri(response.assets[0].uri)
-            }
+            response.assets?.forEach(asset => {
+                if (asset.uri) {
+                    setImageUriList([...imageUriList, asset.uri])
+                }
+            })
         })
+    }
+
+    const deleteImage = (index: number) => {
+        const newImageUriList = [...imageUriList]
+        newImageUriList.splice(index, 1)
+        setImageUriList(newImageUriList)
     }
 
     const onPeopleCountManualInputPress = () => {
@@ -81,24 +87,37 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <ScrollView
                 ref={scrollViewRef}
-                style={styles.scrollViewContainer}
+                style={styles.mainScrollViewContainer}
                 showsVerticalScrollIndicator={false}>
                 {/* ### 제품 이미지 ### */}
-                <TouchableOpacity
-                    style={styles.imageUploader}
-                    onPress={selectImage}>
-                    {imageUri ? (
-                        <Image
-                            source={{ uri: imageUri }}
-                            style={styles.image}
-                        />
-                    ) : (
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.imageScrollViewContainer}>
+                    {imageUriList.map((uri, index) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <TouchableOpacity>
+                                <Image
+                                    source={{ uri: uri }}
+                                    style={styles.image}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => deleteImage(index)}>
+                                <CloseButton />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                    <TouchableOpacity
+                        style={styles.imageUploader}
+                        onPress={addImage}>
                         <View style={styles.imagePlaceholder}>
                             <IcPhotoAdd />
                             <Text>0/10</Text>
                         </View>
-                    )}
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </ScrollView>
 
                 {/* ### 사이트 링크 ### */}
                 <View style={styles.labelContainer}>
@@ -332,7 +351,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
 
                 {/* ### 추가 설명 ### */}
                 <View style={styles.labelContainer}>
-                    <Text style={styles.label}>추가 설명</Text>
+                    <Text style={styles.label}>설명</Text>
                 </View>
                 <TextInput
                     style={[styles.textInput, styles.descriptionTextInput]}
@@ -361,39 +380,53 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    scrollViewContainer: {
+    mainScrollViewContainer: {
         margin: 16,
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 16,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
+    imageScrollViewContainer: {
+        height: 82,
+        marginBottom: 16,
     },
     tempSave: {
         color: '#003366',
     },
-    imageUploader: {
-        height: 200,
+    imageContainer: {
+        position: 'relative',
+        width: 72,
+        height: 72,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
+        marginEnd: 14,
+        marginTop: 10,
+    },
+    image: {
+        width: 72,
+        height: 72,
+        borderRadius: 8,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: -10,
+        right: -10,
+    },
+    imageUploader: {
+        width: 72,
+        height: 72,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
     },
     imagePlaceholder: {
         justifyContent: 'center',
         alignItems: 'center',
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8,
-    },
+
     labelContainer: {
         flexDirection: 'row',
         marginTop: 16,
