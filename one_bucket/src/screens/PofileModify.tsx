@@ -1,13 +1,15 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import { baseColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import {
     queryGetMemberInfo,
     queryGetProfile,
 } from '@/hooks/useQuery/profileQuery'
 import { useNavigation } from '@react-navigation/native'
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import {
     ActivityIndicator,
+    Appearance,
     Image,
     StyleSheet,
     Text,
@@ -16,6 +18,19 @@ import {
 } from 'react-native'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+
     const navigation = useNavigation()
 
     const {
@@ -80,106 +95,107 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        backgroundColor: 'white',
-    },
-    backButtonContainer: {
-        flex: 1,
-        marginTop: 10,
-    },
-    backButtonImage: {
-        width: 24,
-        height: 24,
-    },
-    headerContainer: {
-        flex: 3,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-    },
-    profileImageContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    profileImage: {
-        width: 84,
-        height: 96,
-        backgroundColor: 'gray',
-        borderRadius: 50,
-    },
-    nicknameText: {
-        fontFamily: 'NanumGothic-Bold',
-        fontSize: 18,
-        color: 'black',
-        marginTop: 16,
-    },
-    bioContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    bioImage: {
-        width: 159,
-        height: 192,
-    },
-    bioTextScrollView: {
-        position: 'absolute',
-        top: 4,
-        left: 16,
-        width: '80%',
-        height: '100%',
-    },
-    bioText: {
-        fontFamily: 'NanumGothic',
-        fontSize: 14,
-        color: 'black',
-    },
-    profilesContainer: {
-        flex: 8,
-        backgroundColor: 'white',
-        padding: 10,
-        marginHorizontal: 16,
-        borderRadius: 8,
-        elevation: 3,
-    },
-    profileLabel: {
-        fontSize: 16,
-        color: 'black',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 10,
-    },
-    profileContext: {
-        fontSize: 18,
-        color: 'black',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 10,
-        marginBottom: 16,
-        marginStart: 12,
-    },
-    profileModifyButtonContainer: {
-        flex: 2,
-        justifyContent: 'center',
-    },
-    profileModifyButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: baseColors.SCHOOL_BG,
-        borderRadius: 8,
-        paddingVertical: 16,
-        marginHorizontal: 4,
-    },
-    profileModifyButtonText: {
-        color: 'white',
-        fontSize: 14,
-        fontFamily: 'NanumGothic',
-        marginEnd: 6,
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            paddingHorizontal: 16,
+            paddingTop: 20,
+            backgroundColor: 'white',
+        },
+        backButtonContainer: {
+            flex: 1,
+            marginTop: 10,
+        },
+        backButtonImage: {
+            width: 24,
+            height: 24,
+        },
+        headerContainer: {
+            flex: 3,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+        },
+        profileImageContainer: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        profileImage: {
+            backgroundColor: 'black',
+            width: 84,
+            height: 96,
+            borderRadius: 50,
+        },
+        nicknameText: {
+            color: theme.BG,
+            fontFamily: 'NanumGothic-Bold',
+            fontSize: 18,
+            marginTop: 16,
+        },
+        bioContainer: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        bioImage: {
+            width: 159,
+            height: 192,
+        },
+        bioTextScrollView: {
+            position: 'absolute',
+            top: 4,
+            left: 16,
+            width: '80%',
+            height: '100%',
+        },
+        bioText: {
+            color: theme.BG,
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+        },
+        profilesContainer: {
+            backgroundColor: theme.BG,
+            flex: 8,
+            padding: 10,
+            marginHorizontal: 16,
+            borderRadius: 8,
+            elevation: 3,
+        },
+        profileLabel: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 10,
+        },
+        profileContext: {
+            color: theme.TEXT,
+            fontSize: 18,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 10,
+            marginBottom: 16,
+            marginStart: 12,
+        },
+        profileModifyButtonContainer: {
+            flex: 2,
+            justifyContent: 'center',
+        },
+        profileModifyButton: {
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: baseColors.SCHOOL_BG,
+            borderRadius: 8,
+            paddingVertical: 16,
+            marginHorizontal: 4,
+        },
+        profileModifyButtonText: {
+            color: 'white',
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+            marginEnd: 6,
+        },
+    })
 
 export default ProfileDetails

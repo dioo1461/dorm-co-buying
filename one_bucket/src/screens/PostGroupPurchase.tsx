@@ -1,11 +1,13 @@
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { baseColors } from '@/constants/colors'
+import { baseColors, darkColors, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/useContext/AppContext'
 import CheckBox from '@react-native-community/checkbox'
 import { useNavigation } from '@react-navigation/native'
-import React, { useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
+    Appearance,
     Image,
     KeyboardAvoidingView,
     Platform,
@@ -22,6 +24,17 @@ import {
 } from 'react-native-image-picker'
 
 const PostGroupPurchase: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
     const [imageUri, setImageUri] = useState<string | null>(null)
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
@@ -115,7 +128,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                         onPress={addImage}>
                         <View style={styles.imagePlaceholder}>
                             <IcPhotoAdd />
-                            <Text>0/10</Text>
+                            <Text>{`${imageUriList.length}/10`}</Text>
                         </View>
                     </TouchableOpacity>
                 </ScrollView>
@@ -427,7 +440,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-
     labelContainer: {
         flexDirection: 'row',
         marginTop: 16,

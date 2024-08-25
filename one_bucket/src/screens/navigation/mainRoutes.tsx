@@ -3,22 +3,33 @@
  * https://webruden.tistory.com/186
  */
 
+import IcSetting from '@/assets/drawable/ic-setting.svg'
+import IcTabChatActive from '@/assets/drawable/tab/ic-tab-chat-active.svg'
+import IcTabChatInactive from '@/assets/drawable/tab/ic-tab-chat-inactive.svg'
+import IcTabHomeActive from '@/assets/drawable/tab/ic-tab-home-active.svg'
+import IcTabHomeInactive from '@/assets/drawable/tab/ic-tab-home-inactive.svg'
+
+import IcTabProfileActive from '@/assets/drawable/tab/ic-tab-profile-active.svg'
+import IcTabProfileInactive from '@/assets/drawable/tab/ic-tab-profile-inactive.svg'
+import IcMenu from '@/assets/mipmap/tab/ic-menu.svg'
+import IcNotification from '@/assets/mipmap/tab/ic-notification.svg'
+import IcOther from '@/assets/mipmap/tab/ic-other.svg'
+import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
-import IcSetting from 'assets/drawable/ic-setting.svg'
-import IcMenu from 'assets/mipmap/tab/ic-menu.svg'
-import IcNotification from 'assets/mipmap/tab/ic-notification.svg'
-import IcOther from 'assets/mipmap/tab/ic-other.svg'
 import { StyleSheet, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Chat from 'screens/Chat'
 import Home from 'screens/Home'
 import Mypage from 'screens/Mypage'
+
 export const mainRoutes = [
     {
         name: strings.homeScreenName,
         component: Home,
-        inactiveIcon: require('assets/mipmap/tab/icon_home_inactive.png'),
-        activeIcon: require('assets/mipmap/tab/icon_home_active.png'),
+        activeIconLight: <IcTabHomeActive fill={baseColors.SCHOOL_BG} />,
+        inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,
+        activeIconDark: <IcTabHomeActive fill={baseColors.WHITE} />,
+        inactiveIconDark: <IcTabHomeInactive fill={baseColors.WHITE} />,
         headerRight: () => (
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
@@ -45,8 +56,10 @@ export const mainRoutes = [
     {
         name: strings.chatScreenName,
         component: Chat,
-        inactiveIcon: require('assets/mipmap/tab/icon_chat_inactive.png'),
-        activeIcon: require('assets/mipmap/tab/icon_chat_active.png'),
+        activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
+        inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,
+        activeIconDark: <IcTabChatActive fill={baseColors.WHITE} />,
+        inactiveIconDark: <IcTabChatInactive fill={baseColors.WHITE} />,
         headerRight: () => (
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
@@ -64,8 +77,10 @@ export const mainRoutes = [
     {
         name: strings.myPageScreenName,
         component: Mypage,
-        inactiveIcon: require('assets/mipmap/tab/icon_mypage_inactive.png'),
-        activeIcon: require('assets/mipmap/tab/icon_mypage_active.png'),
+        activeIconLight: <IcTabProfileActive fill={baseColors.SCHOOL_BG} />,
+        inactiveIconLight: <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />,
+        activeIconDark: <IcTabProfileActive fill={baseColors.WHITE} />,
+        inactiveIconDark: <IcTabProfileInactive fill={baseColors.WHITE} />,
         headerRight: () => (
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity

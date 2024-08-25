@@ -6,16 +6,10 @@
  */
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import {
-    Image,
-    Text,
-    TouchableOpacity,
-    useColorScheme,
-    View,
-} from 'react-native'
+import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
@@ -33,7 +27,7 @@ import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
 import { removeAccessToken } from '@/utils/accessTokenMethods'
-import { darkColors, lightColors } from 'constants/colors'
+import { darkColors, Icolor, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -43,37 +37,45 @@ const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
 function App(): React.JSX.Element {
+    // key를 통해 테마 변경 시 리렌더링
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const isDarkMode = useColorScheme() === 'dark'
-    const themeColor = isDarkMode ? darkColors : lightColors
+
+    const [themeColor, setThemeColor] = useState<Icolor>(
+        isDarkMode ? darkColors : lightColors,
+    )
     const queryClient = new QueryClient()
 
     const MainScreen: React.FC = () => {
         return (
-            <Tab.Navigator initialRouteName='Home'>
+            <Tab.Navigator
+                initialRouteName='Home'
+                screenOptions={{
+                    tabBarStyle: {
+                        backgroundColor: themeColor.BG,
+                    },
+                    headerStyle: {
+                        backgroundColor: themeColor.HEADER_BG,
+                    },
+                }}>
                 {mainRoutes.map(route => (
                     <Tab.Screen
                         key={`screen-${route.name}`}
                         name={route.name}
                         component={route.component}
                         options={{
-                            headerStyle: {
-                                backgroundColor: themeColor.ICON_BG,
-                            },
                             headerRight: route.headerRight,
-                            headerTintColor: themeColor.ICON_TEXT,
+                            headerTintColor: themeColor.HEADER_TEXT,
                             tabBarIcon: ({ focused }) => {
-                                return (
-                                    <Image
-                                        testID={`tabIcon-${route.name}`}
-                                        source={
-                                            focused
-                                                ? route.activeIcon
-                                                : route.inactiveIcon
-                                        }
-                                        style={{ width: 20, height: 20 }}
-                                    />
-                                )
+                                if (themeColor === lightColors) {
+                                    return focused
+                                        ? route.activeIconLight
+                                        : route.inactiveIconLight
+                                } else {
+                                    return focused
+                                        ? route.activeIconDark
+                                        : route.inactiveIconDark
+                                }
                             },
                         }}
                     />
@@ -147,7 +149,6 @@ function App(): React.JSX.Element {
                 .then(response => {
                     if (response) {
                         setIsLoggedIn(true)
-
                         // memberInfo를 profileStore에 저장
                         useProfileStore.setState({ memberInfo: response })
                     }
@@ -186,9 +187,10 @@ function App(): React.JSX.Element {
                         onSignUpSuccess,
                         onSignUpFailure,
                         themeColor,
+                        setThemeColor,
                     }}>
                     {isLoggedIn ? (
-                        <NavigationContainer theme={navTheme}>
+                        <NavigationContainer>
                             <Stack.Navigator>
                                 <Stack.Screen
                                     name='Main'
@@ -198,9 +200,10 @@ function App(): React.JSX.Element {
                                 <Stack.Screen
                                     options={{
                                         headerStyle: {
-                                            backgroundColor: themeColor.ICON_BG,
+                                            backgroundColor:
+                                                themeColor.BUTTON_BG,
                                         },
-                                        headerTintColor: themeColor.ICON_TEXT,
+                                        headerTintColor: themeColor.BUTTON_TEXT,
                                         headerRight: () => (
                                             <View>
                                                 <TouchableOpacity>
@@ -231,7 +234,7 @@ function App(): React.JSX.Element {
                             </Stack.Navigator>
                         </NavigationContainer>
                     ) : (
-                        <NavigationContainer theme={navTheme}>
+                        <NavigationContainer>
                             <Stack.Navigator
                                 screenOptions={{ headerShown: false }}
                                 initialRouteName={strings.loginScreenName}>
@@ -281,12 +284,12 @@ function App(): React.JSX.Element {
     )
 }
 
-const navTheme = {
-    ...DefaultTheme,
-    colors: {
-        ...DefaultTheme.colors,
-        background: 'white',
-    },
-}
+// const navTheme = {
+//     ...DefaultTheme,
+//     colors: {
+//         ...DefaultTheme.colors,
+//         background: 'white',
+//     },
+// }
 
 export default App

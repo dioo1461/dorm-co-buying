@@ -1,11 +1,13 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors, lightColors } from '@/constants/colors'
-import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { darkColors, Icolor, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
     Alert,
+    Appearance,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,6 +17,19 @@ import {
 } from 'react-native'
 
 const SignUp3: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
     const navigation = useNavigation()
     const [schoolEmail, setSchoolEmail] = useState('')
 
@@ -47,7 +62,7 @@ const SignUp3: React.FC = (): React.JSX.Element => {
                         navigation.goBack()
                     }}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft fill={baseColors.GRAY_1} />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View style={signUpStyles.headerContainer}>
@@ -64,10 +79,11 @@ const SignUp3: React.FC = (): React.JSX.Element => {
                     학교 이메일 주소 입력
                 </Text>
                 <TextInput
-                    style={styles.input}
+                    style={styles.textInput}
                     onChangeText={handleSchoolEmailChange}
                     value={schoolEmail}
                     placeholder='B912345@mail.hongik.ac.kr'
+                    placeholderTextColor={themeColor.TEXT_SECONDARY}
                     keyboardType='email-address'
                     autoFocus={true}
                 />
@@ -81,32 +97,35 @@ const SignUp3: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    schoolEmailLabel: {
-        fontSize: 18,
-        color: 'black',
-        alignSelf: 'center',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 30,
-        marginBottom: 10,
-    },
-    input: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
-        paddingBottom: 4,
-        fontSize: 16,
-        marginBottom: 30,
-    },
-    button: {
-        backgroundColor: lightColors.ICON_BG,
-        paddingVertical: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        schoolEmailLabel: {
+            fontSize: 18,
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic-Bold',
+            alignSelf: 'center',
+            marginTop: 30,
+            marginBottom: 10,
+        },
+        textInput: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic',
+            borderBottomWidth: 1,
+            borderBottomColor: 'gray',
+            paddingBottom: 4,
+            marginBottom: 30,
+        },
+        button: {
+            backgroundColor: theme.BUTTON_BG,
+            paddingVertical: 15,
+            borderRadius: 5,
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
+        },
+    })
 
 export default SignUp3
