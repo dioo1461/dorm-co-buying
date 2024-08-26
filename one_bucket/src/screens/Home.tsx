@@ -1,8 +1,10 @@
+import { darkColors, lightColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
+    Appearance,
     Dimensions,
     FlatList,
     ScrollView,
@@ -15,9 +17,7 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): React.JSX.Element => {
-    
     const navigation = useNavigation()
-    const { themeColor } = useContext(AppContext)
     const [data, setData] = useState([
         'post1',
         'post2',
@@ -28,7 +28,7 @@ const Home: React.FC = (): React.JSX.Element => {
         'post7',
         'post8',
         'post9',
-        'post10'
+        'post10',
     ])
     const flatListRef = useRef<FlatList>(null)
 
@@ -69,11 +69,11 @@ const Home: React.FC = (): React.JSX.Element => {
         }
     }
 
-    const [board, setBoard] = useState(0);
-    const home = () => setBoard(0);
-    const trade = () => setBoard(1);
-    const used = () => setBoard(2);
-    const free = () => setBoard(3);
+    const [board, setBoard] = useState(0)
+    const home = () => setBoard(0)
+    const trade = () => setBoard(1)
+    const used = () => setBoard(2)
+    const free = () => setBoard(3)
 
     const showBoard = () => {
         if (board === 0) return (
@@ -172,6 +172,7 @@ const Home: React.FC = (): React.JSX.Element => {
             /> 
         )
         return null;
+
     }
 
     return (
@@ -181,6 +182,7 @@ const Home: React.FC = (): React.JSX.Element => {
                     <View style={styles.upperFrame}>
                         <TouchableOpacity onPress={home}>
                             <View style={{...styles.upperMenu, backgroundColor: board==0 ? "lightblue" : "white"}}>
+
                                 <Text>홈</Text>
                             </View>
                         </TouchableOpacity>
@@ -196,6 +198,7 @@ const Home: React.FC = (): React.JSX.Element => {
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
                             <View style={{...styles.upperMenu, backgroundColor: board==3 ? "lightblue" : "white"}}>
+
                                 <Text>자유게시판</Text>
                             </View>
                         </TouchableOpacity>
@@ -204,7 +207,7 @@ const Home: React.FC = (): React.JSX.Element => {
                 </View>
             </View>
             <TouchableOpacity
-                style={[styles.fab, { backgroundColor: themeColor.ICON_BG }]}
+                style={[styles.fab, { backgroundColor: themeColor.BUTTON_BG }]}
                 onPress={() =>
                     navigation.navigate(strings.postGroupPurchaseScreenName)
                 }>

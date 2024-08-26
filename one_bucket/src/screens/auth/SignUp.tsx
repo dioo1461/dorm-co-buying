@@ -1,10 +1,12 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors, lightColors } from '@/constants/colors'
-import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { darkColors, Icolor, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
     Alert,
+    Appearance,
     StyleSheet,
     Text,
     TextInput,
@@ -13,8 +15,21 @@ import {
 } from 'react-native'
 
 const SignUp: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
     const navigation = useNavigation()
     const [phoneNumber, setPhoneNumber] = useState('')
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
 
     const handlePhoneNumberChange = (text: string) => {
         const cleaned = text.replaceAll(/[^0-9]/g, '') // Remove non-numeric characters
@@ -62,7 +77,7 @@ const SignUp: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft fill={baseColors.GRAY_1} />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View style={signUpStyles.headerContainer}>
@@ -77,7 +92,8 @@ const SignUp: React.FC = (): React.JSX.Element => {
             <View>
                 <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
                 <TextInput
-                    style={styles.input}
+                    style={styles.inputText}
+                    placeholderTextColor={themeColor.TEXT_SECONDARY}
                     onChangeText={handlePhoneNumberChange}
                     value={phoneNumber}
                     placeholder="'-' 없이 입력"
@@ -93,33 +109,36 @@ const SignUp: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    phoneLabel: {
-        fontSize: 18,
-        color: 'black',
-        alignSelf: 'center',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 30,
-        marginBottom: 10,
-    },
-    input: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
-        paddingBottom: 8,
-        fontSize: 20,
-        textAlign: 'center',
-        marginBottom: 30,
-    },
-    button: {
-        backgroundColor: lightColors.ICON_BG,
-        paddingVertical: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        phoneLabel: {
+            color: theme.TEXT,
+            fontSize: 18,
+            alignSelf: 'center',
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 30,
+            marginBottom: 10,
+        },
+        inputText: {
+            color: theme.TEXT,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.BORDER,
+            paddingBottom: 8,
+            fontSize: 16,
+            fontFamily: 'NanumGothic',
+            textAlign: 'center',
+            marginBottom: 30,
+        },
+        button: {
+            backgroundColor: theme.BUTTON_BG,
+            paddingVertical: 15,
+            borderRadius: 5,
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
+        },
+    })
 
 export default SignUp

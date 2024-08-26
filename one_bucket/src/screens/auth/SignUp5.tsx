@@ -1,18 +1,19 @@
 import { postSignupForm, requestLogin } from '@/apis/authService'
 import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
 import { LoginRequestBody } from '@/data/request/loginRequestBody'
 import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { setAccessToken } from '@/utils/accessTokenMethods'
 import { StringFilter } from '@/utils/StringFilter'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     Alert,
+    Appearance,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -24,6 +25,20 @@ import {
 } from 'react-native'
 import { ScreenWidth } from 'react-native-elements/dist/helpers'
 const SignUp5: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
+
     const { onSignUpFailure } = useContext(AppContext)
     const navigation = useNavigation()
     const [email, setEmail] = useState('')
@@ -157,159 +172,175 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={signUpStyles.container}
-            behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
-            <View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.goBack()
-                        navigation.goBack()
-                    }}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft fill={baseColors.GRAY_1} />
-                </TouchableOpacity>
-            </View>
-            <View>
-                <View style={signUpStyles.headerContainer}>
-                    <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                    <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
-                    <Text style={signUpStyles.currentStep}>
-                        3. 인증 정보 설정
-                    </Text>
-                    <Text style={signUpStyles.title}>
-                        {`로그인 시 사용할 인증 정보를 설정해 주세요.`}
-                    </Text>
-                    <Text style={signUpStyles.subStep}>
-                        4. 프로필 정보 입력
-                    </Text>
+        <View style={signUpStyles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'position'}>
+                <View>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.goBack()
+                            navigation.goBack()
+                        }}
+                        style={signUpStyles.backButton}>
+                        <IcArrowLeft />
+                    </TouchableOpacity>
                 </View>
                 <View>
-                    <Text style={styles.label}>로그인 이메일 주소 입력</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleEmailChange}
-                        value={email}
-                        placeholder='이메일'
-                        keyboardType='email-address'
-                    />
-                    <View
-                        style={[
-                            { opacity: emailError ? 1 : 0 },
-                            styles.errorLabelContainer,
-                        ]}>
-                        <Exclamation fill='red' style={styles.exclamation} />
-                        <Text style={styles.errorLabel}>{emailError}</Text>
+                    <View style={signUpStyles.headerContainer}>
+                        <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
+                        <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
+                        <Text style={signUpStyles.currentStep}>
+                            3. 인증 정보 설정
+                        </Text>
+                        <Text style={signUpStyles.title}>
+                            {`로그인 시 사용할 인증 정보를 설정해 주세요.`}
+                        </Text>
+                        <Text style={signUpStyles.subStep}>
+                            4. 프로필 정보 입력
+                        </Text>
                     </View>
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        scrollEnabled={false}>
-                        <View style={{ width: ScreenWidth - 40 }}>
-                            <Text style={styles.label}>비밀번호 입력</Text>
-                            <TextInput
-                                ref={passwordRef}
-                                style={styles.input}
-                                onChangeText={handlePasswordChange}
-                                onBlur={onPasswordInputBlur}
-                                value={password}
-                                placeholder='비밀번호'
-                                keyboardType='default'
-                                secureTextEntry={true}
-                                scrollEnabled={false}
+                    <View>
+                        {/* ### 이메일 입력 ### */}
+                        <Text style={styles.label}>
+                            로그인 이메일 주소 입력
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={handleEmailChange}
+                            value={email}
+                            placeholder='이메일'
+                            placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            keyboardType='email-address'
+                        />
+                        <View
+                            style={[
+                                { opacity: emailError ? 1 : 0 },
+                                styles.errorLabelContainer,
+                            ]}>
+                            <Exclamation
+                                fill={themeColor.ACCENT_TEXT}
+                                style={styles.exclamation}
                             />
-                            <View
-                                style={[
-                                    { opacity: passwordError ? 1 : 0 },
-                                    styles.errorLabelContainer,
-                                ]}>
-                                <Exclamation
-                                    fill='red'
-                                    style={styles.exclamation}
-                                />
-                                <Text style={styles.errorLabel}>
-                                    {passwordError}
-                                </Text>
-                            </View>
+                            <Text style={styles.errorLabel}>{emailError}</Text>
                         </View>
-                        <View style={{ width: ScreenWidth - 40 }}>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}>
-                                <Text style={styles.label}>비밀번호 확인</Text>
-                                <TouchableOpacity
-                                    style={styles.pwReEnterButton}
-                                    onPress={onPasswordReEnterButtonPress}>
-                                    <Text style={styles.pwReEnterButtonText}>
-                                        재입력
+
+                        {/* ### 비밀번호 입력 ### */}
+                        <ScrollView
+                            ref={scrollViewRef}
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            scrollEnabled={false}>
+                            <View style={{ width: ScreenWidth - 40 }}>
+                                <Text style={styles.label}>비밀번호 입력</Text>
+                                <TextInput
+                                    ref={passwordRef}
+                                    style={styles.input}
+                                    onChangeText={handlePasswordChange}
+                                    onBlur={onPasswordInputBlur}
+                                    value={password}
+                                    placeholder='비밀번호'
+                                    placeholderTextColor={
+                                        themeColor.TEXT_SECONDARY
+                                    }
+                                    keyboardType='default'
+                                    secureTextEntry={true}
+                                    scrollEnabled={false}
+                                />
+                                <View
+                                    style={[
+                                        { opacity: passwordError ? 1 : 0 },
+                                        styles.errorLabelContainer,
+                                    ]}>
+                                    <Exclamation
+                                        fill={themeColor.ACCENT_TEXT}
+                                        style={styles.exclamation}
+                                    />
+                                    <Text style={styles.errorLabel}>
+                                        {passwordError}
                                     </Text>
-                                </TouchableOpacity>
+                                </View>
                             </View>
-                            <TextInput
-                                ref={passwordConfirmRef}
-                                style={styles.input}
-                                onChangeText={handlePasswordConfirmChange}
-                                value={passwordConfirm}
-                                placeholder='비밀번호를 다시 한 번 입력해 주세요.'
-                                keyboardType='default'
-                                secureTextEntry={true}
-                                scrollEnabled={false}
-                            />
-                            <View
-                                style={[
-                                    { opacity: passwordConfirmError ? 1 : 0 },
-                                    styles.errorLabelContainer,
-                                ]}>
-                                <Exclamation
-                                    fill='red'
-                                    style={styles.exclamation}
+                            <View style={{ width: ScreenWidth - 40 }}>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <Text style={styles.label}>
+                                        비밀번호 확인
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.pwReEnterButton}
+                                        onPress={onPasswordReEnterButtonPress}>
+                                        <Text
+                                            style={styles.pwReEnterButtonText}>
+                                            재입력
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <TextInput
+                                    ref={passwordConfirmRef}
+                                    style={styles.input}
+                                    onChangeText={handlePasswordConfirmChange}
+                                    value={passwordConfirm}
+                                    placeholder='비밀번호를 다시 한 번 입력해 주세요.'
+                                    placeholderTextColor={
+                                        themeColor.TEXT_SECONDARY
+                                    }
+                                    keyboardType='default'
+                                    secureTextEntry={true}
+                                    scrollEnabled={false}
                                 />
-                                <Text style={styles.errorLabel}>
-                                    {passwordConfirmError}
-                                </Text>
+                                <View
+                                    style={[
+                                        {
+                                            opacity: passwordConfirmError
+                                                ? 1
+                                                : 0,
+                                        },
+                                        styles.errorLabelContainer,
+                                    ]}>
+                                    <Exclamation
+                                        fill={themeColor.ACCENT_TEXT}
+                                        style={styles.exclamation}
+                                    />
+                                    <Text style={styles.errorLabel}>
+                                        {passwordConfirmError}
+                                    </Text>
+                                </View>
                             </View>
+                        </ScrollView>
+
+                        {/* ### 닉네임 입력 ### */}
+                        <Text style={styles.label}>닉네임 입력</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={handleNicknameChange}
+                            value={nickname}
+                            placeholder='닉네임'
+                            placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            keyboardType='default'
+                            scrollEnabled={false}
+                        />
+                        <View
+                            style={[
+                                { opacity: nicknameError ? 1 : 0 },
+                                styles.errorLabelContainer,
+                            ]}>
+                            <Exclamation
+                                fill={themeColor.ACCENT_TEXT}
+                                style={styles.exclamation}
+                            />
+                            <Text style={styles.errorLabel}>
+                                {nicknameError}
+                            </Text>
                         </View>
-                    </ScrollView>
 
-                    <Text style={styles.label}>닉네임 입력</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleNicknameChange}
-                        value={nickname}
-                        placeholder='닉네임'
-                        keyboardType='default'
-                        scrollEnabled={false}
-                    />
-                    <View
-                        style={[
-                            { opacity: nicknameError ? 1 : 0 },
-                            styles.errorLabelContainer,
-                        ]}>
-                        <Exclamation fill='red' style={styles.exclamation} />
-                        <Text style={styles.errorLabel}>{nicknameError}</Text>
-                    </View>
-
-                    <TouchableOpacity
-                        disabled={
-                            !!(
-                                emailError ||
-                                passwordError ||
-                                nicknameError ||
-                                passwordConfirmError ||
-                                !email ||
-                                !password ||
-                                !nickname ||
-                                !passwordConfirm
-                            )
-                        }
-                        style={[
-                            {
-                                backgroundColor:
+                        <TouchableOpacity
+                            disabled={
+                                !!(
                                     emailError ||
                                     passwordError ||
                                     nicknameError ||
@@ -318,76 +349,89 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     !password ||
                                     !nickname ||
                                     !passwordConfirm
-                                        ? baseColors.GRAY_2
-                                        : baseColors.SCHOOL_BG,
-                            },
-                            styles.button,
-                        ]}
-                        onPress={handleSubmit}>
-                        <Text style={styles.buttonText}>다음</Text>
-                    </TouchableOpacity>
+                                )
+                            }
+                            style={[
+                                {
+                                    backgroundColor:
+                                        emailError ||
+                                        passwordError ||
+                                        nicknameError ||
+                                        passwordConfirmError ||
+                                        !email ||
+                                        !password ||
+                                        !nickname ||
+                                        !passwordConfirm
+                                            ? baseColors.GRAY_2
+                                            : baseColors.SCHOOL_BG,
+                                },
+                                styles.button,
+                            ]}
+                            onPress={handleSubmit}>
+                            <Text style={styles.buttonText}>다음</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </View>
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    label: {
-        fontSize: 18,
-        color: 'black',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 20,
-        marginBottom: 5,
-    },
-    input: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
-        paddingBottom: 4,
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    errorLabelContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    exclamation: {
-        width: 16,
-        height: 16,
-        marginBottom: 4,
-        marginEnd: 4,
-    },
-    errorLabel: {
-        color: 'red',
-        fontSize: 12,
-        fontFamily: 'NanumGothic',
-        marginBottom: 5,
-    },
-    button: {
-        paddingVertical: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 30,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-    pwReEnterButton: {
-        borderRadius: 6,
-        borderColor: baseColors.GRAY_1,
-        borderWidth: 1,
-        padding: 8,
-        marginTop: 12,
-    },
-    pwReEnterButtonText: {
-        color: baseColors.GRAY_1,
-        fontSize: 12,
-        fontFamily: 'NanumGothic',
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {},
+        label: {
+            fontSize: 18,
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 20,
+            marginBottom: 5,
+        },
+        input: {
+            borderBottomColor: baseColors.GRAY_1,
+            borderBottomWidth: 1,
+            paddingBottom: 4,
+            fontSize: 16,
+            marginBottom: 10,
+        },
+        errorLabelContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        exclamation: {
+            width: 16,
+            height: 16,
+            marginBottom: 4,
+            marginEnd: 4,
+        },
+        errorLabel: {
+            color: theme.ACCENT_TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 12,
+            marginBottom: 5,
+        },
+        button: {
+            paddingVertical: 15,
+            borderRadius: 5,
+            alignItems: 'center',
+            marginTop: 30,
+        },
+        buttonText: {
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
+        },
+        pwReEnterButton: {
+            borderColor: baseColors.GRAY_1,
+            borderRadius: 6,
+            borderWidth: 1,
+            padding: 8,
+            marginTop: 12,
+        },
+        pwReEnterButtonText: {
+            color: theme.BUTTON_SECONDARY_TEXT,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+        },
+    })
 
 export default SignUp5

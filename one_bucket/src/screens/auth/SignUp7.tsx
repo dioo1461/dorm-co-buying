@@ -1,11 +1,31 @@
-import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors, lightColors } from '@/constants/colors'
+import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { RouteProp, useNavigation } from '@react-navigation/native'
-import React, { useContext } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useContext, useEffect } from 'react'
+import {
+    Appearance,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 const SignUp7: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
+
     const navigation = useNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
@@ -16,11 +36,6 @@ const SignUp7: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={styles.backButton}>
-                <IcArrowLeft fill={baseColors.GRAY_1} />
-            </TouchableOpacity>
             <Text
                 style={
                     styles.title1
@@ -34,46 +49,47 @@ const SignUp7: React.FC = (): React.JSX.Element => {
         </View>
     )
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        paddingHorizontal: 20,
-    },
-    backButton: {
-        position: 'absolute',
-        top: 50,
-        left: 20,
-    },
-    title1: {
-        fontSize: 24,
-        color: 'black',
-        fontFamily: 'NanumGothic',
-        textAlign: 'center',
-        lineHeight: 30,
-        marginBottom: 30,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: baseColors.GRAY_1,
-        fontFamily: 'NanumGothic',
-        lineHeight: 24,
-        textAlign: 'center',
-        marginBottom: 40,
-    },
-    button: {
-        backgroundColor: lightColors.ICON_BG,
-        paddingVertical: 15,
-        paddingHorizontal: 50,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+            paddingTop: 24,
+            backgroundColor: theme.BG,
+        },
+        backButton: {
+            position: 'absolute',
+            top: 50,
+            left: 20,
+        },
+        title1: {
+            color: theme.TEXT,
+            fontSize: 24,
+            fontFamily: 'NanumGothic',
+            textAlign: 'center',
+            lineHeight: 30,
+            marginBottom: 32,
+        },
+        subtitle: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 16,
+            fontFamily: 'NanumGothic',
+            lineHeight: 24,
+            textAlign: 'center',
+            marginBottom: 60,
+        },
+        button: {
+            backgroundColor: theme.BUTTON_BG,
+            paddingVertical: 15,
+            paddingHorizontal: 50,
+            borderRadius: 5,
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
+        },
+    })
 
 export default SignUp7

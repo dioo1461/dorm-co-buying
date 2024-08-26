@@ -1,11 +1,12 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import IcRefresh from '@/assets/drawable/ic-refresh.svg'
-import { baseColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
+    Appearance,
     Keyboard,
     StyleSheet,
     Text,
@@ -16,6 +17,20 @@ import {
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const SignUp2: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
+
     const dummyVerificationCode = '000000'
     const { onPhoneVerificationFailure } = useContext(AppContext)
 
@@ -92,7 +107,7 @@ const SignUp2: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                     style={signUpStyles.backButton}>
-                    <IcArrowLeft fill={baseColors.GRAY_1} />
+                    <IcArrowLeft />
                 </TouchableOpacity>
             </View>
             <View style={signUpStyles.headerContainer}>
@@ -140,7 +155,9 @@ const SignUp2: React.FC = (): React.JSX.Element => {
                     style={styles.resendButton}
                     onPress={refreshCodeInput}>
                     <IcRefresh />
-                    <Text style={styles.resendButtonText}>인증번호 재발송</Text>
+                    <Text style={styles.resendButtonLabel}>
+                        인증번호 재발송
+                    </Text>
                 </TouchableOpacity>
                 <Text style={styles.infoText}>
                     30초 후에 다시 시도해 주세요.
@@ -150,55 +167,59 @@ const SignUp2: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    phoneNumber: {
-        fontSize: 14,
-        color: baseColors.GRAY_1,
-        fontFamily: 'NanumGothic',
-        marginTop: 16,
-        marginBottom: 6,
-    },
-    infoText: {
-        fontSize: 14,
-        fontFamily: 'NanumGothic',
-        color: 'black',
-    },
-    inputLabel: {
-        fontSize: 16,
-        color: 'black',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 30,
-        marginBottom: 20,
-    },
-    verificationContainer: {
-        marginVertical: 20,
-        alignItems: 'center',
-    },
-    codeInputContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    codeInput: {
-        height: 50,
-        width: 40,
-        borderColor: baseColors.GRAY_1,
-        borderWidth: 1,
-        borderRadius: 10,
-        textAlign: 'center',
-        marginEnd: 5,
-        fontSize: 18,
-    },
-    resendButton: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 30,
-        marginBottom: 10,
-    },
-    resendButtonText: {
-        marginLeft: 5,
-        fontSize: 16,
-        color: baseColors.GRAY_1,
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        phoneNumber: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+            marginTop: 16,
+            marginBottom: 6,
+        },
+        infoText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        inputLabel: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 30,
+            marginBottom: 20,
+        },
+        verificationContainer: {
+            marginVertical: 20,
+            alignItems: 'center',
+        },
+        codeInputContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+        },
+        codeInput: {
+            color: theme.TEXT,
+            borderColor: baseColors.GRAY_3,
+            height: 50,
+            width: 40,
+            borderWidth: 1,
+            borderRadius: 10,
+            textAlign: 'center',
+            marginEnd: 5,
+            fontSize: 18,
+        },
+        resendButton: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 30,
+            marginBottom: 10,
+        },
+        resendButtonLabel: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 16,
+            fontFamily: 'NanumGothic',
+            marginLeft: 5,
+        },
+    })
 
 export default SignUp2

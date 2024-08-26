@@ -105,6 +105,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         return null;
     }
 
+
     return (
         <View style={{ flex: 1 }}>
             <View style={{ flex: 1, backgroundColor: 'white' }}>

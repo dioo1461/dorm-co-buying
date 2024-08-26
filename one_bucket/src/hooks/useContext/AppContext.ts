@@ -10,6 +10,7 @@ interface AppContextInterface {
     onSignUpSuccess: () => void
     onSignUpFailure: () => void
     themeColor: Icolor
+    setThemeColor: (color: Icolor) => void
 }
 
 export const AppContext = createContext<AppContextInterface>({
@@ -21,4 +22,5 @@ export const AppContext = createContext<AppContextInterface>({
     onSignUpSuccess: () => {},
     onSignUpFailure: () => {},
     themeColor: lightColors,
+    setThemeColor: () => {},
 })

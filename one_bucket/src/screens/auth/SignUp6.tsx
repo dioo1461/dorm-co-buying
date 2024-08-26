@@ -1,14 +1,14 @@
 import { postProfile } from '@/apis/profileService'
-import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors, lightColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { signUpStyles } from '@/styles/signUp/signUpStyles'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+    Appearance,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -20,6 +20,20 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 const SignUp6: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const signUpStyles = createSignUpStyles(themeColor)
+
     const navigation = useNavigation()
     const { onSignUpSuccess } = useContext(AppContext)
 
@@ -66,16 +80,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
             style={signUpStyles.container}
             behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
             <View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.goBack()
-                    }}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft fill={baseColors.GRAY_1} />
-                </TouchableOpacity>
-            </View>
-            <View>
-                <View style={signUpStyles.headerContainer}>
+                <View style={{ marginTop: 46 }}>
                     <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
                     <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
                     <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
@@ -123,52 +128,54 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    label: {
-        fontSize: 18,
-        color: 'black',
-        fontFamily: 'NanumGothic-Bold',
-        marginTop: 30,
-        marginBottom: 10,
-    },
-    input: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
-        paddingBottom: 4,
-        fontSize: 16,
-        marginBottom: 20,
-    },
-    bioInput: {
-        borderColor: baseColors.GRAY_1,
-        borderWidth: 1,
-        borderRadius: 5,
-        textAlignVertical: 'top',
-        fontSize: 14,
-        marginBottom: 10,
-    },
-    button: {
-        backgroundColor: lightColors.ICON_BG,
-        paddingVertical: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-    dormContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    dormText: {
-        fontSize: 16,
-        color: 'black',
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+        },
+        label: {
+            color: theme.TEXT,
+            fontSize: 18,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 30,
+            marginBottom: 10,
+        },
+        input: {
+            borderBottomWidth: 1,
+            paddingBottom: 4,
+            borderBottomColor: baseColors.GRAY_1,
+            fontSize: 16,
+            marginBottom: 20,
+        },
+        bioInput: {
+            borderColor: baseColors.GRAY_1,
+            borderWidth: 1,
+            borderRadius: 5,
+            textAlignVertical: 'top',
+            fontSize: 14,
+            marginBottom: 10,
+        },
+        button: {
+            backgroundColor: lightColors.BUTTON_BG,
+            paddingVertical: 15,
+            borderRadius: 5,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        buttonText: {
+            color: 'white',
+            fontSize: 16,
+        },
+        dormContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 20,
+        },
+        dormText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 16,
+            marginBottom: 4,
+        },
+    })
 
 export default SignUp6

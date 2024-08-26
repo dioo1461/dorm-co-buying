@@ -1,6 +1,5 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { Gender } from '@/data/response/GetProfileResponse'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import {
     queryGetMemberInfo,
@@ -12,7 +11,6 @@ import {
     ActivityIndicator,
     Appearance,
     Image,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -83,68 +81,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <IcAngleLeft
                         style={styles.backButtonImage}
-                        fill={baseColors.GRAY_3}
+                        fill={baseColors.GRAY_1}
                     />
                 </TouchableOpacity>
             </View>
-            <View style={styles.headerContainer}>
-                <View style={styles.profileImageContainer}>
-                    <Image
-                        source={require('@/assets/drawable/vector.png')}
-                        style={styles.profileImage}
-                    />
-                    <Text style={styles.nicknameText}>
-                        {memberInfoData![0].nickname}
-                    </Text>
-                </View>
-                <View style={styles.bioContainer}>
-                    <Image
-                        source={require('@/assets/drawable/postit.png')}
-                        style={styles.bioImage}
-                    />
-                    <ScrollView
-                        style={styles.bioTextScrollView}
-                        showsVerticalScrollIndicator={false}>
-                        <Text style={styles.bioText}>
-                            ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
-                        </Text>
-                    </ScrollView>
-                </View>
-            </View>
-            <View style={styles.profilesContainer}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View>
-                        <Text style={styles.profileLabel}>이름</Text>
-                        <Text style={styles.profileContext}>
-                            {profileData!.name}
-                        </Text>
-                        <Text style={styles.profileLabel}>성별</Text>
-                        <Text style={styles.profileContext}>
-                            {Gender[profileData!.gender]}
-                        </Text>
-                        <Text style={styles.profileLabel}>생년월일</Text>
-                        <Text style={styles.profileContext}>
-                            {profileData!.birth}
-                        </Text>
-                        <Text style={styles.profileLabel}>학교명</Text>
-                        <Text style={styles.profileContext}>홍대</Text>
-                        <Text style={styles.profileLabel}>학부</Text>
-                        <Text style={styles.profileContext}>ㅎㅇ</Text>
-                        <Text style={styles.profileLabel}>가입한 날짜</Text>
-                        <Text style={styles.profileContext}>
-                            {formattedCreateDate}
-                        </Text>
-                    </View>
-                </ScrollView>
-            </View>
-            <View style={styles.profileModifyButtonContainer}>
-                <TouchableOpacity
-                    style={styles.profileModifyButton}
-                    onPress={onProfileModifyButtonClick}>
-                    <Text style={styles.profileModifyButtonText}>
-                        프로필 변경
-                    </Text>
-                </TouchableOpacity>
+            <View>
+                <Image
+                    source={require('@/assets/drawable/vector.png')}
+                    style={styles.profileImage}
+                />
             </View>
         </View>
     )
@@ -153,10 +98,10 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: {
-            backgroundColor: theme.BG,
             flex: 1,
             paddingHorizontal: 16,
             paddingTop: 20,
+            backgroundColor: 'white',
         },
         backButtonContainer: {
             flex: 1,
@@ -179,13 +124,13 @@ const createStyles = (theme: Icolor) =>
             justifyContent: 'center',
         },
         profileImage: {
-            backgroundColor: 'gray',
+            backgroundColor: 'black',
             width: 84,
             height: 96,
             borderRadius: 50,
         },
         nicknameText: {
-            color: theme.TEXT,
+            color: theme.BG,
             fontFamily: 'NanumGothic-Bold',
             fontSize: 18,
             marginTop: 16,
@@ -207,14 +152,12 @@ const createStyles = (theme: Icolor) =>
             height: '100%',
         },
         bioText: {
-            color: theme.TEXT,
+            color: theme.BG,
             fontFamily: 'NanumGothic',
             fontSize: 14,
         },
         profilesContainer: {
             backgroundColor: theme.BG,
-            borderWidth: theme === lightColors ? 0 : 1,
-            borderColor: theme === lightColors ? '' : baseColors.GRAY_2,
             flex: 8,
             padding: 10,
             marginHorizontal: 16,
@@ -222,14 +165,14 @@ const createStyles = (theme: Icolor) =>
             elevation: 3,
         },
         profileLabel: {
-            color: theme.TEXT_SECONDARY,
-            fontSize: 14,
-            fontFamily: 'NanumGothic',
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
             marginTop: 10,
         },
         profileContext: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 18,
             fontFamily: 'NanumGothic-Bold',
             marginTop: 10,
             marginBottom: 16,
@@ -248,7 +191,7 @@ const createStyles = (theme: Icolor) =>
             marginHorizontal: 4,
         },
         profileModifyButtonText: {
-            color: theme.BUTTON_TEXT,
+            color: 'white',
             fontSize: 14,
             fontFamily: 'NanumGothic',
             marginEnd: 6,

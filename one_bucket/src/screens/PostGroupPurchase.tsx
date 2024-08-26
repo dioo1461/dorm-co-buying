@@ -1,157 +1,381 @@
-import React, { useState, useEffect } from 'react'
+import CloseButton from '@/assets/drawable/close-button.svg'
+import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
+import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
+import { baseColors, darkColors, lightColors } from '@/constants/colors'
+import { AppContext } from '@/hooks/useContext/AppContext'
+import CheckBox from '@react-native-community/checkbox'
+import { useNavigation } from '@react-navigation/native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
-    View,
+    Appearance,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
     Text,
     TextInput,
-    StyleSheet,
     TouchableOpacity,
-    Image,
-    Button,
-    ScrollView,
-    Touchable,
+    View,
 } from 'react-native'
 import {
-    launchImageLibrary,
     ImageLibraryOptions,
+    launchImageLibrary,
 } from 'react-native-image-picker'
-import Icon from 'react-native-vector-icons/MaterialIcons'
-import { useNavigation } from '@react-navigation/native'
 
 const PostGroupPurchase: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useContext(AppContext)
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
     const [imageUri, setImageUri] = useState<string | null>(null)
+    const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [item, setItem] = useState('')
     const [price, setPrice] = useState('')
     const [totalAmount, setTotalAmount] = useState('')
     const [peopleCount, setPeopleCount] = useState<number | null>(null)
-    const [description, setDescription] = useState('')
+    const [deadline, setDeadline] = useState<number | null>(null)
+    const [descriptionTextInput, setDescriptionTextInput] = useState('')
     const [keyboardHeight, setKeyboardHeight] = useState(0)
+    const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
+
+    const [peopleCountManualInputEnabled, setPeopleCountManualInputEnabled] =
+        useState(false)
+    const peopleCountManualInputRef = useRef<TextInput>(null)
+    const [deadlineManualInputEnabled, setDeadlineManualInputEnabled] =
+        useState(false)
+    const deadlineManualInputRef = useRef<TextInput>(null)
+    const scrollViewRef = useRef<ScrollView>(null)
 
     const navigation = useNavigation()
 
-    const selectImage = () => {
+    const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
-            selectionLimit: 1,
+            selectionLimit: 10 - imageUriList.length,
         }
 
         launchImageLibrary(options, response => {
-            if (
-                response.assets &&
-                response.assets.length > 0 &&
-                response.assets[0].uri
-            ) {
-                setImageUri(response.assets[0].uri)
-            }
+            response.assets?.forEach(asset => {
+                if (asset.uri) {
+                    setImageUriList([...imageUriList, asset.uri])
+                }
+            })
+        })
+    }
+
+    const deleteImage = (index: number) => {
+        const newImageUriList = [...imageUriList]
+        newImageUriList.splice(index, 1)
+        setImageUriList(newImageUriList)
+    }
+
+    const onPeopleCountManualInputPress = () => {
+        setPeopleCount(null)
+        setPeopleCountManualInputEnabled(true)
+        requestAnimationFrame(() => {
+            peopleCountManualInputRef.current?.focus()
+        })
+    }
+
+    const onDeadlineManualInputPress = () => {
+        setDeadline(null)
+        setDeadlineManualInputEnabled(true)
+        requestAnimationFrame(() => {
+            deadlineManualInputRef.current?.focus()
         })
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Icon
-                    name='arrow-back'
-                    size={24}
-                    onPress={() => navigation.goBack()}
-                />
-                <Text style={styles.headerTitle}>공동구매 글 작성</Text>
-                <Text style={styles.tempSave}>임시저장</Text>
-            </View>
-
-            <ScrollView style={{ flex: 1 }}>
-                <TouchableOpacity
-                    style={styles.imageUploader}
-                    onPress={selectImage}>
-                    {imageUri ? (
-                        <Image
-                            source={{ uri: imageUri }}
-                            style={styles.image}
-                        />
-                    ) : (
-                        <View style={styles.imagePlaceholder}>
-                            <Icon name='camera-alt' size={48} color='gray' />
-                            <Text>0/10</Text>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <ScrollView
+                ref={scrollViewRef}
+                style={styles.mainScrollViewContainer}
+                showsVerticalScrollIndicator={false}>
+                {/* ### 제품 이미지 ### */}
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    style={styles.imageScrollViewContainer}>
+                    {imageUriList.map((uri, index) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <TouchableOpacity>
+                                <Image
+                                    source={{ uri: uri }}
+                                    style={styles.image}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => deleteImage(index)}>
+                                <CloseButton />
+                            </TouchableOpacity>
                         </View>
-                    )}
-                </TouchableOpacity>
+                    ))}
+                    <TouchableOpacity
+                        style={styles.imageUploader}
+                        onPress={addImage}>
+                        <View style={styles.imagePlaceholder}>
+                            <IcPhotoAdd />
+                            <Text>{`${imageUriList.length}/10`}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </ScrollView>
 
+                {/* ### 사이트 링크 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>사이트 링크</Text>
+                </View>
                 <TextInput
-                    style={styles.input}
-                    placeholder='사이트 링크'
+                    style={styles.textInput}
+                    placeholder='https://www.market.com/product-name'
                     value={siteLink}
                     onChangeText={setSiteLink}
+                    keyboardType='url'
                 />
 
-                <Text style={styles.label}>품목 *</Text>
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>품목명</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
                 <TextInput
-                    style={styles.input}
-                    placeholder='품목'
+                    style={styles.textInput}
+                    placeholder='품목명'
                     value={item}
                     onChangeText={setItem}
                 />
 
-                <Text style={styles.label}>가격 *</Text>
+                {/* ### 가격 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>가격</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
                 <TextInput
-                    style={styles.input}
+                    style={styles.textInput}
                     placeholder='가격'
                     value={price}
                     onChangeText={setPrice}
                     keyboardType='numeric'
                 />
 
-                <Text style={styles.label}>총 수량 *</Text>
+                {/* ### 총 수량 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>총 수량</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
                 <TextInput
-                    style={styles.input}
+                    style={styles.textInput}
                     placeholder='총 수량'
                     value={totalAmount}
                     onChangeText={setTotalAmount}
                     keyboardType='numeric'
                 />
 
-                <Text style={styles.label}>모집 인원 (본인 포함) *</Text>
+                {/* ### 모집 인원 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>모집 인원 (본인 포함)</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
                 <View style={styles.peopleCountContainer}>
                     {[2, 3, 4, 5].map(count => (
-                        <TouchableOpacity
+                        <View
                             key={count}
-                            style={[
-                                styles.peopleCountButton,
-                                peopleCount === count && styles.selectedButton,
-                            ]}
-                            onPress={() => setPeopleCount(count)}>
-                            <Icon
-                                name='person'
-                                size={24}
-                                color={peopleCount === count ? 'white' : 'gray'}
-                            />
-                            <Text
-                                style={{
-                                    color:
-                                        peopleCount === count
-                                            ? 'white'
-                                            : 'gray',
+                            style={{
+                                flex: 2,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.selectionButton,
+                                    peopleCount === count &&
+                                        styles.selectedButton,
+                                ]}
+                                onPress={() => {
+                                    setPeopleCount(count)
+                                    setPeopleCountManualInputEnabled(false)
                                 }}>
-                                {count}
-                            </Text>
-                        </TouchableOpacity>
+                                <Text
+                                    style={{
+                                        color:
+                                            peopleCount === count
+                                                ? 'white'
+                                                : 'gray',
+                                    }}>
+                                    {`${count}명`}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
                     <TouchableOpacity
-                        style={styles.peopleCountButton}
-                        onPress={() => setPeopleCount(null)}>
-                        <Text style={{ color: 'gray' }}>직접 입력</Text>
+                        style={[
+                            styles.manualInputButton,
+                            peopleCountManualInputEnabled
+                                ? styles.selectedButton
+                                : {},
+                        ]}
+                        onPress={onPeopleCountManualInputPress}>
+                        <TextInput
+                            ref={peopleCountManualInputRef}
+                            style={[
+                                styles.manualInputText,
+                                peopleCountManualInputEnabled
+                                    ? { color: 'white' }
+                                    : { color: 'gray' },
+                            ]}
+                            onChangeText={text => setPeopleCount(Number(text))}
+                            placeholder='직접 입력'
+                            placeholderTextColor={
+                                peopleCountManualInputEnabled ? 'white' : 'gray'
+                            }
+                            maxLength={2}
+                            editable={peopleCountManualInputEnabled}
+                            keyboardType='numeric'
+                        />
+                        <Text
+                            style={[
+                                styles.manualInputAffixText,
+                                { marginBottom: 2 },
+                            ]}>
+                            {peopleCountManualInputEnabled && peopleCount
+                                ? ' 명'
+                                : ''}
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
-                <Button title='장소 선택' onPress={() => {}} />
+                {/* ### 마감 기한 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>마감 기한</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
 
+                <View style={styles.peopleCountContainer}>
+                    {[3, 5, 7, 9].map(count => (
+                        <View
+                            key={count}
+                            style={{
+                                flex: 2,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.selectionButton,
+                                    deadline === count && styles.selectedButton,
+                                ]}
+                                onPress={() => {
+                                    setDeadline(count)
+                                    setDeadlineManualInputEnabled(false)
+                                }}>
+                                <Text
+                                    style={{
+                                        color:
+                                            deadline === count
+                                                ? 'white'
+                                                : 'gray',
+                                    }}>
+                                    {`D-${count}`}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                    <TouchableOpacity
+                        style={[
+                            styles.manualInputButton,
+                            deadlineManualInputEnabled
+                                ? styles.selectedButton
+                                : {},
+                        ]}
+                        onPress={onDeadlineManualInputPress}>
+                        <Text style={styles.manualInputAffixText}>
+                            {deadlineManualInputEnabled && deadline ? 'D-' : ''}
+                        </Text>
+
+                        <TextInput
+                            ref={deadlineManualInputRef}
+                            style={[
+                                styles.manualInputText,
+                                deadlineManualInputEnabled
+                                    ? { color: 'white' }
+                                    : { color: 'gray' },
+                            ]}
+                            maxLength={2}
+                            onChangeText={text => setDeadline(Number(text))}
+                            placeholder='직접 입력'
+                            placeholderTextColor={
+                                deadlineManualInputEnabled ? 'white' : 'gray'
+                            }
+                            editable={deadlineManualInputEnabled}
+                            keyboardType='numeric'
+                        />
+                    </TouchableOpacity>
+                </View>
+
+                {/* ### 장소 선택 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>거래 희망 장소</Text>
+                    <Text style={styles.accent}> *</Text>
+                </View>
+                <TouchableOpacity style={styles.locationSelectionButton}>
+                    <Text style={styles.locationText}>장소 선택</Text>
+                    <IcAngleRight width={16} height={16} fill='gray' />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.checkBoxContainer}
+                    onPress={() =>
+                        setIsLocationNegotiable(!isLocationNegotiable)
+                    }>
+                    <CheckBox
+                        disabled={false}
+                        value={isLocationNegotiable}
+                        onValueChange={newVal =>
+                            setIsLocationNegotiable(newVal)
+                        }
+                        tintColors={{
+                            true: baseColors.SCHOOL_BG,
+                            false: baseColors.GRAY_1,
+                        }}
+                    />
+                    <Text
+                        style={[
+                            styles.checkBoxLabelText,
+                            {
+                                color: !isLocationNegotiable
+                                    ? 'gray'
+                                    : baseColors.SCHOOL_BG,
+                            },
+                        ]}>
+                        거래 장소 협의 가능
+                    </Text>
+                </TouchableOpacity>
+
+                {/* ### 추가 설명 ### */}
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>설명</Text>
+                </View>
                 <TextInput
-                    style={[styles.input, styles.textArea]}
+                    style={[styles.textInput, styles.descriptionTextInput]}
                     placeholder='추가 설명을 작성해 주세요.'
-                    value={description}
-                    onChangeText={setDescription}
+                    value={descriptionTextInput}
+                    onChangeText={setDescriptionTextInput}
                     multiline
                 />
+                <View style={{ height: 80 }}></View>
             </ScrollView>
-
             <View
                 style={[
                     styles.postButtonContainer,
@@ -161,7 +385,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -170,78 +394,135 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 16,
+    mainScrollViewContainer: {
+        margin: 16,
     },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
+    imageScrollViewContainer: {
+        height: 82,
+        marginBottom: 16,
     },
     tempSave: {
         color: '#003366',
     },
-    imageUploader: {
-        height: 200,
+    imageContainer: {
+        position: 'relative',
+        width: 72,
+        height: 72,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 16,
+        marginEnd: 14,
+        marginTop: 10,
+    },
+    image: {
+        width: 72,
+        height: 72,
+        borderRadius: 8,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: -10,
+        right: -10,
+    },
+    imageUploader: {
+        width: 72,
+        height: 72,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
     },
     imagePlaceholder: {
         justifyContent: 'center',
         alignItems: 'center',
     },
-    image: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8,
+    labelContainer: {
+        flexDirection: 'row',
+        marginTop: 16,
+        marginBottom: 6,
     },
-    input: {
+    label: {
+        fontFamily: 'NanumGothic-Bold',
+        color: 'black',
+    },
+    accent: {
+        fontFamily: 'NanumGothic-Bold',
+        color: 'red',
+    },
+    textInput: {
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 8,
         padding: 8,
-        margin: 16,
-    },
-    label: {
-        marginLeft: 16,
-        marginTop: 16,
-        marginBottom: 8,
-        fontWeight: 'bold',
     },
     peopleCountContainer: {
         flexDirection: 'row',
-        marginBottom: 16,
-        marginLeft: 16,
-    },
-    peopleCountButton: {
-        flexDirection: 'row',
         alignItems: 'center',
-        padding: 8,
+        justifyContent: 'space-around',
+        marginBottom: 16,
+    },
+    selectionButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 8,
-        marginRight: 8,
+    },
+    manualInputButton: {
+        flex: 2,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+    },
+    manualInputText: {
+        flex: 2,
+        padding: 0,
+        margin: 0,
+        fontSize: 14,
+    },
+    manualInputAffixText: {
+        color: 'white',
+        fontSize: 14,
     },
     selectedButton: {
-        backgroundColor: '#003366',
-        borderColor: '#003366',
+        backgroundColor: baseColors.SCHOOL_BG,
+        borderColor: baseColors.SCHOOL_BG,
     },
-    textArea: {
+    descriptionTextInput: {
         height: 100,
         textAlignVertical: 'top',
     },
+    locationSelectionButton: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 8,
+        padding: 12,
+    },
+    locationText: {},
+    checkBoxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 6,
+    },
+    checkBoxLabelText: {
+        marginBottom: 4,
+    },
     postButtonContainer: {
         backgroundColor: 'white',
-        padding: 16,
-        borderTopWidth: 1,
-        borderColor: 'gray',
         position: 'absolute',
+        marginTop: 16,
         bottom: 0,
         left: 0,
         right: 0,
@@ -249,7 +530,7 @@ const styles = StyleSheet.create({
     postButton: {
         backgroundColor: '#003366',
         padding: 16,
-        borderRadius: 8,
+        // borderRadius: 8,
         alignItems: 'center',
     },
     postButtonText: {
