@@ -17,17 +17,6 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
-
     const navigation = useNavigation()
     const [data, setData] = useState([
         'post1',
@@ -43,9 +32,32 @@ const Home: React.FC = (): React.JSX.Element => {
     ])
     const flatListRef = useRef<FlatList>(null)
 
-    const renderItem = ({ item }: { item: string }) => (
-        <View style={styles.post}>
-            <Text>{item}</Text>
+    const renderItem_Box = ({ item }: { item: string }) => (
+        <View style={styles.postBox}>
+            <View style={styles.postBox_thumbFrame}>
+                <View style={styles.postBox_thumb}>
+                    <Text>{item}</Text>
+                </View>
+                <View style={styles.postBox_part}>
+                    <Text>0/10</Text>
+                </View>
+            </View>
+            <View style={styles.postBox_cont}>
+                <Text>{item}</Text>
+            </View>
+        </View>
+    )
+
+    const renderItem_Horz = ({ item }: { item: string }) => (
+        <View style={styles.postHorz}>
+            <View style={styles.postHorz_cont}>
+                <Text>{item}</Text>
+            </View>
+            <View style={styles.postHorz_thumbFrame}>
+                <View style={styles.postHorz_thumb}>
+                    <Text>{item}</Text>
+                </View>
+            </View>
         </View>
     )
 
@@ -64,10 +76,9 @@ const Home: React.FC = (): React.JSX.Element => {
     const free = () => setBoard(3)
 
     const showBoard = () => {
-        if (board === 0)
-            return (
-                <View>
-                    <View style={styles.title}>
+        if (board === 0) return (
+            <View>
+                <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             추천 거래글
                         </Text>
@@ -75,15 +86,15 @@ const Home: React.FC = (): React.JSX.Element => {
                     <FlatList
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.postList}
                     />
-                    <View style={styles.title}>
+                    <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 참여한 거래글
                         </Text>
@@ -91,192 +102,103 @@ const Home: React.FC = (): React.JSX.Element => {
                     <FlatList
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.postList}
                     />
-                    <View style={styles.title}>
+                    <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             내가 쓴 거래글
                         </Text>
                     </View>
                     <FlatList
+                        key={'home'}
                         ref={flatListRef}
                         data={data}
-                        renderItem={renderItem}
+                        renderItem={renderItem_Box}
                         keyExtractor={(item, index) => index.toString()}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
                         onMomentumScrollEnd={onScrollEnd}
-                        contentContainerStyle={styles.post_list}
+                        contentContainerStyle={styles.postList}
                     />
-                </View>
-            )
-        if (board === 1)
-            return (
-                <FlatList
-                    ref={flatListRef}
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onMomentumScrollEnd={onScrollEnd}
-                    contentContainerStyle={styles.post_list}
-                    numColumns={3}
-                />
-            )
-        if (board === 2)
-            return (
-                <FlatList
-                    ref={flatListRef}
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onMomentumScrollEnd={onScrollEnd}
-                    contentContainerStyle={styles.post_list}
-                    numColumns={3}
-                />
-            )
-        if (board === 3)
-            return (
-                <ScrollView
-                    pagingEnabled
-                    contentContainerStyle={styles.post_list_vert}>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post1</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img1</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post2</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img2</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post3</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img3</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post4</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img4</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post5</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img5</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post6</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img6</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post7</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img7</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post8</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img8</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post9</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img9</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post_vert}>
-                        <View style={styles.post_cont}>
-                            <Text>post10</Text>
-                        </View>
-                        <View style={styles.post_thumb}>
-                            <Text>img10</Text>
-                        </View>
-                    </View>
-                </ScrollView>
-            )
-        return null
+            </View>
+        )
+        if (board === 1) return (
+            <FlatList
+                key={'trade'}
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem_Box}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.postList}
+                numColumns={3}
+            />
+        )
+        if (board === 2) return (
+            <FlatList
+                key={'used'}    
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem_Box}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.postList}
+                numColumns={3}
+            />
+        )
+        if (board === 3) return (
+            <FlatList
+                key={'free'}
+                ref={flatListRef}
+                data={data}
+                renderItem={renderItem_Horz}
+                keyExtractor={(item, index) => index.toString()}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onScrollEnd}
+                contentContainerStyle={styles.postList}
+                numColumns={1}
+            /> 
+        )
+        return null;
+
     }
 
     return (
         <>
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
-                    <View style={styles.menu}>
+                    <View style={styles.upperFrame}>
                         <TouchableOpacity onPress={home}>
-                            <View
-                                style={{
-                                    ...styles.menu_S,
-                                    backgroundColor:
-                                        board == 0 ? 'yellow' : 'white',
-                                }}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "lightblue" : "white"}}>
+
                                 <Text>홈</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={trade}>
-                            <View
-                                style={{
-                                    ...styles.menu_S,
-                                    backgroundColor:
-                                        board == 1 ? 'yellow' : 'white',
-                                }}>
-                                <Text>거래게시판</Text>
+                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "lightblue" : "white"}}>
+                                <Text>공동구매</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={used}>
-                            <View
-                                style={{
-                                    ...styles.menu_S,
-                                    backgroundColor:
-                                        board == 2 ? 'yellow' : 'white',
-                                }}>
-                                <Text>중고게시판</Text>
+                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "lightblue" : "white"}}>
+                                <Text>중고거래</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
-                            <View
-                                style={{
-                                    ...styles.menu_S,
-                                    backgroundColor:
-                                        board == 3 ? 'yellow' : 'white',
-                                }}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==3 ? "lightblue" : "white"}}>
+
                                 <Text>자유게시판</Text>
                             </View>
                         </TouchableOpacity>
@@ -296,54 +218,93 @@ const Home: React.FC = (): React.JSX.Element => {
 }
 
 const styles = StyleSheet.create({
-    menu: {
+    upperFrame: {
         height: 50,
-        backgroundColor: 'gray',
+        backgroundColor: 'white',
         flexDirection: 'row',
     },
-    menu_S: {
+    upperMenu: {
         height: 50,
         width: SCREEN_WIDTH / 4,
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
+        borderBottomWidth: 0.5,
     },
-    title: {
+    homeTitle: {
         height: 30,
         backgroundColor: 'white',
         marginStart: 14,
     },
-    post_list: {
+    postList: {
         backgroundColor: 'white',
     },
-    post: {
+    postBox: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 1.3,
         backgroundColor: 'white',
-        justifyContent: 'center',
         alignItems: 'center',
     },
-    post_list_vert: {
+    postBox_thumbFrame:{
+        width: SCREEN_WIDTH / 3,
+        height: SCREEN_WIDTH / 3,
         backgroundColor: 'white',
+        justifyContent: "center",
+        alignItems: "center",
     },
-    post_vert: {
-        height: SCREEN_HEIGHT / 8,
-        backgroundColor: 'blue',
-        flexDirection: 'row',
+    postBox_thumb:{
+        width: (SCREEN_WIDTH / 3) - 5,
+        height: (SCREEN_WIDTH / 3) - 5,
+        backgroundColor: 'lightgray',
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        borderWidth: 0,
     },
-    post_cont: {
+    postBox_part:{
+        width: 50,
+        height: 20,
+        marginTop: -20,
+        marginLeft: (SCREEN_WIDTH / 6) + 10,
+        backgroundColor: "lightblue",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 5,
+        borderWidth: 0.3,
+    },
+    postBox_cont:{
+        width: SCREEN_WIDTH / 3,
+        height: (SCREEN_WIDTH / 3) * 0.3,
+        backgroundColor: "white",
+        paddingHorizontal: 10,
+    },
+    postHorz:{
         height: SCREEN_HEIGHT / 8,
-        width: SCREEN_WIDTH - SCREEN_HEIGHT / 8,
-        backgroundColor: 'white',
-        justifyContent: 'center',
+        backgroundColor: "white",
+        flexDirection: "row",
+    },
+    postHorz_cont:{
+        height: SCREEN_HEIGHT / 8,
+        width: (SCREEN_WIDTH) - (SCREEN_HEIGHT / 8),
+        backgroundColor: "white",
+        justifyContent: "center",
         paddingHorizontal: 20,
     },
-    post_thumb: {
+    postHorz_thumbFrame:{
         height: SCREEN_HEIGHT / 8,
         width: SCREEN_HEIGHT / 8,
-        backgroundColor: 'gray',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    postHorz_thumb:{
+        height: (SCREEN_HEIGHT / 8) - 5,
+        width: (SCREEN_HEIGHT / 8) - 5,
+        backgroundColor: "lightgray",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        borderWidth: 0,
     },
     fab: {
         position: 'absolute',
