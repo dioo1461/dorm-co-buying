@@ -1,12 +1,14 @@
 const schoolColors = {
     HONGIK_NAVY: '#002c62',
-    HONGIK_DARK_NABY: '#001f4d',
+    HONGIK_LIGHT_NAVY: '#285792',
+    HONGIK_DARK_NAVY: '#001f4d',
     HONGIK_TEXT: '#FFFFFF',
 }
 
 export const baseColors = {
     WHITE: '#FFFFFF',
     BLACK: '#000000',
+    DARK_BG: '#141414',
     SCHOOL_BG: schoolColors.HONGIK_NAVY,
     SCHOOL_BG_DARKER: schoolColors.HONGIK_NAVY,
     SCHOOL_TEXT: schoolColors.HONGIK_TEXT,
@@ -67,11 +69,11 @@ export const lightColors: Icolor = {
 }
 
 export const darkColors: Icolor = {
-    BG: '#141414',
+    BG: baseColors.DARK_BG,
     HEADER_BG: baseColors.GRAY_0,
     HEADER_TEXT: baseColors.WHITE,
 
-    TAB_BG: '#141414',
+    TAB_BG: baseColors.DARK_BG,
 
     BUTTON_BG: baseColors.SCHOOL_BG,
     BUTTON_BG_DARKER: baseColors.SCHOOL_BG_DARKER,

@@ -1,7 +1,7 @@
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { baseColors, darkColors, lightColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import CheckBox from '@react-native-community/checkbox'
 import { useNavigation } from '@react-navigation/native'
@@ -35,6 +35,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    const styles = createStyles(themeColor)
+
     const [imageUri, setImageUri] = useState<string | null>(null)
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
@@ -64,6 +66,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
+            console.log('response: ' + response.assets)
+            console.log('list: ' + imageUriList)
             response.assets?.forEach(asset => {
                 if (asset.uri) {
                     setImageUriList([...imageUriList, asset.uri])
@@ -128,7 +132,10 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                         onPress={addImage}>
                         <View style={styles.imagePlaceholder}>
                             <IcPhotoAdd />
-                            <Text>{`${imageUriList.length}/10`}</Text>
+                            <Text
+                                style={
+                                    styles.imageCountText
+                                }>{`${imageUriList.length}/10`}</Text>
                         </View>
                     </TouchableOpacity>
                 </ScrollView>
@@ -140,6 +147,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <TextInput
                     style={styles.textInput}
                     placeholder='https://www.market.com/product-name'
+                    placeholderTextColor={themeColor.TEXT_TERTIARY}
                     value={siteLink}
                     onChangeText={setSiteLink}
                     keyboardType='url'
@@ -152,6 +160,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <TextInput
                     style={styles.textInput}
                     placeholder='품목명'
+                    placeholderTextColor={themeColor.TEXT_TERTIARY}
                     value={item}
                     onChangeText={setItem}
                 />
@@ -164,6 +173,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <TextInput
                     style={styles.textInput}
                     placeholder='가격'
+                    placeholderTextColor={themeColor.TEXT_TERTIARY}
                     value={price}
                     onChangeText={setPrice}
                     keyboardType='numeric'
@@ -177,6 +187,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <TextInput
                     style={styles.textInput}
                     placeholder='총 수량'
+                    placeholderTextColor={themeColor.TEXT_TERTIARY}
                     value={totalAmount}
                     onChangeText={setTotalAmount}
                     keyboardType='numeric'
@@ -232,8 +243,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                             style={[
                                 styles.manualInputText,
                                 peopleCountManualInputEnabled
-                                    ? { color: 'white' }
-                                    : { color: 'gray' },
+                                    ? { color: baseColors.WHITE }
+                                    : { color: baseColors.GRAY_2 },
                             ]}
                             onChangeText={text => setPeopleCount(Number(text))}
                             placeholder='직접 입력'
@@ -310,8 +321,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                             style={[
                                 styles.manualInputText,
                                 deadlineManualInputEnabled
-                                    ? { color: 'white' }
-                                    : { color: 'gray' },
+                                    ? { color: baseColors.WHITE }
+                                    : { color: baseColors.GRAY_2 },
                             ]}
                             maxLength={2}
                             onChangeText={text => setDeadline(Number(text))}
@@ -345,18 +356,27 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                         onValueChange={newVal =>
                             setIsLocationNegotiable(newVal)
                         }
-                        tintColors={{
-                            true: baseColors.SCHOOL_BG,
-                            false: baseColors.GRAY_1,
-                        }}
+                        tintColors={
+                            themeColor === lightColors
+                                ? {
+                                      true: baseColors.SCHOOL_BG,
+                                      false: baseColors.GRAY_2,
+                                  }
+                                : {
+                                      true: baseColors.WHITE,
+                                      false: baseColors.GRAY_1,
+                                  }
+                        }
                     />
                     <Text
                         style={[
                             styles.checkBoxLabelText,
                             {
                                 color: !isLocationNegotiable
-                                    ? 'gray'
-                                    : baseColors.SCHOOL_BG,
+                                    ? themeColor.TEXT_TERTIARY
+                                    : themeColor === lightColors
+                                    ? baseColors.SCHOOL_BG
+                                    : baseColors.WHITE,
                             },
                         ]}>
                         거래 장소 협의 가능
@@ -370,6 +390,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                 <TextInput
                     style={[styles.textInput, styles.descriptionTextInput]}
                     placeholder='추가 설명을 작성해 주세요.'
+                    placeholderTextColor={themeColor.TEXT_TERTIARY}
                     value={descriptionTextInput}
                     onChangeText={setDescriptionTextInput}
                     multiline
@@ -389,154 +410,155 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    mainScrollViewContainer: {
-        margin: 16,
-    },
-    imageScrollViewContainer: {
-        height: 82,
-        marginBottom: 16,
-    },
-    tempSave: {
-        color: '#003366',
-    },
-    imageContainer: {
-        position: 'relative',
-        width: 72,
-        height: 72,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginEnd: 14,
-        marginTop: 10,
-    },
-    image: {
-        width: 72,
-        height: 72,
-        borderRadius: 8,
-    },
-    closeButton: {
-        position: 'absolute',
-        top: -10,
-        right: -10,
-    },
-    imageUploader: {
-        width: 72,
-        height: 72,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    imagePlaceholder: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    labelContainer: {
-        flexDirection: 'row',
-        marginTop: 16,
-        marginBottom: 6,
-    },
-    label: {
-        fontFamily: 'NanumGothic-Bold',
-        color: 'black',
-    },
-    accent: {
-        fontFamily: 'NanumGothic-Bold',
-        color: 'red',
-    },
-    textInput: {
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-        padding: 8,
-    },
-    peopleCountContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        marginBottom: 16,
-    },
-    selectionButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-    },
-    manualInputButton: {
-        flex: 2,
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 4,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-    },
-    manualInputText: {
-        flex: 2,
-        padding: 0,
-        margin: 0,
-        fontSize: 14,
-    },
-    manualInputAffixText: {
-        color: 'white',
-        fontSize: 14,
-    },
-    selectedButton: {
-        backgroundColor: baseColors.SCHOOL_BG,
-        borderColor: baseColors.SCHOOL_BG,
-    },
-    descriptionTextInput: {
-        height: 100,
-        textAlignVertical: 'top',
-    },
-    locationSelectionButton: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 8,
-        padding: 12,
-    },
-    locationText: {},
-    checkBoxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 6,
-    },
-    checkBoxLabelText: {
-        marginBottom: 4,
-    },
-    postButtonContainer: {
-        backgroundColor: 'white',
-        position: 'absolute',
-        marginTop: 16,
-        bottom: 0,
-        left: 0,
-        right: 0,
-    },
-    postButton: {
-        backgroundColor: '#003366',
-        padding: 16,
-        // borderRadius: 8,
-        alignItems: 'center',
-    },
-    postButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-})
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {
+            backgroundColor: theme.BG,
+            flex: 1,
+        },
+        mainScrollViewContainer: {
+            margin: 16,
+        },
+        imageScrollViewContainer: {
+            height: 82,
+            marginBottom: 16,
+        },
+        imageContainer: {
+            borderColor: baseColors.GRAY_2,
+            position: 'relative',
+            width: 72,
+            height: 72,
+            borderWidth: 1,
+            borderRadius: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginEnd: 14,
+            marginTop: 10,
+        },
+        image: {
+            width: 72,
+            height: 72,
+            borderRadius: 8,
+        },
+        imageCountText: {
+            color: theme.TEXT_TERTIARY,
+        },
+        closeButton: {
+            position: 'absolute',
+            top: -10,
+            right: -10,
+        },
+        imageUploader: {
+            borderColor: baseColors.GRAY_2,
+            width: 72,
+            height: 72,
+            borderWidth: 1,
+            borderRadius: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        imagePlaceholder: {
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        labelContainer: {
+            flexDirection: 'row',
+            marginTop: 16,
+            marginBottom: 6,
+        },
+        label: {
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic-Bold',
+        },
+        accent: {
+            fontFamily: 'NanumGothic-Bold',
+            color: theme.ACCENT_TEXT,
+        },
+        textInput: {
+            borderColor: baseColors.GRAY_2,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 8,
+        },
+        peopleCountContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            marginBottom: 16,
+        },
+        selectionButton: {
+            borderColor: baseColors.GRAY_2,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            borderWidth: 1,
+            borderRadius: 8,
+        },
+        manualInputButton: {
+            borderColor: baseColors.GRAY_2,
+            flex: 2,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 4,
+            borderWidth: 1,
+            borderRadius: 8,
+        },
+        manualInputText: {
+            flex: 2,
+            padding: 0,
+            margin: 0,
+            fontSize: 14,
+        },
+        manualInputAffixText: {
+            color: 'white',
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+        },
+        selectedButton: {
+            backgroundColor: baseColors.SCHOOL_BG,
+            borderColor: baseColors.SCHOOL_BG,
+        },
+        descriptionTextInput: {
+            height: 100,
+            textAlignVertical: 'top',
+        },
+        locationSelectionButton: {
+            borderColor: baseColors.GRAY_2,
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+        },
+        locationText: {},
+        checkBoxContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 6,
+        },
+        checkBoxLabelText: {
+            marginBottom: 4,
+        },
+        postButtonContainer: {
+            position: 'absolute',
+            marginTop: 16,
+            bottom: 0,
+            left: 0,
+            right: 0,
+        },
+        postButton: {
+            backgroundColor: baseColors.SCHOOL_BG,
+            padding: 16,
+            alignItems: 'center',
+        },
+        postButtonText: {
+            color: theme.BUTTON_TEXT,
+            fontFamily: 'NanumGothic-Bold',
+            fontSize: 14,
+        },
+    })
 
 export default PostGroupPurchase
