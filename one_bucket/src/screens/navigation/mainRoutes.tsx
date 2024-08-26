@@ -16,7 +16,8 @@ import IcNotification from '@/assets/mipmap/tab/ic-notification.svg'
 import IcOther from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
-import { StyleSheet, View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Chat from 'screens/Chat'
 import Home from 'screens/Home'
@@ -81,27 +82,24 @@ export const mainRoutes = [
         inactiveIconLight: <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />,
         activeIconDark: <IcTabProfileActive fill={baseColors.WHITE} />,
         inactiveIconDark: <IcTabProfileInactive fill={baseColors.WHITE} />,
-        headerRight: () => (
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginEnd: 8,
-                    }}>
-                    <IcSetting fill='white' />
-                </TouchableOpacity>
-            </View>
-        ),
+        headerRight: () => {
+            const navigation = useNavigation()
+            return (
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginEnd: 8,
+                        }}
+                        onPress={() =>
+                            navigation.navigate(strings.settingScreenName)
+                        }>
+                        <IcSetting fill='white' />
+                    </TouchableOpacity>
+                </View>
+            )
+        },
     },
 ]
-
-const styles = StyleSheet.create({
-    icOther: {
-        width: 24,
-        height: 24,
-        marginEnd: 4,
-        color: 'black',
-    },
-})

@@ -16,6 +16,7 @@ const strings = {
     postGroupPurchaseScreenName: '공동구매 글 작성',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
+    settingScreenName: '설정',
 }
 
 export default strings
