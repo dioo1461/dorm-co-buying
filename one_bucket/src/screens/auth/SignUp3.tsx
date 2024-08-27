@@ -3,7 +3,6 @@ import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
-import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
     Alert,
@@ -15,6 +14,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const SignUp3: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useContext(AppContext)
@@ -30,7 +30,7 @@ const SignUp3: React.FC = (): React.JSX.Element => {
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const [schoolEmail, setSchoolEmail] = useState('')
 
     const handleSchoolEmailChange = (text: string) => {

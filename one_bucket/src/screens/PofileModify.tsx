@@ -5,7 +5,6 @@ import {
     queryGetMemberInfo,
     queryGetProfile,
 } from '@/hooks/useQuery/profileQuery'
-import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect } from 'react'
 import {
     ActivityIndicator,
@@ -16,6 +15,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from './navigation/NativeStackNavigation'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useContext(AppContext)
@@ -30,7 +30,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
 
     const {
         data: profileData,
@@ -54,10 +54,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     var formattedCreateDate
     if (profileData) {
         formattedCreateDate = formatDate(profileData.createAt)
-    }
-
-    const onProfileModifyButtonClick = () => {
-        navigation.navigate('ProfileModify')
     }
 
     if (profileError || memberInfoError) return <Text>Error...</Text>

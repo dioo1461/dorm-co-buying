@@ -4,7 +4,6 @@ import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import CheckBox from '@react-native-community/checkbox'
-import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     Appearance,
@@ -56,8 +55,6 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         useState(false)
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
-
-    const navigation = useNavigation()
 
     const addImage = () => {
         const options: ImageLibraryOptions = {

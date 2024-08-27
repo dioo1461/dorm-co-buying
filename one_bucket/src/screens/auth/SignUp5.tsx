@@ -9,7 +9,6 @@ import { AppContext } from '@/hooks/useContext/AppContext'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 import { StringFilter } from '@/utils/StringFilter'
-import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     Alert,
@@ -24,6 +23,7 @@ import {
     View,
 } from 'react-native'
 import { ScreenWidth } from 'react-native-elements/dist/helpers'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp5: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useContext(AppContext)
     // 다크모드 변경 감지
@@ -40,7 +40,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const signUpStyles = createSignUpStyles(themeColor)
 
     const { onSignUpFailure } = useContext(AppContext)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -131,9 +131,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                 requestLogin(loginForm)
                     .then(res => {
                         setAccessToken(res.accessToken)
-                        navigation.navigate('SignUp6', {
-                            accessToken: res.accessToken,
-                        })
+                        navigation.navigate('SignUp6')
                     })
                     .catch(err => {
                         console.log(`signUp5 - requestLogin: ${err}`)

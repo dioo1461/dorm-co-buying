@@ -6,11 +6,7 @@
  */
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import {
-    DefaultTheme,
-    NavigationContainer,
-    useNavigation,
-} from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
@@ -31,6 +27,8 @@ import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
+import BoardPost from '@/screens/home/BoardPost'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { removeAccessToken } from '@/utils/accessTokenUtils'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from 'constants/colors'
@@ -253,7 +251,38 @@ function App(): React.JSX.Element {
                                     component={Setting}
                                     options={{
                                         headerLeft: () => {
-                                            const navigation = useNavigation()
+                                            const navigation = stackNavigation()
+                                            return (
+                                                <TouchableOpacity
+                                                    style={{ marginLeft: 16 }}
+                                                    onPress={() =>
+                                                        navigation.goBack()
+                                                    }>
+                                                    <IcAngleLeft
+                                                        fill={
+                                                            themeColor.HEADER_TEXT
+                                                        }
+                                                    />
+                                                </TouchableOpacity>
+                                            )
+                                        },
+                                        headerStyle: {
+                                            backgroundColor:
+                                                themeColor.HEADER_BG,
+                                        },
+                                        headerTitleStyle: {
+                                            color: themeColor.HEADER_TEXT,
+                                            fontFamily: 'NanumGothic',
+                                            fontSize: 18,
+                                        },
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name={strings.boardPostScreenName}
+                                    component={BoardPost}
+                                    options={{
+                                        headerLeft: () => {
+                                            const navigation = stackNavigation()
                                             return (
                                                 <TouchableOpacity
                                                     style={{ marginLeft: 16 }}

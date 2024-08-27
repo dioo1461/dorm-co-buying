@@ -5,7 +5,6 @@ import { AppContext } from '@/hooks/useContext/AppContext'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
     Appearance,
@@ -18,7 +17,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp6: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useContext(AppContext)
     // 다크모드 변경 감지
@@ -34,7 +33,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
 
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const { onSignUpSuccess } = useContext(AppContext)
 
     const [name, setName] = useState('tUser')
@@ -44,9 +43,6 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const [birth, setBirth] = useState('')
 
     const [isDormitory, setIsDormitory] = useState(false)
-
-    type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
-    const { params } = useRoute<SignUp6RouteProp>()
 
     const handleNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)

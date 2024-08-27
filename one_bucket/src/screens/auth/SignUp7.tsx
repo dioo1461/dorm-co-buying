@@ -1,7 +1,6 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
-import { RouteProp, useNavigation } from '@react-navigation/native'
+import { RouteProp } from '@react-navigation/native'
 import React, { useContext, useEffect } from 'react'
 import {
     Appearance,
@@ -24,9 +23,7 @@ const SignUp7: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    const signUpStyles = createSignUpStyles(themeColor)
 
-    const navigation = useNavigation()
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
 

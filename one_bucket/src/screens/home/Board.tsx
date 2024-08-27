@@ -3,6 +3,7 @@ import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
+import { useNavigation } from '@react-navigation/native'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
     Animated,
@@ -49,6 +50,9 @@ const Board: React.FC = (): JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    // const navigation = stackNavigation()
+    const navigation = useNavigation()
+
     const flatlistRef = useRef(null)
     const flatlistData: ItemProps[] = [
         {
@@ -100,7 +104,10 @@ const Board: React.FC = (): JSX.Element => {
         return (
             <View>
                 <TouchableNativeFeedback
-                    background={touchableNativeFeedbackBg()}>
+                    background={touchableNativeFeedbackBg()}
+                    onPress={() =>
+                        navigation.navigate('BoardPost', { title: 'title' })
+                    }>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View style={styles.postContentContainer}>
                             <View>
@@ -281,13 +288,15 @@ const Board: React.FC = (): JSX.Element => {
                 </TouchableOpacity>
             </View>
             <Animated.View
-                style={[
-                    styles.boardTypeToggleButton,
-                    buttonAnimatedStyle,
-                    { backgroundColor: baseColors.WHITE },
-                ]}>
+                style={[styles.boardTypeToggleButton, buttonAnimatedStyle]}>
                 <TouchableOpacity onPress={toggleDropdown}>
-                    <IcPinList fill={baseColors.GRAY_2} />
+                    <IcPinList
+                        fill={
+                            themeColor === lightColors
+                                ? baseColors.GRAY_2
+                                : baseColors.GRAY_0
+                        }
+                    />
                 </TouchableOpacity>
             </Animated.View>
             {/* ### 게시판 선택 dropdown ### */}
@@ -355,8 +364,8 @@ const createStyles = (theme: Icolor) =>
             padding: 6,
             borderRadius: 10,
             zIndex: 2,
-            // backgroundColor:
-            //     theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
+            backgroundColor:
+                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_2,
         },
         boardTypeSelectionWrapper: {
             position: 'absolute',
@@ -365,7 +374,7 @@ const createStyles = (theme: Icolor) =>
             width: 160,
             borderRadius: 10,
             backgroundColor:
-                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
+                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_2,
             elevation: 4,
             zIndex: 2,
         },
@@ -383,7 +392,7 @@ const createStyles = (theme: Icolor) =>
         },
         boardTypeText: {
             fontSize: 14,
-            color: theme.TEXT_SECONDARY,
+            color: theme === lightColors ? theme.TEXT_SECONDARY : theme.TEXT,
             fontFamily: 'NanumGothic',
         },
         boardTypeTextActive: {
