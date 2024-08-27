@@ -2,7 +2,7 @@ import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { setAccessToken } from '@/utils/accessTokenMethods'
+import { setAccessToken } from '@/utils/accessTokenUtils'
 import React, { useContext, useEffect, useRef } from 'react'
 import {
     Appearance,

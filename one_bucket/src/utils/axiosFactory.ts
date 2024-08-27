@@ -1,6 +1,6 @@
 import { BASE_URL } from '@env'
 import axios, { AxiosRequestConfig } from 'axios'
-import { getAccessToken } from './accessTokenMethods'
+import { getAccessToken } from './accessTokenUtils'
 
 export const createAxios = (options: AxiosRequestConfig = {}) => {
     return axios.create({
