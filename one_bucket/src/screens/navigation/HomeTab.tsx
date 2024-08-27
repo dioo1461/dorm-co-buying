@@ -34,7 +34,10 @@ const HomeTab = () => {
                 },
                 tabBarLabelStyle: {
                     color: themeColor.TEXT,
+                    fontFamily: 'NanumGothic',
+                    fontSize: 12,
                 },
+                swipeEnabled: false,
             }}>
             <Tab.Screen name={strings.homeScreenName} component={Home} />
             <Tab.Screen

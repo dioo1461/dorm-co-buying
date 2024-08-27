@@ -20,8 +20,8 @@ import { useNavigation } from '@react-navigation/native'
 import { View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Chat from 'screens/Chat'
-import HomeRoutes from 'screens/home/HomeRoutes'
 import Mypage from 'screens/Mypage'
+import HomeRoutes from 'screens/navigation/HomeRoutes'
 
 export const mainRoutes = [
     {
