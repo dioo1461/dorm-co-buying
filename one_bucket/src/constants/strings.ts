@@ -1,6 +1,9 @@
 const strings = {
     // navigation screen names
     homeScreenName: '홈',
+    groupPurchaseScreenName: '공동구매',
+    tradingScreenName: '중고거래',
+    freeboardScreenName: '자유게시판',
     chatScreenName: '채팅',
     myPageScreenName: 'MY',
 
