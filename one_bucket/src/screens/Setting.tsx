@@ -1,7 +1,14 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
+import {
+    getAlertSoundEnabled,
+    getAlertVibrationEnabled,
+    setAlertSoundEnabled,
+    setAlertVibrationEnabled,
+} from '@/utils/asyncStorageUtils'
 import { useContext, useEffect, useState } from 'react'
 import {
+    ActivityIndicator,
     Appearance,
     ScrollView,
     StyleSheet,
@@ -24,9 +31,44 @@ const Setting: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    const [isAlertSoundEnabled, setIsAlertSoundEnabled] = useState(true)
+    const [isScreenReady, setIsScreenReady] = useState(false)
+    const [isAlertSoundEnabled, setIsAlertSoundEnabled] = useState(false)
     const [isAlertVibrationEnabled, setIsAlertVibrationEnabled] =
         useState(false)
+
+    useEffect(() => {
+        const setAlertParameters = async () => {
+            setIsAlertSoundEnabled(
+                (await getAlertSoundEnabled()) == 'true' ? true : false,
+            )
+            setIsAlertVibrationEnabled(
+                (await getAlertVibrationEnabled()) == 'true' ? true : false,
+            )
+            setIsScreenReady(true)
+        }
+
+        setAlertParameters()
+    }, [])
+
+    if (!isScreenReady)
+        return (
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator
+                    size='large'
+                    color={
+                        themeColor === lightColors
+                            ? baseColors.SCHOOL_BG
+                            : baseColors.GRAY_2
+                    }
+                />
+            </View>
+        )
 
     return (
         <View style={styles.container}>
@@ -76,9 +118,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                                         : baseColors.GRAY_2
                                 }
                                 value={isAlertSoundEnabled}
-                                onValueChange={() =>
+                                onValueChange={() => {
                                     setIsAlertSoundEnabled(!isAlertSoundEnabled)
-                                }
+                                    setAlertSoundEnabled(!isAlertSoundEnabled)
+                                }}
                             />
                         </View>
                     </View>
@@ -112,11 +155,14 @@ const Setting: React.FC = (): React.JSX.Element => {
                                         : baseColors.GRAY_2
                                 }
                                 value={isAlertVibrationEnabled}
-                                onValueChange={() =>
+                                onValueChange={() => {
                                     setIsAlertVibrationEnabled(
                                         !isAlertVibrationEnabled,
                                     )
-                                }
+                                    setAlertVibrationEnabled(
+                                        !isAlertVibrationEnabled,
+                                    )
+                                }}
                             />
                         </View>
                     </View>
