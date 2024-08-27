@@ -41,7 +41,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                     <Text>{item}</Text>
                 </View>
                 <View style={styles.chatRoom_part}>
-                    <Text>10</Text>
+                    <Text style={{color: "black"}}>10</Text>
                 </View>
             </View>
             <TouchableOpacity onPress={room}>
@@ -57,7 +57,6 @@ const Chat: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
             </TouchableOpacity>
-            
         </View>
     )
 
@@ -104,7 +103,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         )
         return null;
     }
-
 
     return (
         <View style={{ flex: 1 }}>

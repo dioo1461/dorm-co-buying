@@ -39,7 +39,7 @@ const Home: React.FC = (): React.JSX.Element => {
                     <Text>{item}</Text>
                 </View>
                 <View style={styles.postBox_part}>
-                    <Text>0/10</Text>
+                    <Text style={{color: "black"}}>0/10</Text>
                 </View>
             </View>
             <View style={styles.postBox_cont}>
@@ -130,49 +130,75 @@ const Home: React.FC = (): React.JSX.Element => {
             </View>
         )
         if (board === 1) return (
-            <FlatList
-                key={'trade'}
-                ref={flatListRef}
-                data={data}
-                renderItem={renderItem_Box}
-                keyExtractor={(item, index) => index.toString()}
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.postList}
-                numColumns={3}
-            />
+            <View>
+                <FlatList
+                    key={'trade'}
+                    ref={flatListRef}
+                    data={data}
+                    renderItem={renderItem_Box}
+                    keyExtractor={(item, index) => index.toString()}
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={onScrollEnd}
+                    contentContainerStyle={styles.postList}
+                    numColumns={3}
+                />
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: "lightyellow" }]}
+                    onPress={() =>
+                        navigation.navigate(strings.postGroupPurchaseScreenName)
+                    }>
+                    <Text style={styles.fabIcon}>+</Text>
+                </TouchableOpacity>
+            </View>
         )
         if (board === 2) return (
-            <FlatList
-                key={'used'}    
-                ref={flatListRef}
-                data={data}
-                renderItem={renderItem_Box}
-                keyExtractor={(item, index) => index.toString()}
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.postList}
-                numColumns={3}
-            />
+            <View>
+                <FlatList
+                    key={'used'}    
+                    ref={flatListRef}
+                    data={data}
+                    renderItem={renderItem_Box}
+                    keyExtractor={(item, index) => index.toString()}
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={onScrollEnd}
+                    contentContainerStyle={styles.postList}
+                    numColumns={3}
+                />
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: "lightgreen" }]}
+                    onPress={() =>
+                        navigation.navigate(strings.postGroupPurchaseScreenName)
+                    }>
+                    <Text style={styles.fabIcon}>+</Text>
+                </TouchableOpacity>
+            </View>
         )
         if (board === 3) return (
-            <FlatList
-                key={'free'}
-                ref={flatListRef}
-                data={data}
-                renderItem={renderItem_Horz}
-                keyExtractor={(item, index) => index.toString()}
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={onScrollEnd}
-                contentContainerStyle={styles.postList}
-                numColumns={1}
-            /> 
+            <View>
+                <FlatList
+                    key={'free'}
+                    ref={flatListRef}
+                    data={data}
+                    renderItem={renderItem_Horz}
+                    keyExtractor={(item, index) => index.toString()}
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={onScrollEnd}
+                    contentContainerStyle={styles.postList}
+                    numColumns={1}
+                />
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: "lightblue" }]}
+                    onPress={() =>
+                        navigation.navigate(strings.postGroupPurchaseScreenName)
+                    }>
+                    <Text style={styles.fabIcon}>+</Text>
+                </TouchableOpacity>
+            </View> 
         )
         return null;
-
     }
 
     return (
@@ -181,38 +207,30 @@ const Home: React.FC = (): React.JSX.Element => {
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
                     <View style={styles.upperFrame}>
                         <TouchableOpacity onPress={home}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "lightblue" : "white"}}>
+                            <View style={{...styles.upperMenu, backgroundColor: board==0 ? "pink" : "white"}}>
 
-                                <Text>홈</Text>
+                                <Text style={{color: "black"}}>홈</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={trade}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "lightblue" : "white"}}>
-                                <Text>공동구매</Text>
+                            <View style={{...styles.upperMenu, backgroundColor: board==1 ? "lightyellow" : "white"}}>
+                                <Text style={{color: "black"}}>공동구매</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={used}>
-                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "lightblue" : "white"}}>
-                                <Text>중고거래</Text>
+                            <View style={{...styles.upperMenu, backgroundColor: board==2 ? "lightgreen" : "white"}}>
+                                <Text style={{color: "black"}}>중고거래</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={free}>
                             <View style={{...styles.upperMenu, backgroundColor: board==3 ? "lightblue" : "white"}}>
-
-                                <Text>자유게시판</Text>
+                                <Text style={{color: "black"}}>자유게시판</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                     <View>{showBoard()}</View>
                 </View>
             </View>
-            <TouchableOpacity
-                style={[styles.fab, { backgroundColor: themeColor.BUTTON_BG }]}
-                onPress={() =>
-                    navigation.navigate(strings.postGroupPurchaseScreenName)
-                }>
-                <Text style={styles.fabIcon}>+</Text>
-            </TouchableOpacity>
         </>
     )
 }
@@ -220,35 +238,30 @@ const Home: React.FC = (): React.JSX.Element => {
 const styles = StyleSheet.create({
     upperFrame: {
         height: 50,
-        backgroundColor: 'white',
         flexDirection: 'row',
     },
     upperMenu: {
         height: 50,
         width: SCREEN_WIDTH / 4,
-        backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
         borderBottomWidth: 0.5,
     },
     homeTitle: {
         height: 30,
-        backgroundColor: 'white',
         marginStart: 14,
     },
     postList: {
-        backgroundColor: 'white',
+        
     },
     postBox: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 1.3,
-        backgroundColor: 'white',
         alignItems: 'center',
     },
     postBox_thumbFrame:{
         width: SCREEN_WIDTH / 3,
         height: SCREEN_WIDTH / 3,
-        backgroundColor: 'white',
         justifyContent: "center",
         alignItems: "center",
     },
@@ -275,25 +288,21 @@ const styles = StyleSheet.create({
     postBox_cont:{
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 0.3,
-        backgroundColor: "white",
         paddingHorizontal: 10,
     },
     postHorz:{
         height: SCREEN_HEIGHT / 8,
-        backgroundColor: "white",
         flexDirection: "row",
     },
     postHorz_cont:{
         height: SCREEN_HEIGHT / 8,
         width: (SCREEN_WIDTH) - (SCREEN_HEIGHT / 8),
-        backgroundColor: "white",
         justifyContent: "center",
         paddingHorizontal: 20,
     },
     postHorz_thumbFrame:{
         height: SCREEN_HEIGHT / 8,
         width: SCREEN_HEIGHT / 8,
-        backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
     },
@@ -312,14 +321,15 @@ const styles = StyleSheet.create({
         height: 56,
         alignItems: 'center',
         justifyContent: 'center',
-        right: 30,
-        bottom: 30,
+        right: 25,
+        bottom: 70,
         borderRadius: 30,
         elevation: 8,
+
     },
     fabIcon: {
         fontSize: 40,
-        color: 'white',
+        color: 'black',
     },
 })
 
