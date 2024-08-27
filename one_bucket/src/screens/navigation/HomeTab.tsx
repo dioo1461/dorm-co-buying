@@ -4,6 +4,7 @@ import { AppContext } from '@/hooks/useContext/AppContext'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { useContext, useEffect } from 'react'
 import { Appearance } from 'react-native'
+import Board from '../home/Board'
 import GroupPurchase from '../home/GroupPurchase'
 import Home from '../home/Home'
 
@@ -48,10 +49,7 @@ const HomeTab = () => {
                 name={strings.tradingScreenName}
                 component={GroupPurchase}
             />
-            <Tab.Screen
-                name={strings.freeboardScreenName}
-                component={GroupPurchase}
-            />
+            <Tab.Screen name={strings.freeboardScreenName} component={Board} />
         </Tab.Navigator>
     )
 }

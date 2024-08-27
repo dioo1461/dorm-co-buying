@@ -131,19 +131,19 @@ const GroupPurchase: React.FC = (): JSX.Element => {
                                     style={{
                                         flexDirection: 'row',
                                         alignItems: 'center',
-                                        marginTop: 6,
+                                        marginTop: 10,
                                     }}>
                                     <IcLocation />
                                     <Text style={styles.postLocation}>
-                                        {`${data.location}  ·  ${data.deadline}일 남음`}
+                                        {`${data.location}ㆍ${data.deadline}일 남음`}
                                     </Text>
                                 </View>
-                                <View style={{ marginTop: 18 }}>
+                                <View style={{ marginTop: 10 }}>
                                     <Text style={styles.postPrice}>{`${
                                         data.amount
                                     }개  ${data.price.toLocaleString()} 원`}</Text>
                                 </View>
-                                <View style={{ marginTop: 8 }}>
+                                <View style={{ marginTop: 10 }}>
                                     <Text
                                         style={styles.postEachPrice}>{`개당 ${(
                                         data.price / data.amount
@@ -214,7 +214,7 @@ const GroupPurchase: React.FC = (): JSX.Element => {
                                 </View>
                             )}
                             <Text style={styles.postParticipants}>
-                                {`${data.participants} / ${data.maxParticipants}`}
+                                {`${data.participants} / ${data.maxParticipants}명`}
                             </Text>
                         </View>
                         <View style={styles.line} />
@@ -305,13 +305,12 @@ const GroupPurchase: React.FC = (): JSX.Element => {
                     ref={flatlistRef}
                     data={flatlistData}
                     renderItem={renderItem}
-                    keyExtractor={item => item.id}></FlatList>
+                    keyExtractor={item => item.id}
+                />
             </View>
         </View>
     )
 }
-
-export default GroupPurchase
 
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
@@ -328,7 +327,10 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 30,
             backgroundColor: baseColors.GRAY_2,
         },
-        unselectedCategoryButton: { backgroundColor: baseColors.GRAY_2 },
+        unselectedCategoryButton: {
+            backgroundColor:
+                theme === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
+        },
         selectedCategoryButton: { backgroundColor: baseColors.SCHOOL_BG },
         categoryText: {
             color: baseColors.WHITE,
@@ -345,7 +347,7 @@ const createStyles = (theme: Icolor) =>
             paddingStart: 6,
         },
         postImage: { width: 100, height: 100, borderRadius: 10, margin: 10 },
-        postContentContainer: { flex: 6, margin: 0, flexDirection: 'row' },
+        postContentContainer: { flex: 6, marginEnd: 20, flexDirection: 'row' },
         line: {
             borderBottomWidth: 1,
             borderBottomColor:
@@ -370,7 +372,7 @@ const createStyles = (theme: Icolor) =>
         },
         postPrice: {
             color: theme.TEXT,
-            fontSize: 15,
+            fontSize: 16,
             fontFamily: 'NanumGothic-Bold',
         },
         postEachPrice: {
@@ -384,3 +386,5 @@ const createStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic',
         },
     })
+
+export default GroupPurchase
