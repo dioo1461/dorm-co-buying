@@ -1,16 +1,19 @@
 import IcComment from '@/assets/drawable/ic-comment.svg'
+import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
+    Animated,
     Appearance,
     FlatList,
-    LayoutChangeEvent,
     ListRenderItem,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
+    TouchableOpacity,
     View,
 } from 'react-native'
 
@@ -93,10 +96,9 @@ const Board: React.FC = (): JSX.Element => {
     }
 
     const Post = (data: ItemProps) => {
-        const truncateText = (event: LayoutChangeEvent) => {
-            const { height } = event.nativeEvent.layout
-        }
-
+        // const truncateText = (event: LayoutChangeEvent) => {
+        //     const { height } = event.nativeEvent.layout
+        // }
         return (
             <View>
                 <TouchableNativeFeedback
@@ -152,7 +154,6 @@ const Board: React.FC = (): JSX.Element => {
                                     { backgroundColor: 'white' },
                                 ]}
                             />
-
                             <View
                                 style={{
                                     justifyContent: 'flex-end',
@@ -186,6 +187,17 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
+    const FlatlistHeader = () => {
+        return (
+            <View>
+                <View style={styles.boardTypeContainer}>
+                    <Text style={styles.boardTypeLabel}>전체 게시판</Text>
+                </View>
+                <View style={styles.line} />
+            </View>
+        )
+    }
+
     const handleCategorySelect = (category: Category) => {
         if (currentCategory === category) {
             setCurrentCategory(Category.none)
@@ -198,10 +210,54 @@ const Board: React.FC = (): JSX.Element => {
         <Post {...item} />
     )
 
+    const boardTypes = [
+        '전체게시판',
+        '자유게시판',
+        '비밀게시판',
+        '헬스 및 운동',
+        '취미 및 여가',
+    ]
+
+    const [expanded, setExpanded] = useState(false)
+    const animation = useRef(new Animated.Value(0)).current
+
+    const toggleDropdown = () => {
+        setExpanded(!expanded)
+        Animated.timing(animation, {
+            toValue: expanded ? 0 : 1,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const dropdownAnimatedStyle = {
+        height: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 200],
+        }),
+    }
+
+    const buttonColor = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            themeColor === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
+            baseColors.SCHOOL_BG,
+        ],
+    })
+
+    const iconColor = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            themeColor === lightColors ? baseColors.GRAY_2 : baseColors.GRAY_2,
+            themeColor.BUTTON_TEXT,
+        ],
+    })
+
     return (
         <View style={styles.container}>
             <View style={styles.flatList}>
                 <FlatList
+                    ListHeaderComponent={FlatlistHeader}
                     showsVerticalScrollIndicator={false}
                     ref={flatlistRef}
                     data={flatlistData}
@@ -209,6 +265,43 @@ const Board: React.FC = (): JSX.Element => {
                     keyExtractor={item => item.id}
                 />
             </View>
+            <Animated.View
+                style={[
+                    styles.boardTypeToggleButton,
+                    { backgroundColor: buttonColor },
+                ]}>
+                <TouchableOpacity onPress={toggleDropdown}>
+                    <IcPinList fill={baseColors.WHITE} />
+                </TouchableOpacity>
+            </Animated.View>
+            <Animated.View
+                style={[
+                    styles.boardTypeSelectionWrapper,
+                    dropdownAnimatedStyle,
+                ]}>
+                <ScrollView
+                    style={styles.boardTypeSelectionContainer}
+                    contentContainerStyle={styles.boardTypeSelectionContent}
+                    showsVerticalScrollIndicator={false}>
+                    {boardTypes.map((boardType, index) => (
+                        <TouchableNativeFeedback
+                            key={index}
+                            background={touchableNativeFeedbackBg()}
+                            onPress={() => handleCategorySelect(index)}>
+                            <View style={styles.boardTypeItem}>
+                                <Text
+                                    style={[
+                                        styles.boardTypeText,
+                                        currentCategory === index &&
+                                            styles.boardTypeTextActive,
+                                    ]}>
+                                    {boardType}
+                                </Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                    ))}
+                </ScrollView>
+            </Animated.View>
         </View>
     )
 }
@@ -218,6 +311,57 @@ const createStyles = (theme: Icolor) =>
         container: { flex: 1 },
         flatList: {
             flex: 11,
+        },
+        boardTypeContainer: {
+            marginTop: 4,
+            padding: 20,
+        },
+        boardTypeLabel: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
+        },
+        boardTypeToggleButton: {
+            position: 'absolute',
+            top: 14,
+            right: 14,
+            padding: 6,
+            borderRadius: 10,
+            // backgroundColor:
+            //     theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
+            elevation: 6,
+        },
+        boardTypeSelectionWrapper: {
+            position: 'absolute',
+            top: 60,
+            right: 14,
+            width: 160,
+            borderRadius: 10,
+            backgroundColor:
+                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
+            elevation: 4,
+            zIndex: 1,
+        },
+        boardTypeSelectionContainer: {
+            maxHeight: 200,
+        },
+        boardTypeSelectionContent: {
+            paddingVertical: 5,
+        },
+        boardTypeItem: {
+            paddingVertical: 12,
+            paddingHorizontal: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        boardTypeText: {
+            fontSize: 14,
+            color: theme.TEXT_SECONDARY,
+            fontFamily: 'NanumGothic',
+        },
+        boardTypeTextActive: {
+            color: baseColors.SCHOOL_BG,
+            fontFamily: 'NanumGothic-Bold',
         },
         postContainer: {
             flex: 1,
