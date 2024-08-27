@@ -244,14 +244,6 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    const iconColor = animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            themeColor === lightColors ? baseColors.GRAY_2 : baseColors.GRAY_2,
-            themeColor.BUTTON_TEXT,
-        ],
-    })
-
     return (
         <View style={styles.container}>
             <View style={styles.flatList}>
@@ -264,12 +256,21 @@ const Board: React.FC = (): JSX.Element => {
                     keyExtractor={item => item.id}
                 />
             </View>
-            <Animated.View style={[styles.backdrop, backdropAnimatedStyle]}>
+            {/* ### backdrop ### */}
+            <Animated.View
+                style={[
+                    styles.backdrop,
+                    backdropAnimatedStyle,
+                    { pointerEvents: expanded ? 'auto' : 'none' },
+                ]}>
                 <TouchableOpacity
                     style={{ flex: 1 }}
+                    disabled={!expanded}
                     onPress={toggleDropdown}
                 />
             </Animated.View>
+
+            {/* ### 게시판 선택 버튼 ### */}
             <View
                 style={[
                     styles.boardTypeToggleButton,
@@ -289,6 +290,7 @@ const Board: React.FC = (): JSX.Element => {
                     <IcPinList fill={baseColors.GRAY_2} />
                 </TouchableOpacity>
             </Animated.View>
+            {/* ### 게시판 선택 dropdown ### */}
             <Animated.View
                 style={[
                     styles.boardTypeSelectionWrapper,
