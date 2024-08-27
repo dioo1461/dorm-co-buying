@@ -14,10 +14,6 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-one_bucket-one_bucketTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-one_bucket-one_bucketTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		878DDA9B91B240D3B585BCB7 /* NanumGothic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1DADB0CA57824E3C9D66712D /* NanumGothic.otf */; };
-		F19AE258E1344846854E2628 /* NanumGothic-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D9FE944961194CD094DBFA25 /* NanumGothic-Bold.otf */; };
-		8CBB4C05ED984739B8E29A55 /* NanumGothic-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D3084C5FED484806BF103FA1 /* NanumGothic-ExtraBold.otf */; };
-		0A285744DB50422AB88D2CB1 /* NanumGothic-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = CF3152D471FE4C698BAEA5B2 /* NanumGothic-Light.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,10 +44,6 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = one_bucket/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-one_bucket-one_bucketTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-one_bucket-one_bucketTests.release.xcconfig"; path = "Target Support Files/Pods-one_bucket-one_bucketTests/Pods-one_bucket-one_bucketTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		1DADB0CA57824E3C9D66712D /* NanumGothic.otf */ = {isa = PBXFileReference; name = "NanumGothic.otf"; path = "../src/assets/fonts/NanumGothic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D9FE944961194CD094DBFA25 /* NanumGothic-Bold.otf */ = {isa = PBXFileReference; name = "NanumGothic-Bold.otf"; path = "../src/assets/fonts/NanumGothic-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D3084C5FED484806BF103FA1 /* NanumGothic-ExtraBold.otf */ = {isa = PBXFileReference; name = "NanumGothic-ExtraBold.otf"; path = "../src/assets/fonts/NanumGothic-ExtraBold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		CF3152D471FE4C698BAEA5B2 /* NanumGothic-Light.otf */ = {isa = PBXFileReference; name = "NanumGothic-Light.otf"; path = "../src/assets/fonts/NanumGothic-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,7 +122,6 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
-				0A13C99721E64C71B866DE6C /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -156,18 +147,6 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		0A13C99721E64C71B866DE6C /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				1DADB0CA57824E3C9D66712D /* NanumGothic.otf */,
-				D9FE944961194CD094DBFA25 /* NanumGothic-Bold.otf */,
-				D3084C5FED484806BF103FA1 /* NanumGothic-ExtraBold.otf */,
-				CF3152D471FE4C698BAEA5B2 /* NanumGothic-Light.otf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -264,10 +243,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				878DDA9B91B240D3B585BCB7 /* NanumGothic.otf in Resources */,
-				F19AE258E1344846854E2628 /* NanumGothic-Bold.otf in Resources */,
-				8CBB4C05ED984739B8E29A55 /* NanumGothic-ExtraBold.otf in Resources */,
-				0A285744DB50422AB88D2CB1 /* NanumGothic-Light.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Home renders screen Home 1`] = `
-<View>
-  <Text>
-    home
-  </Text>
-</View>
-`;

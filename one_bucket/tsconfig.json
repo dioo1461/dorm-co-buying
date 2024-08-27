@@ -1,11 +1,10 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./src",
-        "paths": {
-            "@/*": ["./*"],
-            "@const/*": ["const/*"],
-            "@icons/*": ["assets/icons/*"]
-        }
-    },
-    "extends": "@react-native/typescript-config/tsconfig.json"
+  "compilerOptions": {
+    "baseUrl": "./src",
+    // "paths": {
+    //   "@/*": ["./*"],
+    //   "@const/*": ["const/*"],
+    // }
+  },
+  "extends": "@react-native/typescript-config/tsconfig.json"
 }

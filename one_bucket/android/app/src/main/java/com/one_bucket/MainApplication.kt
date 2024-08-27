@@ -11,7 +11,6 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
-// import com.facebook.react.modules.network.OkHttpClientProvider
 
 class MainApplication : Application(), ReactApplication {
 
@@ -41,10 +40,6 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    // OkHttpClientProvider.setOkHttpClientFactory(new IgnoreSSLFactory());
-    // if (!BuildConfig.REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS) {
-    //   ReactFeatureFlags.unstable_useRuntimeSchedulerAlways = false;
-    // }
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 }
