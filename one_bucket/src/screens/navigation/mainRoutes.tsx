@@ -25,7 +25,7 @@ import HomeRoutes from 'screens/navigation/HomeRoutes'
 
 export const mainRoutes = [
     {
-        name: strings.homeScreenName,
+        name: strings.homeRouteScreenName,
         component: HomeRoutes,
         activeIconLight: <IcTabHomeActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,

@@ -1,5 +1,6 @@
 const strings = {
     // navigation screen names
+    homeRouteScreenName: 'homeRoute',
     homeScreenName: '홈',
     groupPurchaseScreenName: '공동구매',
     tradingScreenName: '중고거래',
