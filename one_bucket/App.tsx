@@ -151,6 +151,8 @@ function App(): React.JSX.Element {
         const ac = new AbortController()
 
         const checkLoginStatus = async () => {
+            SplashScreen.hide()
+
             await getMemberInfo()
                 .then(response => {
                     if (response) {
@@ -195,7 +197,7 @@ function App(): React.JSX.Element {
                         themeColor,
                         setThemeColor,
                     }}>
-                    {isLoggedIn ? (
+                    {true ? (
                         <NavigationContainer
                             theme={
                                 themeColor === lightColors

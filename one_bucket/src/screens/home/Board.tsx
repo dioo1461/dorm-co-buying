@@ -86,8 +86,6 @@ const Board: React.FC = (): JSX.Element => {
         },
     ]
 
-    const [currentCategory, setCurrentCategory] = useState(Category.none)
-
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
             themeColor === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
@@ -191,25 +189,20 @@ const Board: React.FC = (): JSX.Element => {
         return (
             <View>
                 <View style={styles.boardTypeContainer}>
-                    <Text style={styles.boardTypeLabel}>전체 게시판</Text>
+                    <Text style={styles.boardTypeLabel}>
+                        {boardTypes[currentBoardType]}
+                    </Text>
                 </View>
                 <View style={styles.line} />
             </View>
         )
     }
 
-    const handleCategorySelect = (category: Category) => {
-        if (currentCategory === category) {
-            setCurrentCategory(Category.none)
-            return
-        }
-        setCurrentCategory(category)
-    }
-
     const renderItem: ListRenderItem<ItemProps> = ({ item }) => (
         <Post {...item} />
     )
 
+    const [currentBoardType, setCurrentBoardType] = useState(0)
     const boardTypes = [
         '전체게시판',
         '자유게시판',
@@ -237,13 +230,19 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    const buttonColor = animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            themeColor === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
-            baseColors.SCHOOL_BG,
-        ],
-    })
+    const buttonAnimatedStyle = {
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 0],
+        }),
+    }
+
+    const backdropAnimatedStyle = {
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.5],
+        }),
+    }
 
     const iconColor = animation.interpolate({
         inputRange: [0, 1],
@@ -265,13 +264,29 @@ const Board: React.FC = (): JSX.Element => {
                     keyExtractor={item => item.id}
                 />
             </View>
-            <Animated.View
+            <Animated.View style={[styles.backdrop, backdropAnimatedStyle]}>
+                <TouchableOpacity
+                    style={{ flex: 1 }}
+                    onPress={toggleDropdown}
+                />
+            </Animated.View>
+            <View
                 style={[
                     styles.boardTypeToggleButton,
-                    { backgroundColor: buttonColor },
+                    { backgroundColor: baseColors.SCHOOL_BG, elevation: 6 },
                 ]}>
                 <TouchableOpacity onPress={toggleDropdown}>
                     <IcPinList fill={baseColors.WHITE} />
+                </TouchableOpacity>
+            </View>
+            <Animated.View
+                style={[
+                    styles.boardTypeToggleButton,
+                    buttonAnimatedStyle,
+                    { backgroundColor: baseColors.WHITE },
+                ]}>
+                <TouchableOpacity onPress={toggleDropdown}>
+                    <IcPinList fill={baseColors.GRAY_2} />
                 </TouchableOpacity>
             </Animated.View>
             <Animated.View
@@ -287,12 +302,15 @@ const Board: React.FC = (): JSX.Element => {
                         <TouchableNativeFeedback
                             key={index}
                             background={touchableNativeFeedbackBg()}
-                            onPress={() => handleCategorySelect(index)}>
+                            onPress={() => {
+                                setCurrentBoardType(index)
+                                toggleDropdown()
+                            }}>
                             <View style={styles.boardTypeItem}>
                                 <Text
                                     style={[
                                         styles.boardTypeText,
-                                        currentCategory === index &&
+                                        currentBoardType === index &&
                                             styles.boardTypeTextActive,
                                     ]}>
                                     {boardType}
@@ -312,6 +330,13 @@ const createStyles = (theme: Icolor) =>
         flatList: {
             flex: 11,
         },
+        backdrop: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'black',
+            zIndex: 1,
+        },
         boardTypeContainer: {
             marginTop: 4,
             padding: 20,
@@ -327,9 +352,9 @@ const createStyles = (theme: Icolor) =>
             right: 14,
             padding: 6,
             borderRadius: 10,
+            zIndex: 2,
             // backgroundColor:
             //     theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
-            elevation: 6,
         },
         boardTypeSelectionWrapper: {
             position: 'absolute',
@@ -340,7 +365,7 @@ const createStyles = (theme: Icolor) =>
             backgroundColor:
                 theme === lightColors ? baseColors.WHITE : baseColors.GRAY_3,
             elevation: 4,
-            zIndex: 1,
+            zIndex: 2,
         },
         boardTypeSelectionContainer: {
             maxHeight: 200,
