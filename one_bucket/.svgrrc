@@ -1,6 +1,6 @@
 {
     "replaceAttrValues": {
         "currentColor": "{props.fill}",
-        "secondaryColor": "props.fillSecondary"
+        "secondaryColor": "{props.fillSecondary}"
     }
 }

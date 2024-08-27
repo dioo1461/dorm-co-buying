@@ -10,7 +10,6 @@ import React, { useContext, useEffect } from 'react'
 import {
     ActivityIndicator,
     Appearance,
-    Button,
     Dimensions,
     StyleSheet,
     Text,
@@ -114,7 +113,6 @@ const Mypage = (): React.JSX.Element => {
                     <Text style={styles.activityText}>내가 쓴 글</Text>
                 </TouchableOpacity>
             </View>
-            <Button title='Logout' onPress={onLogOut} />
         </View>
     )
 }

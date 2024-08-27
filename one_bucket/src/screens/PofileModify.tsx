@@ -30,7 +30,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-
     const navigation = useNavigation()
 
     const {
@@ -81,7 +80,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <IcAngleLeft
                         style={styles.backButtonImage}
-                        fill={baseColors.GRAY_1}
+                        fill={baseColors.GRAY_2}
                     />
                 </TouchableOpacity>
             </View>

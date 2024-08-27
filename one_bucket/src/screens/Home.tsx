@@ -1,13 +1,9 @@
-import { darkColors, lightColors } from '@/constants/colors'
 import strings from '@/constants/strings'
-import { AppContext } from '@/hooks/useContext/AppContext'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
-    Appearance,
     Dimensions,
     FlatList,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -76,9 +72,10 @@ const Home: React.FC = (): React.JSX.Element => {
     const free = () => setBoard(3)
 
     const showBoard = () => {
-        if (board === 0) return (
-            <View>
-                <View style={styles.homeTitle}>
+        if (board === 0)
+            return (
+                <View>
+                    <View style={styles.homeTitle}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                             추천 거래글
                         </Text>
@@ -155,7 +152,7 @@ const Home: React.FC = (): React.JSX.Element => {
         if (board === 2) return (
             <View>
                 <FlatList
-                    key={'used'}    
+                    key={'used'}
                     ref={flatListRef}
                     data={data}
                     renderItem={renderItem_Box}
@@ -225,6 +222,7 @@ const Home: React.FC = (): React.JSX.Element => {
                         <TouchableOpacity onPress={free}>
                             <View style={{...styles.upperMenu, backgroundColor: board==3 ? "lightblue" : "white"}}>
                                 <Text style={{color: "black"}}>자유게시판</Text>
+
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -259,59 +257,62 @@ const styles = StyleSheet.create({
         height: (SCREEN_WIDTH / 3) * 1.3,
         alignItems: 'center',
     },
-    postBox_thumbFrame:{
+    postBox_thumbFrame: {
         width: SCREEN_WIDTH / 3,
         height: SCREEN_WIDTH / 3,
         justifyContent: "center",
         alignItems: "center",
+
     },
-    postBox_thumb:{
-        width: (SCREEN_WIDTH / 3) - 5,
-        height: (SCREEN_WIDTH / 3) - 5,
+    postBox_thumb: {
+        width: SCREEN_WIDTH / 3 - 5,
+        height: SCREEN_WIDTH / 3 - 5,
         backgroundColor: 'lightgray',
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 10,
         borderWidth: 0,
     },
-    postBox_part:{
+    postBox_part: {
         width: 50,
         height: 20,
         marginTop: -20,
-        marginLeft: (SCREEN_WIDTH / 6) + 10,
-        backgroundColor: "lightblue",
-        justifyContent: "center",
-        alignItems: "center",
+        marginLeft: SCREEN_WIDTH / 6 + 10,
+        backgroundColor: 'lightblue',
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 5,
         borderWidth: 0.3,
     },
-    postBox_cont:{
+    postBox_cont: {
         width: SCREEN_WIDTH / 3,
         height: (SCREEN_WIDTH / 3) * 0.3,
         paddingHorizontal: 10,
     },
-    postHorz:{
+    postHorz: {
         height: SCREEN_HEIGHT / 8,
         flexDirection: "row",
+
     },
-    postHorz_cont:{
+    postHorz_cont: {
         height: SCREEN_HEIGHT / 8,
         width: (SCREEN_WIDTH) - (SCREEN_HEIGHT / 8),
         justifyContent: "center",
         paddingHorizontal: 20,
     },
-    postHorz_thumbFrame:{
+    postHorz_thumbFrame: {
         height: SCREEN_HEIGHT / 8,
         width: SCREEN_HEIGHT / 8,
         justifyContent: "center",
         alignItems: "center",
+
     },
-    postHorz_thumb:{
-        height: (SCREEN_HEIGHT / 8) - 5,
-        width: (SCREEN_HEIGHT / 8) - 5,
-        backgroundColor: "lightgray",
-        justifyContent: "center",
-        alignItems: "center",
+    postHorz_thumb: {
+        height: SCREEN_HEIGHT / 8 - 5,
+        width: SCREEN_HEIGHT / 8 - 5,
+        backgroundColor: 'lightgray',
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 10,
         borderWidth: 0,
     },

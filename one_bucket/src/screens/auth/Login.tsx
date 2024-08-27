@@ -2,7 +2,7 @@ import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { setAccessToken } from '@/utils/accessTokenMethods'
+import { setAccessToken } from '@/utils/accessTokenUtils'
 import React, { useContext, useEffect, useRef } from 'react'
 import {
     Appearance,
@@ -68,7 +68,10 @@ const Login: React.FC = (): React.JSX.Element => {
                     alignItems: 'center',
                     marginBottom: 50,
                 }}>
-                <Image source={require('@/assets/drawable/login_logo.png')} />
+                <Image
+                    source={require('@/assets/drawable/login_logo.png')}
+                    style={styles.logoImage}
+                />
             </View>
             <View
                 style={{
@@ -147,6 +150,10 @@ const createStyles = (theme: Icolor) =>
             justifyContent: 'center',
             alignItems: 'center',
             paddingHorizontal: 20,
+        },
+        logoImage: {
+            width: 180,
+            height: 166,
         },
         textInput: {
             color: theme.TEXT,

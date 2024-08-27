@@ -6,7 +6,11 @@
  */
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { NavigationContainer } from '@react-navigation/native'
+import {
+    DefaultTheme,
+    NavigationContainer,
+    useNavigation,
+} from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
@@ -18,6 +22,7 @@ import { useProfileStore } from '@/hooks/useStore/useProfileStore'
 import ProfileModify from '@/screens/PofileModify'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
+import Setting from '@/screens/Setting'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
 import SignUp2 from '@/screens/auth/SignUp2'
@@ -26,8 +31,9 @@ import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
-import { removeAccessToken } from '@/utils/accessTokenMethods'
-import { darkColors, Icolor, lightColors } from 'constants/colors'
+import { removeAccessToken } from '@/utils/accessTokenUtils'
+import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
+import { baseColors, darkColors, Icolor, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -190,7 +196,12 @@ function App(): React.JSX.Element {
                         setThemeColor,
                     }}>
                     {isLoggedIn ? (
-                        <NavigationContainer>
+                        <NavigationContainer
+                            theme={
+                                themeColor === lightColors
+                                    ? lightNavTheme
+                                    : darkNavTheme
+                            }>
                             <Stack.Navigator>
                                 <Stack.Screen
                                     name='Main'
@@ -201,15 +212,19 @@ function App(): React.JSX.Element {
                                     options={{
                                         headerStyle: {
                                             backgroundColor:
-                                                themeColor.BUTTON_BG,
+                                                themeColor === lightColors
+                                                    ? themeColor.HEADER_BG
+                                                    : themeColor.HEADER_BG,
                                         },
-                                        headerTintColor: themeColor.BUTTON_TEXT,
+                                        headerTintColor: themeColor.HEADER_TEXT,
                                         headerRight: () => (
                                             <View>
                                                 <TouchableOpacity>
                                                     <Text
                                                         style={{
-                                                            color: 'white',
+                                                            color: themeColor.HEADER_TEXT,
+                                                            fontFamily:
+                                                                'NanumGothic',
                                                             marginEnd: 16,
                                                         }}>
                                                         임시저장
@@ -231,10 +246,46 @@ function App(): React.JSX.Element {
                                     component={ProfileModify}
                                     options={{ headerShown: false }}
                                 />
+                                <Stack.Screen
+                                    name={strings.settingScreenName}
+                                    component={Setting}
+                                    options={{
+                                        headerLeft: () => {
+                                            const navigation = useNavigation()
+                                            return (
+                                                <TouchableOpacity
+                                                    style={{ marginLeft: 16 }}
+                                                    onPress={() =>
+                                                        navigation.goBack()
+                                                    }>
+                                                    <IcAngleLeft
+                                                        fill={
+                                                            themeColor.HEADER_TEXT
+                                                        }
+                                                    />
+                                                </TouchableOpacity>
+                                            )
+                                        },
+                                        headerStyle: {
+                                            backgroundColor:
+                                                themeColor.HEADER_BG,
+                                        },
+                                        headerTitleStyle: {
+                                            color: themeColor.HEADER_TEXT,
+                                            fontFamily: 'NanumGothic',
+                                            fontSize: 18,
+                                        },
+                                    }}
+                                />
                             </Stack.Navigator>
                         </NavigationContainer>
                     ) : (
-                        <NavigationContainer>
+                        <NavigationContainer
+                            theme={
+                                themeColor === lightColors
+                                    ? lightNavTheme
+                                    : darkNavTheme
+                            }>
                             <Stack.Navigator
                                 screenOptions={{ headerShown: false }}
                                 initialRouteName={strings.loginScreenName}>
@@ -284,12 +335,19 @@ function App(): React.JSX.Element {
     )
 }
 
-// const navTheme = {
-//     ...DefaultTheme,
-//     colors: {
-//         ...DefaultTheme.colors,
-//         background: 'white',
-//     },
-// }
+const lightNavTheme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        background: baseColors.WHITE,
+    },
+}
 
+const darkNavTheme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        background: baseColors.DARK_BG,
+    },
+}
 export default App
