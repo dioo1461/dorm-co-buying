@@ -5,7 +5,7 @@ const strings = {
     groupPurchaseScreenName: '공동구매',
     tradingScreenName: '중고거래',
     freeboardScreenName: '게시판',
-    boardPostScreenName: 'BoardPost',
+    boardCreatePostScreenName: 'BoardCreatePost',
 
     chatScreenName: '채팅',
     myPageScreenName: 'MY',

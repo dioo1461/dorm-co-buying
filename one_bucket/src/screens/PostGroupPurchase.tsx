@@ -67,13 +67,13 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
-            console.log('response: ' + response.assets)
-            console.log('list: ' + imageUriList)
+            const newImageUriList: string[] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    setImageUriList([...imageUriList, asset.uri])
+                    newImageUriList.push(asset.uri)
                 }
             })
+            setImageUriList([...imageUriList, ...newImageUriList])
         })
     }
 

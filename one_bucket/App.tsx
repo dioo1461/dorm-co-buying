@@ -26,7 +26,7 @@ import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
-import BoardPost from '@/screens/home/BoardPost'
+import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
@@ -42,10 +42,10 @@ function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
     const loginState = useBoundStore(state => state.loginState)
     const setLoginState = useBoundStore(state => state.setLoginState)
-    const isDarkMode = useColorScheme() === 'dark'
 
     const themeColor = useBoundStore(state => state.themeColor)
     const setThemeColor = useBoundStore(state => state.setThemeColor)
+    const isDarkMode = useColorScheme() === 'dark'
 
     useEffect(() => {
         setThemeColor(isDarkMode ? darkColors : lightColors)
@@ -208,8 +208,8 @@ function App(): React.JSX.Element {
                                 }}
                             />
                             <Stack.Screen
-                                name={strings.boardPostScreenName}
-                                component={BoardPost}
+                                name={strings.boardCreatePostScreenName}
+                                component={BoardCreatePost}
                                 options={{
                                     headerLeft: () => {
                                         const navigation = stackNavigation()

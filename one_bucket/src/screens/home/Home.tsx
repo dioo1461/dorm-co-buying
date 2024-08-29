@@ -15,7 +15,6 @@ import { stackNavigation } from '../navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): JSX.Element => {
-    // const { themeColor, setThemeColor } = useContext(AppContext)
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
