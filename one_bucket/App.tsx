@@ -14,7 +14,7 @@ import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { useProfileStore } from '@/hooks/useStore/useProfileStore'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import ProfileModify from '@/screens/PofileModify'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
@@ -42,7 +42,8 @@ const Tab = createBottomTabNavigator()
 
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const loginState = useBoundStore(state => state.loginState)
+    const setLoginState = useBoundStore(state => state.setLoginState)
     const isDarkMode = useColorScheme() === 'dark'
 
     const [themeColor, setThemeColor] = useState<Icolor>(
@@ -88,17 +89,19 @@ function App(): React.JSX.Element {
         )
     }
 
-    const onLogOut = async () => {
+    const onLogOut = async (showToast: boolean = true) => {
         await removeAccessToken()
-        setIsLoggedIn(false)
-        Toast.show({
-            type: 'success',
-            text1: '성공적으로 로그아웃하였습니다.',
-        })
+        setLoginState(false)
+        if (showToast) {
+            Toast.show({
+                type: 'success',
+                text1: '성공적으로 로그아웃하였습니다.',
+            })
+        }
     }
 
     const onLogInSuccess = async () => {
-        setIsLoggedIn(true)
+        setLoginState(true)
         Toast.show({
             type: 'success',
             text1: '성공적으로 로그인하였습니다.',
@@ -106,7 +109,7 @@ function App(): React.JSX.Element {
     }
 
     const onLoginFailure = async () => {
-        setIsLoggedIn(false)
+        setLoginState(false)
         Toast.show({
             type: 'error',
             text1: '로그인에 실패하였습니다.',
@@ -147,20 +150,18 @@ function App(): React.JSX.Element {
 
     useEffect(() => {
         const ac = new AbortController()
-
+        console.log(useBoundStore.getState().loginState)
         const checkLoginStatus = async () => {
-            SplashScreen.hide()
-
             await getMemberInfo()
                 .then(response => {
                     if (response) {
-                        setIsLoggedIn(true)
                         // memberInfo를 profileStore에 저장
-                        useProfileStore.setState({ memberInfo: response })
+
+                        setLoginState(true)
                     }
                 })
                 .catch(error => {
-                    setIsLoggedIn(false)
+                    setLoginState(false)
                     if (
                         error.response.status === 401 ||
                         error.response.status === 403
@@ -195,7 +196,7 @@ function App(): React.JSX.Element {
                         themeColor,
                         setThemeColor,
                     }}>
-                    {true ? (
+                    {loginState ? (
                         <NavigationContainer
                             theme={
                                 themeColor === lightColors

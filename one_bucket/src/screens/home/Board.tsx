@@ -3,7 +3,6 @@ import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AppContext } from '@/hooks/useContext/AppContext'
-import { useNavigation } from '@react-navigation/native'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
     Animated,
@@ -17,6 +16,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const enum Category {
     'none' = 0,
@@ -50,8 +50,8 @@ const Board: React.FC = (): JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    // const navigation = stackNavigation()
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
+    // const navigation = useNavigation()
 
     const flatlistRef = useRef(null)
     const flatlistData: ItemProps[] = [
@@ -105,9 +105,7 @@ const Board: React.FC = (): JSX.Element => {
             <View>
                 <TouchableNativeFeedback
                     background={touchableNativeFeedbackBg()}
-                    onPress={() =>
-                        navigation.navigate('BoardPost', { title: 'title' })
-                    }>
+                    onPress={() => navigation.navigate('BoardPost', data)}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View style={styles.postContentContainer}>
                             <View>
@@ -331,6 +329,11 @@ const Board: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
             </Animated.View>
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('CreateBoardPost')}>
+                <Text style={styles.fabIcon}>+</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -451,6 +454,22 @@ const createStyles = (theme: Icolor) =>
             color: baseColors.LIGHT_BLUE,
             fontSize: 12,
             fontFamily: 'NanumGothic-Bold',
+        },
+        fab: {
+            backgroundColor: theme.BUTTON_BG,
+            position: 'absolute',
+            width: 56,
+            height: 56,
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 25,
+            bottom: 70,
+            borderRadius: 30,
+            elevation: 8,
+        },
+        fabIcon: {
+            fontSize: 40,
+            color: theme.BUTTON_TEXT,
         },
     })
 

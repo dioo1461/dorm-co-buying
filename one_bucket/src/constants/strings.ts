@@ -19,7 +19,7 @@ const strings = {
     signUp6ScreenName: 'SignUp6',
     signUp7ScreenName: 'SignUp7',
 
-    postGroupPurchaseScreenName: '공동구매 글 작성',
+    postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
     settingScreenName: '설정',

@@ -9,6 +9,8 @@ import {
     Text,
     View,
 } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -25,6 +27,7 @@ const Home: React.FC = (): JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    const navigation = stackNavigation()
     const flatListRef = useRef<FlatList>(null)
     const [data, setData] = useState([
         'post1',
@@ -127,6 +130,11 @@ const Home: React.FC = (): JSX.Element => {
                 onMomentumScrollEnd={onScrollEnd}
                 contentContainerStyle={styles.postList}
             />
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('PostGroupPurchase')}>
+                <Text style={styles.fabIcon}>+</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -211,6 +219,7 @@ const createStyles = (theme: Icolor) =>
             borderWidth: 0,
         },
         fab: {
+            backgroundColor: theme.BUTTON_BG,
             position: 'absolute',
             width: 56,
             height: 56,
@@ -223,7 +232,7 @@ const createStyles = (theme: Icolor) =>
         },
         fabIcon: {
             fontSize: 40,
-            color: 'black',
+            color: theme.BUTTON_TEXT,
         },
     })
 

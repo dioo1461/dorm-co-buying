@@ -33,7 +33,6 @@ const Mypage = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     // const [nickName, setNickName] = useState('')
-    const { onLogOut } = useContext(AppContext)
 
     const { data, isLoading, error } = queryGetMemberInfo()
     const [memberInfo, profileImage] = data ? data : [null, null]

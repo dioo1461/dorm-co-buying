@@ -1,7 +1,9 @@
 import { Icolor, lightColors } from '@/constants/colors'
-import { createContext } from 'react'
+import { StateCreator } from 'zustand'
 
-interface AppContextInterface {
+export interface AppSlice {
+    loginState: boolean
+    setLoginState: (isLoggedIn: boolean) => void
     onLogOut: {
         (showToast: boolean): void
         (): void
@@ -16,7 +18,11 @@ interface AppContextInterface {
     setThemeColor: (color: Icolor) => void
 }
 
-export const AppContext = createContext<AppContextInterface>({
+export const createAppSlice: StateCreator<AppSlice, [], []> = set => ({
+    loginState: false,
+    setLoginState: (loginState: boolean) => {
+        set({ loginState })
+    },
     onLogOut: () => {},
     onLogInSuccess: () => {},
     onLoginFailure: () => {},

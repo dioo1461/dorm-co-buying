@@ -18,7 +18,9 @@ export type RootStackParamList = {
     BoardPost: {
         postData: GetBoardPostResponse
     }
+    CreateBoardPost: undefined
     ProfileDetails: undefined
+    PostGroupPurchase: undefined
 }
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>

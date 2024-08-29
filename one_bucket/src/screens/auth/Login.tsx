@@ -34,7 +34,7 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const [isAutoLogin, setIsAutoLogin] = React.useState(false)
+    const [autoLoginEnabled, setAutoLoginEnabled] = React.useState(false)
     const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     const navigation = stackNavigation()
 
@@ -51,6 +51,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 onLogInSuccess()
             })
             .catch(err => {
+                console.log(err)
                 onLoginFailure()
             })
     }
@@ -100,9 +101,7 @@ const Login: React.FC = (): React.JSX.Element => {
                             ref={bouncyCheckboxRef}
                             size={25}
                             fillColor={themeColor.BUTTON_BG}
-                            onPress={isAutoLogin =>
-                                setIsAutoLogin(!isAutoLogin)
-                            }
+                            onPress={value => setAutoLoginEnabled(!value)}
                         />
                     </View>
                     <View>

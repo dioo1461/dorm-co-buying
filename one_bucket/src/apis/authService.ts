@@ -28,8 +28,12 @@ export const requestLogin = async (
             return response.data
         })
         .catch(error => {
-            // console.log(error)
+            console.log(error)
+
             // 401 unauthorized
+            if (error.response.status === 401 || 403) {
+                // onLogOut(false)
+            }
             throw error
         })
 }
