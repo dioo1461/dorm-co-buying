@@ -4,8 +4,8 @@ import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcRefridgeratedItem from '@/assets/drawable/ic-refridgerated-item.svg'
 import IcOther from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     FlatList,
@@ -40,7 +40,11 @@ type ItemProps = {
 }
 
 const GroupPurchase: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

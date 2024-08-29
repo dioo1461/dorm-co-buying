@@ -1,12 +1,16 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Appearance, StyleSheet, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const BoardPost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

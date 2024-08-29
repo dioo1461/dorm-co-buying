@@ -1,13 +1,13 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { Gender } from '@/data/response/GetProfileResponse'
-import { AppContext } from '@/hooks/useContext/AppContext'
 import {
     queryGetMemberInfo,
     queryGetProfile,
 } from '@/hooks/useQuery/profileQuery'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -20,7 +20,11 @@ import {
 } from 'react-native'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -30,7 +34,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         )
         return () => themeSubscription.remove()
     }, [])
-
     const styles = createStyles(themeColor)
 
     const navigation = useNavigation()

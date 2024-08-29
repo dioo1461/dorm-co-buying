@@ -1,11 +1,11 @@
 import { postProfile } from '@/apis/profileService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Appearance,
     KeyboardAvoidingView,
@@ -19,7 +19,14 @@ import {
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp6: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onSignUpSuccess } = useBoundStore(
+        state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onSignUpSuccess: state.onSignUpSuccess,
+        }),
+    )
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -34,7 +41,6 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const signUpStyles = createSignUpStyles(themeColor)
 
     const navigation = stackNavigation()
-    const { onSignUpSuccess } = useContext(AppContext)
 
     const [name, setName] = useState('tUser')
     const [gender, setGender] = useState('man')

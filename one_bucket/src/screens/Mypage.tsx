@@ -2,9 +2,9 @@ import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
 import IcPlus from '@/assets/drawable/ic-plus.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
-import React, { useContext, useEffect } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import React, { useEffect } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -19,7 +19,11 @@ import { stackNavigation } from './navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

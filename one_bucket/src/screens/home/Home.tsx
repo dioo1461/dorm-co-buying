@@ -1,6 +1,6 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Dimensions,
@@ -15,7 +15,12 @@ import { stackNavigation } from '../navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    // const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

@@ -1,9 +1,9 @@
 import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAccessToken } from '@/utils/accessTokenUtils'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
     Appearance,
     Image,
@@ -18,7 +18,14 @@ import BouncyCheckbox, {
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const Login: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
+        useBoundStore(state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onLogInSuccess: state.onLogInSuccess,
+            onLoginFailure: state.onLoginFailure,
+        }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -35,7 +42,6 @@ const Login: React.FC = (): React.JSX.Element => {
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
     const [autoLoginEnabled, setAutoLoginEnabled] = React.useState(false)
-    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     const navigation = stackNavigation()
 
     let bouncyCheckboxRef = useRef<BouncyCheckboxHandle>(null)

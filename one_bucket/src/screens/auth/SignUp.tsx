@@ -1,8 +1,8 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Alert,
     Appearance,
@@ -15,7 +15,11 @@ import {
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const SignUp: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

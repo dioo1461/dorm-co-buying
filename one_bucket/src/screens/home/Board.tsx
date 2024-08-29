@@ -2,8 +2,9 @@ import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { useEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
@@ -38,7 +39,11 @@ type ItemProps = {
 }
 
 const Board: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -97,6 +102,14 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
+    const tempPostData: GetBoardPostResponse = {
+        postId: '0',
+        title: 'title',
+        content: 'content',
+        author: 'author',
+        createdAt: 'createdAt',
+    }
+
     const Post = (data: ItemProps) => {
         // const truncateText = (event: LayoutChangeEvent) => {
         //     const { height } = event.nativeEvent.layout
@@ -105,7 +118,9 @@ const Board: React.FC = (): JSX.Element => {
             <View>
                 <TouchableNativeFeedback
                     background={touchableNativeFeedbackBg()}
-                    onPress={() => navigation.navigate('BoardPost', data)}>
+                    onPress={() =>
+                        navigation.navigate('BoardPost', tempPostData)
+                    }>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View style={styles.postContentContainer}>
                             <View>

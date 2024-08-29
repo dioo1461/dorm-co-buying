@@ -2,9 +2,9 @@ import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import CheckBox from '@react-native-community/checkbox'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Image,
@@ -23,7 +23,11 @@ import {
 } from 'react-native-image-picker'
 
 const PostGroupPurchase: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

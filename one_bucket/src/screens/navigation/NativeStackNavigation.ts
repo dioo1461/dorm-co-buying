@@ -15,9 +15,8 @@ export type RootStackParamList = {
     SignUp6: undefined
     SignUp7: undefined
 
-    BoardPost: {
-        postData: GetBoardPostResponse
-    }
+    BoardPost: GetBoardPostResponse
+
     CreateBoardPost: undefined
     ProfileDetails: undefined
     PostGroupPurchase: undefined
