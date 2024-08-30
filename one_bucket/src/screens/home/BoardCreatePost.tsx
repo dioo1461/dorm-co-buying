@@ -55,12 +55,9 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
-            console.log('response: ' + response.assets)
-            console.log('list: ' + imageUriList)
             const newImageUriList: string[] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    console.log(asset.uri)
                     newImageUriList.push(asset.uri)
                 }
             })

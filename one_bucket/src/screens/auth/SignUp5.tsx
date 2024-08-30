@@ -3,8 +3,8 @@ import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
+import { LoginRequestBody } from '@/data/request/LoginRequestBody'
+import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { setAccessToken } from '@/utils/accessTokenUtils'
@@ -389,6 +389,7 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 5,
         },
         input: {
+            color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
             borderBottomWidth: 1,
             paddingBottom: 4,

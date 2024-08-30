@@ -1,6 +1,6 @@
 import { postProfile } from '@/apis/profileService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
+import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'

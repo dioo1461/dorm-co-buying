@@ -9,9 +9,11 @@ export type RootStackParamList = {
     }
     SignUp3: undefined
     SignUp4: {
+        // schoolname: string
         schoolEmail: string
     }
     SignUp5: undefined
+    // SignUp5: {schoolName: string}
     SignUp6: undefined
     SignUp7: undefined
 

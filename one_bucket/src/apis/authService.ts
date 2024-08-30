@@ -1,5 +1,5 @@
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
+import { LoginRequestBody } from '@/data/request/LoginRequestBody'
+import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
 import { LoginResponse } from '@/data/response/LogInResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
