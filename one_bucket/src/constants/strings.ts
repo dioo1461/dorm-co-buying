@@ -6,6 +6,7 @@ const strings = {
     tradingScreenName: '중고거래',
     freeboardScreenName: '게시판',
     boardCreatePostScreenName: 'BoardCreatePost',
+    boardPostScreenName: 'BoardPost',
 
     chatScreenName: '채팅',
     myPageScreenName: 'MY',

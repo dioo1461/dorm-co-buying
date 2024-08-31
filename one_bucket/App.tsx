@@ -27,6 +27,7 @@ import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
+import BoardPost from '@/screens/home/BoardPost'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
@@ -210,6 +211,36 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.boardCreatePostScreenName}
                                 component={BoardCreatePost}
+                                options={{
+                                    headerLeft: () => {
+                                        const navigation = stackNavigation()
+                                        return (
+                                            <TouchableOpacity
+                                                style={{ marginLeft: 16 }}
+                                                onPress={() =>
+                                                    navigation.goBack()
+                                                }>
+                                                <IcAngleLeft
+                                                    fill={
+                                                        themeColor.HEADER_TEXT
+                                                    }
+                                                />
+                                            </TouchableOpacity>
+                                        )
+                                    },
+                                    headerStyle: {
+                                        backgroundColor: themeColor.HEADER_BG,
+                                    },
+                                    headerTitleStyle: {
+                                        color: themeColor.HEADER_TEXT,
+                                        fontFamily: 'NanumGothic',
+                                        fontSize: 18,
+                                    },
+                                }}
+                            />
+                            <Stack.Screen
+                                name={strings.boardPostScreenName}
+                                component={BoardPost}
                                 options={{
                                     headerLeft: () => {
                                         const navigation = stackNavigation()

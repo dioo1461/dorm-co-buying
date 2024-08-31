@@ -80,7 +80,7 @@ const Board: React.FC = (): JSX.Element => {
             likes: 10,
             comments: 3,
             createdAt: 'createdAt0',
-            imageUri: 'imageUri',
+            imageUri: '',
         },
         {
             id: '2',
@@ -121,12 +121,13 @@ const Board: React.FC = (): JSX.Element => {
                     onPress={() =>
                         navigation.navigate('BoardPost', tempPostData)
                     }>
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <View style={styles.postContentContainer}>
-                            <View>
+                    <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                        <View style={{ flexDirection: 'row', margin: 4 }}>
+                            <View style={{ flex: 1, marginEnd: 10 }}>
+                                {/* ### 제목 ### */}
                                 <View
                                     style={{
-                                        marginTop: 10,
+                                        // marginTop: 10,
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
@@ -138,9 +139,10 @@ const Board: React.FC = (): JSX.Element => {
                                         {data.title}
                                     </Text>
                                 </View>
+                                {/* ### 내용 ### */}
                                 <View
                                     style={{
-                                        marginTop: 10,
+                                        marginTop: 16,
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
@@ -148,42 +150,58 @@ const Board: React.FC = (): JSX.Element => {
                                     <Text
                                         numberOfLines={2}
                                         ellipsizeMode='tail'
-                                        style={styles.postContent}>
+                                        style={styles.postContentText}>
                                         {data.content}
                                     </Text>
                                 </View>
-                                <View
-                                    style={{
-                                        marginTop: 10,
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text style={styles.postMetaData}>
-                                        {`${data.createdAt}ㆍ조회 ${data.views}`}
-                                    </Text>
-                                </View>
                             </View>
+                            {/* ### 이미지 ### */}
+                            {data.imageUri ? (
+                                <View
+                                    style={[
+                                        styles.postImage,
+                                        {
+                                            width: 72,
+                                            height: 72,
+                                            backgroundColor: 'white',
+                                        },
+                                    ]}
+                                />
+                            ) : (
+                                <></>
+                            )}
                         </View>
-                        <View>
-                            <View
-                                style={[
-                                    styles.postImage,
-                                    { backgroundColor: 'white' },
-                                ]}
-                            />
+                        <View
+                            style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginTop: 6,
+                            }}>
+                            {/* ### 생성일자, 조회수 ### */}
                             <View
                                 style={{
+                                    flex: 1,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}>
+                                <Text style={styles.postMetaDataText}>
+                                    {`${data.createdAt}ㆍ조회 ${data.views}`}
+                                </Text>
+                            </View>
+                            {/* ### 추천수, 댓글 ### */}
+                            <View
+                                style={{
+                                    flex: 1,
                                     justifyContent: 'flex-end',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    marginVertical: 4,
-                                    marginEnd: 20,
                                 }}>
                                 <IcLikes />
                                 <Text
                                     style={[
-                                        styles.postlikeCount,
+                                        styles.postlikeCountText,
                                         { marginStart: 1, marginEnd: 6 },
                                     ]}>
                                     {data.likes}
@@ -191,7 +209,7 @@ const Board: React.FC = (): JSX.Element => {
                                 <IcComment />
                                 <Text
                                     style={[
-                                        styles.postCommentCount,
+                                        styles.postCommentCountText,
                                         { marginStart: 2 },
                                     ]}>
                                     {data.comments}
@@ -424,11 +442,9 @@ const createStyles = (theme: Icolor) =>
             paddingStart: 6,
         },
         postImage: {
-            flex: 2,
             width: 72,
             height: 72,
             borderRadius: 10,
-            marginTop: 12,
         },
         postContentContainer: {
             flex: 6,
@@ -449,23 +465,23 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             fontFamily: 'NanumGothic-Bold',
         },
-        postContent: {
+        postContentText: {
             color: theme.TEXT,
             fontSize: 13,
             fontFamily: 'NanumGothic',
             lineHeight: 18,
         },
-        postMetaData: {
+        postMetaDataText: {
             color: theme.TEXT_SECONDARY,
             fontSize: 12,
             fontFamily: 'NanumGothic',
         },
-        postlikeCount: {
+        postlikeCountText: {
             color: baseColors.LIGHT_RED,
             fontSize: 12,
             fontFamily: 'NanumGothic-Bold',
         },
-        postCommentCount: {
+        postCommentCountText: {
             color: baseColors.LIGHT_BLUE,
             fontSize: 12,
             fontFamily: 'NanumGothic-Bold',
