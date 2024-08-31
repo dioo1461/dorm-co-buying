@@ -19,7 +19,7 @@ export type RootStackParamList = {
 
     BoardPost: GetBoardPostResponse
 
-    BoardCreatePost: undefined
+    BoardCreatePost: { boardName: string }
     ProfileDetails: undefined
     PostGroupPurchase: undefined
 }

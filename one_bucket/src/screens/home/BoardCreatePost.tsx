@@ -16,6 +16,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker'
 import { TextInput } from 'react-native-gesture-handler'
 import {
     ImageLibraryOptions,
@@ -40,14 +41,37 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    type BoardPostRouteProp = RouteProp<RootStackParamList, 'BoardPost'>
-    const { params } = useRoute<BoardPostRouteProp>()
+    type BoardCreatePostRouteProp = RouteProp<
+        RootStackParamList,
+        'BoardCreatePost'
+    >
+    const { params } = useRoute<BoardCreatePostRouteProp>()
 
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [inputHeight, setInputHeight] = useState(200)
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
+
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const [dropdownValue, setDropdownValue] = useState(null)
+
+    // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
+    const [dropdownItems, setDropdownItems] = useState([
+        {
+            label: '자유게시판',
+            value: '자유게시판',
+        },
+        {
+            label: '비밀게시판',
+            value: '비밀게시판',
+        },
+        {
+            label: '운동 및 헬스',
+            value: '운동 및 헬스',
+        },
+    ])
+
     const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -80,6 +104,23 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
+            <View style={{ margin: 10, marginTop: 20 }}>
+                <DropDownPicker
+                    open={dropdownOpen}
+                    value={dropdownValue}
+                    items={dropdownItems}
+                    setOpen={setDropdownOpen}
+                    setValue={setDropdownValue}
+                    setItems={setDropdownItems}
+                    placeholder='게시판을 선택해 주세요'
+                    // placeholderStyle={styles.dropdownPlaceholder}
+                    labelStyle={styles.dropdownLabel}
+                    style={styles.dropdownContainer}
+                    // textStyle={styles.dropdownLabel}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    theme={themeColor === lightColors ? 'LIGHT' : 'DARK'}
+                />
+            </View>
             <View style={styles.bodyContainer}>
                 <TextInput
                     style={styles.titleTextInput}
@@ -152,6 +193,22 @@ const createStyles = (theme: Icolor) =>
         bodyContainer: {
             marginHorizontal: 20,
         },
+        dropdownContainer: {
+            backgroundColor:
+                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_0,
+            borderWidth: theme === lightColors ? 1 : 0,
+            borderColor: baseColors.GRAY_1,
+        },
+        dropdownPlaceholder: {
+            color: theme.TEXT_SECONDARY,
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+        },
+        dropdownLabel: {
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+        },
         titleTextInput: {
             color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
@@ -159,7 +216,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             width: '100%',
             borderBottomWidth: 1,
-            marginVertical: 12,
+            marginVertical: 0,
             marginBottom: 10,
             backgroundColor: 'transparent',
         },
