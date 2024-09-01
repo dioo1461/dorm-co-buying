@@ -364,7 +364,11 @@ const Board: React.FC = (): JSX.Element => {
             </Animated.View>
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => navigation.navigate('BoardCreatePost')}>
+                onPress={() =>
+                    navigation.navigate('BoardCreatePost', {
+                        boardName: '자유게시판',
+                    })
+                }>
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </View>

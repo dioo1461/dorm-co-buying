@@ -9,10 +9,10 @@ import IcTabChatInactive from '@/assets/drawable/tab/ic-tab-chat-inactive.svg'
 import IcTabHomeActive from '@/assets/drawable/tab/ic-tab-home-active.svg'
 import IcTabHomeInactive from '@/assets/drawable/tab/ic-tab-home-inactive.svg'
 
+import IcNotification from '@/assets/drawable/ic-notification-2.svg'
+import IcSearch from '@/assets/drawable/ic-search.svg'
 import IcTabProfileActive from '@/assets/drawable/tab/ic-tab-profile-active.svg'
 import IcTabProfileInactive from '@/assets/drawable/tab/ic-tab-profile-inactive.svg'
-import IcMenu from '@/assets/mipmap/tab/ic-menu.svg'
-import IcNotification from '@/assets/mipmap/tab/ic-notification.svg'
 import IcOther from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
@@ -22,7 +22,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import Chat from 'screens/Chat'
 import Mypage from 'screens/Mypage'
 import HomeRoutes from 'screens/navigation/HomeRoutes'
-
 export const mainRoutes = [
     {
         name: strings.homeRouteScreenName,
@@ -40,7 +39,8 @@ export const mainRoutes = [
                         justifyContent: 'center',
                         marginEnd: 8,
                     }}>
-                    <IcNotification fill='white' />
+                    {/* <IcNotification fill='white' /> */}
+                    <IcSearch fill='white' />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={{
@@ -49,7 +49,7 @@ export const mainRoutes = [
                         justifyContent: 'center',
                         marginEnd: 8,
                     }}>
-                    <IcMenu fill='white' />
+                    <IcNotification />
                 </TouchableOpacity>
             </View>
         ),

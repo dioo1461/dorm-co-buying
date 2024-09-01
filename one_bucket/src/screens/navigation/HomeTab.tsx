@@ -9,7 +9,7 @@ import GroupPurchase from '../home/GroupPurchase'
 import Home from '../home/Home'
 
 const Tab = createMaterialTopTabNavigator()
-const HomeTab = () => {
+const HomeTab: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
