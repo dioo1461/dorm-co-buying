@@ -3,6 +3,7 @@ import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
 import React, { useEffect, useRef, useState } from 'react'
 import {
@@ -39,8 +40,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    const navigation = stackNavigation()
 
-    const [imageUri, setImageUri] = useState<string | null>(null)
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [item, setItem] = useState('')
@@ -115,7 +116,13 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                     style={styles.imageScrollViewContainer}>
                     {imageUriList.map((uri, index) => (
                         <View key={index} style={styles.imageContainer}>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('ImageEnlargement', {
+                                        imageUriList: imageUriList,
+                                        index: index,
+                                    })
+                                }>
                                 <Image
                                     source={{ uri: uri }}
                                     style={styles.image}

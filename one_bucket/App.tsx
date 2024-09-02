@@ -35,6 +35,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
+import ImageEnlargement from '@/screens/ImageEnlargement'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -266,6 +267,13 @@ function App(): React.JSX.Element {
                                         fontFamily: 'NanumGothic',
                                         fontSize: 18,
                                     },
+                                }}
+                            />
+                            <Stack.Screen
+                                name={strings.imageEnlargementScreenName}
+                                component={ImageEnlargement}
+                                options={{
+                                    headerShown: false,
                                 }}
                             />
                         </Stack.Navigator>

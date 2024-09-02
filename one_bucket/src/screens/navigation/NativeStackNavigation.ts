@@ -22,6 +22,11 @@ export type RootStackParamList = {
     BoardCreatePost: { boardName: string }
     ProfileDetails: undefined
     PostGroupPurchase: undefined
+
+    ImageEnlargement: {
+        imageUriList: string[]
+        index: number
+    }
 }
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>

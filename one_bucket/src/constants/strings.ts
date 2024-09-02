@@ -24,6 +24,8 @@ const strings = {
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
     settingScreenName: '설정',
+
+    imageEnlargementScreenName: 'ImageEnlargement',
 }
 
 export default strings
