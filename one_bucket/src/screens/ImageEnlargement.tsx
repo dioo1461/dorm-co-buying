@@ -2,6 +2,7 @@ import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+    Animated,
     Appearance,
     Dimensions,
     NativeScrollEvent,
@@ -19,6 +20,13 @@ import {
     stackNavigation,
 } from '@/screens/navigation/NativeStackNavigation'
 import { Image } from 'react-native'
+import {
+    HandlerStateChangeEvent,
+    PanGestureHandler,
+    PinchGestureHandler,
+    PinchGestureHandlerEventPayload,
+    State,
+} from 'react-native-gesture-handler'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -78,12 +86,112 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onScroll={handleScroll}
-                scrollEventThrottle={16}>
-                {params.imageUriList.map((value: string, idx: number) => (
-                    <View style={styles.imageContainer} key={idx}>
-                        <Image style={styles.image} source={{ uri: value }} />
-                    </View>
-                ))}
+                scrollEventThrottle={16}
+                maximumZoomScale={4}
+                minimumZoomScale={1}>
+                {params.imageUriList.map((value: string, idx: number) => {
+                    const scale = useRef(new Animated.Value(1)).current
+                    const translateX = useRef(new Animated.Value(0)).current
+                    const translateY = useRef(new Animated.Value(0)).current
+
+                    let lastScale = 1
+                    let lastTranslateX = 0
+                    let lastTranslateY = 0
+
+                    const onPanEvent = Animated.event(
+                        [
+                            {
+                                nativeEvent: {
+                                    translationX: translateX,
+                                    translationY: translateY,
+                                },
+                            },
+                        ],
+                        { useNativeDriver: false },
+                    )
+
+                    const onPanStateChange = (event: any) => {
+                        if (event.nativeEvent.oldState === State.ACTIVE) {
+                            lastTranslateX += event.nativeEvent.translationX
+                            lastTranslateY += event.nativeEvent.translationY
+
+                            const maxTranslateX =
+                                (SCREEN_WIDTH * (lastScale - 1)) / 2
+                            const maxTranslateY =
+                                (SCREEN_HEIGHT * (lastScale - 1)) / 2
+
+                            lastTranslateX = Math.max(
+                                -maxTranslateX,
+                                Math.min(lastTranslateX, maxTranslateX),
+                            )
+                            lastTranslateY = Math.max(
+                                -maxTranslateY,
+                                Math.min(lastTranslateY, maxTranslateY),
+                            )
+
+                            translateX.setOffset(lastTranslateX)
+                            translateX.setValue(0)
+                            translateY.setOffset(lastTranslateY)
+                            translateY.setValue(0)
+                        }
+                    }
+
+                    const onPinchStateChange = (
+                        event: HandlerStateChangeEvent<PinchGestureHandlerEventPayload>,
+                    ) => {
+                        if (event.nativeEvent.oldState === State.ACTIVE) {
+                            if (event.nativeEvent.scale < 1) {
+                                Animated.spring(scale, {
+                                    toValue: 1,
+                                    useNativeDriver: false,
+                                }).start()
+                            } else if (event.nativeEvent.scale > 4) {
+                                Animated.spring(scale, {
+                                    toValue: 4,
+                                    useNativeDriver: false,
+                                }).start()
+                            }
+                        }
+                    }
+                    const onPinchEvent = Animated.event(
+                        [{ nativeEvent: { scale: scale } }],
+                        { useNativeDriver: false },
+                    )
+                    return (
+                        <PanGestureHandler
+                            minPointers={1}
+                            maxPointers={1}
+                            key={idx}
+                            onGestureEvent={onPanEvent}
+                            onHandlerStateChange={onPanStateChange}>
+                            {/* <Animated.View> */}
+                            <PinchGestureHandler
+                                minPointers={2}
+                                maxPointers={2}
+                                onGestureEvent={onPinchEvent}
+                                onHandlerStateChange={onPinchStateChange}>
+                                <Animated.View
+                                    style={{
+                                        transform: [
+                                            { scale: scale },
+                                            {
+                                                translateX: translateX,
+                                            },
+                                            {
+                                                translateY: translateY,
+                                            },
+                                        ],
+                                    }}>
+                                    <Image
+                                        style={[styles.image, {}]}
+                                        source={{ uri: value }}
+                                    />
+                                </Animated.View>
+                            </PinchGestureHandler>
+                            {/* </Animated.View> */}
+                        </PanGestureHandler>
+                    )
+                })}
             </ScrollView>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -109,15 +217,9 @@ const createStyles = (theme: Icolor) =>
             width: '100%',
             height: '100%',
         },
-        imageContainer: {
+        image: {
             width: SCREEN_WIDTH,
             height: SCREEN_HEIGHT,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        image: {
-            width: '100%',
-            height: '100%',
             resizeMode: 'contain',
         },
         header: {
