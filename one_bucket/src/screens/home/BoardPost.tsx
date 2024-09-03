@@ -16,6 +16,8 @@ import {
     View,
 } from 'react-native'
 
+const IMAGE_SIZE = 112
+
 const BoardPost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
@@ -44,6 +46,8 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [comment, setComment] = useState('')
+
+    const [expanded, setExpanded] = useState(false)
 
     useEffect(() => {
         setImageUriList(['uri1', 'uri2', 'uri3', 'uri4', 'uri5'])
@@ -130,10 +134,11 @@ const BoardPost: React.FC = (): JSX.Element => {
     }, [])
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const threshold = 60
+        const threshold = 0
         const scrollY = event.nativeEvent.contentOffset.y
         const windowHeight = event.nativeEvent.layoutMeasurement.height
 
+        // console.log(`scrollY: ${scrollY}, windowHeight: ${windowHeight}`)
         // 스크롤 위치가 댓글 영역에 근접하면 이미지 컨테이너를 본문 내로 이동
         if (scrollY + windowHeight >= commentPosition + threshold) {
             if (isImageInView) setImageInView(false)
@@ -141,7 +146,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             if (!isImageInView) setImageInView(true)
         }
 
-        // 이미지 스크롤뷰의 위치를 동기화
+        // 이미지 스크롤뷰의 스크롤 상태를 동기화
         if (imageScrollViewRef.current) {
             imageScrollViewRef.current.scrollTo({
                 y: scrollY,
@@ -247,14 +252,31 @@ const BoardPost: React.FC = (): JSX.Element => {
                         ))}
                     </ScrollView>
                 )}
-
+                {isImageInView && imageUriList.length > 0 && (
+                    <View style={{ height: IMAGE_SIZE }} />
+                )}
+                <View onLayout={handleCommentLayout} style={styles.line} />
                 {/* ### 댓글 ### */}
-                <View onLayout={handleCommentLayout}>
+                <View>
+                    <Comment />
+                    <Comment />
+                    <Comment />
                     <Comment />
                     {/* <Text>{comment}</Text> */}
                 </View>
-            </ScrollView>
 
+                {/* ### 댓글 입력 container ### */}
+                <View
+                    style={{
+                        width: '100%',
+                        height: 60,
+                        position: 'absolute',
+                        backgroundColor: 'white',
+                        bottom: 0,
+                    }}>
+                    <Text>댓글입력</Text>
+                </View>
+            </ScrollView>
             {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ### */}
             {isImageInView && imageUriList.length > 0 && (
                 <ScrollView
@@ -264,8 +286,8 @@ const BoardPost: React.FC = (): JSX.Element => {
                         position: 'absolute',
                         bottom: 60, // 댓글 입력창 위에 위치
                         left: 0,
-                        marginHorizontal: 20,
                         marginBottom: 20,
+                        marginHorizontal: 20,
                     }}
                     showsHorizontalScrollIndicator={false}
                     onMomentumScrollEnd={onMomentumScrollEnd}
@@ -279,17 +301,8 @@ const BoardPost: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
             )}
-            {/* ### 댓글 입력 container ### */}
-            <View
-                style={{
-                    width: '100%',
-                    height: 60,
-                    position: 'absolute',
-                    backgroundColor: 'white',
-                    bottom: 0,
-                }}>
-                <Text>댓글입력</Text>
-            </View>
+
+            <View style={styles.backdrop} />
         </View>
     )
 }
@@ -310,8 +323,8 @@ const createStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic',
         },
         imageContainer: {
-            width: 112,
-            height: 112,
+            width: IMAGE_SIZE,
+            height: IMAGE_SIZE,
             backgroundColor: 'white',
             borderWidth: 1,
             marginRight: 8,
@@ -319,7 +332,6 @@ const createStyles = (theme: Icolor) =>
         },
         commentContainer: {
             flex: 1,
-            padding: 6,
         },
         commentHeader: {
             flexDirection: 'row',
@@ -382,5 +394,21 @@ const createStyles = (theme: Icolor) =>
             marginStart: 4,
             fontSize: 12,
             fontFamily: 'NanumGothic',
+        },
+        line: {
+            borderBottomWidth: 1,
+            borderBottomColor:
+                theme === theme ? baseColors.GRAY_3 : baseColors.GRAY_1,
+            marginHorizontal: 10,
+            paddingTop: 10,
+            paddingBottom: 10,
+            marginBottom: 10,
+        },
+        backdrop: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'black',
+            zIndex: 1,
         },
     })

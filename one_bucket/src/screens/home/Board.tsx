@@ -1,6 +1,7 @@
 import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
+import Backdrop from '@/components/Backdrop'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -18,14 +19,6 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-
-const enum Category {
-    'none' = 0,
-    'refridgerated' = 1,
-    'frozen' = 2,
-    'disposable' = 3,
-    'others' = 4,
-}
 
 type ItemProps = {
     id: string
@@ -253,6 +246,7 @@ const Board: React.FC = (): JSX.Element => {
     const animation = useRef(new Animated.Value(0)).current
 
     const toggleDropdown = () => {
+        console.log('toggleDropdown')
         setExpanded(!expanded)
         Animated.timing(animation, {
             toValue: expanded ? 0 : 1,
@@ -265,6 +259,10 @@ const Board: React.FC = (): JSX.Element => {
         height: animation.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 200],
+        }),
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
         }),
     }
 
@@ -294,8 +292,9 @@ const Board: React.FC = (): JSX.Element => {
                     keyExtractor={item => item.id}
                 />
             </View>
+            <Backdrop expanded={expanded} onPress={toggleDropdown} />
             {/* ### backdrop ### */}
-            <Animated.View
+            {/* <Animated.View
                 style={[
                     styles.backdrop,
                     backdropAnimatedStyle,
@@ -306,7 +305,7 @@ const Board: React.FC = (): JSX.Element => {
                     disabled={!expanded}
                     onPress={toggleDropdown}
                 />
-            </Animated.View>
+            </Animated.View> */}
 
             {/* ### 게시판 선택 버튼 ### */}
             <View
