@@ -15,8 +15,12 @@ import {
     Switch,
     Text,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     View,
 } from 'react-native'
+
+const CIRCLE_SIZE = 30;
+const CIRCLE_RING_SIZE = 2;
 
 const Setting: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogOut } = useContext(AppContext)
@@ -31,6 +35,10 @@ const Setting: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    // 테마 색상
+    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100',];
+    const [value, setValue] = useState(0);
+    
     const [isScreenReady, setIsScreenReady] = useState(false)
     const [isAlertSoundEnabled, setIsAlertSoundEnabled] = useState(false)
     const [isAlertVibrationEnabled, setIsAlertVibrationEnabled] =
@@ -168,6 +176,44 @@ const Setting: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
                 <View style={styles.line} />
+                <View
+                    style={[
+                        styles.contextContainer,
+                        {
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        },
+                    ]}>
+                    <Text style={[styles.contextLabel, { flex: 1 }]}>
+                        테마 색상 변경
+                    </Text>
+                    <View style={styles.group}>
+                        {colorList.map((item, index) => {
+                            const isActive = value === index;
+                            return (
+                                <View key={item}>
+                                    <TouchableWithoutFeedback
+                                        onPress={() => {
+                                        setValue(index);
+
+                                        }}>
+                                        <View
+                                        style={[
+                                            styles.circle,
+                                            isActive && { borderColor: item },
+                                        ]}>
+                                        <View
+                                            style={[styles.circleInside, { backgroundColor: item }]}
+                                        />
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                </View>
+                            );
+                        })}
+                    </View>
+                </View>
+                <View style={styles.line} />
                 <View>
                     <Text style={styles.subjectLabel}>기타</Text>
                     <TouchableOpacity style={styles.contextContainer}>
@@ -188,7 +234,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                         <Text style={styles.contextLabel}>로그아웃</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.contextContainer}>
-                        <Text style={styles.contextLabel}>회원탈퇴</Text>
+                        <Text style={{...styles.contextLabel, color: "red"}}>회원탈퇴</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -233,6 +279,28 @@ const createStyles = (theme: Icolor) =>
             position: 'absolute',
             right: -12,
         },
+        group: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+        },
+        circle: {
+            width: CIRCLE_SIZE + CIRCLE_RING_SIZE * 4,
+            height: CIRCLE_SIZE + CIRCLE_RING_SIZE * 4,
+            borderRadius: 9999,
+            backgroundColor: 'white',
+            borderWidth: CIRCLE_RING_SIZE,
+            borderColor: 'transparent',
+            marginRight: 5,
+        },
+          circleInside: {
+            width: CIRCLE_SIZE,
+            height: CIRCLE_SIZE,
+            borderRadius: 9999,
+            position: 'absolute',
+            top: CIRCLE_RING_SIZE,
+            left: CIRCLE_RING_SIZE,
+        },
     })
-
+ 
 export default Setting

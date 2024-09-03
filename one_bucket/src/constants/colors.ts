@@ -1,3 +1,37 @@
+{/*
+const colors = (x: number) => {
+    if (value === 0) return {
+      ORIG: '#002c62',
+      LIGHT: '#285792',
+      DARK: '#001f4d',
+      TEXT: '#FFFFFF',
+    }; // NAVY
+    if (value === 1) return {
+      ORIG: '#8b0029',
+      LIGHT: '#bd043a',
+      DARK: '#6b0120',
+      TEXT: '#FFFFFF',
+    }; // RED
+    if (value === 2) return {
+      ORIG: '#036B3F',
+      LIGHT: '#038c52',
+      DARK: '#013b22',
+      TEXT: '#FFFFFF',
+    }; // GREEN
+    if (value === 3) return {
+      ORIG: '#e17100',
+      LIGHT: '#f28e29',
+      DARK: '#a85603',
+      TEXT: '#FFFFFF',
+    }; // ORANGE
+    return {
+        ORIG: '#000000',
+        LIGHT: '#333333',
+        DARK: '#666666',
+        TEXT: '#FFFFFF',
+    };
+};  */}
+
 const schoolColors = {
     HONGIK_NAVY: '#002c62',
     HONGIK_LIGHT_NAVY: '#285792',
@@ -10,7 +44,7 @@ export const baseColors = {
     BLACK: '#000000',
     DARK_BG: '#141414',
     SCHOOL_BG: schoolColors.HONGIK_NAVY,
-    SCHOOL_BG_DARK: schoolColors.HONGIK_NAVY,
+    SCHOOL_BG_DARK: schoolColors.HONGIK_DARK_NAVY,
     SCHOOL_BG_LIGHT: schoolColors.HONGIK_LIGHT_NAVY,
     SCHOOL_TEXT: schoolColors.HONGIK_TEXT,
     GRAY_0: '#303030',

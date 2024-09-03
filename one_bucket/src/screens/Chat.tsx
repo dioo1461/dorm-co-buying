@@ -3,7 +3,7 @@ import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { AppContext } from '@/hooks/useContext/AppContext'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useRef, useState, useCallback } from 'react'
 import {
     Dimensions,
     FlatList,
@@ -13,6 +13,9 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { TextInput } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Bubble, GiftedChat } from 'react-native-gifted-chat'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -36,14 +39,16 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     const renderItem_Horz = ({ item }: { item: string }) => (
         <View style={styles.chatRoom}>
-            <View style={styles.chatRoom_thumbFrame}>
-                <View style={styles.chatRoom_thumb}>
-                    <Text>{item}</Text>
+            <TouchableOpacity>
+                <View style={styles.chatRoom_thumbFrame}>
+                    <View style={styles.chatRoom_thumb}>
+                        <Text>{item}</Text>
+                    </View>
+                    <View style={styles.chatRoom_part}>
+                        <Text style={{color: "black"}}>10</Text>
+                    </View>
                 </View>
-                <View style={styles.chatRoom_part}>
-                    <Text style={{color: "black"}}>10</Text>
-                </View>
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity onPress={room}>
                 <View style={styles.chatRoom_subj}>
                     <Text style={{fontWeight: 'bold'}}>{item}</Text>
@@ -89,16 +94,46 @@ const Chat: React.FC = (): React.JSX.Element => {
         )
         if (board === 1) return (
             <View>
-                <View style={styles.upperFrame}>
-                    <TouchableOpacity onPress={home}>
-                        <IcAngleLeft
-                            style={styles.upperMenu}
-                            fill={baseColors.GRAY_1}
-                        />
-                    </TouchableOpacity>
-                    <Text>item name</Text>
-                </View>
-                <Text>chat</Text>
+                <SafeAreaView style={{flex:1, backgroundColor: 'white'}}>
+                    {/* Header */}
+                    <View style={styles.upperFrame}>
+                        <TouchableOpacity
+                            style={styles.upperMenu} 
+                            onPress={home}>
+                            <IcAngleLeft fill={baseColors.GRAY_1}/>
+                        </TouchableOpacity>
+                        <Text style={{
+                            bottom: -10,
+                            fontSize: 15,
+                        }
+                        }>10</Text>
+                        <Text style={{
+                            bottom: -10,
+                            right: -10,
+                            fontSize: 20,
+                            fontWeight: "bold"
+                        }}>item name</Text>
+                    </View>
+                    
+                    {/* Chats */}
+                    <View style={styles.chats}>
+
+                    </View>
+                    {/* input bar */}
+                    <View style={styles.inputContainer}>
+                        <View style={styles.inputMessageContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder='메세지를 입력하세요.'
+                                placeholderTextColor='gray'
+                            />
+                            <TouchableOpacity
+                            style={styles.sendButton}>
+                                <Text>전송</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </SafeAreaView>
             </View>
         )
         return null;
@@ -195,21 +230,39 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 0.3,
     },
-    fab: {
-        position: 'absolute',
-        width: 56,
-        height: 56,
+    chats:{
+        height: SCREEN_HEIGHT - 260,
+    },
+    inputContainer:{
+        backgroundColor: "white",
+        height: 72,
         alignItems: 'center',
-        justifyContent: 'center',
-        right: 30,
-        bottom: 30,
-        borderRadius: 30,
-        elevation: 8,
+        justifyContent: "center",
     },
-    fabIcon: {
-        fontSize: 40,
-        color: 'white',
+    inputMessageContainer:{
+        height: 54,
+        width: SCREEN_WIDTH - 30,
+        flexDirection: "row",
+        justifyContent: "center",
+        backgroundColor: 'white',
+        borderRadius: 16,
+        alignItems: 'center',
+        borderColor: "rgba(128,128,128,.4)",
+        borderWidth: 1,
     },
+    input: {
+       backgroundColor: "white",
+       flex: 1,
+       height: 40,
+       borderRadius: 10,
+       paddingHorizontal: 10, 
+    },
+    sendButton:{
+        backgroundColor: "lightblue",
+        padding: 10,
+        borderRadius: 9,
+        marginHorizontal: 10,
+    }
 })
 
 export default Chat
