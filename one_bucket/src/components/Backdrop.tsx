@@ -1,5 +1,8 @@
-import { useRef } from 'react'
-import { Animated } from 'react-native'
+import { useEffect, useRef } from 'react'
+import { Animated, Pressable } from 'react-native'
+
+interface BackdropProps {
+    expanded: boolean
     onPress: () => void
 }
 
@@ -16,11 +19,13 @@ const Backdrop: React.FC<BackdropProps> = ({
         }),
     }
 
-    Animated.timing(animation, {
-        toValue: expanded ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false,
-    }).start()
+    useEffect(() => {
+        Animated.timing(animation, {
+            toValue: expanded ? 1 : 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }, [expanded])
 
     return (
         <Animated.View
@@ -34,9 +39,8 @@ const Backdrop: React.FC<BackdropProps> = ({
                 },
                 backdropAnimatedStyle,
                 { pointerEvents: expanded ? 'auto' : 'none' },
-                // { pointerEvents: 'auto' },
             ]}>
-            <TouchableOpacity style={{ flex: 1 }} onPress={onPress} />
+            <Pressable style={{ flex: 1 }} onPress={onPress} />
         </Animated.View>
     )
 }

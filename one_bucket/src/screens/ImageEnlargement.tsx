@@ -1,10 +1,17 @@
+import IcClose from '@/assets/drawable/ic-close.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '@/screens/navigation/NativeStackNavigation'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
     Dimensions,
+    Image,
     NativeScrollEvent,
     NativeSyntheticEvent,
     ScrollView,
@@ -13,13 +20,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import IcClose from '@/assets/drawable/ic-close.svg'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import {
-    RootStackParamList,
-    stackNavigation,
-} from '@/screens/navigation/NativeStackNavigation'
-import { Image } from 'react-native'
 import {
     HandlerStateChangeEvent,
     PanGestureHandler,
@@ -43,6 +43,8 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
     const { params } = useRoute<ImageEnlargementProps>()
     const navigation = stackNavigation()
     const scrollViewRef = useRef<ScrollView>(null)
+    const panRef = useRef<PanGestureHandler>(null)
+    const pinchRef = useRef<PinchGestureHandler>(null)
 
     const [currentIndex, setCurrentIndex] = useState<number>(params.index)
 
@@ -158,38 +160,50 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
                         { useNativeDriver: false },
                     )
                     return (
-                        <PanGestureHandler
-                            minPointers={1}
-                            maxPointers={1}
+                        <Image
                             key={idx}
-                            onGestureEvent={onPanEvent}
-                            onHandlerStateChange={onPanStateChange}>
-                            {/* <Animated.View> */}
-                            <PinchGestureHandler
-                                minPointers={2}
-                                maxPointers={2}
-                                onGestureEvent={onPinchEvent}
-                                onHandlerStateChange={onPinchStateChange}>
-                                <Animated.View
-                                    style={{
-                                        transform: [
-                                            { scale: scale },
-                                            {
-                                                translateX: translateX,
-                                            },
-                                            {
-                                                translateY: translateY,
-                                            },
-                                        ],
-                                    }}>
-                                    <Image
-                                        style={[styles.image, {}]}
-                                        source={{ uri: value }}
-                                    />
-                                </Animated.View>
-                            </PinchGestureHandler>
-                            {/* </Animated.View> */}
-                        </PanGestureHandler>
+                            style={[styles.image, {}]}
+                            source={{ uri: value }}
+                        />
+                        // TODO: 이미지 확대 및 축소 기능 추가
+                        //
+                        // <PanGestureHandler
+                        //     minPointers={1}
+                        //     maxPointers={1}
+                        //     key={idx}
+                        //     onGestureEvent={onPanEvent}
+                        //     onHandlerStateChange={onPanStateChange}
+                        //     simultaneousHandlers={[pinchRef, scrollViewRef]}>
+                        //     {/* <Animated.View> */}
+                        //     <PinchGestureHandler
+                        //         minPointers={2}
+                        //         maxPointers={2}
+                        //         onGestureEvent={onPinchEvent}
+                        //         onHandlerStateChange={onPinchStateChange}
+                        //         simultaneousHandlers={[
+                        //             pinchRef,
+                        //             scrollViewRef,
+                        //         ]}>
+                        //         <Animated.View
+                        //             style={{
+                        //                 transform: [
+                        //                     { scale: scale },
+                        //                     {
+                        //                         translateX: translateX,
+                        //                     },
+                        //                     {
+                        //                         translateY: translateY,
+                        //                     },
+                        //                 ],
+                        //             }}>
+                        //             <Image
+                        //                 style={[styles.image, {}]}
+                        //                 source={{ uri: value }}
+                        //             />
+                        //         </Animated.View>
+                        //     </PinchGestureHandler>
+                        //     {/* </Animated.View> */}
+                        // </PanGestureHandler>
                     )
                 })}
             </ScrollView>
