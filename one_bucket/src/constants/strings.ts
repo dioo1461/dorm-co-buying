@@ -1,6 +1,13 @@
 const strings = {
     // navigation screen names
+    homeRouteScreenName: ' 홈 ',
     homeScreenName: '홈',
+    groupPurchaseScreenName: '공동구매',
+    tradingScreenName: '중고거래',
+    freeboardScreenName: '게시판',
+    boardCreatePostScreenName: 'BoardCreatePost',
+    boardPostScreenName: 'BoardPost',
+
     chatScreenName: '채팅',
     myPageScreenName: 'MY',
 
@@ -13,10 +20,12 @@ const strings = {
     signUp6ScreenName: 'SignUp6',
     signUp7ScreenName: 'SignUp7',
 
-    postGroupPurchaseScreenName: '공동구매 글 작성',
+    postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
     settingScreenName: '설정',
+
+    imageEnlargementScreenName: 'ImageEnlargement',
 }
 
 export default strings

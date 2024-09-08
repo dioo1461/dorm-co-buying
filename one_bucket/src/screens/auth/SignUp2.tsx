@@ -1,10 +1,10 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import IcRefresh from '@/assets/drawable/ic-refresh.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Keyboard,
@@ -14,10 +14,19 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 
 const SignUp2: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onPhoneVerificationFailure } =
+        useBoundStore(state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onPhoneVerificationFailure: state.onPhoneVerificationFailure,
+        }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -32,13 +41,12 @@ const SignUp2: React.FC = (): React.JSX.Element => {
     const signUpStyles = createSignUpStyles(themeColor)
 
     const dummyVerificationCode = '000000'
-    const { onPhoneVerificationFailure } = useContext(AppContext)
 
     type SignUp2RouteProp = RouteProp<RootStackParamList, 'SignUp2'>
     const { params } = useRoute<SignUp2RouteProp>()
 
     const [phoneNumber, setPhoneNumber] = useState('')
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
     const [nextIndex, setNextIndex] = useState(0)

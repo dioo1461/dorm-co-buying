@@ -3,14 +3,13 @@ import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { LoginRequestBody } from '@/data/request/LoginRequestBody'
+import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 import { StringFilter } from '@/utils/StringFilter'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Alert,
     Appearance,
@@ -24,8 +23,13 @@ import {
     View,
 } from 'react-native'
 import { ScreenWidth } from 'react-native-elements/dist/helpers'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp5: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -39,8 +43,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
 
-    const { onSignUpFailure } = useContext(AppContext)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -131,9 +134,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                 requestLogin(loginForm)
                     .then(res => {
                         setAccessToken(res.accessToken)
-                        navigation.navigate('SignUp6', {
-                            accessToken: res.accessToken,
-                        })
+                        navigation.navigate('SignUp6')
                     })
                     .catch(err => {
                         console.log(`signUp5 - requestLogin: ${err}`)
@@ -388,6 +389,7 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 5,
         },
         input: {
+            color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
             borderBottomWidth: 1,
             paddingBottom: 4,

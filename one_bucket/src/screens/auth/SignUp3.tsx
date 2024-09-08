@@ -1,10 +1,9 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Alert,
     Appearance,
@@ -15,9 +14,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const SignUp3: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -30,7 +34,7 @@ const SignUp3: React.FC = (): React.JSX.Element => {
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const [schoolEmail, setSchoolEmail] = useState('')
 
     const handleSchoolEmailChange = (text: string) => {

@@ -1,12 +1,12 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     getAlertSoundEnabled,
     getAlertVibrationEnabled,
     setAlertSoundEnabled,
     setAlertVibrationEnabled,
 } from '@/utils/asyncStorageUtils'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -19,7 +19,12 @@ import {
 } from 'react-native'
 
 const Setting: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogOut } = useContext(AppContext)
+    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+        onLogOut: state.onLogOut,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(

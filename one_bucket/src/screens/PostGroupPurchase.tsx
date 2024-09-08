@@ -2,10 +2,10 @@ import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Image,
@@ -24,7 +24,11 @@ import {
 } from 'react-native-image-picker'
 
 const PostGroupPurchase: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -36,8 +40,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    const navigation = stackNavigation()
 
-    const [imageUri, setImageUri] = useState<string | null>(null)
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [item, setItem] = useState('')
@@ -57,8 +61,6 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
 
-    const navigation = useNavigation()
-
     const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -66,13 +68,13 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
-            console.log('response: ' + response.assets)
-            console.log('list: ' + imageUriList)
+            const newImageUriList: string[] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    setImageUriList([...imageUriList, asset.uri])
+                    newImageUriList.push(asset.uri)
                 }
             })
+            setImageUriList([...imageUriList, ...newImageUriList])
         })
     }
 
@@ -114,7 +116,13 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                     style={styles.imageScrollViewContainer}>
                     {imageUriList.map((uri, index) => (
                         <View key={index} style={styles.imageContainer}>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('ImageEnlargement', {
+                                        imageUriList: imageUriList,
+                                        index: index,
+                                    })
+                                }>
                                 <Image
                                     source={{ uri: uri }}
                                     style={styles.image}
@@ -551,7 +559,7 @@ const createStyles = (theme: Icolor) =>
         },
         postButton: {
             backgroundColor: baseColors.SCHOOL_BG,
-            padding: 16,
+            padding: 20,
             alignItems: 'center',
         },
         postButtonText: {

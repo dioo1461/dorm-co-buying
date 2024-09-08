@@ -6,10 +6,10 @@ import {
 import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { GetProfileResponse } from '@/data/response/GetProfileResponse'
 import { useQuery } from 'react-query'
-import { useProfileStore } from '../useStore/useProfileStore'
+import { useBoundStore } from '../useStore/useBoundStore'
 
 export const queryGetMemberInfo = () => {
-    const memberInfoData = useProfileStore.getState().memberInfo
+    const memberInfo = useBoundStore(state => state.memberInfo)
     // TODO: 캐싱 제대로 작동하는지 확인
 
     const checkProfileImageCached = async () => {
@@ -18,7 +18,7 @@ export const queryGetMemberInfo = () => {
     }
 
     return useQuery<[GetMemberInfoResponse, ArrayBuffer]>(
-        ['memberInfo', memberInfoData],
+        ['memberInfo', memberInfo],
         async () => {
             const promise = await Promise.all([
                 getMemberInfo(),

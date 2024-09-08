@@ -1,6 +1,8 @@
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
+import { LoginRequestBody } from '@/data/request/LoginRequestBody'
+import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
+import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
 import { LoginResponse } from '@/data/response/LogInResponse'
+import { SetUniversityResponse } from '@/data/response/SetUniversityResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 export const postSignupForm = async (data: SignUpRequestBody): Promise<any> => {
@@ -28,8 +30,27 @@ export const requestLogin = async (
             return response.data
         })
         .catch(error => {
-            // console.log(error)
+            console.log(error)
+
             // 401 unauthorized
+            if (error.response.status === 401 || 403) {
+                // onLogOut(false)
+            }
+            throw error
+        })
+}
+
+export const setUniversity = async (
+    data: SetUniversityRequestBody,
+): Promise<SetUniversityResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .put('/member/univ', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log(error)
             throw error
         })
 }

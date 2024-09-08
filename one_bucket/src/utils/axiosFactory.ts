@@ -1,3 +1,4 @@
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { BASE_URL } from '@env'
 import axios, { AxiosRequestConfig } from 'axios'
 import { getAccessToken } from './accessTokenUtils'
@@ -30,7 +31,7 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
         error => {
             if (error.response && error.response.status === 401) {
                 // Token expired, perform logout
-                // handleLogout()
+                useBoundStore.setState({ loginState: false })
             }
             return Promise.reject(error)
         },

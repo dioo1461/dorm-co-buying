@@ -2,11 +2,9 @@ import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
 import IcPlus from '@/assets/drawable/ic-plus.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import strings from '@/constants/strings'
-import { AppContext } from '@/hooks/useContext/AppContext'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import React, { useEffect } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -16,11 +14,16 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from './navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -34,15 +37,14 @@ const Mypage = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     // const [nickName, setNickName] = useState('')
-    const { onLogOut } = useContext(AppContext)
 
     const { data, isLoading, error } = queryGetMemberInfo()
     const [memberInfo, profileImage] = data ? data : [null, null]
 
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
 
     const handleProfileDetailNavigation = () => {
-        navigation.navigate(strings.profileDetailsScreenName)
+        navigation.navigate('ProfileDetails')
     }
 
     if (error) return <Text>Error...</Text>

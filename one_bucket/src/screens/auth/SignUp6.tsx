@@ -1,12 +1,11 @@
 import { postProfile } from '@/apis/profileService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Appearance,
     KeyboardAvoidingView,
@@ -18,9 +17,16 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp6: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onSignUpSuccess } = useBoundStore(
+        state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onSignUpSuccess: state.onSignUpSuccess,
+        }),
+    )
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -34,8 +40,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
 
-    const navigation = useNavigation()
-    const { onSignUpSuccess } = useContext(AppContext)
+    const navigation = stackNavigation()
 
     const [name, setName] = useState('tUser')
     const [gender, setGender] = useState('man')
@@ -44,9 +49,6 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const [birth, setBirth] = useState('')
 
     const [isDormitory, setIsDormitory] = useState(false)
-
-    type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
-    const { params } = useRoute<SignUp6RouteProp>()
 
     const handleNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
