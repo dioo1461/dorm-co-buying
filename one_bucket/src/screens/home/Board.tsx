@@ -3,10 +3,12 @@ import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import Backdrop from '@/components/Backdrop'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
+import { BoardPostReduced } from '@/data/response/GetBoardPostListResponse'
+import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef, useState } from 'react'
 import {
+    ActivityIndicator,
     Animated,
     Appearance,
     FlatList,
@@ -19,17 +21,6 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-
-type ItemProps = {
-    id: string
-    title: string
-    content: string
-    views: number
-    likes: number
-    comments: number
-    createdAt: string
-    imageUri: string
-}
 
 const Board: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -49,44 +40,15 @@ const Board: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
-    // const navigation = useNavigation()
 
     const flatlistRef = useRef(null)
-    const flatlistData: ItemProps[] = [
-        {
-            id: '0',
-            title: '젠장 또 대상혁이야',
-            content:
-                '제기랄, 또 대상혁이야. 이 글만 보고 자려고 했는데, 대상혁을 보고 말았어. 이제 나는 숭배해야만 해.... 숭배를 시작하면 잠이 확 깨 버릴 걸 알면서도, 나는 숭배해야만 해. 그것이 대상혁을 목도한 자의 사명이다. 자, 숭배를 시작하겠어.',
-            views: 22,
-            likes: 10,
-            comments: 3,
-            createdAt: 'createdAt0',
-            imageUri: 'imageUri',
-        },
-        {
-            id: '1',
-            title: '젠장 또 대상혁이야',
-            content:
-                '제기랄, 또 대상혁이야. 이 글만 보고 자려고 했는데, 대상혁을 보고 말았어. 이제 나는 숭배해야만 해.... 숭배를 시작하면 잠이 확 깨 버릴 걸 알면서도, 나는 숭배해야만 해. 그것이 대상혁을 목도한 자의 사명이다. 자, 숭배를 시작하겠어.',
-            views: 22,
-            likes: 10,
-            comments: 3,
-            createdAt: 'createdAt0',
-            imageUri: '',
-        },
-        {
-            id: '2',
-            title: '젠장 또 대상혁이야',
-            content:
-                '제기랄, 또 대상혁이야. 이 글만 보고 자려고 했는데, 대상혁을 보고 말았어. 이제 나는 숭배해야만 해.... 숭배를 시작하면 잠이 확 깨 버릴 걸 알면서도, 나는 숭배해야만 해. 그것이 대상혁을 목도한 자의 사명이다. 자, 숭배를 시작하겠어.',
-            views: 22,
-            likes: 10,
-            comments: 3,
-            createdAt: 'createdAt0',
-            imageUri: 'imageUri',
-        },
-    ]
+
+    const [boardId, setBoardId] = useState(1)
+
+    const { data, isLoading, error } = queryBoardPostList(boardId, 0, {
+        sortType: 'createdDate',
+        sort: 'asc',
+    })
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -95,15 +57,7 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
-    const tempPostData: GetBoardPostResponse = {
-        postId: '0',
-        title: 'title',
-        content: 'content',
-        author: 'author',
-        createdAt: 'createdAt',
-    }
-
-    const Post = (data: ItemProps) => {
+    const Post = (data: BoardPostReduced) => {
         // const truncateText = (event: LayoutChangeEvent) => {
         //     const { height } = event.nativeEvent.layout
         // }
@@ -112,9 +66,17 @@ const Board: React.FC = (): JSX.Element => {
                 <TouchableNativeFeedback
                     background={touchableNativeFeedbackBg()}
                     onPress={() =>
-                        navigation.navigate('BoardPost', tempPostData)
+                        navigation.navigate('BoardPost', {
+                            boardId: data.boardId,
+                            postId: data.postId,
+                        })
                     }>
-                    <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
+                    <View
+                        style={{
+                            marginHorizontal: 10,
+                            paddingHorizontal: 10,
+                            paddingVertical: 10,
+                        }}>
                         <View style={{ flexDirection: 'row', margin: 4 }}>
                             <View style={{ flex: 1, marginEnd: 10 }}>
                                 {/* ### 제목 ### */}
@@ -144,12 +106,12 @@ const Board: React.FC = (): JSX.Element => {
                                         numberOfLines={2}
                                         ellipsizeMode='tail'
                                         style={styles.postContentText}>
-                                        {data.content}
+                                        {data.text}
                                     </Text>
                                 </View>
                             </View>
                             {/* ### 이미지 ### */}
-                            {data.imageUri ? (
+                            {true ? (
                                 <View
                                     style={[
                                         styles.postImage,
@@ -180,7 +142,9 @@ const Board: React.FC = (): JSX.Element => {
                                     justifyContent: 'space-between',
                                 }}>
                                 <Text style={styles.postMetaDataText}>
-                                    {`${data.createdAt}ㆍ조회 ${data.views}`}
+                                    {`${
+                                        data.createdDate
+                                    }ㆍ조회 ${'data.views'}`}
                                 </Text>
                             </View>
                             {/* ### 추천수, 댓글 ### */}
@@ -197,7 +161,7 @@ const Board: React.FC = (): JSX.Element => {
                                         styles.postlikeCountText,
                                         { marginStart: 1, marginEnd: 6 },
                                     ]}>
-                                    {data.likes}
+                                    {/* {data.likes} */}
                                 </Text>
                                 <IcComment />
                                 <Text
@@ -205,7 +169,7 @@ const Board: React.FC = (): JSX.Element => {
                                         styles.postCommentCountText,
                                         { marginStart: 2 },
                                     ]}>
-                                    {data.comments}
+                                    {/* {data.comments} */}
                                 </Text>
                             </View>
                         </View>
@@ -229,7 +193,7 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
-    const renderItem: ListRenderItem<ItemProps> = ({ item }) => (
+    const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
         <Post {...item} />
     )
 
@@ -246,7 +210,6 @@ const Board: React.FC = (): JSX.Element => {
     const animation = useRef(new Animated.Value(0)).current
 
     const toggleDropdown = () => {
-        console.log('toggleDropdown')
         setExpanded(!expanded)
         Animated.timing(animation, {
             toValue: expanded ? 0 : 1,
@@ -273,40 +236,42 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    const backdropAnimatedStyle = {
-        opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0.5],
-        }),
-    }
+    if (error) return <Text>Error...</Text>
+
+    if (isLoading)
+        return (
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator
+                    size='large'
+                    color={
+                        themeColor === lightColors
+                            ? baseColors.SCHOOL_BG
+                            : baseColors.GRAY_2
+                    }
+                />
+            </View>
+        )
 
     return (
         <View style={styles.container}>
+            {/* ### 게시글 목록 flatlist ### */}
             <View style={styles.flatList}>
                 <FlatList
                     ListHeaderComponent={FlatlistHeader}
                     showsVerticalScrollIndicator={false}
                     ref={flatlistRef}
-                    data={flatlistData}
+                    data={data?.content}
                     renderItem={renderItem}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.postId.toString()}
                 />
             </View>
             <Backdrop expanded={expanded} onPress={toggleDropdown} />
-            {/* ### backdrop ### */}
-            {/* <Animated.View
-                style={[
-                    styles.backdrop,
-                    backdropAnimatedStyle,
-                    { pointerEvents: expanded ? 'auto' : 'none' },
-                ]}>
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    disabled={!expanded}
-                    onPress={toggleDropdown}
-                />
-            </Animated.View> */}
-
             {/* ### 게시판 선택 버튼 ### */}
             <View
                 style={[
@@ -379,13 +344,6 @@ const createStyles = (theme: Icolor) =>
         container: { flex: 1 },
         flatList: {
             flex: 11,
-        },
-        backdrop: {
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'black',
-            zIndex: 1,
         },
         boardTypeContainer: {
             marginTop: 4,
@@ -461,7 +419,6 @@ const createStyles = (theme: Icolor) =>
             borderBottomColor:
                 theme === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
             marginHorizontal: 10,
-            marginVertical: 4,
         },
         postTitle: {
             color: theme.TEXT,

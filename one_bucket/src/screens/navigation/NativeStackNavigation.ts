@@ -1,4 +1,3 @@
-import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
@@ -17,9 +16,14 @@ export type RootStackParamList = {
     SignUp6: undefined
     SignUp7: undefined
 
-    BoardPost: GetBoardPostResponse
+    BoardPost: {
+        boardId: number
+        postId: number
+    }
 
-    BoardCreatePost: { boardName: string }
+    BoardCreatePost: {
+        boardName: string
+    }
     ProfileDetails: undefined
     PostGroupPurchase: undefined
 

@@ -1,7 +1,10 @@
 export interface GetBoardPostResponse {
-    postId: string
+    boardId: number
     title: string
-    content: string
-    author: string
-    createdAt: string
+    text: string
+    postId: number
+    authorNickname: string
+    createdDate: string
+    modifiedDate: string
+    comments: []
 }

@@ -2,9 +2,12 @@ import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import IcOthers from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useRef, useState } from 'react'
 import {
+    ActivityIndicator,
     Appearance,
     LayoutChangeEvent,
     NativeScrollEvent,
@@ -15,6 +18,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const IMAGE_SIZE = 112
 
@@ -36,6 +40,9 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
 
+    type BoardPostProp = RouteProp<RootStackParamList, 'BoardPost'>
+    const { params } = useRoute<BoardPostProp>()
+
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [isImageInView, setImageInView] = useState(true)
     const scrollViewRef = useRef<ScrollView>(null)
@@ -43,94 +50,12 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
 
-    const [title, setTitle] = useState('')
-    const [content, setContent] = useState('')
-    const [comment, setComment] = useState('')
-
     const [expanded, setExpanded] = useState(false)
 
+    const { data, isLoading, error } = queryBoardPost(params.postId)
+
     useEffect(() => {
-        setImageUriList(['uri1', 'uri2', 'uri3', 'uri4', 'uri5'])
-        setTitle('제목')
-        setContent(`굉
-            장
-            히
-            긴
-            본
-            문
-            굉
-            장
-            히
-            긴
-            본
-            문
-            굉
-            장
-            히
-            긴
-            본
-            문
-            굉
-            장
-            히
-            긴
-            본
-            문
-            굉
-            장
-            히
-            긴
-            본
-            문
-            굉
-            장
-            히
-            긴
-            본
-            문`)
-        setComment(`굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                굉
-                장
-                히
-                긴
-                댓
-                글
-                `)
+        console.log(data)
     }, [])
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -218,6 +143,28 @@ const BoardPost: React.FC = (): JSX.Element => {
         )
     }
 
+    if (error) return <Text>Error...</Text>
+
+    if (isLoading)
+        return (
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator
+                    size='large'
+                    color={
+                        themeColor === lightColors
+                            ? baseColors.SCHOOL_BG
+                            : baseColors.GRAY_2
+                    }
+                />
+            </View>
+        )
+
     return (
         <View style={styles.container}>
             {/* ### 본문 container ### */}
@@ -231,11 +178,11 @@ const BoardPost: React.FC = (): JSX.Element => {
                 showsVerticalScrollIndicator={false}
                 onScroll={handleScroll}
                 ref={scrollViewRef}
-                scrollEventThrottle={16}>
+                scrollEventThrottle={0}>
                 <Text style={[styles.titleText, { marginBottom: 10 }]}>
-                    {title}
+                    {data?.title}
                 </Text>
-                <Text style={styles.contentText}>{content}</Text>
+                <Text style={styles.contentText}>{data?.text}</Text>
                 {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
                 {!isImageInView && imageUriList.length > 0 && (
                     <ScrollView
@@ -301,8 +248,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
             )}
-
-            <View style={styles.backdrop} />
         </View>
     )
 }
@@ -403,12 +348,5 @@ const createStyles = (theme: Icolor) =>
             paddingTop: 10,
             paddingBottom: 10,
             marginBottom: 10,
-        },
-        backdrop: {
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'black',
-            zIndex: 1,
         },
     })
