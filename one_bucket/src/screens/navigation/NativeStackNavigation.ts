@@ -21,6 +21,11 @@ export type RootStackParamList = {
         postId: number
     }
 
+    Search: undefined
+
+    ChatList: undefined
+    Chat: undefined
+
     BoardCreatePost: {
         boardName: string
     }

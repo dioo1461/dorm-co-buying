@@ -19,9 +19,10 @@ import strings from '@/constants/strings'
 import { useNavigation } from '@react-navigation/native'
 import { View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import Chat from 'screens/Chat'
+import ChatList from 'screens/chat/ChatList'
 import Mypage from 'screens/Mypage'
 import HomeRoutes from 'screens/navigation/HomeRoutes'
+import { stackNavigation } from './NativeStackNavigation'
 export const mainRoutes = [
     {
         name: strings.homeRouteScreenName,
@@ -30,33 +31,38 @@ export const mainRoutes = [
         inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,
         activeIconDark: <IcTabHomeActive fill={baseColors.WHITE} />,
         inactiveIconDark: <IcTabHomeInactive fill={baseColors.WHITE} />,
-        headerRight: () => (
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginEnd: 8,
-                    }}>
-                    {/* <IcNotification fill='white' /> */}
-                    <IcSearch fill='white' />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginEnd: 8,
-                    }}>
-                    <IcNotification />
-                </TouchableOpacity>
-            </View>
-        ),
+        headerRight: () => {
+            const navigation = stackNavigation()
+
+            return (
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginEnd: 8,
+                        }}
+                        onPress={() => navigation.navigate('Search')}>
+                        {/* <IcNotification fill='white' /> */}
+                        <IcSearch fill='white' />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginEnd: 8,
+                        }}>
+                        <IcNotification />
+                    </TouchableOpacity>
+                </View>
+            )
+        },
     },
     {
-        name: strings.chatScreenName,
-        component: Chat,
+        name: strings.chatListScreenName,
+        component: ChatList,
         activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,
         activeIconDark: <IcTabChatActive fill={baseColors.WHITE} />,

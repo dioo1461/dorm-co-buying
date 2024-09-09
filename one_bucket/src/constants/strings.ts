@@ -8,8 +8,11 @@ const strings = {
     boardCreatePostScreenName: 'BoardCreatePost',
     boardPostScreenName: 'BoardPost',
 
-    chatScreenName: '채팅',
+    chatListScreenName: '채팅',
+    chatScreenName: 'Chat',
     myPageScreenName: 'MY',
+
+    searchScreenName: 'Search',
 
     loginScreenName: 'Login',
     signUp1ScreenName: 'SignUp',

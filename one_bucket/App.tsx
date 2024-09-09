@@ -14,9 +14,11 @@ import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import ImageEnlargement from '@/screens/ImageEnlargement'
 import ProfileModify from '@/screens/PofileModify'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
+import Search from '@/screens/Search'
 import Setting from '@/screens/Setting'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
@@ -26,6 +28,7 @@ import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
+import Chat from '@/screens/chat/Chat'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
@@ -35,7 +38,6 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
-import ImageEnlargement from '@/screens/ImageEnlargement'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -272,6 +274,17 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.imageEnlargementScreenName}
                                 component={ImageEnlargement}
+                                options={{
+                                    headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name={strings.chatScreenName}
+                                component={Chat}
+                            />
+                            <Stack.Screen
+                                name={strings.searchScreenName}
+                                component={Search}
                                 options={{
                                     headerShown: false,
                                 }}
