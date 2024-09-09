@@ -18,6 +18,7 @@ export const baseColors = {
     GRAY_2: '#808080',
     GRAY_3: '#C0C0C0',
     GRAY_4: '#F0F0F0',
+    RED: '#FF0000',
     LIGHT_RED: '#FF7070',
     LIGHT_BLUE: '#699BF7',
 }

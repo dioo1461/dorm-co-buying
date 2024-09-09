@@ -169,7 +169,7 @@ const CreateStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             borderRadius: 10,
             marginStart: 20,
-            paddingVertical: 6,
+            paddingVertical: 8,
             paddingHorizontal: 16,
         },
         bodyContainer: {},
