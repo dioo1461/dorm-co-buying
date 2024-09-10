@@ -1,7 +1,10 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { ChatRoom } from '@/data/response/success/chat/GetRoomsForMemberResponse'
+import { queryGetChatroomsForMember } from '@/hooks/useQuery/chatQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef } from 'react'
 import {
+    ActivityIndicator,
     Appearance,
     FlatList,
     ListRenderItem,
@@ -31,65 +34,9 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
+    const { data, isLoading, error } = queryGetChatroomsForMember()
+
     const flatlistRef = useRef<FlatList>(null)
-
-    type ChatItemProps = {
-        id: number
-        title: string
-        isMyChat: boolean
-        lastChat: string
-        lastChatTime: Date
-        location: string
-        peopleCount: number
-    }
-
-    const tempChats: ChatItemProps[] = [
-        {
-            id: 1,
-            title: 'title',
-            isMyChat: true,
-            lastChat: 'lastChat',
-            lastChatTime: new Date(),
-            location: 'location',
-            peopleCount: 1,
-        },
-        {
-            id: 2,
-            title: 'title2',
-            isMyChat: false,
-            lastChat: 'lastChat2',
-            lastChatTime: new Date(),
-            location: 'location2',
-            peopleCount: 2,
-        },
-        {
-            id: 3,
-            title: 'title3',
-            isMyChat: false,
-            lastChat: 'lastChat3',
-            lastChatTime: new Date(),
-            location: 'location3',
-            peopleCount: 3,
-        },
-        {
-            id: 4,
-            title: 'title4',
-            isMyChat: true,
-            lastChat: 'lastChat4',
-            lastChatTime: new Date(),
-            location: 'location4',
-            peopleCount: 4,
-        },
-        {
-            id: 5,
-            title: 'title5',
-            isMyChat: true,
-            lastChat: 'lastChat5',
-            lastChatTime: new Date(),
-            location: 'location5',
-            peopleCount: 5,
-        },
-    ]
 
     const FlatlistHeader = () => <View></View>
 
@@ -100,7 +47,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const ChatItem = (data: ChatItemProps) => {
+    const ChatItem = (data: ChatRoom) => {
         const styles = createChatitemStyles(themeColor)
 
         return (
@@ -113,9 +60,10 @@ const ChatList: React.FC = (): React.JSX.Element => {
                         <View style={styles.headerContainer}>
                             <View style={styles.headerFirstContainer}>
                                 <Text style={styles.titleText}>
-                                    {data.title}
+                                    {data.name}
                                 </Text>
-                                <Text style={styles.lastChatTimeText}>
+                                <Text>ㅋ</Text>
+                                {/* <Text style={styles.lastChatTimeText}>
                                     {data.lastChatTime
                                         .getHours()
                                         .toString()
@@ -125,13 +73,13 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                         .getMinutes()
                                         .toString()
                                         .padStart(2, '0')}
-                                </Text>
+                                </Text> */}
                             </View>
                             <View style={styles.headerSecondContainer}></View>
                         </View>
                         <View style={styles.bodyContainer}>
                             <View>
-                                {data.isMyChat ? (
+                                {/* {data.isMyChat ? (
                                     <View style={{ backgroundColor: 'yellow' }}>
                                         <Text style={styles.lastChatText}>
                                             {data.lastChat}
@@ -146,7 +94,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                             {data.lastChat}
                                         </Text>
                                     </View>
-                                )}
+                                )} */}
                             </View>
                         </View>
                     </View>
@@ -155,19 +103,40 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const renderItem: ListRenderItem<ChatItemProps> = ({ item }) => (
+    const renderItem: ListRenderItem<ChatRoom> = ({ item }) => (
         <ChatItem {...item} />
     )
+
+    if (error) return <Text>Error...</Text>
+
+    if (isLoading)
+        return (
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator
+                    size='large'
+                    color={
+                        themeColor === lightColors
+                            ? baseColors.SCHOOL_BG
+                            : baseColors.GRAY_2
+                    }
+                />
+            </View>
+        )
 
     return (
         <View style={styles.container}>
             <FlatList
                 // ListHeaderComponent={FlatlistHeader}
-                showsVerticalScrollIndicator={false}
                 ref={flatlistRef}
-                data={tempChats}
+                data={data}
                 renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item.roomId.toString()}
             />
         </View>
     )

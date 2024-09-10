@@ -19,10 +19,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         setThemeColor: state.setThemeColor,
     }))
 
-    const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<string[]>([])
-    const stompClientRef = useRef<any>(null) // Stomp 클라이언트를 useRef로 저장
-
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -33,10 +29,14 @@ const Chat: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    const [message, setMessage] = useState('')
+    const [chatMessages, setChatMessages] = useState<string[]>([])
+    const stompClientRef = useRef<any>(null) // Stomp 클라이언트를 useRef로 저장
+
     // WebSocket 연결 및 설정
     useEffect(() => {
         const socket = new SockJS(BASE_URL + '/chat')
-        const stompClient = Stomp.over(socket)
+        const stompClient = Stomp.over(() => socket)
 
         const onConnected = () => {
             console.log('Connected to WebSocket')

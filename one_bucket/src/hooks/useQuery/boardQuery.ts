@@ -1,6 +1,6 @@
 import { getBoardPost, getBoardPostList } from '@/apis/boardService'
-import { GetBoardPostListResponse } from '@/data/response/GetBoardPostListResponse'
-import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
+import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
+import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { useQuery } from 'react-query'
 
 export const queryBoardPost = (postId: number) => {

@@ -1,5 +1,5 @@
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
-import { UpdateUniversityRequestBody } from '@/data/request/UpdateUniversityRequestBody'
+import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
 import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
 import { createAuthAxios } from 'utils/axiosFactory'
 
@@ -65,7 +65,7 @@ export const postProfile = async (data: AddProfileRequestBody) => {
         })
 }
 
-export const updateUniversity = async (data: UpdateUniversityRequestBody) => {
+export const updateUniversity = async (data: SetUniversityRequestBody) => {
     const authAxios = await createAuthAxios()
     return authAxios
         .post('/member/univ', data)

@@ -1,6 +1,6 @@
-import { CreateBoardPostRequestBody } from '@/data/request/CreateBoardPostRequestBody'
-import { GetBoardPostListResponse } from '@/data/response/GetBoardPostListResponse'
-import { GetBoardPostResponse } from '@/data/response/GetBoardPostResponse'
+import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
+import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 /** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장

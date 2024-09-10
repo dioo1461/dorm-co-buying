@@ -9,7 +9,7 @@ import { useQuery } from 'react-query'
 import { useBoundStore } from '../useStore/useBoundStore'
 
 export const queryGetMemberInfo = () => {
-    const memberInfo = useBoundStore(state => state.memberInfo)
+    const memberInfo = useBoundStore.getState().memberInfo
     // TODO: 캐싱 제대로 작동하는지 확인
 
     const checkProfileImageCached = async () => {

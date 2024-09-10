@@ -44,8 +44,13 @@ const Tab = createBottomTabNavigator()
 
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
-    const loginState = useBoundStore(state => state.loginState)
-    const setLoginState = useBoundStore(state => state.setLoginState)
+    const { loginState, setLoginState, setMemberInfo } = useBoundStore(
+        state => ({
+            loginState: state.loginState,
+            setLoginState: state.setLoginState,
+            setMemberInfo: state.setMemberInfo,
+        }),
+    )
 
     const themeColor = useBoundStore(state => state.themeColor)
     const setThemeColor = useBoundStore(state => state.setThemeColor)
@@ -102,7 +107,7 @@ function App(): React.JSX.Element {
                 .then(response => {
                     if (response) {
                         // memberInfo를 profileStore에 저장
-
+                        setMemberInfo(response)
                         setLoginState(true)
                     }
                 })
