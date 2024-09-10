@@ -53,7 +53,9 @@ const ChatList: React.FC = (): React.JSX.Element => {
         return (
             <TouchableNativeFeedback
                 background={touchableNativeFeedbackBg()}
-                onPress={() => navigation.navigate('Chat')}>
+                onPress={() =>
+                    navigation.navigate('Chat', { roomId: data.roomId })
+                }>
                 <View style={styles.container}>
                     <View style={styles.imageContainer}></View>
                     <View>
@@ -62,7 +64,6 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                 <Text style={styles.titleText}>
                                     {data.name}
                                 </Text>
-                                <Text>ㅋ</Text>
                                 {/* <Text style={styles.lastChatTimeText}>
                                     {data.lastChatTime
                                         .getHours()

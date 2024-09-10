@@ -47,6 +47,7 @@
         "react-query": "^3.39.3",
         "sockjs-client": "^1.6.1",
         "styled-components": "^6.1.8",
+        "ws": "^8.18.0",
         "zustand": "^4.5.4"
     },
     "devDependencies": {

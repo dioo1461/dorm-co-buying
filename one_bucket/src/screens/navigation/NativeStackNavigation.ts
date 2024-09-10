@@ -24,7 +24,9 @@ export type RootStackParamList = {
     Search: undefined
 
     ChatList: undefined
-    Chat: undefined
+    Chat: {
+        roomId: string
+    }
 
     BoardCreatePost: {
         boardName: string

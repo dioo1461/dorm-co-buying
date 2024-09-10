@@ -1,7 +1,8 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { BASE_URL } from '@env'
-import { Stomp } from '@stomp/stompjs'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
@@ -12,6 +13,7 @@ import {
     View,
 } from 'react-native'
 import SockJS from 'sockjs-client'
+import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const Chat: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -29,63 +31,58 @@ const Chat: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>
+    const { params } = useRoute<ChatRouteProp>()
+
     const [message, setMessage] = useState('')
     const [chatMessages, setChatMessages] = useState<string[]>([])
-    const stompClientRef = useRef<any>(null) // Stomp 클라이언트를 useRef로 저장
+    const stompClientRef = useRef<Client | null>(null) // Stomp 클라이언트를 useRef로 저장
 
-    // WebSocket 연결 및 설정
     useEffect(() => {
-        const socket = new SockJS(BASE_URL + '/chat')
-        const stompClient = Stomp.over(() => socket)
+        // WebSocket 연결 및 설정
 
-        const onConnected = () => {
-            console.log('Connected to WebSocket')
-            // 메시지 구독
-            stompClient.subscribe('/chat/messages', message => {
-                onMessageReceived(message)
-            })
-        }
+        console.log(params.roomId)
 
-        const onMessageReceived = (message: any) => {
-            const payload = JSON.parse(message.body)
-            console.log('Message received: ', payload)
-            setChatMessages(prevMessages => [...prevMessages, payload.content]) // 새로운 메시지 추가
-        }
-
-        const onError = (error: any) => {
-            console.log('Error', error)
-        }
-
-        // 연결 시작
-        stompClient.connect({}, onConnected, onError)
-
-        // Stomp 클라이언트를 참조로 저장
-        stompClientRef.current = stompClient
-
-        // 컴포넌트 언마운트 시 연결 해제
-        return () => {
-            if (stompClientRef.current) {
-                stompClientRef.current.disconnect(() => {
-                    console.log('Disconnected from WebSocket')
+        const stompClient = new Client({
+            webSocketFactory: () => new SockJS(BASE_URL),
+            onConnect: () => {
+                stompClient.subscribe(
+                    '/sub/chat/room/' + params.roomId,
+                    message => {
+                        console.log(message)
+                    },
+                )
+                stompClient.publish({
+                    destination: '/pub/chat/message',
+                    body: 'test',
                 })
-            }
+            },
+            debug: str => console.log('stomp: ' + str),
+        })
+        stompClient.debug = str => {
+            console.log('STOMP Debug: ', str) // STOMP 디버그 로그 추가
         }
-    }, [])
 
-    // 메시지 전송 함수
-    const sendMessage = () => {
-        if (stompClientRef.current && message.trim()) {
-            stompClientRef.current.send(
-                '/app/chat', // 서버 측에서 처리할 엔드포인트
-                {},
-                JSON.stringify({ sender: 'sender', content: message }),
-            )
-            setMessage('') // 메시지 전송 후 입력 필드 비움
-        }
-    }
+        stompClientRef.current = stompClient
+    }, [])
 
     const styles = createStyles(themeColor)
 
+    const onMessageReceived = (message: any) => {
+        const payload = JSON.parse(message.body)
+        console.log('Message received: ', payload)
+        setChatMessages(prevMessages => [...prevMessages, payload.content]) // 새로운 메시지 추가
+    }
+
+    // 메시지 전송 함수
+    const sendMessage = () => {
+        message.trim()
+        stompClientRef.current?.publish({
+            destination: '/pub/chat/message',
+            body: JSON.stringify({ content: message, sender: 'test' }),
+        })
+        setMessage('')
+    }
     return (
         <View style={styles.container}>
             <View style={styles.chatContainer}>
