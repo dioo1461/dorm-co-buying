@@ -13,6 +13,7 @@ const strings = {
     myPageScreenName: 'MY',
 
     searchScreenName: 'Search',
+    notificationScreenName: 'Notification',
 
     loginScreenName: 'Login',
     signUp1ScreenName: 'SignUp',

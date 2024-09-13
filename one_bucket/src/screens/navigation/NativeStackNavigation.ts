@@ -23,6 +23,8 @@ export type RootStackParamList = {
 
     Search: undefined
 
+    Notification: undefined
+    
     ChatList: undefined
     Chat: {
         roomId: string

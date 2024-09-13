@@ -17,12 +17,14 @@ import IcOther from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { useNavigation } from '@react-navigation/native'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import ChatList from 'screens/chat/ChatList'
 import Mypage from 'screens/Mypage'
 import HomeRoutes from 'screens/navigation/HomeRoutes'
 import { stackNavigation } from './NativeStackNavigation'
+import { notifsNum } from 'screens/Notification'
+
 export const mainRoutes = [
     {
         name: strings.homeRouteScreenName,
@@ -53,8 +55,28 @@ export const mainRoutes = [
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginEnd: 8,
+                        }}
+                        onPress={() => navigation.navigate('Notification')}>
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginEnd: 8,
                         }}>
-                        <IcNotification />
+                            <IcNotification />
+                            <View style={{
+                                height: 10,
+                                width: 10,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginTop: -20,
+                                marginLeft: -8,
+                                borderRadius: 20,
+                                backgroundColor: ( notifsNum != 0 ) ? "red" : "",
+                            }}>
+                            </View>
+                        </View>
                     </TouchableOpacity>
                 </View>
             )
@@ -74,7 +96,7 @@ export const mainRoutes = [
                         flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginEnd: 8,
+                        marginEnd: 15,
                     }}>
                     <IcOther fill='white' />
                 </TouchableOpacity>
@@ -97,7 +119,7 @@ export const mainRoutes = [
                             flex: 1,
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginEnd: 8,
+                            marginEnd: 15,
                         }}
                         onPress={() =>
                             navigation.navigate(strings.settingScreenName)

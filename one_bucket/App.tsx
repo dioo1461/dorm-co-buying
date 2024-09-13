@@ -29,6 +29,7 @@ import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
 import Chat from '@/screens/chat/Chat'
+import Notification from '@/screens/Notification'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
@@ -292,6 +293,36 @@ function App(): React.JSX.Element {
                                 component={Search}
                                 options={{
                                     headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name={strings.notificationScreenName}
+                                component={Notification}
+                                options={{
+                                    headerLeft: () => {
+                                        const navigation = stackNavigation()
+                                        return (
+                                            <TouchableOpacity
+                                                style={{ marginLeft: 16 }}
+                                                onPress={() =>
+                                                    navigation.goBack()
+                                                }>
+                                                <IcAngleLeft
+                                                    fill={
+                                                        themeColor.HEADER_TEXT
+                                                    }
+                                                />
+                                            </TouchableOpacity>
+                                        )
+                                    },
+                                    headerStyle: {
+                                        backgroundColor: themeColor.HEADER_BG,
+                                    },
+                                    headerTitleStyle: {
+                                        color: themeColor.HEADER_TEXT,
+                                        fontFamily: 'NanumGothic',
+                                        fontSize: 18,
+                                    },
                                 }}
                             />
                         </Stack.Navigator>
