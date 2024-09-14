@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import {
     ActivityIndicator,
     Appearance,
+    Modal,
     ScrollView,
     StyleSheet,
     Switch,
@@ -21,6 +22,11 @@ import {
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
+
+export const getColorNow = (colorValue: number): string => {
+    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
+    return colorList[colorValue];
+  };
 
 const Setting: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
@@ -45,8 +51,16 @@ const Setting: React.FC = (): React.JSX.Element => {
     const [isAlertVibrationEnabled, setIsAlertVibrationEnabled] =
         useState(false)
 
-    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100']
+    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
     const [colorValue, setColorValue] = useState(0)
+
+    const [logoutVisible, setLogoutVisible] = useState(false)
+    const openLogout = () => { setLogoutVisible(true); }
+    const closeLogout = () => { setLogoutVisible(false); }
+    const [delIDVisible, setDelIDVisible] = useState(false)
+    const openDelID = () => { setDelIDVisible(true); }
+    const closeDelID = () => { setDelIDVisible(false); }
+
 
     useEffect(() => {
         const setAlertParameters = async () => {
@@ -217,6 +231,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
+                                
                             )
                         })}
                     </View>
@@ -238,10 +253,31 @@ const Setting: React.FC = (): React.JSX.Element => {
                 <View>
                     <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={onLogOut}>
+                        onPress={openLogout}>
                         <Text style={styles.contextLabel}>로그아웃</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.contextContainer}>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={logoutVisible}
+                        onRequestClose={closeLogout}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text>정말 로그아웃 하시겠습니까?</Text>
+                                <View style={{flexDirection: "row"}}>
+                                    <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
+                                        <Text style={{fontWeight: "bold"}}>예</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
+                                        <Text>아니오</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={openDelID}>
                         <Text
                             style={[
                                 styles.contextLabel,
@@ -250,8 +286,28 @@ const Setting: React.FC = (): React.JSX.Element => {
                             회원탈퇴
                         </Text>
                     </TouchableOpacity>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={delIDVisible}
+                        onRequestClose={closeDelID}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
+                                <View style={{flexDirection: "row"}}>
+                                    <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
+                                        <Text style={{fontWeight: "bold", color: baseColors.RED}}>예</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
+                                        <Text>아니오</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
             </ScrollView>
+            
         </View>
     )
 }
@@ -315,6 +371,33 @@ const createStyles = (theme: Icolor) =>
             top: CIRCLE_RING_SIZE,
             left: CIRCLE_RING_SIZE,
         },
+        modalContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+
+        },
+        modalContent: {
+            padding: 20,
+            backgroundColor: "white",
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 8,
+            width: '80%',
+            borderWidth: 0.2,
+        },
+        confirmButton: {
+            marginTop: 10,
+            width: '50%',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        cancelButton:{
+            marginTop: 10,
+            width: '50%',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }
     })
 
 export default Setting

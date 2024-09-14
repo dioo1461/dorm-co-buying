@@ -27,7 +27,7 @@ const notifs = [
     '참여한 공동구매 마감',
     '공지사항',
 ]
-export const notifsNum = notifs.length;
+export const notifsNum = notifs.length; // mainRoutes에 import
 const getNotifs = () => {
     // append.notifs
 }

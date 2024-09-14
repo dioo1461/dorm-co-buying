@@ -47,7 +47,7 @@ const Home: React.FC = (): JSX.Element => {
     ])
 
     const renderItem_Box = ({ item }: { item: string }) => (
-        <View style={styles.postBox}>
+        <TouchableOpacity style={styles.postBox}>
             <View style={styles.postBox_thumbFrame}>
                 <View style={styles.postBox_thumb}>
                     <Text>{item}</Text>
@@ -59,7 +59,7 @@ const Home: React.FC = (): JSX.Element => {
             <View style={styles.postBox_cont}>
                 <Text>{item}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 
     const renderItem_Horz = ({ item }: { item: string }) => (
