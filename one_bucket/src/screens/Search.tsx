@@ -3,7 +3,7 @@ import IcClose from '@/assets/drawable/ic-close.svg'
 import IcHistory from '@/assets/drawable/ic-history.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Appearance,
     FlatList,
@@ -18,13 +18,19 @@ import {
 import SQLite from 'react-native-sqlite-storage'
 import { stackNavigation } from './navigation/NativeStackNavigation'
 
+type HistoryItemProp = {
+    id: number
+    name: string
+    category: string
+}
+
 const Search: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
     }))
 
-    var db: SQLite.SQLiteDatabase
+    var [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null)
 
     // 다크모드 변경 감지
     useEffect(() => {
@@ -36,44 +42,106 @@ const Search: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    const [searchHistory, setSearchHistory] = useState<HistoryItemProp[]>([])
+
     useEffect(() => {
         // SQLite.enablePromise(true)
-        db = SQLite.openDatabase(
-            {
-                name: 'TestDB.db',
-                location: 'default',
-                createFromLocation: 1,
-            },
-            DB => {
-                console.log('Database opened')
-            },
-            error => {
-                console.log('Error:', error)
-            },
+        setDb(
+            SQLite.openDatabase(
+                {
+                    name: 'searchHistoryDB.db',
+                    location: 'default',
+                    createFromLocation: 1,
+                },
+                DB => {
+                    console.log('Database opened')
+                    createTable()
+                },
+                error => {
+                    console.log('Error:', error)
+                },
+            ),
         )
     }, [])
+
+    useEffect(() => {
+        loadSearchHistory()
+    }, [db])
+
+    const createTable = () => {
+        db?.transaction(tx => {
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS searchHistory (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT);',
+                [],
+                () => {
+                    console.log('Table created successfully')
+                },
+                error => {
+                    console.log('Error creating table:', error)
+                },
+            )
+        })
+    }
+
+    const onSearchSubmit = (text: string) => {
+        if (!text) return
+
+        db?.transaction(tx => {
+            tx.executeSql(
+                `INSERT INTO searchHistory (name, category) VALUES (?, 'default')`,
+                [text],
+                () => {
+                    loadSearchHistory()
+                },
+                error => {
+                    console.log('Error:', error)
+                },
+            )
+        })
+    }
+
+    const loadSearchHistory = () => {
+        db?.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM searchHistory ORDER BY id DESC',
+                [],
+                (_, results) => {
+                    var history: HistoryItemProp[] = []
+                    for (let i = 0; i < results.rows.length; i++) {
+                        history.push({
+                            id: results.rows.item(i).id,
+                            name: results.rows.item(i).name,
+                            category: results.rows.item(i).category,
+                        })
+                    }
+                    setSearchHistory(history)
+                },
+                error => {
+                    console.log('Error:', error)
+                },
+            )
+        })
+    }
+
+    const deleteSearchItem = (data: HistoryItemProp) => {
+        db?.transaction(tx => {
+            tx.executeSql(
+                'DELETE FROM searchHistory WHERE id = ?;',
+                [data.id],
+                () => {
+                    loadSearchHistory() // 검색 기록 다시 불러오기
+                },
+                error => {
+                    console.log('Error deleting search item:', error)
+                },
+            )
+        })
+    }
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
-    const tempRecommendations = [
-        '우유',
-        '계란',
-        '물',
-        '휴지',
-        '물티슈',
-        '종이컵',
-        '컵라면',
-        '라면',
-        '커피',
-        '콜라',
-        '컵라면',
-        '라면',
-        '커피',
-        '콜라',
-    ]
-
-    const tempSearched = [
+    const historyRecommendations = [
         '우유',
         '계란',
         '물',
@@ -113,7 +181,7 @@ const Search: React.FC = (): React.JSX.Element => {
         </TouchableOpacity>
     )
 
-    const renderRecentSearchedItem = (data: any) => (
+    const renderRecentSearchedItem = (data: HistoryItemProp) => (
         <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple(
                 themeColor.BG_SECONDARY,
@@ -123,7 +191,7 @@ const Search: React.FC = (): React.JSX.Element => {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <IcHistory style={{ marginEnd: 8 }} />
                     <Text style={styles.recentSearchedItemText}>
-                        {data.item}
+                        {data.name}
                     </Text>
                 </View>
                 <TouchableNativeFeedback
@@ -132,7 +200,7 @@ const Search: React.FC = (): React.JSX.Element => {
                         true,
                         24,
                     )}
-                    onPress={() => {}}>
+                    onPress={() => deleteSearchItem(data)}>
                     <IcClose width={24} height={24} fill={baseColors.GRAY_2} />
                 </TouchableNativeFeedback>
             </View>
@@ -147,8 +215,10 @@ const Search: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
                 <TextInput
                     style={styles.textInput}
+                    inputMode='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
+                    onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text)}
                 />
             </View>
             <View style={styles.bodyContainer}>
@@ -157,7 +227,7 @@ const Search: React.FC = (): React.JSX.Element => {
                     style={styles.recommendationScrollView}
                     horizontal
                     showsHorizontalScrollIndicator={false}>
-                    {tempRecommendations.map((value, index) =>
+                    {historyRecommendations.map((value, index) =>
                         RecommendationItem(value, index),
                     )}
                 </ScrollView>
@@ -165,8 +235,8 @@ const Search: React.FC = (): React.JSX.Element => {
             </View>
             <FlatList
                 style={styles.historyFlatlist}
-                data={tempRecommendations}
-                renderItem={renderRecentSearchedItem}
+                data={searchHistory}
+                renderItem={({ item }) => renderRecentSearchedItem(item)}
                 keyExtractor={(item, index) => index.toString()}
             />
         </View>

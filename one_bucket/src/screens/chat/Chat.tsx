@@ -1,6 +1,7 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
+import { CHAT_BASE_URL } from '@env'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
@@ -51,10 +52,10 @@ const Chat: React.FC = (): React.JSX.Element => {
             const token = await getAccessToken()
             const stompClient = new Client({
                 // webSocketFactory: () => new WebSocket(CHAT_BASE_URL),
-                brokerURL: 'ws://jack8226.ddns.net:8080',
-                connectHeaders: {
-                    Authorization: `Bearer ${token}`,
-                },
+                brokerURL: CHAT_BASE_URL,
+                // connectHeaders: {
+                //     Authorization: `Bearer ${token}`,
+                // },
                 onConnect: () => {
                     console.log('connected')
                     stompClient.subscribe(
@@ -83,7 +84,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         // const initStompClient = () => {
-        //     var socket = new SockJS('http'://jack8226.ddns.net:8080/ws-stomp')
+        //     var socket = new SockJS('')
         //     const stompClient = Stomp.over(socket)
         //     stompClient.connect({}, function (frame: any) {
         //         console.log('Connected: ' + frame)
