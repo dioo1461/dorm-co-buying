@@ -1,6 +1,6 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { BASE_URL } from '@env'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
@@ -12,8 +12,13 @@ import {
     TextInput,
     View,
 } from 'react-native'
-import SockJS from 'sockjs-client'
+import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+
+Object.assign(global, {
+    TextEncoder: encoding.TextEncoder,
+    TextDecoder: encoding.TextDecoder,
+})
 
 const Chat: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -40,30 +45,62 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     useEffect(() => {
         // WebSocket 연결 및 설정
-
         console.log(params.roomId)
+        // 왜안되지 ..
+        const initStompClient = async () => {
+            const token = await getAccessToken()
+            const stompClient = new Client({
+                // webSocketFactory: () => new WebSocket(CHAT_BASE_URL),
+                brokerURL: 'ws://jack8226.ddns.net:8080',
+                connectHeaders: {
+                    Authorization: `Bearer ${token}`,
+                },
+                onConnect: () => {
+                    console.log('connected')
+                    stompClient.subscribe(
+                        '/sub/chat/room/' + params.roomId,
+                        message => {
+                            console.log(message)
+                        },
+                    )
+                    stompClient.publish({
+                        destination: '/pub/chat/message',
+                        body: 'test',
+                    })
+                },
+                debug: str => console.log('stomp: ' + str),
+                onStompError: frame => {
+                    console.log('stomp error: ', frame)
+                    console.log('details: ', frame.body)
+                },
+            })
+            stompClient.debug = str => {
+                console.log('STOMP Debug: ', str) // STOMP 디버그 로그 추가
+            }
 
-        const stompClient = new Client({
-            webSocketFactory: () => new SockJS(BASE_URL),
-            onConnect: () => {
-                stompClient.subscribe(
-                    '/sub/chat/room/' + params.roomId,
-                    message => {
-                        console.log(message)
-                    },
-                )
-                stompClient.publish({
-                    destination: '/pub/chat/message',
-                    body: 'test',
-                })
-            },
-            debug: str => console.log('stomp: ' + str),
-        })
-        stompClient.debug = str => {
-            console.log('STOMP Debug: ', str) // STOMP 디버그 로그 추가
+            stompClientRef.current = stompClient
+            stompClient.activate()
         }
 
-        stompClientRef.current = stompClient
+        // const initStompClient = () => {
+        //     var socket = new SockJS('http'://jack8226.ddns.net:8080/ws-stomp')
+        //     const stompClient = Stomp.over(socket)
+        //     stompClient.connect({}, function (frame: any) {
+        //         console.log('Connected: ' + frame)
+        //         stompClient.subscribe(
+        //             '/topic/public',
+        //             function (messageOutput) {
+        //                 console.log(JSON.parse(messageOutput.body))
+        //             },
+        //         )
+        //     })
+        // }
+
+        initStompClient()
+
+        return () => {
+            stompClientRef.current?.deactivate()
+        }
     }, [])
 
     const styles = createStyles(themeColor)

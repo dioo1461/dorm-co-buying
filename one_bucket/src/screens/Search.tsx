@@ -15,6 +15,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import SQLite from 'react-native-sqlite-storage'
 import { stackNavigation } from './navigation/NativeStackNavigation'
 
 const Search: React.FC = (): React.JSX.Element => {
@@ -22,6 +23,9 @@ const Search: React.FC = (): React.JSX.Element => {
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
     }))
+
+    var db: SQLite.SQLiteDatabase
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -30,6 +34,23 @@ const Search: React.FC = (): React.JSX.Element => {
             },
         )
         return () => themeSubscription.remove()
+    }, [])
+
+    useEffect(() => {
+        // SQLite.enablePromise(true)
+        db = SQLite.openDatabase(
+            {
+                name: 'TestDB.db',
+                location: 'default',
+                createFromLocation: 1,
+            },
+            DB => {
+                console.log('Database opened')
+            },
+            error => {
+                console.log('Error:', error)
+            },
+        )
     }, [])
 
     const styles = CreateStyles(themeColor)
