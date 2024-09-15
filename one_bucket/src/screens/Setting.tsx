@@ -266,7 +266,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text>정말 로그아웃 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text style={{fontWeight: "bold"}}>예</Text>
+                                        <Text>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
                                         <Text>아니오</Text>
@@ -296,7 +296,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
-                                        <Text style={{fontWeight: "bold", color: baseColors.RED}}>예</Text>
+                                        <Text>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
                                         <Text>아니오</Text>
@@ -384,19 +384,25 @@ const createStyles = (theme: Icolor) =>
             alignItems: 'center',
             borderRadius: 8,
             width: '80%',
-            borderWidth: 0.2,
+            borderWidth: 0.5,
         },
         confirmButton: {
             marginTop: 10,
-            width: '50%',
+            backgroundColor : "#FFCCCC",
             justifyContent: 'center',
             alignItems: 'center',
+            height: 30,
+            width: '50%',
+            borderRadius: 8,
+            
         },
         cancelButton:{
             marginTop: 10,
-            width: '50%',
             justifyContent: 'center',
             alignItems: 'center',
+            height: 30,
+            width: '50%',
+            borderRadius: 8,
         }
     })
 
