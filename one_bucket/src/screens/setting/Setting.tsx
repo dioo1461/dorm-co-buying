@@ -19,14 +19,14 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
 
-export const getColorNow = (colorValue: number): string => {
-    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
-    return colorList[colorValue];
-  };
+interface SettingProps {
+    onValueChange: (value: number) => void;
+}
 
 const Setting: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
@@ -51,6 +51,8 @@ const Setting: React.FC = (): React.JSX.Element => {
     const [isAlertVibrationEnabled, setIsAlertVibrationEnabled] =
         useState(false)
 
+    const navigation = stackNavigation()
+    
     const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
     const [colorValue, setColorValue] = useState(0)
 
@@ -101,7 +103,10 @@ const Setting: React.FC = (): React.JSX.Element => {
             <ScrollView style={styles.scrollView}>
                 <View>
                     <Text style={styles.subjectLabel}>알림 설정</Text>
-                    <TouchableOpacity style={styles.contextContainer}>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={() => navigation.navigate('AlertSetting')}    
+                        >
                         <Text style={styles.contextLabel}>알림 수신 설정</Text>
                     </TouchableOpacity>
                     <View
@@ -239,10 +244,16 @@ const Setting: React.FC = (): React.JSX.Element => {
                 <View style={styles.line} />
                 <View>
                     <Text style={styles.subjectLabel}>기타</Text>
-                    <TouchableOpacity style={styles.contextContainer}>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={() => navigation.navigate('Announcement')}    
+                        >
                         <Text style={styles.contextLabel}>공지사항</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.contextContainer}>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={() => navigation.navigate('Support')}    
+                        >
                         <Text style={styles.contextLabel}>개발자 문의</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.contextContainer}>
@@ -266,7 +277,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text>정말 로그아웃 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text>예</Text>
+                                        <Text style={{color:"black"}}>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
                                         <Text>아니오</Text>
@@ -296,7 +307,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
-                                        <Text>예</Text>
+                                        <Text style={{color:"black"}}>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
                                         <Text>아니오</Text>
@@ -379,12 +390,13 @@ const createStyles = (theme: Icolor) =>
         },
         modalContent: {
             padding: 20,
-            backgroundColor: "white",
+            backgroundColor: theme.BG,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 8,
             width: '80%',
             borderWidth: 0.5,
+            borderColor: theme.TEXT
         },
         confirmButton: {
             marginTop: 10,
@@ -398,6 +410,7 @@ const createStyles = (theme: Icolor) =>
         },
         cancelButton:{
             marginTop: 10,
+            backgroundColor: theme.BG,
             justifyContent: 'center',
             alignItems: 'center',
             height: 30,

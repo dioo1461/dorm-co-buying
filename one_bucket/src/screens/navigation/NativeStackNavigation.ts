@@ -24,6 +24,10 @@ export type RootStackParamList = {
     Search: undefined
 
     Notification: undefined
+
+    AlertSetting: undefined
+    Announcement: undefined
+    Support: undefined
     
     ChatList: undefined
     Chat: {
