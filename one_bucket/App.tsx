@@ -15,6 +15,7 @@ import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import ImageEnlargement from '@/screens/ImageEnlargement'
+import Notification from '@/screens/Notification'
 import ProfileModify from '@/screens/PofileModify'
 import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
@@ -32,7 +33,6 @@ import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
 import Chat from '@/screens/chat/Chat'
-import Notification from '@/screens/Notification'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
@@ -45,7 +45,6 @@ import { mainRoutes } from 'screens/navigation/mainRoutes'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
-
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
     const { loginState, setLoginState, setMemberInfo } = useBoundStore(

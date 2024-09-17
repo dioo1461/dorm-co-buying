@@ -13,6 +13,7 @@ import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
 // import com.facebook.react.modules.network.OkHttpClientProvider
 
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost =
@@ -47,4 +48,5 @@ class MainApplication : Application(), ReactApplication {
     // }
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
+
 }
