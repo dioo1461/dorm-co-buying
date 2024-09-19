@@ -28,6 +28,9 @@ const strings = {
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
     settingScreenName: '설정',
+    alertSettingScreenName: 'AlertSetting',
+    announcementScreenName: 'Announcement',
+    supportScreenName: 'Support',
 
     imageEnlargementScreenName: 'ImageEnlargement',
 }
