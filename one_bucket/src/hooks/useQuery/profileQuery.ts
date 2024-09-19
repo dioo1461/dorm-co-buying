@@ -3,7 +3,7 @@ import {
     getProfile,
     getProfileImage,
 } from '@/apis/profileService'
-import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
+import { GetMemberInfoResponse } from '@/data/response/GetMemberInfoResponse'
 import { GetProfileResponse } from '@/data/response/GetProfileResponse'
 import { useQuery } from 'react-query'
 import { useBoundStore } from '../useStore/useBoundStore'

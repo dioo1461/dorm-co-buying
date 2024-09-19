@@ -1,7 +1,7 @@
+import { render } from '@testing-library/react-native'
 import React from 'react'
 import 'react-native'
-import { render, fireEvent } from '@testing-library/react-native'
-import Home from 'screens/Home'
+import Home from 'screens/home/Home'
 
 describe('Home', () => {
     it('renders screen Home', () => {
@@ -11,7 +11,7 @@ describe('Home', () => {
     })
 
     it('displays title properly', () => {
-        const screen = render(<Home/>)
+        const screen = render(<Home />)
         const title = screen.getByText('home')
     })
 })

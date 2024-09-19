@@ -17,7 +17,7 @@ export const createBoardPost = async (
             return response.data
         })
         .catch(error => {
-            console.log(error)
+            console.log('createBoardPost - ' + error)
             // 401 unauthorized
             if (error.response.status === 401 || 403) {
                 // onLogOut(false)
@@ -36,8 +36,8 @@ export const getBoardPost = async (
             return response.data
         })
         .catch(error => {
-            console.log(error.response)
-            console.log(postId)
+            console.log('getBoardPost - ' + error.response)
+            // console.log(postId)
             throw error
         })
 }
@@ -62,8 +62,8 @@ export const getBoardPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log(error)
-            console.log(error.response)
+            console.log('getBoardPost - ' + error)
+            // console.log(error.response)
 
             throw error
         })
