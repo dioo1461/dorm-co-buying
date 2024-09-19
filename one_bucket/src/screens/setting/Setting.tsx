@@ -256,8 +256,11 @@ const Setting: React.FC = (): React.JSX.Element => {
                         >
                         <Text style={styles.contextLabel}>개발자 문의</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.contextContainer}>
-                        <Text style={styles.contextLabel}>업데이트 확인</Text>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={() => navigation.navigate('VersionCheck')}    
+                        >
+                        <Text style={styles.contextLabel}>버전 정보</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.line} />

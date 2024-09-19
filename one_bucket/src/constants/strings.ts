@@ -31,6 +31,7 @@ const strings = {
     alertSettingScreenName: 'AlertSetting',
     announcementScreenName: 'Announcement',
     supportScreenName: 'Support',
+    versionCheckScreenName: 'VersionCheck',
 
     imageEnlargementScreenName: 'ImageEnlargement',
 }

@@ -24,6 +24,7 @@ import Setting from '@/screens/setting/Setting'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import Announcement from '@/screens/setting/Announcement'
 import Support from '@/screens/setting/Support'
+import VersionCheck from '@/screens/setting/VersionCheck'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
 import SignUp2 from '@/screens/auth/SignUp2'
@@ -281,6 +282,36 @@ function App(): React.JSX.Element {
                             <Stack.Screen
                                 name={strings.supportScreenName}
                                 component={Support}
+                                options={{
+                                    headerLeft: () => {
+                                        const navigation = stackNavigation()
+                                        return (
+                                            <TouchableOpacity
+                                                style={{ marginLeft: 16 }}
+                                                onPress={() =>
+                                                    navigation.goBack()
+                                                }>
+                                                <IcAngleLeft
+                                                    fill={
+                                                        themeColor.HEADER_TEXT
+                                                    }
+                                                />
+                                            </TouchableOpacity>
+                                        )
+                                    },
+                                    headerStyle: {
+                                        backgroundColor: themeColor.HEADER_BG,
+                                    },
+                                    headerTitleStyle: {
+                                        color: themeColor.HEADER_TEXT,
+                                        fontFamily: 'NanumGothic',
+                                        fontSize: 18,
+                                    },
+                                }}
+                            />
+                            <Stack.Screen
+                                name={strings.versionCheckScreenName}
+                                component={VersionCheck}
                                 options={{
                                     headerLeft: () => {
                                         const navigation = stackNavigation()
