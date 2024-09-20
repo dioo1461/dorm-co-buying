@@ -215,6 +215,110 @@ function App(): React.JSX.Element {
                             }}
                         />
                         <Stack.Screen
+                            name={strings.alertSettingScreenName}
+                            component={AlertSetting}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.announcementScreenName}
+                            component={Announcement}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.supportScreenName}
+                            component={Support}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.versionCheckScreenName}
+                            component={VersionCheck}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
                             name={strings.boardCreatePostScreenName}
                             component={BoardCreatePost}
                             options={{
