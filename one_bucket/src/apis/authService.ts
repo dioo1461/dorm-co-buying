@@ -1,7 +1,7 @@
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
 import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
-import { LoginResponse } from '@/data/response/LogInResponse'
+import { LoginResponse } from '@/data/response/LoginResponse'
 import { SetUniversityResponse } from '@/data/response/SetUniversityResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
