@@ -28,13 +28,14 @@ export type RootStackParamList = {
     AlertSetting: undefined
     Announcement: undefined
     Support: undefined
-    
+
     ChatList: undefined
     Chat: {
         roomId: string
     }
 
     BoardCreatePost: {
+        boardId: number
         boardName: string
     }
     ProfileDetails: undefined

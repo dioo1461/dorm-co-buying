@@ -1,4 +1,8 @@
-import { getBoardPost, getBoardPostList } from '@/apis/boardService'
+import {
+    getBoardList,
+    getBoardPost,
+    getBoardPostList,
+} from '@/apis/boardService'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { useQuery } from 'react-query'
@@ -35,4 +39,9 @@ export const queryBoardPostList = (
             ])
         },
     )
+}
+
+export const queryBoardList = () => {
+    // TODO: 캐싱 파라미터 수정
+    return useQuery('boardList', getBoardList)
 }

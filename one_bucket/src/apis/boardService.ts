@@ -1,4 +1,5 @@
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { GetBoardListResponse } from '@/data/response/success/board/GetBoardListResponse'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
@@ -65,6 +66,19 @@ export const getBoardPostList = async (
             console.log('getBoardPost - ' + error)
             // console.log(error.response)
 
+            throw error
+        })
+}
+
+export const getBoardList = async (): Promise<GetBoardListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get('/board/list')
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getBoardList - ' + error)
             throw error
         })
 }

@@ -180,12 +180,13 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
+    // ### 게시판 타입 헤더 ###
     const FlatlistHeader = () => {
         return (
             <View>
                 <View style={styles.boardTypeContainer}>
                     <Text style={styles.boardTypeLabel}>
-                        {boardTypes[currentBoardType]}
+                        {boardList[currentBoardType].name}
                     </Text>
                 </View>
                 <View style={styles.line} />
@@ -193,18 +194,15 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
+    // ### 게시글 목록 flatlist ###
     const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
         <Post {...item} />
     )
 
     const [currentBoardType, setCurrentBoardType] = useState(0)
-    const boardTypes = [
-        '전체게시판',
-        '자유게시판',
-        '비밀게시판',
-        '헬스 및 운동',
-        '취미 및 여가',
-    ]
+    const { boardList } = useBoundStore(state => ({
+        boardList: state.boardList,
+    }))
 
     const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
@@ -304,7 +302,7 @@ const Board: React.FC = (): JSX.Element => {
                     style={styles.boardTypeSelectionContainer}
                     contentContainerStyle={styles.boardTypeSelectionContent}
                     showsVerticalScrollIndicator={false}>
-                    {boardTypes.map((boardType, index) => (
+                    {boardList.map((boardType, index) => (
                         <TouchableNativeFeedback
                             key={index}
                             background={touchableNativeFeedbackBg()}
@@ -319,7 +317,7 @@ const Board: React.FC = (): JSX.Element => {
                                         currentBoardType === index &&
                                             styles.boardTypeTextActive,
                                     ]}>
-                                    {boardType}
+                                    {boardType.name}
                                 </Text>
                             </View>
                         </TouchableNativeFeedback>
@@ -329,8 +327,10 @@ const Board: React.FC = (): JSX.Element => {
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() =>
+                    // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
                     navigation.navigate('BoardCreatePost', {
                         boardName: '자유게시판',
+                        boardId: 3,
                     })
                 }>
                 <Text style={styles.fabIcon}>+</Text>
