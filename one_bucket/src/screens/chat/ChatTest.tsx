@@ -1,7 +1,7 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
-import { Client } from '@stomp/stompjs'
+import { Client, Stomp } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
@@ -11,8 +11,9 @@ import {
     TextInput,
     View,
 } from 'react-native'
+import SockJS from 'sockjs-client'
 
-Object.assign(global, { WebSocket })
+// Object.assign(global, { WebSocket })
 
 const ROOM_ID = '4852b68f-da40-4235-898b-1a0ea25deb5b'
 
@@ -41,37 +42,49 @@ const ChatTest: React.FC = (): React.JSX.Element => {
         // 왜안되지 ..
         const initStompClient = async () => {
             const token = await getAccessToken()
-            const stompClient = new Client({
-                // webSocketFactory: () => new WebSocket(CHAT_BASE_URL),
-                brokerURL: 'ws://jack8226.ddns.net:8180/ws',
-                // connectHeaders: {
-                //     Authorization: `Bearer ${token}`,
-                // },
-                onConnect: () => {
-                    console.log('connected')
-                    // stompClient.subscribe(
-                    //     '/sub/chat/room/' + ROOM_ID,
-                    //     message => {
-                    //         console.log(message)
-                    //     },
-                    // )
-                    // stompClient.publish({
-                    //     destination: '/pub/chat/message',
-                    //     body: 'test',
-                    // })
-                },
-                debug: str => console.log('stomp: ' + str),
-                onStompError: frame => {
-                    console.log('stomp error: ', frame)
-                    console.log('details: ', frame.body)
-                },
-                reconnectDelay: 5000,
-                heartbeatIncoming: 4000,
-                heartbeatOutgoing: 4000,
+            // const stompClient = new Client({
+            //     // webSocketFactory: () => new WebSocket(CHAT_BASE_URL),
+            //     brokerURL: 'ws://192.168.243.182:8080/ws',
+            //     // connectHeaders: {
+            //     //     Authorization: `Bearer ${token}`,
+            //     // },
+            //     onConnect: () => {
+            //         console.log('connected')
+            //         // stompClient.subscribe(
+            //         //     '/sub/chat/room/' + ROOM_ID,
+            //         //     message => {
+            //         //         console.log(message)
+            //         //     },
+            //         // )
+            //         // stompClient.publish({
+            //         //     destination: '/pub/chat/message',
+            //         //     body: 'test',
+            //         // })
+            //     },
+            //     debug: str => console.log('stomp: ' + str),
+            //     onStompError: frame => {
+            //         console.log('stomp error: ', frame)
+            //         console.log('details: ', frame.body)
+            //     },
+            //     reconnectDelay: 10000,
+            //     heartbeatIncoming: 4000,
+            //     heartbeatOutgoing: 4000,
+            // })
+            // stompClient.debug = str => {
+            //     console.log('STOMP Debug: ', str) // STOMP 디버그 로그 추가
+            // }
+
+            var socket = new SockJS('http://192.168.243.182:8080/ws')
+            const stompClient = Stomp.over(socket)
+            stompClient.connect({}, function (frame: any) {
+                console.log('Connected: ' + frame)
+                stompClient.subscribe(
+                    '/topic/public',
+                    function (messageOutput) {
+                        console.log(JSON.parse(messageOutput.body))
+                    },
+                )
             })
-            stompClient.debug = str => {
-                console.log('STOMP Debug: ', str) // STOMP 디버그 로그 추가
-            }
 
             stompClientRef.current = stompClient
             stompClient.activate()

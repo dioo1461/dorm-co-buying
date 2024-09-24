@@ -43,7 +43,7 @@ const Board: React.FC = (): JSX.Element => {
 
     const flatlistRef = useRef(null)
 
-    const [boardId, setBoardId] = useState(1)
+    const [boardId, setBoardId] = useState(3)
 
     const { data, isLoading, error } = queryBoardPostList(boardId, 0, {
         sortType: 'createdDate',

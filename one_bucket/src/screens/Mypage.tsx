@@ -2,7 +2,10 @@ import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
 import IcPlus from '@/assets/drawable/ic-plus.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
+import {
+    queryGetMemberInfo,
+    queryGetProfile,
+} from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import React, { useEffect } from 'react'
 import {
@@ -39,7 +42,7 @@ const Mypage = (): React.JSX.Element => {
     // const [nickName, setNickName] = useState('')
 
     const { data, isLoading, error } = queryGetMemberInfo()
-    const [memberInfo, profileImage] = data ? data : [null, null]
+    // const [memberInfo, profileImage] = data ? data : [null, null]
 
     const navigation = stackNavigation()
 
@@ -47,7 +50,7 @@ const Mypage = (): React.JSX.Element => {
         navigation.navigate('ProfileDetails')
     }
 
-    if (error) return <Text>Error...</Text>
+    if (error) return <Text>error</Text>
 
     if (isLoading)
         return (
@@ -78,7 +81,7 @@ const Mypage = (): React.JSX.Element => {
                         image={data![1]}
                         imageId='profile2'
                     /> */}
-                    <Text style={styles.username}>{memberInfo!.nickname}</Text>
+                    <Text style={styles.username}>{data?.nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
                 <TouchableOpacity onPress={handleProfileDetailNavigation}>
