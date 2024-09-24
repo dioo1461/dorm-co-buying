@@ -13,7 +13,7 @@ export const createBoardPost = async (
 ): Promise<CreateBoardPostRequestBody> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post('/board/post', data)
+        .post('/post/create', data)
         .then(response => {
             return response.data
         })

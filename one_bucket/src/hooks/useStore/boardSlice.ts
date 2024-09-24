@@ -14,9 +14,7 @@ export const createBoardSlice: StateCreator<BoardSlice, [], []> = (
     set,
     get,
 ) => ({
-    boardList: {
-        boardList: [],
-    },
+    boardList: [],
     setBoardList: (boardList: GetBoardListResponse) => {
         set({ boardList })
     },

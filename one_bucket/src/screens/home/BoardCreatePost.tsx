@@ -22,7 +22,12 @@ import {
     ImageLibraryOptions,
     launchImageLibrary,
 } from 'react-native-image-picker'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
+import { createBoardPost } from '@/apis/boardService'
+import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -47,6 +52,8 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     >
     const { params } = useRoute<BoardCreatePostRouteProp>()
 
+    const navigation = stackNavigation()
+
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [inputHeight, setInputHeight] = useState(200)
@@ -54,23 +61,22 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [imageUriList, setImageUriList] = useState<string[]>([])
 
     const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState(null)
+    const [dropdownValue, setDropdownValue] = useState<number>(-1)
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
-    const [dropdownItems, setDropdownItems] = useState([
-        {
-            label: '자유게시판',
-            value: '자유게시판',
-        },
-        {
-            label: '비밀게시판',
-            value: '비밀게시판',
-        },
-        {
-            label: '운동 및 헬스',
-            value: '운동 및 헬스',
-        },
-    ])
+    const { memberInfo, boardList } = useBoundStore(state => ({
+        memberInfo: state.memberInfo,
+        boardList: state.boardList,
+    }))
+
+    const [dropdownItems, setDropdownItems] = useState(
+        boardList.map(board => {
+            return {
+                label: board.name,
+                value: board.id,
+            }
+        }),
+    )
 
     const addImage = () => {
         const options: ImageLibraryOptions = {
@@ -100,6 +106,22 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     ) => {
         const { height } = event.nativeEvent.contentSize
         if (height > 200) setInputHeight(height)
+    }
+
+    const onSubmit = async () => {
+        let submitForm: CreateBoardPostRequestBody = {
+            boardId: dropdownValue,
+            title: title,
+            text: content,
+        }
+        createBoardPost(submitForm)
+            .then(res => {
+                console.log('board post created')
+                navigation.goBack()
+            })
+            .catch(err => {
+                console.log('board post create failed')
+            })
     }
 
     return (
@@ -177,7 +199,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 </ScrollView>
             </View>
             <View style={styles.postButtonContainer}>
-                <TouchableNativeFeedback>
+                <TouchableNativeFeedback onPress={onSubmit}>
                     <View style={styles.postButton}>
                         <Text style={styles.postButtonText}>게시</Text>
                     </View>

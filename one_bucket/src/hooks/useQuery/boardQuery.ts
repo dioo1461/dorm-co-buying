@@ -5,7 +5,7 @@ import {
 } from '@/apis/boardService'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
-import { useQuery } from 'react-query'
+import { useQuery, UseQueryOptions } from 'react-query'
 
 export const queryBoardPost = (postId: number) => {
     return useQuery<GetBoardPostResponse>(['boardPost', postId], () =>
@@ -24,6 +24,7 @@ export const queryBoardPostList = (
     page: number,
     sortType: SortType,
     size = 10,
+    options: UseQueryOptions = {},
 ) => {
     return useQuery<GetBoardPostListResponse>(
         ['boardPostList', boardId, page, size, sortType],

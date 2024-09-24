@@ -48,13 +48,13 @@ const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
-    const { loginState, setLoginState, setMemberInfo, setBoardList } =
-        useBoundStore(state => ({
+    const { loginState, setLoginState, setMemberInfo } = useBoundStore(
+        state => ({
             loginState: state.loginState,
             setLoginState: state.setLoginState,
             setMemberInfo: state.setMemberInfo,
-            setBoardList: state.setBoardList,
-        }))
+        }),
+    )
 
     const themeColor = useBoundStore(state => state.themeColor)
     const setThemeColor = useBoundStore(state => state.setThemeColor)
@@ -126,11 +126,6 @@ function App(): React.JSX.Element {
                         // TODO: refreshToken으로 accessToken 갱신
                     }
                 })
-            await getBoardList()
-                .then(response => {
-                    setBoardList(response)
-                })
-                .catch(error => {})
             SplashScreen.hide()
         }
 

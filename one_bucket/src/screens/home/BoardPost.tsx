@@ -54,9 +54,7 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const { data, isLoading, error } = queryBoardPost(params.postId)
 
-    useEffect(() => {
-        console.log(data)
-    }, [])
+    useEffect(() => {}, [])
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const threshold = 0

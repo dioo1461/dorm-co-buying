@@ -4,7 +4,7 @@ import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import Backdrop from '@/components/Backdrop'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import { queryBoardList, queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -21,6 +21,7 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import Loading from '@/components/Loading'
 
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
@@ -45,18 +46,12 @@ const Board: React.FC = (): JSX.Element => {
     const flatlistRef = useRef(null)
 
     const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
-    const { boardList } = useBoundStore(state => ({
-        boardList: state.boardList,
-    }))
 
-    const { data, isLoading, error } = queryBoardPostList(
-        boardList[currentBoardIndex].id,
-        0,
-        {
-            sortType: 'createdDate',
-            sort: 'asc',
-        },
-    )
+    const {
+        data: boardListData,
+        isLoading: boardListIsLoading,
+        error: boardListError,
+    } = queryBoardList()
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -188,24 +183,56 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
-    // ### 게시판 타입 헤더 ###
-    const FlatlistHeader = () => {
-        return (
-            <View>
-                <View style={styles.boardTypeContainer}>
-                    <Text style={styles.boardTypeLabel}>
-                        {boardList[currentBoardIndex].name}
-                    </Text>
+    const PostFlatList: React.FC = (): JSX.Element => {
+        // ### 게시판 타입 헤더 ###
+        const FlatlistHeader = () => {
+            return (
+                <View>
+                    <View style={styles.boardTypeContainer}>
+                        <Text style={styles.boardTypeLabel}>
+                            {boardListData![currentBoardIndex].name}
+                        </Text>
+                    </View>
+                    <View style={styles.line} />
                 </View>
-                <View style={styles.line} />
+            )
+        }
+
+        // ### 게시글 목록 flatlist ###
+        const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
+            <Post {...item} />
+        )
+
+        const boardId = boardListData
+            ? boardListData[currentBoardIndex].id
+            : null
+
+        const { data, isLoading, error } = queryBoardPostList(
+            boardId!,
+            0,
+            {
+                sortType: 'createdDate',
+                sort: 'asc',
+            },
+            10,
+            { enabled: !!boardId },
+        )
+        if (error) return <Text>Error...</Text>
+
+        if (isLoading) return <Loading theme={themeColor} />
+        return (
+            <View style={styles.flatList}>
+                <FlatList
+                    ListHeaderComponent={FlatlistHeader}
+                    showsVerticalScrollIndicator={false}
+                    ref={flatlistRef}
+                    data={data?.content}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.postId.toString()}
+                />
             </View>
         )
     }
-
-    // ### 게시글 목록 flatlist ###
-    const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
-        <Post {...item} />
-    )
 
     const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
@@ -237,41 +264,13 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    if (error) return <Text>Error...</Text>
-
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
+    if (boardListIsLoading) return <Loading theme={themeColor} />
+    if (boardListError) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
-            <View style={styles.flatList}>
-                <FlatList
-                    ListHeaderComponent={FlatlistHeader}
-                    showsVerticalScrollIndicator={false}
-                    ref={flatlistRef}
-                    data={data?.content}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.postId.toString()}
-                />
-            </View>
+            <PostFlatList />
             <Backdrop expanded={expanded} onPress={toggleDropdown} />
             {/* ### 게시판 선택 버튼 ### */}
             <View
@@ -305,13 +304,13 @@ const Board: React.FC = (): JSX.Element => {
                     style={styles.boardTypeSelectionContainer}
                     contentContainerStyle={styles.boardTypeSelectionContent}
                     showsVerticalScrollIndicator={false}>
-                    {boardList.map((boardType, index) => (
+                    {boardListData!.map((boardType, index) => (
                         <TouchableNativeFeedback
                             key={index}
                             background={touchableNativeFeedbackBg()}
                             onPress={() => {
-                                setCurrentBoardIndex(index)
                                 toggleDropdown()
+                                setCurrentBoardIndex(index)
                             }}>
                             <View style={styles.boardTypeItem}>
                                 <Text
