@@ -18,6 +18,7 @@ type SortType = {
     sort: 'asc' | 'desc'
 }
 
+// TODO: 게시글 캐싱
 export const queryBoardPostList = (
     boardId: number,
     page: number,

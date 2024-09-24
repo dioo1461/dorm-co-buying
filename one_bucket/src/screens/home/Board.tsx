@@ -22,6 +22,7 @@ import {
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 
+// TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
@@ -43,12 +44,19 @@ const Board: React.FC = (): JSX.Element => {
 
     const flatlistRef = useRef(null)
 
-    const [boardId, setBoardId] = useState(3)
+    const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
+    const { boardList } = useBoundStore(state => ({
+        boardList: state.boardList,
+    }))
 
-    const { data, isLoading, error } = queryBoardPostList(boardId, 0, {
-        sortType: 'createdDate',
-        sort: 'asc',
-    })
+    const { data, isLoading, error } = queryBoardPostList(
+        boardList[currentBoardIndex].id,
+        0,
+        {
+            sortType: 'createdDate',
+            sort: 'asc',
+        },
+    )
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -186,7 +194,7 @@ const Board: React.FC = (): JSX.Element => {
             <View>
                 <View style={styles.boardTypeContainer}>
                     <Text style={styles.boardTypeLabel}>
-                        {boardList[currentBoardType].name}
+                        {boardList[currentBoardIndex].name}
                     </Text>
                 </View>
                 <View style={styles.line} />
@@ -198,11 +206,6 @@ const Board: React.FC = (): JSX.Element => {
     const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
         <Post {...item} />
     )
-
-    const [currentBoardType, setCurrentBoardType] = useState(0)
-    const { boardList } = useBoundStore(state => ({
-        boardList: state.boardList,
-    }))
 
     const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
@@ -307,14 +310,14 @@ const Board: React.FC = (): JSX.Element => {
                             key={index}
                             background={touchableNativeFeedbackBg()}
                             onPress={() => {
-                                setCurrentBoardType(index)
+                                setCurrentBoardIndex(index)
                                 toggleDropdown()
                             }}>
                             <View style={styles.boardTypeItem}>
                                 <Text
                                     style={[
                                         styles.boardTypeText,
-                                        currentBoardType === index &&
+                                        currentBoardIndex === index &&
                                             styles.boardTypeTextActive,
                                     ]}>
                                     {boardType.name}
