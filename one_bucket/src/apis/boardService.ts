@@ -55,8 +55,8 @@ export const getBoardPostList = async (
             params: {
                 page: page,
                 size: size,
-                sortPrimary: sortParams[0],
-                sortSecondary: sortParams[1],
+                sort: sortParams[0],
+                // sort: sortParams[1],
             },
         })
         .then(response => {

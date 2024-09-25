@@ -19,6 +19,7 @@ import {
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import Loading from '@/components/Loading'
@@ -188,7 +189,7 @@ const Board: React.FC = (): JSX.Element => {
 
         const handleRefresh = async () => {
             setIsRefreshing(true)
-
+            await refetch()
             setIsRefreshing(false)
         }
 
@@ -215,19 +216,28 @@ const Board: React.FC = (): JSX.Element => {
             ? boardListData[currentBoardIndex].id
             : null
 
-        const { data, isLoading, error } = queryBoardPostList(
+        const {
+            data, // 각 페이지의 데이터를 담고 있음
+            fetchNextPage, // 다음 페이지 불러오기 함수
+            hasNextPage, // 다음 페이지가 있는지 여부
+            isFetchingNextPage, // 다음 페이지 불러오는 중인지 여부
+            isLoading, // 첫 번째 페이지 로딩 여부
+            error,
+            refetch,
+        } = queryBoardPostList(
             boardId!,
-            0,
             {
                 sortType: 'createdDate',
-                sort: 'asc',
+                sort: 'desc',
             },
-            10,
+            5,
             { enabled: !!boardId },
         )
+
         if (error) return <Text>Error...</Text>
 
         if (isLoading) return <Loading theme={themeColor} />
+        const posts = data!.pages.flatMap(page => page.content)
         return (
             <View style={styles.flatList}>
                 <FlatList
@@ -238,11 +248,20 @@ const Board: React.FC = (): JSX.Element => {
                         />
                     }
                     ListHeaderComponent={FlatlistHeader}
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={true}
                     ref={flatlistRef}
-                    data={data?.content}
+                    data={posts}
                     renderItem={renderItem}
                     keyExtractor={item => item.postId.toString()}
+                    onEndReached={() => {
+                        if (!isFetchingNextPage && hasNextPage) fetchNextPage()
+                    }}
+                    onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
+                    // ListFooterComponent={
+                    //     isFetchingNextPage ? (
+                    //         <ActivityIndicator size='small' color='#0000ff' />
+                    //     ) : null
+                    // }
                 />
             </View>
         )

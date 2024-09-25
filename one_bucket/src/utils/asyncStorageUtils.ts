@@ -20,4 +20,6 @@ export const cacheBoardPostList = async (
     boardId: number,
     page: number,
     data: any,
-) => {}
+) => {
+    return AsyncStorage.setItem()
+}
