@@ -24,6 +24,7 @@ export const queryBoardPostList = (
     page: number,
     sortType: SortType,
     size = 10,
+    random = false,
     options: UseQueryOptions = {},
 ) => {
     return useQuery<GetBoardPostListResponse>(

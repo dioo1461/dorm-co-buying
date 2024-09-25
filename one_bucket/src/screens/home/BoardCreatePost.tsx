@@ -28,6 +28,8 @@ import {
 } from '../navigation/NativeStackNavigation'
 import { createBoardPost } from '@/apis/boardService'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { queryBoardList } from '@/hooks/useQuery/boardQuery'
+import Loading from '@/components/Loading'
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -61,22 +63,30 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [imageUriList, setImageUriList] = useState<string[]>([])
 
     const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState<number>(-1)
+    const [dropdownValue, setDropdownValue] = useState<number>(0)
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
-    const { memberInfo, boardList } = useBoundStore(state => ({
-        memberInfo: state.memberInfo,
-        boardList: state.boardList,
-    }))
+    const {
+        data: boardListData,
+        isLoading: boardListIsLoading,
+        error: boardListError,
+    } = queryBoardList()
 
-    const [dropdownItems, setDropdownItems] = useState(
-        boardList.map(board => {
-            return {
-                label: board.name,
-                value: board.id,
-            }
-        }),
-    )
+    const [dropdownItems, setDropdownItems] = useState<
+        { label: string; value: number }[]
+    >([])
+
+    useEffect(() => {
+        setDropdownItems(
+            boardListData!.map(board => {
+                return {
+                    label: board.name,
+                    value: board.id,
+                }
+            }),
+        )
+        setDropdownValue(params.boardId)
+    }, [])
 
     const addImage = () => {
         const options: ImageLibraryOptions = {
@@ -123,6 +133,10 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 console.log('board post create failed')
             })
     }
+
+    if (boardListIsLoading) return <Loading theme={themeColor} />
+
+    if (boardListError) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>

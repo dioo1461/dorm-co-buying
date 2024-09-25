@@ -8,7 +8,7 @@ import { queryBoardList, queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
+    RefreshControl,
     Animated,
     Appearance,
     FlatList,
@@ -184,6 +184,14 @@ const Board: React.FC = (): JSX.Element => {
     }
 
     const PostFlatList: React.FC = (): JSX.Element => {
+        const [isRefreshing, setIsRefreshing] = useState(false)
+
+        const handleRefresh = async () => {
+            setIsRefreshing(true)
+
+            setIsRefreshing(false)
+        }
+
         // ### 게시판 타입 헤더 ###
         const FlatlistHeader = () => {
             return (
@@ -223,6 +231,12 @@ const Board: React.FC = (): JSX.Element => {
         return (
             <View style={styles.flatList}>
                 <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={handleRefresh}
+                        />
+                    }
                     ListHeaderComponent={FlatlistHeader}
                     showsVerticalScrollIndicator={false}
                     ref={flatlistRef}
@@ -331,8 +345,8 @@ const Board: React.FC = (): JSX.Element => {
                 onPress={() =>
                     // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
                     navigation.navigate('BoardCreatePost', {
-                        boardName: '자유게시판',
-                        boardId: 3,
+                        boardName: boardListData![currentBoardIndex].name,
+                        boardId: boardListData![currentBoardIndex].id,
                     })
                 }>
                 <Text style={styles.fabIcon}>+</Text>

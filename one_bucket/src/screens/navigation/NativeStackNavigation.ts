@@ -35,8 +35,8 @@ export type RootStackParamList = {
     }
 
     BoardCreatePost: {
-        boardId: number
         boardName: string
+        boardId: number
     }
     ProfileDetails: undefined
     PostGroupPurchase: undefined
