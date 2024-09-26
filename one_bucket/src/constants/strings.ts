@@ -3,8 +3,8 @@ const strings = {
     homeRouteScreenName: 'HomeRoute',
     homeScreenName: 'Home',
     groupPurchaseScreenName: 'GroupPurchase',
-    tradingScreenName: 'Trade',
-    freeboardScreenName: 'Board',
+    tradeScreenName: 'Trade',
+    boardScreenName: 'Board',
     boardCreatePostScreenName: 'BoardCreatePost',
     boardPostScreenName: 'BoardPost',
 
@@ -33,6 +33,32 @@ const strings = {
     supportScreenName: 'Support',
 
     imageEnlargementScreenName: 'ImageEnlargement',
+
+    // navigation screen titles
+    homeRouteScreenTitle: '한바구니',
+    homeScreenTitle: '홈',
+    groupPurchaseScreenTitle: '공동구매',
+    tradeScreenTitle: '중고거래',
+    boardScreenTitle: '게시판',
+    boardCreatePostScreenTitle: '게시글 작성',
+    boardPostScreenTitle: '게시글',
+
+    chatListScreenTitle: '채팅',
+    chatScreenTitle: '채팅',
+    myPageScreenTitle: 'MY',
+
+    settingScreenTitle: '설정',
+    // searchScreenTitle: '검색',
+    // notificationScreenTitle: '알림',
+
+    postGroupPurchaseScreenTitle: '공동구매 글 작성',
+    // profileDetailsScreenTitle: 'ProfileDetails',
+    // profileModifyScreenTitle: 'ProfileModify',
+    // alertSettingScreenTitle: 'AlertSetting',
+    // announcementScreenTitle: 'Ann/ouncement',
+    // supportScreenTitle: 'Support',
+
+    // imageEnlargementScreenTitle: 'ImageEnlargement',
 }
 
 export default strings
