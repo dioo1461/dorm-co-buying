@@ -28,6 +28,8 @@ import {
 import Loading from '@/components/Loading'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 
+const FETCH_SIZE = 10
+
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -244,7 +246,7 @@ const Board: React.FC = (): JSX.Element => {
                 sortType: 'createdDate',
                 sort: 'desc',
             },
-            5,
+            FETCH_SIZE,
             { enabled: !!boardId },
         )
         refetchCallback = refetch
@@ -319,7 +321,7 @@ const Board: React.FC = (): JSX.Element => {
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
             <PostFlatList />
-            <Backdrop expanded={expanded} onPress={toggleDropdown} />
+            <Backdrop enabled={expanded} onPress={toggleDropdown} />
             {/* ### 게시판 선택 버튼 ### */}
             <View
                 style={[

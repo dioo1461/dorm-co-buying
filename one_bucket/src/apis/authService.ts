@@ -1,8 +1,8 @@
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
 import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
-import { LoginResponse } from '@/data/response/LoginResponse'
-import { SetUniversityResponse } from '@/data/response/SetUniversityResponse'
+import { LoginResponse } from '@/data/response/success/LoginResponse'
+import { SetUniversityResponse } from '@/data/response/success/SetUniversityResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 export const postSignupForm = async (data: SignUpRequestBody): Promise<any> => {

@@ -47,6 +47,7 @@ const HomeTab: React.FC = (): JSX.Element => {
             }}>
             {homeRoutes.map(route => (
                 <Tab.Screen
+                    key={route.name}
                     name={route.name}
                     component={route.component}
                     options={{ title: route.title }}

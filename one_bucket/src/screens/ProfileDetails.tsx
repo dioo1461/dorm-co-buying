@@ -1,6 +1,6 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { Gender } from '@/data/response/GetProfileResponse'
+import { Gender } from '@/data/response/success/GetProfileResponse'
 import {
     queryGetMemberInfo,
     queryGetProfile,

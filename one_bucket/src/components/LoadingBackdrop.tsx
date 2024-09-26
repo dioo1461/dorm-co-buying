@@ -1,14 +1,15 @@
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useEffect, useRef } from 'react'
-import { Animated, Pressable } from 'react-native'
+import { ActivityIndicator, Animated, Pressable } from 'react-native'
 
 interface BackdropProps {
     enabled: boolean
-    onPress: () => void
+    theme: Icolor
 }
 
-const Backdrop: React.FC<BackdropProps> = ({
+const LoadingBackdrop: React.FC<BackdropProps> = ({
     enabled,
-    onPress,
+    theme,
 }): JSX.Element => {
     const animation = useRef(new Animated.Value(0)).current
 
@@ -22,7 +23,7 @@ const Backdrop: React.FC<BackdropProps> = ({
     useEffect(() => {
         Animated.timing(animation, {
             toValue: enabled ? 1 : 0,
-            duration: 300,
+            duration: 200,
             useNativeDriver: false,
         }).start()
     }, [enabled])
@@ -40,9 +41,22 @@ const Backdrop: React.FC<BackdropProps> = ({
                 backdropAnimatedStyle,
                 { pointerEvents: enabled ? 'auto' : 'none' },
             ]}>
-            <Pressable style={{ flex: 1 }} onPress={onPress} />
+            <ActivityIndicator
+                style={{
+                    flex: 1,
+                    alignSelf: 'center',
+                    zIndex: 2,
+                }}
+                color={
+                    theme === lightColors
+                        ? baseColors.SCHOOL_BG
+                        : baseColors.GRAY_2
+                }
+                // style={backdropAnimatedStyle}
+                size='large'
+            />
         </Animated.View>
     )
 }
 
-export default Backdrop
+export default LoadingBackdrop

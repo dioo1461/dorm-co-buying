@@ -4,7 +4,7 @@ import {
     getProfileImage,
 } from '@/apis/profileService'
 import { GetMemberInfoResponse } from '@/data/response/GetMemberInfoResponse'
-import { GetProfileResponse } from '@/data/response/GetProfileResponse'
+import { GetProfileResponse } from '@/data/response/success/GetProfileResponse'
 import { useQuery } from 'react-query'
 import { useBoundStore } from '../useStore/useBoundStore'
 

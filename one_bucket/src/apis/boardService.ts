@@ -1,3 +1,5 @@
+import { AddCommentRequestBody } from '@/data/request/board/AddCommentRequestBody'
+import { AddReplyCommentRequestBody } from '@/data/request/board/AddReplyCommentRequestBody'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { GetBoardListResponse } from '@/data/response/success/board/GetBoardListResponse'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
@@ -79,6 +81,36 @@ export const getBoardList = async (): Promise<GetBoardListResponse> => {
         })
         .catch(error => {
             console.log('getBoardList - ' + error)
+            throw error
+        })
+}
+
+export const addComment = async (
+    data: AddCommentRequestBody,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/comment', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('addComment - ' + error)
+            throw error
+        })
+}
+
+export const addReplyComment = async (
+    data: AddReplyCommentRequestBody,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/comment', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('addReplyComment - ' + error)
             throw error
         })
 }
