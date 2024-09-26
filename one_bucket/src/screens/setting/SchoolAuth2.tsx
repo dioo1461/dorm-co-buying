@@ -19,7 +19,7 @@ import {
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
 
-const SignUp4: React.FC = (): React.JSX.Element => {
+const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onSchoolEmailVerificationFailure } =
         useBoundStore(state => ({
             themeColor: state.themeColor,
@@ -43,8 +43,8 @@ const SignUp4: React.FC = (): React.JSX.Element => {
 
     const dummyVerificationCode = '000000'
 
-    type SignUp4RouteProp = RouteProp<RootStackParamList, 'SignUp4'>
-    const { params } = useRoute<SignUp4RouteProp>()
+    type SchoolAuth2RouteProp = RouteProp<RootStackParamList, 'SchoolAuth2'>
+    const { params } = useRoute<SchoolAuth2RouteProp>()
 
     const navigation = stackNavigation()
     const inputRef = useRef<(TextInput | null)[]>([])
@@ -68,7 +68,7 @@ const SignUp4: React.FC = (): React.JSX.Element => {
             if (verificationCode.join('') === dummyVerificationCode) {
                 refreshCodeInput()
                 Keyboard.dismiss()
-                navigation.navigate('SignUp5')
+                navigation.navigate('SchoolAuth3')
             } else {
                 refreshCodeInput()
                 onSchoolEmailVerificationFailure()
@@ -106,22 +106,6 @@ const SignUp4: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={signUpStyles.container}>
-            <View>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft />
-                </TouchableOpacity>
-            </View>
-            <View style={signUpStyles.headerContainer}>
-                <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                <Text style={signUpStyles.currentStep}>2. 학교 인증</Text>
-                <Text style={signUpStyles.title}>
-                    {`이용자님의 재학생 여부를\n인증해 주세요.`}
-                </Text>
-                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
-                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
-            </View>
             <View style={styles.verificationContainer}>
                 <Text style={styles.schoolEmail}>
                     {maskSchoolEmail(params?.schoolEmail)}
@@ -225,4 +209,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default SignUp4
+export default SchoolAuth2

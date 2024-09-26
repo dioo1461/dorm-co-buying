@@ -44,7 +44,7 @@ const SignUp7: React.FC = (): React.JSX.Element => {
                     styles.title1
                 }>{`한바구니에 오신 것을\n환영합니다!`}</Text>
             <Text style={styles.subtitle}>
-                {`이제 한바구니의 서비스를 모두\n이용하실 수 있습니다.`}
+                {`본인 및 학교 인증 후\n한바구니의 서비스를 모두 이용하실 수 있습니다.`}
             </Text>
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>시작하기</Text>

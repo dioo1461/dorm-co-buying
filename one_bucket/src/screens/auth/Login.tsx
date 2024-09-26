@@ -91,6 +91,7 @@ const Login: React.FC = (): React.JSX.Element => {
                     placeholder='아이디'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     value={id}
+                    keyboardType='email-address'
                     onChangeText={setId}
                 />
                 <TextInput
@@ -131,7 +132,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 <View style={[styles.signUpButtonContainer]}>
                     <TouchableOpacity
                         style={styles.signUpButton}
-                        onPress={() => navigation.navigate('SignUp')}>
+                        onPress={() => navigation.navigate('SignUp5')}>
                         <Text style={styles.signUpButtonText}>계정 생성</Text>
                     </TouchableOpacity>
                 </View>

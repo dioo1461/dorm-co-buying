@@ -41,6 +41,7 @@ export const getAccessToken = async () => {
     return EncryptedStorage.getItem(ACCESS_TOKEN_NAME)
 }
 
+
 export const getRefreshToken = async () => {
     if (Platform.OS === 'web') {
         return AsyncStorage.getItem(REFRESH_TOKEN_NAME)

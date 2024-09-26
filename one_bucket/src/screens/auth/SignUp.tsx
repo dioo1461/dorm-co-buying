@@ -13,6 +13,9 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import { PhoneRequestBody } from '@/data/request/SignUpRequestBody'
+import { postPhoneForm, requestPhone } from '@/apis/authService'
+import { setAccessToken } from '@/utils/accessTokenUtils'
 
 const SignUp: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -65,7 +68,49 @@ const SignUp: React.FC = (): React.JSX.Element => {
             Alert.alert('휴대폰 번호를 정확히 입력해주세요.')
         }
     }
+{/*
+    const handleSubmit = async () => {
+        if (!validatePhoneNumber(phoneNumber)) {
+            Alert.alert('휴대폰 번호를 정확히 입력해주세요.')
+            return
+        }
 
+        const form: PhoneRequestBody = {
+            phonenumber: phoneNumber,
+        }
+        postPhoneForm(form)
+            .then(res => {
+                const loginForm: PhoneRequestBody = {
+                    phonenumber: phoneNumber,
+                }
+
+                requestPhone(loginForm)
+                    .then(res => {
+                        setAccessToken(res.accessToken)
+                        navigation.navigate('SignUp6')
+                    })
+                    .catch(err => {
+                        console.log(`signUp - requestLogin: ${err}`)
+                    })
+            })
+            .catch(err => 
+            {/*
+                {
+                console.log(`signUp5 - submitSignUpForm: ${err}`)
+                if (err.response.status === 409) {
+                    if (err.response.data.code == 1000) {
+                        setEmailError(
+                            signUpErrorMessage.duplicatedEmailOrNickname,
+                        )
+                        setNicknameError(
+                            signUpErrorMessage.duplicatedEmailOrNickname,
+                        )
+                    }
+                }
+            }   /*}
+                )
+    }
+*/}
     const validatePhoneNumber = (number: string) => {
         // TODO : 최초 세자리 (010, 011, ...) validation 구현
         if (number.replaceAll('-', '').length >= 10) {

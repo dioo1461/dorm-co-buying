@@ -1,5 +1,6 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { darkColors, Icolor, lightColors } from '@/constants/colors'
+import IcRefresh from '@/assets/drawable/ic-refresh.svg'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
@@ -7,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import {
     Alert,
     Appearance,
+    Keyboard,
     ScrollView,
     StyleSheet,
     Text,
@@ -19,7 +21,7 @@ import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
 import { postSchoolForm, requestSchool } from '@/apis/authService'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 
-const SignUp3: React.FC = (): React.JSX.Element => {
+const SchoolAuth1: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -53,7 +55,7 @@ const SignUp3: React.FC = (): React.JSX.Element => {
 
     const handleSchoolInfoSubmit = () => {
         if (validateInfo(schoolName, schoolEmail) === true) {
-            navigation.navigate('SignUp4', {
+            navigation.navigate('SchoolAuth2', {
                 schoolName: schoolName,
                 schoolEmail: schoolEmail,
             })
@@ -74,13 +76,13 @@ const SignUp3: React.FC = (): React.JSX.Element => {
         }
         postSchoolForm(form)
             .then(res => {
-                navigation.navigate('SignUp4', {
+                navigation.navigate('SchoolAuth2', {
                     schoolName: schoolName,
                     schoolEmail: schoolEmail
                 })
             })
             .catch(err => {
-                console.log(`signUp3 - submitSignUpForm: ${err}`)
+                console.log(`selfAuth1 - submitSignUpForm: ${err}`)
                 {/* if (err.response.status === 409) {
                     if (err.response.data.code == 1000) {
                         setEmailError(
@@ -102,25 +104,6 @@ const SignUp3: React.FC = (): React.JSX.Element => {
 
     return (
         <ScrollView style={signUpStyles.container}>
-            <View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.goBack()
-                        navigation.goBack()
-                    }}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft />
-                </TouchableOpacity>
-            </View>
-            <View style={signUpStyles.headerContainer}>
-                <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                <Text style={signUpStyles.currentStep}>2. 학교 인증</Text>
-                <Text style={signUpStyles.title}>
-                    {`이용자님의 재학생 여부를\n인증해 주세요.`}
-                </Text>
-                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
-                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
-            </View>
             <View>
                 <Text style={styles.schoolInfoLabel}>
                     학교 이름 입력
@@ -147,7 +130,11 @@ const SignUp3: React.FC = (): React.JSX.Element => {
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={handleSubmit}>
+                    // onPress={handleSubmit}>
+                    onPress={() => navigation.navigate('SchoolAuth2', {
+                        schoolName: schoolName,
+                        schoolEmail: schoolEmail,
+                    })}>
                     <Text style={styles.buttonText}>인증 코드 발송</Text>
                 </TouchableOpacity>
             </View>
@@ -186,4 +173,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default SignUp3
+export default SchoolAuth1

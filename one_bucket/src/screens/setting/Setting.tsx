@@ -19,6 +19,7 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
+import strings from '@/constants/strings'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const CIRCLE_SIZE = 30
@@ -102,6 +103,30 @@ const Setting: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View>
+                    <TouchableOpacity 
+                        style={{...styles.contextContainer, flexDirection: "row"}}
+                        onPress={() => navigation.navigate('SchoolAuth1')}
+                        >
+                        <Text style={styles.contextLabel}>학교 인증</Text>
+                        <Text style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 10,
+                            color: 'red', // 'blue'
+                        }}>미완료</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={{...styles.contextContainer, flexDirection: "row"}}
+                        // onPress={() => navigation.navigate('SchoolAuth1')}
+                        >
+                        <Text style={styles.contextLabel}>휴대폰 인증</Text>
+                        <Text style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 10,
+                            color: 'red', // 'blue'
+                        }}>미완료</Text>
+                    </TouchableOpacity>
+                    <View style={styles.line} />
+                    
                     <Text style={styles.subjectLabel}>알림 설정</Text>
                     <TouchableOpacity 
                         style={styles.contextContainer}

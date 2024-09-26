@@ -21,6 +21,9 @@ import PostGroupPurchase from '@/screens/PostGroupPurchase'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Search from '@/screens/Search'
 import Setting from '@/screens/setting/Setting'
+import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
+import SchoolAuth2 from '@/screens/setting/SchoolAuth2'
+import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import Announcement from '@/screens/setting/Announcement'
 import Support from '@/screens/setting/Support'
@@ -191,6 +194,84 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.settingScreenName}
                             component={Setting}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.schoolAuth1ScreenName}
+                            component={SchoolAuth1}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.schoolAuth2ScreenName}
+                            component={SchoolAuth2}
+                            options={{
+                                headerLeft: () => {
+                                    const navigation = stackNavigation()
+                                    return (
+                                        <TouchableOpacity
+                                            style={{ marginLeft: 16 }}
+                                            onPress={() => navigation.goBack()}>
+                                            <IcAngleLeft
+                                                fill={themeColor.HEADER_TEXT}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                },
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTitleStyle: {
+                                    color: themeColor.HEADER_TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 18,
+                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.schoolAuth3ScreenName}
+                            component={SchoolAuth3}
                             options={{
                                 headerLeft: () => {
                                     const navigation = stackNavigation()

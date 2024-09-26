@@ -8,7 +8,7 @@ export type RootStackParamList = {
     }
     SignUp3: undefined
     SignUp4: {
-        // schoolname: string
+        schoolName: string
         schoolEmail: string
     }
     SignUp5: undefined
@@ -24,6 +24,15 @@ export type RootStackParamList = {
     Search: undefined
 
     Notification: undefined
+
+    Setting: undefined
+
+    SchoolAuth1: undefined
+    SchoolAuth2: {
+        schoolName: string
+        schoolEmail: string
+    }
+    SchoolAuth3: undefined
 
     AlertSetting: undefined
     Announcement: undefined

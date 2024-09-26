@@ -121,7 +121,8 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={handleSubmit}>
+                        // onPress={handleSubmit}>
+                        onPress={() => navigation.navigate('SignUp7')}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>
