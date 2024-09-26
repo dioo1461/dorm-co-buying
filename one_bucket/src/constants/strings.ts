@@ -1,14 +1,14 @@
 const strings = {
     // navigation screen names
-    homeRouteScreenName: ' 홈 ',
-    homeScreenName: '홈',
-    groupPurchaseScreenName: '공동구매',
-    tradingScreenName: '중고거래',
-    freeboardScreenName: '게시판',
+    homeRouteScreenName: 'HomeRoute',
+    homeScreenName: 'Home',
+    groupPurchaseScreenName: 'GroupPurchase',
+    tradingScreenName: 'Trade',
+    freeboardScreenName: 'Board',
     boardCreatePostScreenName: 'BoardCreatePost',
     boardPostScreenName: 'BoardPost',
 
-    chatListScreenName: '채팅',
+    chatListScreenName: 'ChatList',
     chatScreenName: 'Chat',
     myPageScreenName: 'MY',
 
@@ -27,7 +27,7 @@ const strings = {
     postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
-    settingScreenName: '설정',
+    settingScreenName: 'Setting',
     alertSettingScreenName: 'AlertSetting',
     announcementScreenName: 'Announcement',
     supportScreenName: 'Support',

@@ -21,8 +21,12 @@ import {
     View,
     ActivityIndicator,
 } from 'react-native'
-import { stackNavigation } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 import Loading from '@/components/Loading'
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
@@ -43,8 +47,18 @@ const Board: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
+    type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>
+    const { params } = useRoute<BoardRouteProp>()
 
     const flatlistRef = useRef(null)
+    var refetchCallback: () => void
+
+    useFocusEffect(() => {
+        if (!!refetchCallback && params?.pendingRefresh) {
+            refetchCallback()
+            navigation.setParams({ pendingRefresh: false })
+        }
+    })
 
     const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
 
@@ -233,6 +247,7 @@ const Board: React.FC = (): JSX.Element => {
             5,
             { enabled: !!boardId },
         )
+        refetchCallback = refetch
 
         if (error) return <Text>Error...</Text>
 
@@ -366,6 +381,7 @@ const Board: React.FC = (): JSX.Element => {
                     navigation.navigate('BoardCreatePost', {
                         boardName: boardListData![currentBoardIndex].name,
                         boardId: boardListData![currentBoardIndex].id,
+                        // refetch: refetchCallback,
                     })
                 }>
                 <Text style={styles.fabIcon}>+</Text>

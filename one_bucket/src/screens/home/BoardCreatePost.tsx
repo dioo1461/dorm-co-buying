@@ -1,8 +1,12 @@
+import { createBoardPost } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
+import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { queryBoardList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
     Appearance,
@@ -26,15 +30,18 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import { createBoardPost } from '@/apis/boardService'
-import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
-import { queryBoardList } from '@/hooks/useQuery/boardQuery'
-import Loading from '@/components/Loading'
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const {
+        themeColor,
+        setThemeColor,
+        pendingBoardRefresh,
+        setPendingBoardRefresh,
+    } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        pendingBoardRefresh: state.pendingBoardRefresh,
+        setPendingBoardRefresh: state.setPendingBoardRefresh,
     }))
 
     // 다크모드 변경 감지
@@ -63,7 +70,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [imageUriList, setImageUriList] = useState<string[]>([])
 
     const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState<number>(0)
+    const [dropdownValue, setDropdownValue] = useState<number>(-1)
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
     const {
@@ -127,10 +134,18 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         createBoardPost(submitForm)
             .then(res => {
                 console.log('board post created')
-                navigation.goBack()
+                // setPendingBoardRefresh(true)
+                // useBoundStore.setState({ pendingBoardRefresh: true })
+                // params.setPendingRefresh(true)
+                setTimeout(() => {
+                    navigation.navigate('Board', {
+                        pendingRefresh: true,
+                    })
+                }, 100)
             })
             .catch(err => {
                 console.log('board post create failed')
+                console.log(err)
             })
     }
 

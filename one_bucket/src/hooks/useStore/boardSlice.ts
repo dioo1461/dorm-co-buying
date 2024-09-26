@@ -7,8 +7,8 @@ import { StateCreator } from 'zustand'
 export interface BoardSlice {
     boardList: GetBoardListResponse
     setBoardList: (boardList: GetBoardListResponse) => void
-    boardRefreshParam: number
-    BoardRefreshParamincrement: () => void
+    pendingBoardRefresh: boolean
+    setPendingBoardRefresh: (pendingBoardRefresh: boolean) => void
     showTitleMissingToast: () => void
 }
 
@@ -20,9 +20,9 @@ export const createBoardSlice: StateCreator<BoardSlice, [], []> = (
     setBoardList: (boardList: GetBoardListResponse) => {
         set({ boardList })
     },
-    boardRefreshParam: 0,
-    BoardRefreshParamincrement: () => {
-        set({ boardRefreshParam: get().boardRefreshParam + 1 })
+    pendingBoardRefresh: false,
+    setPendingBoardRefresh: (pendingBoardRefresh: boolean) => {
+        set({ pendingBoardRefresh })
     },
     showTitleMissingToast: () => {
         Toast.show({

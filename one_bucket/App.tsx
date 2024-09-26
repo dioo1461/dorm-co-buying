@@ -14,16 +14,6 @@ import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import ImageEnlargement from '@/screens/ImageEnlargement'
-import Notification from '@/screens/Notification'
-import ProfileModify from '@/screens/PofileModify'
-import PostGroupPurchase from '@/screens/PostGroupPurchase'
-import ProfileDetails from '@/screens/ProfileDetails'
-import Search from '@/screens/Search'
-import Setting from '@/screens/setting/Setting'
-import AlertSetting from '@/screens/setting/AlertSetting'
-import Announcement from '@/screens/setting/Announcement'
-import Support from '@/screens/setting/Support'
 import Login from '@/screens/auth/Login'
 import SignUp from '@/screens/auth/SignUp'
 import SignUp2 from '@/screens/auth/SignUp2'
@@ -35,14 +25,20 @@ import SignUp7 from '@/screens/auth/SignUp7'
 import Chat from '@/screens/chat/Chat'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
+import ImageEnlargement from '@/screens/ImageEnlargement'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import Notification from '@/screens/Notification'
+import ProfileModify from '@/screens/PofileModify'
+import PostGroupPurchase from '@/screens/PostGroupPurchase'
+import ProfileDetails from '@/screens/ProfileDetails'
+import Search from '@/screens/Search'
+import Setting from '@/screens/setting/Setting'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
-import { getBoardList } from '@/apis/boardService'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -80,7 +76,7 @@ function App(): React.JSX.Element {
                 }}>
                 {mainRoutes.map(route => (
                     <Tab.Screen
-                        key={`screen-${route.name}`}
+                        key={route.name}
                         name={route.name}
                         component={route.component}
                         options={{
