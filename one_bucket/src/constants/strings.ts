@@ -27,11 +27,14 @@ const strings = {
     postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
-    
+
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
     schoolAuth2ScreenName: 'SchoolAuth2',
     schoolAuth3ScreenName: 'SchoolAuth3',
+    phoneAuth1ScreenName: 'PhoneAuth1',
+    phoneAuth2ScreenName: 'PhoneAuth2',
+    phoneAuth3ScreenName: 'PhoneAuth3',
     alertSettingScreenName: 'AlertSetting',
     announcementScreenName: 'Announcement',
     supportScreenName: 'Support',

@@ -17,7 +17,7 @@ import { PhoneRequestBody } from '@/data/request/SignUpRequestBody'
 import { postPhoneForm, requestPhone } from '@/apis/authService'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 
-const SignUp: React.FC = (): React.JSX.Element => {
+const PhoneAuth1: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -61,7 +61,7 @@ const SignUp: React.FC = (): React.JSX.Element => {
 
     const handlePhoneNumberSubmit = () => {
         if (validatePhoneNumber(phoneNumber) === true) {
-            navigation.navigate('SignUp2', {
+            navigation.navigate('PhoneAuth2', {
                 phoneNumber: phoneNumber,
             })
         } else {
@@ -128,17 +128,6 @@ const SignUp: React.FC = (): React.JSX.Element => {
                     style={signUpStyles.backButton}>
                     <IcArrowLeft />
                 </TouchableOpacity>
-            </View>
-            <View style={signUpStyles.headerContainer}>
-                <Text style={signUpStyles.currentStep}>1. 본인 인증</Text>
-                <Text style={signUpStyles.title}>
-                    {`한바구니를 이용하기 위해\n본인인증이 필요해요.`}
-                </Text>
-                <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
-                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
-                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
-            </View>
-            <View>
                 <Text style={styles.phoneLabel}>휴대폰 번호 입력</Text>
                 <TextInput
                     style={styles.inputText}
@@ -190,4 +179,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default SignUp
+export default PhoneAuth1

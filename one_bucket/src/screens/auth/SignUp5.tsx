@@ -188,30 +188,27 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                 </View>
                 <View>
                     <View style={signUpStyles.headerContainer}>
-                        <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                        <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
                         <Text style={signUpStyles.currentStep}>
-                            3. 인증 정보 설정
+                            1. 인증 정보 설정
                         </Text>
                         <Text style={signUpStyles.title}>
                             {`로그인 시 사용할 인증 정보를 설정해 주세요.`}
                         </Text>
                         <Text style={signUpStyles.subStep}>
-                            4. 프로필 정보 입력
+                            2. 프로필 정보 입력
                         </Text>
                     </View>
                     <View>
                         {/* ### 이메일 입력 ### */}
                         <Text style={styles.label}>
-                            로그인 이메일 주소 입력
+                            로그인 아이디 입력
                         </Text>
                         <TextInput
                             style={styles.input}
                             onChangeText={handleEmailChange}
                             value={email}
-                            placeholder='이메일'
+                            placeholder='아이디(8~20자)'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
-                            keyboardType='email-address'
                         />
                         <View
                             style={[
@@ -240,7 +237,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     onChangeText={handlePasswordChange}
                                     onBlur={onPasswordInputBlur}
                                     value={password}
-                                    placeholder='비밀번호'
+                                    placeholder='비밀번호(숫자, 대소문자, 특수문자 모두 포함하여 8~20자)'
                                     placeholderTextColor={
                                         themeColor.TEXT_SECONDARY
                                     }
@@ -320,7 +317,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             style={styles.input}
                             onChangeText={handleNicknameChange}
                             value={nickname}
-                            placeholder='닉네임'
+                            placeholder='닉네임(4~14자)'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
                             keyboardType='default'
                             scrollEnabled={false}

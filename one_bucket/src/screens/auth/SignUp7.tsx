@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+
 const SignUp7: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
         useBoundStore(state => ({

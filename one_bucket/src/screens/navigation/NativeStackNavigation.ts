@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
 export type RootStackParamList = {
+    /*
     SignUp: undefined
     SignUp2: {
         phoneNumber: string
@@ -10,7 +11,7 @@ export type RootStackParamList = {
     SignUp4: {
         schoolName: string
         schoolEmail: string
-    }
+    } */
     SignUp5: undefined
     // SignUp5: {schoolName: string}
     SignUp6: undefined
@@ -33,6 +34,11 @@ export type RootStackParamList = {
         schoolEmail: string
     }
     SchoolAuth3: undefined
+    PhoneAuth1: undefined
+    PhoneAuth2: {
+        phoneNumber: string
+    }
+    PhoneAuth3: undefined
 
     AlertSetting: undefined
     Announcement: undefined

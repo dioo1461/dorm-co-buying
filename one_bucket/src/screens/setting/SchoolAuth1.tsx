@@ -82,7 +82,7 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                 })
             })
             .catch(err => {
-                console.log(`selfAuth1 - submitSignUpForm: ${err}`)
+                console.log(`SchoolAuth1 - submitSignUpForm: ${err}`)
                 {/* if (err.response.status === 409) {
                     if (err.response.data.code == 1000) {
                         setEmailError(
@@ -105,6 +105,11 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
     return (
         <ScrollView style={signUpStyles.container}>
             <View>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={signUpStyles.backButton}>
+                    <IcArrowLeft />
+                </TouchableOpacity>
                 <Text style={styles.schoolInfoLabel}>
                     학교 이름 입력
                 </Text>
@@ -130,11 +135,12 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    // onPress={handleSubmit}>
+                    onPress={handleSubmit}>
+                    {/*
                     onPress={() => navigation.navigate('SchoolAuth2', {
                         schoolName: schoolName,
                         schoolEmail: schoolEmail,
-                    })}>
+                    })}> */}
                     <Text style={styles.buttonText}>인증 코드 발송</Text>
                 </TouchableOpacity>
             </View>

@@ -23,7 +23,7 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
     console.log(token)
     const authAxios = axios.create({
         headers: { Authorization: `Bearer ${token}` },
-        baseURL: 'http://jack8226.ddns.net:8080/',
+        baseURL: BASE_URL,
         ...options,
     })
     authAxios.interceptors.request.use(
@@ -38,7 +38,6 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
     )
     authAxios.interceptors.response.use(
         response => {
-            console.log("Response: " + response)
             return response
         },
         error => {

@@ -83,11 +83,9 @@ const SignUp6: React.FC = (): React.JSX.Element => {
             behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
             <View>
                 <View style={{ marginTop: 46 }}>
-                    <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                    <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
-                    <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
+                    <Text style={signUpStyles.subStep}>1. 인증 정보 설정</Text>
                     <Text style={signUpStyles.currentStep}>
-                        4. 프로필 정보 입력
+                        2. 프로필 정보 입력
                     </Text>
                     <Text style={signUpStyles.title}>
                         {`이용자님의 프로필 정보를\n입력해 주세요.`}
@@ -121,8 +119,8 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        // onPress={handleSubmit}>
-                        onPress={() => navigation.navigate('SignUp7')}>
+                        onPress={handleSubmit}>
+                        {/* onPress={() => navigation.navigate('SignUp7')}> */}
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>

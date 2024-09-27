@@ -18,6 +18,9 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
+import { CodeValRequestBody } from '@/data/request/signUpRequestBody'
+import { postCodeForm, requestSchool } from '@/apis/authService'
+import { setAccessToken } from '@/utils/accessTokenUtils'
 
 const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onSchoolEmailVerificationFailure } =
@@ -42,6 +45,9 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const signUpStyles = createSignUpStyles(themeColor)
 
     const dummyVerificationCode = '000000'
+    const rightVerificationCode = {
+
+    } // 진짜 인증코드
 
     type SchoolAuth2RouteProp = RouteProp<RootStackParamList, 'SchoolAuth2'>
     const { params } = useRoute<SchoolAuth2RouteProp>()
@@ -65,6 +71,21 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
             inputRef.current[nextIndex]?.focus()
         }
         if (verificationCode.join('').length == 6) {
+            const form: CodeValRequestBody = {
+                university: params.schoolName,
+                universityEmail: params.schoolEmail,
+                verifiedCode: verificationCode.join('')
+            }
+            postCodeForm(form)
+                .then(res => {
+                    navigation.navigate('SchoolAuth3')
+                })
+                .catch(err => {
+                    console.log(`SchoolAuth2 - submitSignUpForm: ${err}`)
+                })
+            refreshCodeInput()
+            Keyboard.dismiss()
+            {/*
             if (verificationCode.join('') === dummyVerificationCode) {
                 refreshCodeInput()
                 Keyboard.dismiss()
@@ -73,6 +94,7 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                 refreshCodeInput()
                 onSchoolEmailVerificationFailure()
             }
+            */}
         }
     }, [nextIndex, verificationCode])
 
@@ -106,6 +128,11 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={signUpStyles.container}>
+            <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={signUpStyles.backButton}>
+                <IcArrowLeft />
+            </TouchableOpacity>
             <View style={styles.verificationContainer}>
                 <Text style={styles.schoolEmail}>
                     {maskSchoolEmail(params?.schoolEmail)}

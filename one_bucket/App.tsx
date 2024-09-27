@@ -24,15 +24,14 @@ import Setting from '@/screens/setting/Setting'
 import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
 import SchoolAuth2 from '@/screens/setting/SchoolAuth2'
 import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
+import PhoneAuth1 from '@/screens/setting/PhoneAuth1'
+import PhoneAuth2 from '@/screens/setting/PhoneAuth2'
+import PhoneAuth3 from '@/screens/setting/PhoneAuth3'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import Announcement from '@/screens/setting/Announcement'
 import Support from '@/screens/setting/Support'
 import VersionCheck from '@/screens/setting/VersionCheck'
 import Login from '@/screens/auth/Login'
-import SignUp from '@/screens/auth/SignUp'
-import SignUp2 from '@/screens/auth/SignUp2'
-import SignUp3 from '@/screens/auth/SignUp3'
-import SignUp4 from '@/screens/auth/SignUp4'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
@@ -220,80 +219,32 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.schoolAuth1ScreenName}
                             component={SchoolAuth1}
-                            options={{
-                                headerLeft: () => {
-                                    const navigation = stackNavigation()
-                                    return (
-                                        <TouchableOpacity
-                                            style={{ marginLeft: 16 }}
-                                            onPress={() => navigation.goBack()}>
-                                            <IcAngleLeft
-                                                fill={themeColor.HEADER_TEXT}
-                                            />
-                                        </TouchableOpacity>
-                                    )
-                                },
-                                headerStyle: {
-                                    backgroundColor: themeColor.HEADER_BG,
-                                },
-                                headerTitleStyle: {
-                                    color: themeColor.HEADER_TEXT,
-                                    fontFamily: 'NanumGothic',
-                                    fontSize: 18,
-                                },
-                            }}
+                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name={strings.schoolAuth2ScreenName}
                             component={SchoolAuth2}
-                            options={{
-                                headerLeft: () => {
-                                    const navigation = stackNavigation()
-                                    return (
-                                        <TouchableOpacity
-                                            style={{ marginLeft: 16 }}
-                                            onPress={() => navigation.goBack()}>
-                                            <IcAngleLeft
-                                                fill={themeColor.HEADER_TEXT}
-                                            />
-                                        </TouchableOpacity>
-                                    )
-                                },
-                                headerStyle: {
-                                    backgroundColor: themeColor.HEADER_BG,
-                                },
-                                headerTitleStyle: {
-                                    color: themeColor.HEADER_TEXT,
-                                    fontFamily: 'NanumGothic',
-                                    fontSize: 18,
-                                },
-                            }}
+                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name={strings.schoolAuth3ScreenName}
                             component={SchoolAuth3}
-                            options={{
-                                headerLeft: () => {
-                                    const navigation = stackNavigation()
-                                    return (
-                                        <TouchableOpacity
-                                            style={{ marginLeft: 16 }}
-                                            onPress={() => navigation.goBack()}>
-                                            <IcAngleLeft
-                                                fill={themeColor.HEADER_TEXT}
-                                            />
-                                        </TouchableOpacity>
-                                    )
-                                },
-                                headerStyle: {
-                                    backgroundColor: themeColor.HEADER_BG,
-                                },
-                                headerTitleStyle: {
-                                    color: themeColor.HEADER_TEXT,
-                                    fontFamily: 'NanumGothic',
-                                    fontSize: 18,
-                                },
-                            }}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name={strings.phoneAuth1ScreenName}
+                            component={PhoneAuth1}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name={strings.phoneAuth2ScreenName}
+                            component={PhoneAuth2}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name={strings.phoneAuth3ScreenName}
+                            component={PhoneAuth3}
+                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name={strings.alertSettingScreenName}
@@ -510,22 +461,6 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.loginScreenName}
                             component={Login}
-                        />
-                        <Stack.Screen
-                            name={strings.signUp1ScreenName}
-                            component={SignUp}
-                        />
-                        <Stack.Screen
-                            name={strings.signUp2ScreenName}
-                            component={SignUp2}
-                        />
-                        <Stack.Screen
-                            name={strings.signUp3ScreenName}
-                            component={SignUp3}
-                        />
-                        <Stack.Screen
-                            name={strings.signUp4ScreenName}
-                            component={SignUp4}
                         />
                         <Stack.Screen
                             name={strings.signUp5ScreenName}

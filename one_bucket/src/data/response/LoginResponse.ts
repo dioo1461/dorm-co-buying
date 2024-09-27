@@ -5,9 +5,7 @@ export interface PhoneResponse {
 }
 
 export interface SchoolAuthResponse {
-    grantType: string
-    accessToken: string
-    refreshToken: string
+    verificationCode: string
 }
 
 export interface LoginResponse {

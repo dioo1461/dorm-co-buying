@@ -19,7 +19,7 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
-import strings from '@/constants/strings'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const CIRCLE_SIZE = 30
@@ -64,6 +64,30 @@ const Setting: React.FC = (): React.JSX.Element => {
     const openDelID = () => { setDelIDVisible(true); }
     const closeDelID = () => { setDelIDVisible(false); }
 
+    const authCompletedText = (school: string) => {
+        if(school == 'null') return (
+            <View>
+                <Text style={{
+                    ...styles.contextLabel,
+                    paddingHorizontal: 10,
+                    color: 'red',
+                }}>미완료</Text>
+            </View>
+        )
+        else return (
+            <View style={{flexDirection: "row"}}>
+                <Text style={{
+                    ...styles.contextLabel,
+                    paddingHorizontal: 10,
+                    color: 'dodgerblue',
+                }}>완료</Text>
+                <Text style={styles.contextLabel}>{'('+school+')'}</Text>
+            </View>
+        )
+    }
+
+    const { data, isLoading, error } = queryGetMemberInfo()
+    const [memberInfo, profileImage] = data ? data : [null, null]
 
     useEffect(() => {
         const setAlertParameters = async () => {
@@ -103,30 +127,30 @@ const Setting: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View>
-                    <TouchableOpacity 
-                        style={{...styles.contextContainer, flexDirection: "row"}}
-                        onPress={() => navigation.navigate('SchoolAuth1')}
+                    <View style={{...styles.authContainer,
+                        backgroundColor: (memberInfo!.university == 'null') ? 
+                        "rgba(255, 0, 0, 0.2)" : themeColor.BG
+                    }}>
+                        <TouchableOpacity 
+                            style={{...styles.contextContainer, flexDirection: "row"}}
+                            onPress={() => navigation.navigate('SchoolAuth1')}
                         >
-                        <Text style={styles.contextLabel}>학교 인증</Text>
-                        <Text style={{
-                            ...styles.contextLabel,
-                            paddingHorizontal: 10,
-                            color: 'red', // 'blue'
-                        }}>미완료</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={{...styles.contextContainer, flexDirection: "row"}}
-                        // onPress={() => navigation.navigate('SchoolAuth1')}
-                        >
-                        <Text style={styles.contextLabel}>휴대폰 인증</Text>
-                        <Text style={{
-                            ...styles.contextLabel,
-                            paddingHorizontal: 10,
-                            color: 'red', // 'blue'
-                        }}>미완료</Text>
-                    </TouchableOpacity>
+                            <Text style={styles.contextLabel}>학교 인증</Text>
+                            {authCompletedText(memberInfo!.university)}
+                        </TouchableOpacity>
+                        {/*
+                        <TouchableOpacity 
+                            style={{...styles.contextContainer, flexDirection: "row"}}
+                            onPress={() => {
+                                setPhoneIsAuth(true)
+                                navigation.navigate('PhoneAuth1')
+                            }}>
+                            <Text style={styles.contextLabel}>휴대폰 인증</Text>
+                            {authCompletedText(phoneIsAuth)}
+                        </TouchableOpacity>
+                        */}
+                    </View>
                     <View style={styles.line} />
-                    
                     <Text style={styles.subjectLabel}>알림 설정</Text>
                     <TouchableOpacity 
                         style={styles.contextContainer}
@@ -305,7 +329,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text>정말 로그아웃 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text style={{color:"black"}}>예</Text>
+                                        <Text>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
                                         <Text>아니오</Text>
@@ -335,7 +359,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
-                                        <Text style={{color:"black"}}>예</Text>
+                                        <Text>예</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
                                         <Text>아니오</Text>
@@ -358,6 +382,11 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BG,
             paddingHorizontal: 16,
             paddingTop: 8,
+        },
+        authContainer: {
+            flex: 1,
+            paddingHorizontal: 8,
+            borderRadius: 8,
         },
         backButtonImage: {
             width: 24,
@@ -414,7 +443,6 @@ const createStyles = (theme: Icolor) =>
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-
         },
         modalContent: {
             padding: 20,
@@ -428,7 +456,7 @@ const createStyles = (theme: Icolor) =>
         },
         confirmButton: {
             marginTop: 10,
-            backgroundColor : "#FFCCCC",
+            backgroundColor : "rgba(255, 0, 0, 0.2)",
             justifyContent: 'center',
             alignItems: 'center',
             height: 30,

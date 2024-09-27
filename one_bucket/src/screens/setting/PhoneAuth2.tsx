@@ -19,13 +19,12 @@ import {
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
 
-const SignUp4: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onSchoolEmailVerificationFailure } =
+const PhoneAuth2: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor, onPhoneVerificationFailure } =
         useBoundStore(state => ({
             themeColor: state.themeColor,
             setThemeColor: state.setThemeColor,
-            onSchoolEmailVerificationFailure:
-                state.onSchoolEmailVerificationFailure,
+            onPhoneVerificationFailure: state.onPhoneVerificationFailure,
         }))
 
     // 다크모드 변경 감지
@@ -43,9 +42,10 @@ const SignUp4: React.FC = (): React.JSX.Element => {
 
     const dummyVerificationCode = '000000'
 
-    type SignUp4RouteProp = RouteProp<RootStackParamList, 'SignUp4'>
-    const { params } = useRoute<SignUp4RouteProp>()
+    type PhoneAuth2RouteProp = RouteProp<RootStackParamList, 'PhoneAuth2'>
+    const { params } = useRoute<PhoneAuth2RouteProp>()
 
+    const [phoneNumber, setPhoneNumber] = useState('')
     const navigation = stackNavigation()
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
@@ -64,14 +64,15 @@ const SignUp4: React.FC = (): React.JSX.Element => {
         if (nextIndex < 6) {
             inputRef.current[nextIndex]?.focus()
         }
-        if (verificationCode.join('').length == 6) {
-            if (verificationCode.join('') === dummyVerificationCode) {
+        const code = verificationCode.join('')
+        if (code.length == 6) {
+            if (VerifyCode(code)) {
                 refreshCodeInput()
                 Keyboard.dismiss()
-                navigation.navigate('SignUp5')
+                navigation.navigate('PhoneAuth3')
             } else {
                 refreshCodeInput()
-                onSchoolEmailVerificationFailure()
+                onPhoneVerificationFailure()
             }
         }
     }, [nextIndex, verificationCode])
@@ -84,52 +85,45 @@ const SignUp4: React.FC = (): React.JSX.Element => {
         inputRef.current[0]?.focus()
     }
 
-    const handleCodeVerification = () => {
-        // TODO : 인증번호 발송 API 호출
+    const VerifyCode = (code: string) => {
+        if (code === dummyVerificationCode) {
+            return true
+        } else {
+            return false
+        }
     }
 
-    const maskSchoolEmail = (schoolEmail: string) => {
-        const [localPart, domain] = schoolEmail.split('@')
+    const maskPhoneNumber = (phoneNumber: string) => {
+        const phoneParts = phoneNumber.split('-')
+        if (phoneParts.length !== 3) {
+            // 전화번호 형식이 올바르지 않을 경우
+            return phoneNumber
+        }
 
-        const maskedLocalPart = localPart
-            .split('')
-            .map((char, index) => {
-                if (index === 0 || index === localPart.length - 1) {
-                    return char
-                }
-                return '*'
-            })
-            .join('')
+        const firstPart = phoneParts[0]
 
-        return `${maskedLocalPart}@${domain}`
+        // 마지막 두 자리를 제외하고 마스킹
+        // 긍정형 후방 탐색(?<=...)과 긍정형 전방 탐색(?=..)을 사용하여 구현
+        const secondPart = phoneParts[1].replace(/.(?<=...)/g, '*')
+        const thirdPart = phoneParts[2].replace(/.(?=..)/g, '*')
+        return `${firstPart} - ${secondPart} - ${thirdPart}`
     }
 
     return (
         <View style={signUpStyles.container}>
-            <View>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft />
-                </TouchableOpacity>
-            </View>
-            <View style={signUpStyles.headerContainer}>
-                <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                <Text style={signUpStyles.currentStep}>2. 학교 인증</Text>
-                <Text style={signUpStyles.title}>
-                    {`이용자님의 재학생 여부를\n인증해 주세요.`}
-                </Text>
-                <Text style={signUpStyles.subStep}>3. 인증 정보 설정</Text>
-                <Text style={signUpStyles.subStep}>4. 프로필 정보 입력</Text>
-            </View>
+            <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={signUpStyles.backButton}>
+                <IcArrowLeft />
+            </TouchableOpacity>
             <View style={styles.verificationContainer}>
-                <Text style={styles.schoolEmail}>
-                    {maskSchoolEmail(params?.schoolEmail)}
+                <Text style={styles.phoneNumber}>
+                    {maskPhoneNumber(params?.phoneNumber)}
                 </Text>
                 <Text style={styles.infoText}>
-                    이메일로 발송된 인증 코드를 입력해 주세요.
+                    번호로 발송된 인증번호를 입력해 주세요.
                 </Text>
-                <Text style={styles.inputLabel}>인증 코드 입력</Text>
+                <Text style={styles.inputLabel}>인증번호 입력</Text>
                 <View style={styles.codeInputContainer}>
                     {Array(6)
                         .fill(0)
@@ -149,7 +143,6 @@ const SignUp4: React.FC = (): React.JSX.Element => {
                                         setNextIndex(index + 1)
                                     }
                                 }}
-                                keyboardType='default'
                                 maxLength={1}
                             />
                         ))}
@@ -159,7 +152,7 @@ const SignUp4: React.FC = (): React.JSX.Element => {
                     onPress={refreshCodeInput}>
                     <IcRefresh />
                     <Text style={styles.resendButtonLabel}>
-                        인증 코드 재발송
+                        인증번호 재발송
                     </Text>
                 </TouchableOpacity>
                 <Text style={styles.infoText}>
@@ -172,7 +165,7 @@ const SignUp4: React.FC = (): React.JSX.Element => {
 
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
-        schoolEmail: {
+        phoneNumber: {
             color: theme.TEXT_TERTIARY,
             fontSize: 14,
             fontFamily: 'NanumGothic',
@@ -225,4 +218,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default SignUp4
+export default PhoneAuth2
