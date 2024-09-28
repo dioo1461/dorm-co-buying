@@ -12,13 +12,19 @@ import {
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import IcSend from '@/assets/drawable/ic-send.svg'
+import { IComment } from '@/data/response/success/board/GetBoardPostResponse'
+import { addComment } from '@/apis/boardService'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 
 const IMAGE_SIZE = 112
 
@@ -44,19 +50,40 @@ const BoardPost: React.FC = (): JSX.Element => {
     const { params } = useRoute<BoardPostProp>()
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
+    const [commentValue, setCommentValue] = useState('')
+
     const [isImageInView, setImageInView] = useState(true)
     const scrollViewRef = useRef<ScrollView>(null)
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
 
-    const [expanded, setExpanded] = useState(false)
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [backdropEnabled, setBackdropEnabled] = useState(false)
 
-    const { data, isLoading, error } = queryBoardPost(params.postId)
+    const { data, isLoading, error, refetch } = queryBoardPost(params.postId)
 
-    useEffect(() => {
-        console.log(data)
-    }, [])
+    useEffect(() => {}, [])
+
+    const handleCommentSubmit = async () => {
+        setBackdropEnabled(true)
+        addComment({ postId: params.postId, text: commentValue })
+            .then(res => {
+                console.log(res)
+                setCommentValue('')
+                refetch()
+                setBackdropEnabled(false)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true)
+        await refetch()
+        setIsRefreshing(false)
+    }
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const threshold = 0
@@ -92,7 +119,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const Comment: React.FC = (data: any): JSX.Element => {
+    const Comment: React.FC<{ data: IComment }> = ({ data }): JSX.Element => {
         return (
             <View style={styles.commentContainer}>
                 <View style={styles.commentHeader}>
@@ -100,15 +127,17 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <View style={styles.commentProfileImage}></View>
                     {/* ### 닉네임 ### */}
                     <View style={styles.commentNicknameContainer}>
-                        <Text style={styles.commentNicknameText}>닉네임</Text>
+                        <Text style={styles.commentNicknameText}>
+                            {data.authorNickname}
+                        </Text>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity style={{ position: 'relative', top: -8 }}>
                         <IcOthers fill='white' />
                     </TouchableOpacity>
                 </View>
                 {/* ### 댓글 본문 ### */}
                 <View style={styles.commentBody}>
-                    <Text style={styles.commentBodyText}>댓글</Text>
+                    <Text style={styles.commentBodyText}>{data.text}</Text>
                 </View>
                 <View style={styles.commentFooter}>
                     <View style={styles.commentTime}>
@@ -169,20 +198,36 @@ const BoardPost: React.FC = (): JSX.Element => {
         <View style={styles.container}>
             {/* ### 본문 container ### */}
             <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefreshing}
+                        onRefresh={handleRefresh}
+                    />
+                }
                 style={{
                     flex: 1,
                     marginBottom: 60,
                     marginTop: 20,
-                    marginHorizontal: 20,
+                    marginHorizontal: 16,
                 }}
                 showsVerticalScrollIndicator={false}
                 onScroll={handleScroll}
                 ref={scrollViewRef}
                 scrollEventThrottle={0}>
-                <Text style={[styles.titleText, { marginBottom: 10 }]}>
+                <Text
+                    style={[
+                        styles.titleText,
+                        { marginHorizontal: 10, marginBottom: 10 },
+                    ]}>
                     {data?.title}
                 </Text>
-                <Text style={styles.contentText}>{data?.text}</Text>
+                <Text
+                    style={[
+                        styles.contentText,
+                        { marginHorizontal: 6, marginBottom: 10 },
+                    ]}>
+                    {data?.text}
+                </Text>
                 {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
                 {!isImageInView && imageUriList.length > 0 && (
                     <ScrollView
@@ -202,28 +247,69 @@ const BoardPost: React.FC = (): JSX.Element => {
                 {isImageInView && imageUriList.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
                 )}
-                <View onLayout={handleCommentLayout} style={styles.line} />
-                {/* ### 댓글 ### */}
-                <View>
-                    <Comment />
-                    <Comment />
-                    <Comment />
-                    <Comment />
-                    {/* <Text>{comment}</Text> */}
+                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                    {/* ### 좋아요 버튼 ### */}
+                    <TouchableOpacity style={styles.commentActionButton}>
+                        <IcThumbUp />
+                        <Text
+                            style={[
+                                styles.commentActionText,
+                                { color: baseColors.LIGHT_RED },
+                            ]}>
+                            {data?.likes}
+                        </Text>
+                    </TouchableOpacity>
+                    {/* ### 답글 달기 버튼 ### */}
+                    <TouchableOpacity style={styles.commentActionButton}>
+                        <IcComment />
+                        <Text
+                            style={[
+                                styles.commentActionText,
+                                { color: baseColors.LIGHT_BLUE },
+                            ]}>
+                            {data?.comments.length}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-
-                {/* ### 댓글 입력 container ### */}
-                <View
-                    style={{
-                        width: '100%',
-                        height: 60,
-                        position: 'absolute',
-                        backgroundColor: 'white',
-                        bottom: 0,
-                    }}>
-                    <Text>댓글입력</Text>
+                <View onLayout={handleCommentLayout} style={styles.line} />
+                {/* ### 댓글 리스트 ### */}
+                <View>
+                    {data?.comments.map((comment, index) => (
+                        <Comment key={index} data={comment} />
+                    ))}
                 </View>
             </ScrollView>
+            {/* ### 댓글 입력 container ### */}
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    alignItems: 'center',
+                    width: '100%',
+                    height: 52,
+                    position: 'absolute',
+                    bottom: 0,
+                }}>
+                <View style={styles.commentInputContainer}>
+                    <TextInput
+                        style={styles.commentTextInput}
+                        placeholder='댓글을 입력하세요.'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        value={commentValue}
+                        onChangeText={text => setCommentValue(text)}
+                    />
+                    <TouchableOpacity
+                        style={{ marginEnd: 10 }}
+                        onPress={handleCommentSubmit}>
+                        <IcSend
+                            fill={
+                                themeColor === lightColors
+                                    ? baseColors.SCHOOL_BG
+                                    : baseColors.GRAY_2
+                            }
+                        />
+                    </TouchableOpacity>
+                </View>
+            </View>
             {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ### */}
             {isImageInView && imageUriList.length > 0 && (
                 <ScrollView
@@ -248,6 +334,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
             )}
+            <LoadingBackdrop enabled={backdropEnabled} theme={themeColor} />
         </View>
     )
 }
@@ -259,7 +346,7 @@ const createStyles = (theme: Icolor) =>
         container: { flex: 1 },
         titleText: {
             color: theme.TEXT,
-            fontSize: 18,
+            fontSize: 20,
             fontFamily: 'NanumGothic-Bold',
         },
         contentText: {
@@ -317,7 +404,7 @@ const createStyles = (theme: Icolor) =>
             marginStart: 10,
         },
         commentTimeText: {
-            color: theme.TEXT,
+            color: theme.TEXT_SECONDARY,
             fontSize: 12,
             fontFamily: 'NanumGothic',
         },
@@ -348,5 +435,22 @@ const createStyles = (theme: Icolor) =>
             paddingTop: 10,
             paddingBottom: 10,
             marginBottom: 10,
+        },
+        commentInputContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginVertical: 4,
+            marginHorizontal: 20,
+            borderRadius: 40,
+        },
+        commentTextInput: {
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+            flex: 1,
+            marginStart: 6,
         },
     })

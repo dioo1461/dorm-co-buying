@@ -21,7 +21,7 @@ import { View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import ChatList from 'screens/chat/ChatList'
 import Mypage from 'screens/Mypage'
-import HomeRoutes from 'screens/navigation/HomeRoutes'
+import HomeTab from 'screens/navigation/HomeTab'
 import { notifsNum } from 'screens/Notification'
 import ChatTest from '../chat/ChatTest'
 import { stackNavigation } from './NativeStackNavigation'
@@ -29,7 +29,9 @@ import { stackNavigation } from './NativeStackNavigation'
 export const mainRoutes = [
     {
         name: strings.homeRouteScreenName,
-        component: HomeRoutes,
+        title: strings.homeRouteScreenTitle,
+        tabBarLabel: strings.homeScreenTitle,
+        component: HomeTab,
         activeIconLight: <IcTabHomeActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,
         activeIconDark: <IcTabHomeActive fill={baseColors.WHITE} />,
@@ -87,6 +89,8 @@ export const mainRoutes = [
     },
     {
         name: strings.chatListScreenName,
+        title: strings.chatListScreenTitle,
+        tabBarLabel: strings.chatListScreenTitle,
         component: ChatList,
         activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,
@@ -108,6 +112,8 @@ export const mainRoutes = [
     },
     {
         name: strings.myPageScreenName,
+        title: strings.myPageScreenTitle,
+        tabBarLabel: strings.myPageScreenTitle,
         component: Mypage,
         activeIconLight: <IcTabProfileActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />,
@@ -135,6 +141,8 @@ export const mainRoutes = [
     },
     {
         name: 'chatTest',
+        title: 'chatTest',
+        tabBarLabel: 'chatTest',
         component: ChatTest,
         activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
         inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,

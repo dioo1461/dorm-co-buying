@@ -1,7 +1,7 @@
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
 import { GetMemberInfoResponse } from '@/data/response/GetMemberInfoResponse'
-import { createAuthAxios } from 'utils/axiosFactory'
+import { createAuthAxios, createStorageAxios } from 'utils/axiosFactory'
 
 /**
  * @returns:
@@ -40,7 +40,7 @@ export const getMemberInfo = async () => {
  * @returns:
  */
 export const getProfileImage = async () => {
-    const authAxios = await createAuthAxios()
+    const authAxios = await createStorageAxios()
     return await authAxios
         .get('/profile/image', { responseType: 'arraybuffer' })
         .then(response => {

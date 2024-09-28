@@ -1,5 +1,5 @@
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { BASE_URL } from '@env'
+import { BASE_URL, STORAGE_BASE_URL } from '@env'
 import axios, { AxiosRequestConfig } from 'axios'
 import { getAccessToken } from './accessTokenUtils'
 
@@ -49,4 +49,28 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
         },
     )
     return authAxios
+}
+
+export const createStorageAxios = async (options: AxiosRequestConfig = {}) => {
+    return axios.create({
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+        },
+        baseURL: STORAGE_BASE_URL,
+        ...options,
+    })
+}
+
+export const createAuthStorageAxios = async (
+    options: AxiosRequestConfig = {},
+) => {
+    const token = await getAccessToken()
+    return axios.create({
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            Authorization: 'Bearer ' + token,
+        },
+        baseURL: STORAGE_BASE_URL,
+        ...options,
+    })
 }

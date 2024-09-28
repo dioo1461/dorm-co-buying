@@ -6,5 +6,17 @@ export interface GetBoardPostResponse {
     authorNickname: string
     createdDate: string
     modifiedDate: string
-    comments: []
+    views: number
+    likes: number
+    comments: IComment[]
+    userAlreadyLikes: boolean
+}
+
+export interface IComment {
+    text: string
+    postId: number
+    commentId: number
+    authorNickname: string
+    modifiedDate: string
+    replies: IComment[]
 }

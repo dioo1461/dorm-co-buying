@@ -7,6 +7,7 @@ import { Appearance } from 'react-native'
 import Board from '../home/Board'
 import GroupPurchase from '../home/GroupPurchase'
 import Home from '../home/Home'
+import { homeRoutes } from './HomeRoutes'
 
 const Tab = createMaterialTopTabNavigator()
 const HomeTab: React.FC = (): JSX.Element => {
@@ -44,16 +45,14 @@ const HomeTab: React.FC = (): JSX.Element => {
                 },
                 swipeEnabled: false,
             }}>
-            <Tab.Screen name={strings.homeScreenName} component={Home} />
-            <Tab.Screen
-                name={strings.groupPurchaseScreenName}
-                component={GroupPurchase}
-            />
-            <Tab.Screen
-                name={strings.tradingScreenName}
-                component={GroupPurchase}
-            />
-            <Tab.Screen name={strings.freeboardScreenName} component={Board} />
+            {homeRoutes.map(route => (
+                <Tab.Screen
+                    key={route.name}
+                    name={route.name}
+                    component={route.component}
+                    options={{ title: route.title }}
+                />
+            ))}
         </Tab.Navigator>
     )
 }

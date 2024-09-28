@@ -1,4 +1,7 @@
+import { AddCommentRequestBody } from '@/data/request/board/AddCommentRequestBody'
+import { AddReplyCommentRequestBody } from '@/data/request/board/AddReplyCommentRequestBody'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { GetBoardListResponse } from '@/data/response/success/board/GetBoardListResponse'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
@@ -12,7 +15,7 @@ export const createBoardPost = async (
 ): Promise<CreateBoardPostRequestBody> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post('/board/post', data)
+        .post('/post/create', data)
         .then(response => {
             return response.data
         })
@@ -54,8 +57,8 @@ export const getBoardPostList = async (
             params: {
                 page: page,
                 size: size,
-                sortPrimary: sortParams[0],
-                sortSecondary: sortParams[1],
+                sort: sortParams[0],
+                // sort: sortParams[1],
             },
         })
         .then(response => {
@@ -65,6 +68,49 @@ export const getBoardPostList = async (
             console.log('getBoardPost - ' + error)
             // console.log(error.response)
 
+            throw error
+        })
+}
+
+export const getBoardList = async (): Promise<GetBoardListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get('/board/list')
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getBoardList - ' + error)
+            throw error
+        })
+}
+
+export const addComment = async (
+    data: AddCommentRequestBody,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/comment', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('addComment - ' + error)
+            throw error
+        })
+}
+
+export const addReplyComment = async (
+    data: AddReplyCommentRequestBody,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/comment', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('addReplyComment - ' + error)
             throw error
         })
 }

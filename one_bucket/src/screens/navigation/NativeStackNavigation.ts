@@ -13,13 +13,19 @@ export type RootStackParamList = {
         schoolEmail: string
     } */
     SignUp5: undefined
-    // SignUp5: {schoolName: string}
     SignUp6: undefined
     SignUp7: undefined
 
+    Board: {
+        pendingRefresh: boolean
+    }
     BoardPost: {
         boardId: number
         postId: number
+    }
+    BoardCreatePost: {
+        boardName: string
+        boardId: number
     }
 
     Search: undefined
@@ -50,9 +56,6 @@ export type RootStackParamList = {
         roomId: string
     }
 
-    BoardCreatePost: {
-        boardName: string
-    }
     ProfileDetails: undefined
     PostGroupPurchase: undefined
 

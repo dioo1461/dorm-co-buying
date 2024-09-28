@@ -4,11 +4,11 @@ import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import Backdrop from '@/components/Backdrop'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import { queryBoardList, queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
+    RefreshControl,
     Animated,
     Appearance,
     FlatList,
@@ -19,9 +19,18 @@ import {
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native'
-import { stackNavigation } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
+import Loading from '@/components/Loading'
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 
+const FETCH_SIZE = 10
+
+// TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
@@ -40,15 +49,26 @@ const Board: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
+    type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>
+    const { params } = useRoute<BoardRouteProp>()
 
     const flatlistRef = useRef(null)
+    var refetchCallback: () => void
 
-    const [boardId, setBoardId] = useState(1)
-
-    const { data, isLoading, error } = queryBoardPostList(boardId, 0, {
-        sortType: 'createdDate',
-        sort: 'asc',
+    useFocusEffect(() => {
+        if (!!refetchCallback && params?.pendingRefresh) {
+            refetchCallback()
+            navigation.setParams({ pendingRefresh: false })
+        }
     })
+
+    const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
+
+    const {
+        data: boardListData,
+        isLoading: boardListIsLoading,
+        error: boardListError,
+    } = queryBoardList()
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -180,31 +200,89 @@ const Board: React.FC = (): JSX.Element => {
         )
     }
 
-    const FlatlistHeader = () => {
-        return (
-            <View>
-                <View style={styles.boardTypeContainer}>
-                    <Text style={styles.boardTypeLabel}>
-                        {boardTypes[currentBoardType]}
-                    </Text>
+    const PostFlatList: React.FC = (): JSX.Element => {
+        const [isRefreshing, setIsRefreshing] = useState(false)
+
+        const handleRefresh = async () => {
+            setIsRefreshing(true)
+            await refetch()
+            setIsRefreshing(false)
+        }
+
+        // ### 게시판 타입 헤더 ###
+        const FlatlistHeader = () => {
+            return (
+                <View>
+                    <View style={styles.boardTypeContainer}>
+                        <Text style={styles.boardTypeLabel}>
+                            {boardListData![currentBoardIndex].name}
+                        </Text>
+                    </View>
+                    <View style={styles.line} />
                 </View>
-                <View style={styles.line} />
+            )
+        }
+
+        // ### 게시글 목록 flatlist ###
+        const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
+            <Post {...item} />
+        )
+
+        const boardId = boardListData
+            ? boardListData[currentBoardIndex].id
+            : null
+
+        const {
+            data, // 각 페이지의 데이터를 담고 있음
+            fetchNextPage, // 다음 페이지 불러오기 함수
+            hasNextPage, // 다음 페이지가 있는지 여부
+            isFetchingNextPage, // 다음 페이지 불러오는 중인지 여부
+            isLoading, // 첫 번째 페이지 로딩 여부
+            error,
+            refetch,
+        } = queryBoardPostList(
+            boardId!,
+            {
+                sortType: 'createdDate',
+                sort: 'desc',
+            },
+            FETCH_SIZE,
+            { enabled: !!boardId },
+        )
+        refetchCallback = refetch
+
+        if (error) return <Text>Error...</Text>
+
+        if (isLoading) return <Loading theme={themeColor} />
+        const posts = data!.pages.flatMap(page => page.content)
+        return (
+            <View style={styles.flatList}>
+                <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={handleRefresh}
+                        />
+                    }
+                    ListHeaderComponent={FlatlistHeader}
+                    showsVerticalScrollIndicator={true}
+                    ref={flatlistRef}
+                    data={posts}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.postId.toString()}
+                    onEndReached={() => {
+                        if (!isFetchingNextPage && hasNextPage) fetchNextPage()
+                    }}
+                    onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
+                    // ListFooterComponent={
+                    //     isFetchingNextPage ? (
+                    //         <ActivityIndicator size='small' color='#0000ff' />
+                    //     ) : null
+                    // }
+                />
             </View>
         )
     }
-
-    const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
-        <Post {...item} />
-    )
-
-    const [currentBoardType, setCurrentBoardType] = useState(0)
-    const boardTypes = [
-        '전체게시판',
-        '자유게시판',
-        '비밀게시판',
-        '헬스 및 운동',
-        '취미 및 여가',
-    ]
 
     const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
@@ -236,42 +314,14 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    if (error) return <Text>Error...</Text>
-
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
+    if (boardListIsLoading) return <Loading theme={themeColor} />
+    if (boardListError) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
-            <View style={styles.flatList}>
-                <FlatList
-                    ListHeaderComponent={FlatlistHeader}
-                    showsVerticalScrollIndicator={false}
-                    ref={flatlistRef}
-                    data={data?.content}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.postId.toString()}
-                />
-            </View>
-            <Backdrop expanded={expanded} onPress={toggleDropdown} />
+            <PostFlatList />
+            <Backdrop enabled={expanded} onPress={toggleDropdown} />
             {/* ### 게시판 선택 버튼 ### */}
             <View
                 style={[
@@ -304,22 +354,22 @@ const Board: React.FC = (): JSX.Element => {
                     style={styles.boardTypeSelectionContainer}
                     contentContainerStyle={styles.boardTypeSelectionContent}
                     showsVerticalScrollIndicator={false}>
-                    {boardTypes.map((boardType, index) => (
+                    {boardListData!.map((boardType, index) => (
                         <TouchableNativeFeedback
                             key={index}
                             background={touchableNativeFeedbackBg()}
                             onPress={() => {
-                                setCurrentBoardType(index)
                                 toggleDropdown()
+                                setCurrentBoardIndex(index)
                             }}>
                             <View style={styles.boardTypeItem}>
                                 <Text
                                     style={[
                                         styles.boardTypeText,
-                                        currentBoardType === index &&
+                                        currentBoardIndex === index &&
                                             styles.boardTypeTextActive,
                                     ]}>
-                                    {boardType}
+                                    {boardType.name}
                                 </Text>
                             </View>
                         </TouchableNativeFeedback>
@@ -329,8 +379,11 @@ const Board: React.FC = (): JSX.Element => {
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() =>
+                    // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
                     navigation.navigate('BoardCreatePost', {
-                        boardName: '자유게시판',
+                        boardName: boardListData![currentBoardIndex].name,
+                        boardId: boardListData![currentBoardIndex].id,
+                        // refetch: refetchCallback,
                     })
                 }>
                 <Text style={styles.fabIcon}>+</Text>

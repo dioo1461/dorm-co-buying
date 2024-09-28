@@ -1,9 +1,10 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { Gender } from '@/data/response/GetProfileResponse'
+import { Gender } from '@/data/response/success/GetProfileResponse'
 import {
     queryGetMemberInfo,
     queryGetProfile,
+    queryGetProfileImage,
 } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useNavigation } from '@react-navigation/native'
@@ -50,6 +51,12 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         error: memberInfoError,
     } = queryGetMemberInfo()
 
+    const {
+        data: profileImageData,
+        isLoading: isProfileImageLoading,
+        error: profileImageError,
+    } = queryGetProfileImage()
+
     const formatDate = (raw: any) => {
         const date = new Date(raw)
         const year = date.getFullYear()
@@ -57,18 +64,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         const day = String(date.getDate()).padStart(2, '0')
         return `${year}년 ${month}년 ${day}일`
     }
-    var formattedCreateDate
-    if (profileData) {
-        formattedCreateDate = formatDate(profileData.createAt)
-    }
 
     const onProfileModifyButtonClick = () => {
         navigation.navigate('ProfileModify')
     }
 
-    if (profileError || memberInfoError) return <Text>Error...</Text>
+    if (profileError || memberInfoError || profileImageError)
+        return <Text>Error...</Text>
 
-    if (isProfileLoading || isMemberInfoLoading)
+    if (isProfileLoading || isMemberInfoLoading || isProfileImageLoading)
         return (
             <View
                 style={{
@@ -97,7 +101,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.profileImage}
                     />
                     <Text style={styles.nicknameText}>
-                        {memberInfoData![0].nickname}
+                        {memberInfoData!.nickname}
                     </Text>
                 </View>
                 <View style={styles.bioContainer}>
@@ -109,7 +113,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.bioTextScrollView}
                         showsVerticalScrollIndicator={false}>
                         <Text style={styles.bioText}>
-                            ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
+                            {profileData!.description}
                         </Text>
                     </ScrollView>
                 </View>
@@ -127,15 +131,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         </Text>
                         <Text style={styles.profileLabel}>생년월일</Text>
                         <Text style={styles.profileContext}>
-                            {profileData!.birth}
+                            {formatDate(profileData!.birth)}
                         </Text>
                         <Text style={styles.profileLabel}>학교명</Text>
                         <Text style={styles.profileContext}>홍대</Text>
                         <Text style={styles.profileLabel}>학부</Text>
-                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileContext}>컴붕</Text>
                         <Text style={styles.profileLabel}>가입한 날짜</Text>
                         <Text style={styles.profileContext}>
-                            {formattedCreateDate}
+                            {formatDate(profileData!.createAt)}
                         </Text>
                     </View>
                 </ScrollView>

@@ -71,7 +71,7 @@ function App(): React.JSX.Element {
     const MainScreen: React.FC = () => {
         return (
             <Tab.Navigator
-                initialRouteName='Home'
+                initialRouteName={strings.homeScreenName}
                 screenOptions={{
                     tabBarStyle: {
                         backgroundColor: themeColor.BG,
@@ -82,10 +82,12 @@ function App(): React.JSX.Element {
                 }}>
                 {mainRoutes.map(route => (
                     <Tab.Screen
-                        key={`screen-${route.name}`}
+                        key={route.name}
                         name={route.name}
                         component={route.component}
                         options={{
+                            title: route.title,
+                            tabBarLabel: route.tabBarLabel,
                             headerRight: route.headerRight,
                             headerTintColor: themeColor.HEADER_TEXT,
                             tabBarIcon: ({ focused }) => {
@@ -154,7 +156,10 @@ function App(): React.JSX.Element {
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
+                            name={strings.postGroupPurchaseScreenName}
+                            component={PostGroupPurchase}
                             options={{
+                                title: strings.postGroupPurchaseScreenTitle,
                                 headerStyle: {
                                     backgroundColor:
                                         themeColor === lightColors
@@ -177,8 +182,6 @@ function App(): React.JSX.Element {
                                     </View>
                                 ),
                             }}
-                            name={strings.postGroupPurchaseScreenName}
-                            component={PostGroupPurchase}
                         />
                         <Stack.Screen
                             name={strings.profileDetailsScreenName}
@@ -194,6 +197,7 @@ function App(): React.JSX.Element {
                             name={strings.settingScreenName}
                             component={Setting}
                             options={{
+                                title: strings.settingScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -354,6 +358,7 @@ function App(): React.JSX.Element {
                             name={strings.boardCreatePostScreenName}
                             component={BoardCreatePost}
                             options={{
+                                title: strings.boardCreatePostScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (

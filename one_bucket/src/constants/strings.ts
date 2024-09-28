@@ -1,14 +1,14 @@
 const strings = {
     // navigation screen names
-    homeRouteScreenName: ' 홈 ',
-    homeScreenName: '홈',
-    groupPurchaseScreenName: '공동구매',
-    tradingScreenName: '중고거래',
-    freeboardScreenName: '게시판',
+    homeRouteScreenName: 'HomeRoute',
+    homeScreenName: 'Home',
+    groupPurchaseScreenName: 'GroupPurchase',
+    tradeScreenName: 'Trade',
+    boardScreenName: 'Board',
     boardCreatePostScreenName: 'BoardCreatePost',
     boardPostScreenName: 'BoardPost',
 
-    chatListScreenName: '채팅',
+    chatListScreenName: 'ChatList',
     chatScreenName: 'Chat',
     myPageScreenName: 'MY',
 
@@ -27,7 +27,7 @@ const strings = {
     postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
-
+    
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
     schoolAuth2ScreenName: 'SchoolAuth2',
@@ -41,6 +41,32 @@ const strings = {
     versionCheckScreenName: 'VersionCheck',
 
     imageEnlargementScreenName: 'ImageEnlargement',
+
+    // navigation screen titles
+    homeRouteScreenTitle: '한바구니',
+    homeScreenTitle: '홈',
+    groupPurchaseScreenTitle: '공동구매',
+    tradeScreenTitle: '중고거래',
+    boardScreenTitle: '게시판',
+    boardCreatePostScreenTitle: '게시글 작성',
+    boardPostScreenTitle: '게시글',
+
+    chatListScreenTitle: '채팅',
+    chatScreenTitle: '채팅',
+    myPageScreenTitle: 'MY',
+
+    settingScreenTitle: '설정',
+    // searchScreenTitle: '검색',
+    // notificationScreenTitle: '알림',
+
+    postGroupPurchaseScreenTitle: '공동구매 글 작성',
+    // profileDetailsScreenTitle: 'ProfileDetails',
+    // profileModifyScreenTitle: 'ProfileModify',
+    // alertSettingScreenTitle: 'AlertSetting',
+    // announcementScreenTitle: 'Ann/ouncement',
+    // supportScreenTitle: 'Support',
+
+    // imageEnlargementScreenTitle: 'ImageEnlargement',
 }
 
 export default strings

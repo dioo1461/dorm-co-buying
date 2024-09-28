@@ -1,8 +1,12 @@
+import { createBoardPost } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
+import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { queryBoardList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
     Appearance,
@@ -22,12 +26,22 @@ import {
     ImageLibraryOptions,
     launchImageLibrary,
 } from 'react-native-image-picker'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const {
+        themeColor,
+        setThemeColor,
+        pendingBoardRefresh,
+        setPendingBoardRefresh,
+    } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        pendingBoardRefresh: state.pendingBoardRefresh,
+        setPendingBoardRefresh: state.setPendingBoardRefresh,
     }))
 
     // 다크모드 변경 감지
@@ -47,6 +61,8 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     >
     const { params } = useRoute<BoardCreatePostRouteProp>()
 
+    const navigation = stackNavigation()
+
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [inputHeight, setInputHeight] = useState(200)
@@ -54,23 +70,30 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [imageUriList, setImageUriList] = useState<string[]>([])
 
     const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState(null)
+    const [dropdownValue, setDropdownValue] = useState<number>(-1)
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
-    const [dropdownItems, setDropdownItems] = useState([
-        {
-            label: '자유게시판',
-            value: '자유게시판',
-        },
-        {
-            label: '비밀게시판',
-            value: '비밀게시판',
-        },
-        {
-            label: '운동 및 헬스',
-            value: '운동 및 헬스',
-        },
-    ])
+    const {
+        data: boardListData,
+        isLoading: boardListIsLoading,
+        error: boardListError,
+    } = queryBoardList()
+
+    const [dropdownItems, setDropdownItems] = useState<
+        { label: string; value: number }[]
+    >([])
+
+    useEffect(() => {
+        setDropdownItems(
+            boardListData!.map(board => {
+                return {
+                    label: board.name,
+                    value: board.id,
+                }
+            }),
+        )
+        setDropdownValue(params.boardId)
+    }, [])
 
     const addImage = () => {
         const options: ImageLibraryOptions = {
@@ -101,6 +124,34 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         const { height } = event.nativeEvent.contentSize
         if (height > 200) setInputHeight(height)
     }
+
+    const onSubmit = async () => {
+        let submitForm: CreateBoardPostRequestBody = {
+            boardId: dropdownValue,
+            title: title,
+            text: content,
+        }
+        createBoardPost(submitForm)
+            .then(res => {
+                console.log('board post created')
+                // setPendingBoardRefresh(true)
+                // useBoundStore.setState({ pendingBoardRefresh: true })
+                // params.setPendingRefresh(true)
+                setTimeout(() => {
+                    navigation.navigate('Board', {
+                        pendingRefresh: true,
+                    })
+                }, 100)
+            })
+            .catch(err => {
+                console.log('board post create failed')
+                console.log(err)
+            })
+    }
+
+    if (boardListIsLoading) return <Loading theme={themeColor} />
+
+    if (boardListError) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>
@@ -177,7 +228,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 </ScrollView>
             </View>
             <View style={styles.postButtonContainer}>
-                <TouchableNativeFeedback>
+                <TouchableNativeFeedback onPress={onSubmit}>
                     <View style={styles.postButton}>
                         <Text style={styles.postButtonText}>게시</Text>
                     </View>

@@ -15,3 +15,11 @@ export const setAlertVibrationEnabled = async (value: boolean) => {
 export const getAlertVibrationEnabled = async () => {
     return AsyncStorage.getItem('alertVibrationEnabled')
 }
+
+export const cacheBoardPostList = async (
+    boardId: number,
+    page: number,
+    data: any,
+) => {
+    return AsyncStorage.setItem()
+}
