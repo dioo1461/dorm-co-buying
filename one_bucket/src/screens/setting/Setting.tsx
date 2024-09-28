@@ -19,7 +19,10 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
-import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
+import {
+    queryGetMemberInfo,
+    queryGetProfile,
+} from '@/hooks/useQuery/profileQuery'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const CIRCLE_SIZE = 30
@@ -64,7 +67,9 @@ const Setting: React.FC = (): React.JSX.Element => {
     const openDelID = () => { setDelIDVisible(true); }
     const closeDelID = () => { setDelIDVisible(false); }
 
-    const authCompletedText = (school: string) => {
+    const { data, isLoading, error } = queryGetMemberInfo()
+
+    const authCompletedText = (school: any) => {
         if(school == 'null') return (
             <View>
                 <Text style={{
@@ -85,9 +90,6 @@ const Setting: React.FC = (): React.JSX.Element => {
             </View>
         )
     }
-
-    const { data, isLoading, error } = queryGetMemberInfo()
-    const [memberInfo, profileImage] = data ? data : [null, null]
 
     useEffect(() => {
         const setAlertParameters = async () => {
@@ -128,7 +130,7 @@ const Setting: React.FC = (): React.JSX.Element => {
             <ScrollView style={styles.scrollView}>
                 <View>
                     <View style={{...styles.authContainer,
-                        backgroundColor: (memberInfo!.university == 'null') ? 
+                        backgroundColor: (data?.university == 'null') ? 
                         "rgba(255, 0, 0, 0.2)" : themeColor.BG
                     }}>
                         <TouchableOpacity 
@@ -136,7 +138,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                             onPress={() => navigation.navigate('SchoolAuth1')}
                         >
                             <Text style={styles.contextLabel}>학교 인증</Text>
-                            {authCompletedText(memberInfo!.university)}
+                            {authCompletedText(data?.university)}
                         </TouchableOpacity>
                         {/*
                         <TouchableOpacity 
