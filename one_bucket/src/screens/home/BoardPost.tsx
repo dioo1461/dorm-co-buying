@@ -1,6 +1,6 @@
 import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
-import IcOthers from '@/assets/mipmap/tab/ic-other.svg'
+import IcOthers from '@/assets/drawable/ic-others.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'

@@ -1,8 +1,16 @@
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
-import { PhoneRequestBody, SchoolAuthRequestBody, CodeValRequestBody, SignUpRequestBody } from '@/data/request/SignUpRequestBody'
-import { PhoneResponse, SchoolAuthResponse, LoginResponse } from '@/data/response/LoginResponse'
-import { SetUniversityResponse } from '@/data/response/SetUniversityResponse'
+import {
+    PhoneRequestBody,
+    SchoolAuthRequestBody,
+    SignUpRequestBody,
+} from '@/data/request/SignUpRequestBody'
+import {
+    PhoneResponse,
+    SchoolAuthResponse,
+    LoginResponse,
+} from '@/data/response/success/LoginResponse'
+import { SetUniversityResponse } from '@/data/response/success/SetUniversityResponse'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 export const postPhoneForm = async (data: PhoneRequestBody): Promise<any> => {
@@ -17,7 +25,9 @@ export const postPhoneForm = async (data: PhoneRequestBody): Promise<any> => {
         })
 }
 
-export const postSchoolForm = async (data: SchoolAuthRequestBody): Promise<any> => {
+export const postSchoolForm = async (
+    data: SchoolAuthRequestBody,
+): Promise<any> => {
     const authAxios = await createAuthAxios()
     // console.log("data:",data)
     return authAxios
@@ -31,9 +41,9 @@ export const postSchoolForm = async (data: SchoolAuthRequestBody): Promise<any> 
         })
 }
 
-export const postCodeForm = async (data: CodeValRequestBody): Promise<any> => {
+export const postCodeForm = async (data: any): Promise<any> => {
     const authAxios = await createAuthAxios()
-    console.log("data:",data)
+    console.log('data:', data)
     return authAxios
         .post('/univ/verify-code', data)
         .then(res => {

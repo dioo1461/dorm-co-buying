@@ -50,13 +50,14 @@ export type RootStackParamList = {
     Announcement: undefined
     Support: undefined
     VersionCheck: undefined
-    
+
     ChatList: undefined
     Chat: {
         roomId: string
     }
 
     ProfileDetails: undefined
+    GroupPurchasePost: undefined
     PostGroupPurchase: undefined
 
     ImageEnlargement: {

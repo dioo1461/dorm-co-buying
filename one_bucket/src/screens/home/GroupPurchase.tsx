@@ -2,9 +2,10 @@ import IcDisposableItem from '@/assets/drawable/ic-disposable-item.svg'
 import IcFrozenItem from '@/assets/drawable/ic-frozen-item.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcRefridgeratedItem from '@/assets/drawable/ic-refridgerated-item.svg'
-import IcOther from '@/assets/mipmap/tab/ic-other.svg'
+import IcOthers from '@/assets/drawable/ic-others.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
@@ -56,6 +57,7 @@ const GroupPurchase: React.FC = (): JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
+    const navigation = stackNavigation()
     const flatlistRef = useRef(null)
     const flatlistData: ItemProps[] = [
         {
@@ -110,7 +112,8 @@ const GroupPurchase: React.FC = (): JSX.Element => {
             <View>
                 <TouchableNativeFeedback
                     style={styles.postContainer}
-                    background={touchableNativeFeedbackBg()}>
+                    background={touchableNativeFeedbackBg()}
+                    onPress={() => navigation.navigate('GroupPurchasePost')}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View
                             style={[
@@ -170,7 +173,7 @@ const GroupPurchase: React.FC = (): JSX.Element => {
                                         padding: 10,
                                         overflow: 'hidden',
                                     }}>
-                                    <IcOther fill={baseColors.GRAY_3} />
+                                    <IcOthers fill={baseColors.GRAY_3} />
                                 </View>
                             </TouchableNativeFeedback>
                         </View>
