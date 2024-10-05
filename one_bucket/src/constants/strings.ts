@@ -3,6 +3,7 @@ const strings = {
     homeRouteScreenName: 'HomeRoute',
     homeScreenName: 'Home',
     groupPurchaseScreenName: 'GroupPurchase',
+    groupPurchasePostScreenName: 'GroupPurchasePost',
     tradeScreenName: 'Trade',
     boardScreenName: 'Board',
     boardCreatePostScreenName: 'BoardCreatePost',
@@ -28,9 +29,10 @@ const strings = {
     newPw2ScreenName: 'NewPw2',
 
     postGroupPurchaseScreenName: 'PostGroupPurchase',
+    // postGroupPurchasePostScreenName: '공동구매',
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
-    
+
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
     schoolAuth2ScreenName: 'SchoolAuth2',

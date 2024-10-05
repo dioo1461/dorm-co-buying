@@ -49,6 +49,8 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
+import GroupPurchasePost from '@/screens/home/GroupPurchasePost'
+import { color } from 'react-native-elements/dist/helpers'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -186,6 +188,11 @@ function App(): React.JSX.Element {
                                     </View>
                                 ),
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.groupPurchasePostScreenName}
+                            component={GroupPurchasePost}
+                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name={strings.profileDetailsScreenName}

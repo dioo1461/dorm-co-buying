@@ -23,7 +23,9 @@ export const postPhoneForm = async (data: PhoneRequestBody): Promise<any> => {
         })
 }
 
-export const postSchoolForm = async (data: SchoolAuthRequestBody): Promise<any> => {
+export const postSchoolForm = async (
+    data: SchoolAuthRequestBody,
+): Promise<any> => {
     const authAxios = await createAuthAxios()
     console.log("SchoolAuthRequestBody:",data)
     return authAxios
@@ -37,7 +39,7 @@ export const postSchoolForm = async (data: SchoolAuthRequestBody): Promise<any> 
         })
 }
 
-export const postCodeForm = async (data: CodeValRequestBody): Promise<any> => {
+export const postCodeForm = async (data: any): Promise<any> => {
     const authAxios = await createAuthAxios()
     console.log("CodeValRequestBody:",data)
     return authAxios

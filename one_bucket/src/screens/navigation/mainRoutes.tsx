@@ -8,12 +8,11 @@ import IcTabChatActive from '@/assets/drawable/tab/ic-tab-chat-active.svg'
 import IcTabChatInactive from '@/assets/drawable/tab/ic-tab-chat-inactive.svg'
 import IcTabHomeActive from '@/assets/drawable/tab/ic-tab-home-active.svg'
 import IcTabHomeInactive from '@/assets/drawable/tab/ic-tab-home-inactive.svg'
-
+import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcNotification from '@/assets/drawable/ic-notification-2.svg'
 import IcSearch from '@/assets/drawable/ic-search.svg'
 import IcTabProfileActive from '@/assets/drawable/tab/ic-tab-profile-active.svg'
 import IcTabProfileInactive from '@/assets/drawable/tab/ic-tab-profile-inactive.svg'
-import IcOther from '@/assets/mipmap/tab/ic-other.svg'
 import { baseColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { useNavigation } from '@react-navigation/native'
@@ -105,7 +104,7 @@ export const mainRoutes = [
                         justifyContent: 'center',
                         marginEnd: 15,
                     }}>
-                    <IcOther fill='white' />
+                    <IcOthers fill='white' />
                 </TouchableOpacity>
             </View>
         ),
@@ -157,7 +156,7 @@ export const mainRoutes = [
                         justifyContent: 'center',
                         marginEnd: 15,
                     }}>
-                    <IcOther fill='white' />
+                    <IcOthers fill='white' />
                 </TouchableOpacity>
             </View>
         ),
