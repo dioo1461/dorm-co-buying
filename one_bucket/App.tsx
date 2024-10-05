@@ -27,6 +27,8 @@ import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
 import PhoneAuth1 from '@/screens/setting/PhoneAuth1'
 import PhoneAuth2 from '@/screens/setting/PhoneAuth2'
 import PhoneAuth3 from '@/screens/setting/PhoneAuth3'
+import ChangePw from '@/screens/setting/ChangePw'
+import ChangePw2 from '@/screens/setting/ChangePw2'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import Announcement from '@/screens/setting/Announcement'
 import Support from '@/screens/setting/Support'
@@ -35,6 +37,8 @@ import Login from '@/screens/auth/Login'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
+import NewPw from '@/screens/auth/NewPw'
+import NewPw2 from '@/screens/auth/NewPw2'
 import Chat from '@/screens/chat/Chat'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
@@ -251,9 +255,20 @@ function App(): React.JSX.Element {
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
+                            name={strings.changePwScreenName}
+                            component={ChangePw}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name={strings.changePw2ScreenName}
+                            component={ChangePw2}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
                             name={strings.alertSettingScreenName}
                             component={AlertSetting}
                             options={{
+                                title: strings.alertSettingScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -280,6 +295,7 @@ function App(): React.JSX.Element {
                             name={strings.announcementScreenName}
                             component={Announcement}
                             options={{
+                                title: strings.announcementScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -306,6 +322,7 @@ function App(): React.JSX.Element {
                             name={strings.supportScreenName}
                             component={Support}
                             options={{
+                                title: strings.supportScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -332,6 +349,7 @@ function App(): React.JSX.Element {
                             name={strings.versionCheckScreenName}
                             component={VersionCheck}
                             options={{
+                                title: strings.versionCheckScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -429,6 +447,7 @@ function App(): React.JSX.Element {
                             name={strings.notificationScreenName}
                             component={Notification}
                             options={{
+                                title: strings.notificationScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -478,6 +497,14 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.signUp7ScreenName}
                             component={SignUp7}
+                        />
+                        <Stack.Screen
+                            name={strings.newPwScreenName}
+                            component={NewPw}
+                        />
+                        <Stack.Screen
+                            name={strings.newPw2ScreenName}
+                            component={NewPw2}
                         />
                     </Stack.Navigator>
                 </NavigationContainer>

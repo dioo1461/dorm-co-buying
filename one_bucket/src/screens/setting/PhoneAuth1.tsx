@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { PhoneRequestBody } from '@/data/request/SignUpRequestBody'
-import { postPhoneForm, requestPhone } from '@/apis/authService'
+// import { postPhoneForm, requestPhone } from '@/apis/authService'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 
 const PhoneAuth1: React.FC = (): React.JSX.Element => {

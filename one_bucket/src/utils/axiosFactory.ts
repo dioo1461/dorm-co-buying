@@ -9,6 +9,7 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
             'Content-Type': 'application/json;charset=UTF-8',
         },
         baseURL: BASE_URL,
+        // baseURL: "http://192.168.250.104:8080",
         ...options,
     })
 }
@@ -20,19 +21,20 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
  */
 export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
     const token = await getAccessToken();
-    console.log(token)
+    // console.log(token)
     const authAxios = axios.create({
         headers: { Authorization: `Bearer ${token}` },
         baseURL: BASE_URL,
+        // baseURL: "http://192.168.250.104:8080",
         ...options,
     })
     authAxios.interceptors.request.use(
         (config) => {
-            console.log('Request config: ' + config.baseURL + config.url)
+            // console.log('Request config: ' + config.baseURL + config.url)
             return config
         },
         (error) => {
-            console.log('Request Error: ' + error)
+            // console.log('Request Error: ' + error)
             return error
         } 
     )

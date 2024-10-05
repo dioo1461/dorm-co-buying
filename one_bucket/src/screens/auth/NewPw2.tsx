@@ -22,7 +22,7 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
-const SchoolAuth3: React.FC = (): React.JSX.Element => {
+const NewPw2: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -60,16 +60,16 @@ const SchoolAuth3: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <Text style={{fontSize: 30}}>
-                학교 인증이 완료되었습니다!
+            <Text style={styles.subtitle}>
+                {`새로운 비밀번호로 변경되었습니다!\n메일을 확인해 보세요.`}
             </Text>
             <TouchableOpacity 
                 style={styles.button}
                 onPress = {() => {
                     onPressBackBtn(false)
-                    navigation.pop(3)}
+                    navigation.pop(2)}
                 }>
-                <Text style={styles.buttonText}>설정 화면으로 돌아가기</Text>
+                <Text style={styles.buttonText}>다시 로그인하기</Text>
             </TouchableOpacity>
         </View>
     )
@@ -82,6 +82,13 @@ const CreateStyles = (theme: Icolor) =>
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        subtitle: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 20,
+            fontFamily: 'NanumGothic',
+            lineHeight: 24,
+            textAlign: 'center',
         },
         button:{
             height: 50,
@@ -98,4 +105,4 @@ const CreateStyles = (theme: Icolor) =>
         }
     })
 
-export default SchoolAuth3
+export default NewPw2

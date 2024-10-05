@@ -16,13 +16,16 @@ const strings = {
     notificationScreenName: 'Notification',
 
     loginScreenName: 'Login',
+    /*
     signUp1ScreenName: 'SignUp',
     signUp2ScreenName: 'SignUp2',
     signUp3ScreenName: 'SignUp3',
-    signUp4ScreenName: 'SignUp4',
+    signUp4ScreenName: 'SignUp4', */
     signUp5ScreenName: 'SignUp5',
     signUp6ScreenName: 'SignUp6',
     signUp7ScreenName: 'SignUp7',
+    newPwScreenName: 'NewPw',
+    newPw2ScreenName: 'NewPw2',
 
     postGroupPurchaseScreenName: 'PostGroupPurchase',
     profileDetailsScreenName: 'ProfileDetails',
@@ -35,6 +38,8 @@ const strings = {
     phoneAuth1ScreenName: 'PhoneAuth1',
     phoneAuth2ScreenName: 'PhoneAuth2',
     phoneAuth3ScreenName: 'PhoneAuth3',
+    changePwScreenName: 'ChangePw',
+    changePw2ScreenName: 'ChangePw2',
     alertSettingScreenName: 'AlertSetting',
     announcementScreenName: 'Announcement',
     supportScreenName: 'Support',
@@ -57,7 +62,11 @@ const strings = {
 
     settingScreenTitle: '설정',
     // searchScreenTitle: '검색',
-    // notificationScreenTitle: '알림',
+    notificationScreenTitle: '알림',
+    alertSettingScreenTitle: '알림 수신 설정',
+    announcementScreenTitle: '공지사항',
+    supportScreenTitle: '개발자 문의',
+    versionCheckScreenTitle: '버전 정보',
 
     postGroupPurchaseScreenTitle: '공동구매 글 작성',
     // profileDetailsScreenTitle: 'ProfileDetails',
@@ -84,4 +93,6 @@ export const signUpErrorMessage = {
     unappropriateNickname: '닉네임에 적절하지 못한 단어가 포함되어 있어요.',
 
     duplicatedEmailOrNickname: '중복된 이메일 또는 닉네임이 존재해요.',
+
+    wrongPassword: '비밀번호가 일치하지 않아요.'
 }

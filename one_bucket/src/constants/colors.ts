@@ -1,6 +1,6 @@
 const schoolColors = {
     HONGIK_NAVY: '#002c62',
-    HONGIK_LIGHT_NAVY: '#285792',
+    HONGIK_LIGHT_NAVY: '#3e82d6', //'#285792',
     HONGIK_DARK_NAVY: '#001f4d',
     HONGIK_TEXT: '#FFFFFF',
 }

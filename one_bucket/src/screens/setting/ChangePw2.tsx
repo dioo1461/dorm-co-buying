@@ -22,7 +22,7 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
-const SchoolAuth3: React.FC = (): React.JSX.Element => {
+const ChangePw2: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -61,13 +61,13 @@ const SchoolAuth3: React.FC = (): React.JSX.Element => {
     return (
         <View style={styles.container}>
             <Text style={{fontSize: 30}}>
-                학교 인증이 완료되었습니다!
+                비밀번호가 변경되었습니다!
             </Text>
             <TouchableOpacity 
                 style={styles.button}
                 onPress = {() => {
                     onPressBackBtn(false)
-                    navigation.pop(3)}
+                    navigation.pop(2)}
                 }>
                 <Text style={styles.buttonText}>설정 화면으로 돌아가기</Text>
             </TouchableOpacity>
@@ -98,4 +98,4 @@ const CreateStyles = (theme: Icolor) =>
         }
     })
 
-export default SchoolAuth3
+export default ChangePw2

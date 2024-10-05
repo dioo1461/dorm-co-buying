@@ -229,7 +229,7 @@ const Board: React.FC = (): JSX.Element => {
         )
 
         const boardId = boardListData
-            ? boardListData[currentBoardIndex].id
+            ? boardListData[currentBoardIndex]?.id // ? boardListData[currentBoardIndex].id
             : null
 
         const {

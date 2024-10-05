@@ -7,8 +7,24 @@ export interface SchoolAuthRequestBody {
     universityEmail: string
 }
 
+export interface CodeValRequestBody {
+    university: string
+    universityEmail: string
+    verifiedCode: string
+}
+
 export interface SignUpRequestBody {
     username: string
     password: string
     nickname: string
+}
+
+export interface NewPwRequestBody {
+    username: string
+    email: string
+}
+
+export interface ChangePwRequestBody {
+    oldpassword: string
+    newpassword: string
 }

@@ -6,6 +6,7 @@ import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useRef, useState } from 'react'
 import {
+    Alert,
     Appearance,
     Keyboard,
     StyleSheet,
@@ -14,12 +15,15 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
+import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
+import { postSchoolForm } from '@/apis/authService'
 import { CodeValRequestBody } from '@/data/request/signUpRequestBody'
-import { postCodeForm, requestSchool } from '@/apis/authService'
+import { postCodeForm } from '@/apis/authService'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 
 const SchoolAuth2: React.FC = (): React.JSX.Element => {
@@ -44,11 +48,6 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
 
-    const dummyVerificationCode = '000000'
-    const rightVerificationCode = {
-
-    } // 진짜 인증코드
-
     type SchoolAuth2RouteProp = RouteProp<RootStackParamList, 'SchoolAuth2'>
     const { params } = useRoute<SchoolAuth2RouteProp>()
 
@@ -56,6 +55,17 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
     const [nextIndex, setNextIndex] = useState(0)
+    const [count, setCount] = useState(300)
+
+    useEffect(() => {
+        const id = setInterval(() => {
+          setCount(count => count - 1); 
+        }, 1000);
+        if(count === 0){
+          clearInterval(id);
+        }
+        return () => clearInterval(id);
+      }, [count]);
 
     useEffect(() => {
         // 키패드 팝업이 되지 않는 문제를 해결하기 위해, 렌더링이 완료된 후
@@ -85,18 +95,19 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                 })
             refreshCodeInput()
             Keyboard.dismiss()
-            {/*
-            if (verificationCode.join('') === dummyVerificationCode) {
-                refreshCodeInput()
-                Keyboard.dismiss()
-                navigation.navigate('SchoolAuth3')
-            } else {
-                refreshCodeInput()
-                onSchoolEmailVerificationFailure()
-            }
-            */}
         }
     }, [nextIndex, verificationCode])
+
+    const infoWithTimer = (time: number) => {
+        const min = Math.floor(time/60)
+        const sec = time % 60
+        if(time==0) Alert.alert('인증 코드가 만료되었습니다. 다시 발급받아 보세요.')
+        return (
+            <Text style={{color: count<=30 ? "red" : ''}}>
+                {`인증 코드 입력 (${min}:${String(sec).padStart(2,"0")})`}
+            </Text>
+        )
+    }
 
     const refreshCodeInput = () => {
         inputRef.current.map(input => {
@@ -104,10 +115,19 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
             verificationCode.fill('')
         })
         inputRef.current[0]?.focus()
-    }
 
-    const handleCodeVerification = () => {
-        // TODO : 인증번호 발송 API 호출
+        const form: SchoolAuthRequestBody = {
+            university: params.schoolName,
+            universityEmail: params.schoolEmail,
+        }
+        postSchoolForm(form)
+            .then(res => {
+                Toast.show({ text1: '인증 코드를 재발급했습니다.' })
+                setCount(300)
+            })
+            .catch(err => {
+                console.log(`refreshCodeInput - submitSignUpForm: ${err}`)
+            })
     }
 
     const maskSchoolEmail = (schoolEmail: string) => {
@@ -140,7 +160,9 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                 <Text style={styles.infoText}>
                     이메일로 발송된 인증 코드를 입력해 주세요.
                 </Text>
-                <Text style={styles.inputLabel}>인증 코드 입력</Text>
+                <Text style={styles.inputLabel}>
+                    {infoWithTimer(count)}
+                </Text>
                 <View style={styles.codeInputContainer}>
                     {Array(6)
                         .fill(0)
@@ -173,9 +195,10 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                         인증 코드 재발송
                     </Text>
                 </TouchableOpacity>
+                {/*
                 <Text style={styles.infoText}>
                     30초 후에 다시 시도해 주세요.
-                </Text>
+                </Text> */}
             </View>
         </View>
     )

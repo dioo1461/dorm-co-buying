@@ -1,4 +1,4 @@
-import { GetMemberInfoResponse } from '@/data/response/GetMemberInfoResponse'
+import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
 import { StateCreator } from 'zustand'
 
 export interface ProfileSlice {

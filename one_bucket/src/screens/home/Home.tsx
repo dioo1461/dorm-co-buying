@@ -15,13 +15,15 @@ import { stackNavigation } from '../navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Home: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        onLogOut: state.onLogOut,
     }))
 
     // 다크모드 변경 감지
     useEffect(() => {
+        // onLogOut()
         const themeSubscription = Appearance.addChangeListener(
             ({ colorScheme }) => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)

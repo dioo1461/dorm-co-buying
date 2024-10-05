@@ -5,8 +5,10 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 import React, { useEffect, useRef } from 'react'
 import {
+    Alert,
     Appearance,
     Image,
+    Modal,
     StyleSheet,
     Text,
     TextInput,
@@ -66,6 +68,11 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const handleGoogleLogin = () => {}
 
+    const [easterEgg, setEE] = React.useState(10)
+    const [eeVisible, setEEVisible] = React.useState(false)
+    const openEE = () => { setEEVisible(true); }
+    const closeEE = () => { setEEVisible(false); }
+
     return (
         <View style={[styles.container]}>
             <View
@@ -75,11 +82,32 @@ const Login: React.FC = (): React.JSX.Element => {
                     alignItems: 'center',
                     marginBottom: 50,
                 }}>
-                <Image
-                    source={require('@/assets/drawable/login_logo.png')}
-                    style={styles.logoImage}
-                />
+                <TouchableOpacity 
+                    onPress={()=>{
+                        setEE(easterEgg => easterEgg -1 )
+                        if(easterEgg == 1) {
+                            setEEVisible(true)
+                            setEE(10)
+                        }
+                    }}
+                    activeOpacity={1}>
+                    <Image
+                        source={require('@/assets/drawable/login_logo.png')}
+                        style={styles.logoImage}
+                    />
+                </TouchableOpacity>
             </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={eeVisible}
+                onRequestClose={closeEE}>
+                    <View style={{alignItems: 'center'}}>
+                        <Image
+                            source={require('@/assets/drawable/mungmoonge.jpg')}
+                        />
+                    </View>
+            </Modal>
             <View
                 style={{
                     flex: 5,
@@ -137,7 +165,8 @@ const Login: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.linkTextContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={()=>{navigation.navigate('NewPw')}}>
                         <Text style={styles.linkText}>
                             비밀번호를 잊으셨나요?
                         </Text>
@@ -212,13 +241,13 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 10,
         },
         signUpButton: {
-            backgroundColor: theme.BUTTON_SECONDARY_BG,
+            backgroundColor: baseColors.SCHOOL_BG_LIGHT,
             padding: 18,
             alignItems: 'center',
             borderRadius: 5,
         },
         signUpButtonText: {
-            color: theme.BUTTON_SECONDARY_TEXT,
+            color: theme.BUTTON_TEXT,
             fontSize: 14,
             fontFamily: 'NanumGothic',
         },

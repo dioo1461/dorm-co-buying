@@ -19,10 +19,7 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
-import {
-    queryGetMemberInfo,
-    queryGetProfile,
-} from '@/hooks/useQuery/profileQuery'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const CIRCLE_SIZE = 30
@@ -68,13 +65,13 @@ const Setting: React.FC = (): React.JSX.Element => {
     const closeDelID = () => { setDelIDVisible(false); }
 
     const { data, isLoading, error } = queryGetMemberInfo()
-
+    
     const authCompletedText = (school: any) => {
         if(school == 'null') return (
             <View>
                 <Text style={{
                     ...styles.contextLabel,
-                    paddingHorizontal: 10,
+                    paddingHorizontal: 5,
                     color: 'red',
                 }}>미완료</Text>
             </View>
@@ -83,10 +80,9 @@ const Setting: React.FC = (): React.JSX.Element => {
             <View style={{flexDirection: "row"}}>
                 <Text style={{
                     ...styles.contextLabel,
-                    paddingHorizontal: 10,
+                    paddingHorizontal: 5,
                     color: 'dodgerblue',
-                }}>완료</Text>
-                <Text style={styles.contextLabel}>{'('+school+')'}</Text>
+                }}>{`완료 (${school})`}</Text>
             </View>
         )
     }
@@ -129,6 +125,7 @@ const Setting: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View>
+                    <Text style={styles.subjectLabel}>계정</Text>
                     <View style={{...styles.authContainer,
                         backgroundColor: (data?.university == 'null') ? 
                         "rgba(255, 0, 0, 0.2)" : themeColor.BG
@@ -140,7 +137,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                             <Text style={styles.contextLabel}>학교 인증</Text>
                             {authCompletedText(data?.university)}
                         </TouchableOpacity>
-                        {/*
+                        {/* 휴대폰 인증?
                         <TouchableOpacity 
                             style={{...styles.contextContainer, flexDirection: "row"}}
                             onPress={() => {
@@ -152,6 +149,66 @@ const Setting: React.FC = (): React.JSX.Element => {
                         </TouchableOpacity>
                         */}
                     </View>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={() => navigation.navigate('ChangePw')}    
+                        >
+                        <Text style={styles.contextLabel}>비밀번호 변경</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.contextContainer}
+                        onPress={openLogout}>
+                        <Text style={styles.contextLabel}>로그아웃</Text>
+                    </TouchableOpacity>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={logoutVisible}
+                        onRequestClose={closeLogout}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text>정말 로그아웃 하시겠습니까?</Text>
+                                <View style={{flexDirection: "row"}}>
+                                    <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
+                                        <Text>예</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
+                                        <Text>아니오</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+                    <TouchableOpacity 
+                        style={styles.contextContainer}
+                        onPress={openDelID}>
+                        <Text
+                            style={[
+                                styles.contextLabel,
+                                { color: baseColors.RED },
+                            ]}>
+                            회원탈퇴
+                        </Text>
+                    </TouchableOpacity>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={delIDVisible}
+                        onRequestClose={closeDelID}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
+                                <View style={{flexDirection: "row"}}>
+                                    <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
+                                        <Text>예</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
+                                        <Text>아니오</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                     <View style={styles.line} />
                     <Text style={styles.subjectLabel}>알림 설정</Text>
                     <TouchableOpacity 
@@ -314,63 +371,6 @@ const Setting: React.FC = (): React.JSX.Element => {
                         <Text style={styles.contextLabel}>버전 정보</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.line} />
-                <View>
-                    <TouchableOpacity
-                        style={styles.contextContainer}
-                        onPress={openLogout}>
-                        <Text style={styles.contextLabel}>로그아웃</Text>
-                    </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={logoutVisible}
-                        onRequestClose={closeLogout}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text>정말 로그아웃 하시겠습니까?</Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text>예</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                    <TouchableOpacity 
-                        style={styles.contextContainer}
-                        onPress={openDelID}>
-                        <Text
-                            style={[
-                                styles.contextLabel,
-                                { color: baseColors.RED },
-                            ]}>
-                            회원탈퇴
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={delIDVisible}
-                        onRequestClose={closeDelID}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
-                                        <Text>예</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                </View>
             </ScrollView>
             
         </View>
@@ -387,7 +387,6 @@ const createStyles = (theme: Icolor) =>
         },
         authContainer: {
             flex: 1,
-            paddingHorizontal: 8,
             borderRadius: 8,
         },
         backButtonImage: {
