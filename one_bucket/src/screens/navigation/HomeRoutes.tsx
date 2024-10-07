@@ -1,12 +1,7 @@
-import { darkColors, lightColors } from '@/constants/colors'
-import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import React, { useEffect } from 'react'
-import { Appearance } from 'react-native'
-import HomeTab from './HomeTab'
 import strings from '@/constants/strings'
-import Home from '../home/Home'
-import Board from '../home/Board'
-import GroupPurchase from '../home/GroupPurchase'
+import Board from '@/screens/home/Board'
+import Home from '@/screens/home/Home'
+import Market from '@/screens/home/Market'
 
 export const homeRoutes = [
     {
@@ -15,14 +10,14 @@ export const homeRoutes = [
         component: Home,
     },
     {
-        name: strings.groupPurchaseScreenName,
-        title: strings.groupPurchaseScreenTitle,
-        component: GroupPurchase,
+        name: strings.marketScreenName,
+        title: strings.marketScreenTitle,
+        component: Market,
     },
     {
         name: strings.tradeScreenName,
         title: strings.tradeScreenTitle,
-        component: GroupPurchase,
+        component: Market,
     },
     {
         name: strings.boardScreenName,

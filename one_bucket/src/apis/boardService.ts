@@ -10,6 +10,19 @@ import { createAuthAxios } from '@/utils/axiosFactory'
  * @returns: 요청 성공시 true, 요청 실패시 false 반환
  */
 
+export const getBoardList = async (): Promise<GetBoardListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get('/board/list')
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getBoardList - ' + error)
+            throw error
+        })
+}
+
 export const createBoardPost = async (
     data: CreateBoardPostRequestBody,
 ): Promise<CreateBoardPostRequestBody> => {
@@ -68,19 +81,6 @@ export const getBoardPostList = async (
             console.log('getBoardPost - ' + error)
             // console.log(error.response)
 
-            throw error
-        })
-}
-
-export const getBoardList = async (): Promise<GetBoardListResponse> => {
-    const authAxios = await createAuthAxios()
-    return authAxios
-        .get('/board/list')
-        .then(response => {
-            return response.data
-        })
-        .catch(error => {
-            console.log('getBoardList - ' + error)
             throw error
         })
 }

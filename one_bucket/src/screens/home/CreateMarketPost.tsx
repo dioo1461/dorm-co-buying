@@ -1,7 +1,9 @@
+import { createMarketPost } from '@/apis/marketService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
@@ -23,10 +25,11 @@ import {
     launchImageLibrary,
 } from 'react-native-image-picker'
 
-const PostGroupPurchase: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+const CreateMarketPost: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        boardList: state.boardList,
     }))
 
     // 다크모드 변경 감지
@@ -44,7 +47,7 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
-    const [item, setItem] = useState('')
+    const [itemName, setItemName] = useState('')
     const [price, setPrice] = useState('')
     const [totalAmount, setTotalAmount] = useState('')
     const [peopleCount, setPeopleCount] = useState<number | null>(null)
@@ -98,6 +101,53 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
         requestAnimationFrame(() => {
             deadlineManualInputRef.current?.focus()
         })
+    }
+
+    const findMarketBoardId = () => {
+        const marketBoard = boardList.find(board => board.type === 'marketPost')
+        if (marketBoard) {
+            console.log(marketBoard.id)
+            return marketBoard.id
+        }
+        throw new Error('CreateMarketPost - Market board not found')
+    }
+
+    const onSubmit = async () => {
+        const form: CreateMarketPostRequestBody = {
+            boardId: findMarketBoardId(),
+            title: itemName,
+            text: descriptionTextInput,
+            item: itemName,
+            wanted: Number(totalAmount),
+            price: Number(price),
+            count: peopleCount ?? 0,
+            // TODO: 지도에 마커 찍어서 위치 선택하도록 구현
+            location: '서울시 강남구',
+            linkUrl: siteLink,
+            // TODO: 태그 선택 구현
+            tag: '신선식품',
+            dueDays: deadline ?? -1,
+        }
+
+        createMarketPost(form)
+            .then(res => {
+                navigation.goBack()
+            })
+            .catch(err => {
+                console.log(`createMarketPost error - ${err}`)
+            })
+    }
+
+    const checkFormAvailable = () => {
+        return (
+            // TODO: 장소도 추가
+            // imageUriList.length > 0 &&
+            itemName.length > 0 &&
+            price.length > 0 &&
+            totalAmount.length > 0 &&
+            peopleCount !== null &&
+            deadline !== null
+        )
     }
 
     return (
@@ -169,8 +219,8 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                     style={styles.textInput}
                     placeholder='품목명'
                     placeholderTextColor={themeColor.TEXT_TERTIARY}
-                    value={item}
-                    onChangeText={setItem}
+                    value={itemName}
+                    onChangeText={setItemName}
                 />
 
                 {/* ### 가격 ### */}
@@ -410,7 +460,17 @@ const PostGroupPurchase: React.FC = (): React.JSX.Element => {
                     styles.postButtonContainer,
                     { bottom: keyboardHeight },
                 ]}>
-                <TouchableOpacity style={styles.postButton}>
+                <TouchableOpacity
+                    style={[
+                        styles.postButton,
+                        {
+                            backgroundColor: checkFormAvailable()
+                                ? themeColor.BUTTON_BG
+                                : themeColor.BUTTON_SECONDARY_BG_DARKER,
+                        },
+                    ]}
+                    onPress={onSubmit}
+                    disabled={!checkFormAvailable()}>
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
@@ -426,6 +486,7 @@ const createStyles = (theme: Icolor) =>
         },
         mainScrollViewContainer: {
             margin: 16,
+            marginBottom: 54,
         },
         imageScrollViewContainer: {
             height: 82,
@@ -484,6 +545,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.ACCENT_TEXT,
         },
         textInput: {
+            color: theme.TEXT,
             borderColor: baseColors.GRAY_2,
             borderWidth: 1,
             borderRadius: 8,
@@ -558,7 +620,6 @@ const createStyles = (theme: Icolor) =>
             right: 0,
         },
         postButton: {
-            backgroundColor: baseColors.SCHOOL_BG,
             padding: 20,
             alignItems: 'center',
         },
@@ -569,4 +630,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default PostGroupPurchase
+export default CreateMarketPost

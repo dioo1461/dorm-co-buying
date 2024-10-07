@@ -32,9 +32,10 @@ const FETCH_SIZE = 10
 
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        boardList: state.boardList,
     }))
 
     // 다크모드 변경 감지
@@ -63,12 +64,6 @@ const Board: React.FC = (): JSX.Element => {
     })
 
     const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
-
-    const {
-        data: boardListData,
-        isLoading: boardListIsLoading,
-        error: boardListError,
-    } = queryBoardList()
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -215,7 +210,7 @@ const Board: React.FC = (): JSX.Element => {
                 <View>
                     <View style={styles.boardTypeContainer}>
                         <Text style={styles.boardTypeLabel}>
-                            {boardListData![currentBoardIndex].name}
+                            {boardList[currentBoardIndex]?.name}
                         </Text>
                     </View>
                     <View style={styles.line} />
@@ -228,9 +223,7 @@ const Board: React.FC = (): JSX.Element => {
             <Post {...item} />
         )
 
-        const boardId = boardListData
-            ? boardListData[currentBoardIndex].id
-            : null
+        const boardId = boardList ? boardList[currentBoardIndex]?.id : null
 
         const {
             data, // 각 페이지의 데이터를 담고 있음
@@ -254,7 +247,7 @@ const Board: React.FC = (): JSX.Element => {
         if (error) return <Text>Error...</Text>
 
         if (isLoading) return <Loading theme={themeColor} />
-        const posts = data!.pages.flatMap(page => page.content)
+        const posts = data?.pages?.flatMap(page => page.content)
         return (
             <View style={styles.flatList}>
                 <FlatList
@@ -314,9 +307,6 @@ const Board: React.FC = (): JSX.Element => {
         }),
     }
 
-    if (boardListIsLoading) return <Loading theme={themeColor} />
-    if (boardListError) return <Text>Error...</Text>
-
     return (
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
@@ -354,7 +344,7 @@ const Board: React.FC = (): JSX.Element => {
                     style={styles.boardTypeSelectionContainer}
                     contentContainerStyle={styles.boardTypeSelectionContent}
                     showsVerticalScrollIndicator={false}>
-                    {boardListData!.map((boardType, index) => (
+                    {boardList!.map((boardType, index) => (
                         <TouchableNativeFeedback
                             key={index}
                             background={touchableNativeFeedbackBg()}
@@ -381,8 +371,8 @@ const Board: React.FC = (): JSX.Element => {
                 onPress={() =>
                     // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
                     navigation.navigate('BoardCreatePost', {
-                        boardName: boardListData![currentBoardIndex].name,
-                        boardId: boardListData![currentBoardIndex].id,
+                        boardName: boardList![currentBoardIndex].name,
+                        boardId: boardList![currentBoardIndex].id,
                         // refetch: refetchCallback,
                     })
                 }>

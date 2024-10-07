@@ -17,7 +17,7 @@ import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import ImageEnlargement from '@/screens/ImageEnlargement'
 import Notification from '@/screens/Notification'
 import ProfileModify from '@/screens/PofileModify'
-import PostGroupPurchase from '@/screens/PostGroupPurchase'
+import CreateMarketPost from '@/screens/home/CreateMarketPost'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Search from '@/screens/Search'
 import Setting from '@/screens/setting/Setting'
@@ -45,20 +45,21 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
-import GroupPurchasePost from '@/screens/home/GroupPurchasePost'
+import MarketPost from '@/screens/home/MarketPost'
 import { color } from 'react-native-elements/dist/helpers'
+import { getBoardList } from '@/apis/boardService'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
-    const { loginState, setLoginState, setMemberInfo } = useBoundStore(
-        state => ({
+    const { loginState, setLoginState, setMemberInfo, setBoardList } =
+        useBoundStore(state => ({
             loginState: state.loginState,
             setLoginState: state.setLoginState,
             setMemberInfo: state.setMemberInfo,
-        }),
-    )
+            setBoardList: state.setBoardList,
+        }))
 
     const themeColor = useBoundStore(state => state.themeColor)
     const setThemeColor = useBoundStore(state => state.setThemeColor)
@@ -132,6 +133,9 @@ function App(): React.JSX.Element {
                         // TODO: refreshToken으로 accessToken 갱신
                     }
                 })
+            await getBoardList().then(res => {
+                setBoardList(res)
+            })
             SplashScreen.hide()
         }
 
@@ -158,10 +162,10 @@ function App(): React.JSX.Element {
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
-                            name={strings.postGroupPurchaseScreenName}
-                            component={PostGroupPurchase}
+                            name={strings.createMarketPostScreenName}
+                            component={CreateMarketPost}
                             options={{
-                                title: strings.postGroupPurchaseScreenTitle,
+                                title: strings.createMarketPostScreenTitle,
                                 headerStyle: {
                                     backgroundColor:
                                         themeColor === lightColors
@@ -186,8 +190,8 @@ function App(): React.JSX.Element {
                             }}
                         />
                         <Stack.Screen
-                            name={strings.groupPurchasePostScreenName}
-                            component={GroupPurchasePost}
+                            name={strings.marketPostScreenName}
+                            component={MarketPost}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen

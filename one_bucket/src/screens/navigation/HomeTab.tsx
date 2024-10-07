@@ -4,9 +4,6 @@ import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { useEffect } from 'react'
 import { Appearance } from 'react-native'
-import Board from '../home/Board'
-import GroupPurchase from '../home/GroupPurchase'
-import Home from '../home/Home'
 import { homeRoutes } from './HomeRoutes'
 
 const Tab = createMaterialTopTabNavigator()
