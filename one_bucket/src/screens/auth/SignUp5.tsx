@@ -200,9 +200,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     </View>
                     <View>
                         {/* ### 이메일 입력 ### */}
-                        <Text style={styles.label}>
-                            로그인 아이디 입력
-                        </Text>
+                        <Text style={styles.label}>로그인 아이디 입력</Text>
                         <TextInput
                             style={styles.input}
                             onChangeText={handleEmailChange}

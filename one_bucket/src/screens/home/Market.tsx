@@ -40,7 +40,7 @@ type ItemProps = {
     maxParticipants: number
 }
 
-const GroupPurchase: React.FC = (): JSX.Element => {
+const Market: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -113,7 +113,7 @@ const GroupPurchase: React.FC = (): JSX.Element => {
                 <TouchableNativeFeedback
                     style={styles.postContainer}
                     background={touchableNativeFeedbackBg()}
-                    onPress={() => navigation.navigate('GroupPurchasePost')}>
+                    onPress={() => navigation.navigate('MarketPost')}>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View
                             style={[
@@ -394,4 +394,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default GroupPurchase
+export default Market

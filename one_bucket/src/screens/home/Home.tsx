@@ -138,7 +138,7 @@ const Home: React.FC = (): JSX.Element => {
             />
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => navigation.navigate('PostGroupPurchase')}>
+                onPress={() => navigation.navigate('CreateMarketPost')}>
                 <Text style={styles.fabIcon}>+</Text>
             </TouchableOpacity>
         </View>

@@ -2,8 +2,8 @@ const strings = {
     // navigation screen names
     homeRouteScreenName: 'HomeRoute',
     homeScreenName: 'Home',
-    groupPurchaseScreenName: 'GroupPurchase',
-    groupPurchasePostScreenName: 'GroupPurchasePost',
+    marketScreenName: 'Market',
+    marketPostScreenName: 'MarketPost',
     tradeScreenName: 'Trade',
     boardScreenName: 'Board',
     boardCreatePostScreenName: 'BoardCreatePost',
@@ -28,8 +28,8 @@ const strings = {
     newPwScreenName: 'NewPw',
     newPw2ScreenName: 'NewPw2',
 
-    postGroupPurchaseScreenName: 'PostGroupPurchase',
-    // postGroupPurchasePostScreenName: '공동구매',
+    createMarketPostScreenName: 'CreateMarketPost',
+
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
 
@@ -52,7 +52,7 @@ const strings = {
     // navigation screen titles
     homeRouteScreenTitle: '한바구니',
     homeScreenTitle: '홈',
-    groupPurchaseScreenTitle: '공동구매',
+    marketScreenTitle: '공동구매',
     tradeScreenTitle: '중고거래',
     boardScreenTitle: '게시판',
     boardCreatePostScreenTitle: '게시글 작성',
@@ -70,7 +70,7 @@ const strings = {
     supportScreenTitle: '개발자 문의',
     versionCheckScreenTitle: '버전 정보',
 
-    postGroupPurchaseScreenTitle: '공동구매 글 작성',
+    createMarketPostScreenTitle: '공동구매 글 작성',
     // profileDetailsScreenTitle: 'ProfileDetails',
     // profileModifyScreenTitle: 'ProfileModify',
     // alertSettingScreenTitle: 'AlertSetting',

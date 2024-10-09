@@ -61,8 +61,8 @@ export type RootStackParamList = {
     }
 
     ProfileDetails: undefined
-    GroupPurchasePost: undefined
-    PostGroupPurchase: undefined
+    MarketPost: undefined
+    CreateMarketPost: undefined
 
     ImageEnlargement: {
         imageUriList: string[]
