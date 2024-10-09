@@ -65,8 +65,7 @@ const NewPw: React.FC = (): React.JSX.Element => {
         }
         postNewPwForm(form)
             .then(res => {
-                // Toast.show({ text1: '잠시만 기다려 주세요..' })
-                navigation.navigate('NewPw2')
+                navigation.navigate('NewPw2',{ email: myEmail})
             })
             .catch(err => {
                 console.log(`FindPw - submitSignUpForm: ${err}`)
@@ -141,8 +140,8 @@ const NewPw: React.FC = (): React.JSX.Element => {
                         },
                     styles.button,
                     ]}
-                    // onPress={handleSubmit}>
-                    onPress={()=>navigation.navigate('NewPw2')}>
+                    onPress={handleSubmit}>
+                    {/* onPress={()=>navigation.navigate('NewPw2')}> */}
                     <Text style={styles.buttonText}>새 비밀번호 발급 요청</Text>
                 </TouchableOpacity>
             </View>

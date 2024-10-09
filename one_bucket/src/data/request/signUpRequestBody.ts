@@ -25,6 +25,6 @@ export interface NewPwRequestBody {
 }
 
 export interface ChangePwRequestBody {
-    oldpassword: string
-    newpassword: string
+    oldPassword: string
+    newPassword: string
 }

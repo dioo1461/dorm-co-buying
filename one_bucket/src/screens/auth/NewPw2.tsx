@@ -4,6 +4,7 @@ import IcNotification from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useState } from 'react'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import {
     Appearance,
     BackHandler,
@@ -18,7 +19,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -58,10 +62,13 @@ const NewPw2: React.FC = (): React.JSX.Element => {
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
+    type NewPw2RouteProp = RouteProp<RootStackParamList, 'NewPw2'>
+    const { params } = useRoute<NewPw2RouteProp>()
+
     return (
         <View style={styles.container}>
             <Text style={styles.subtitle}>
-                {`새로운 비밀번호로 변경되었습니다!\n메일을 확인해 보세요.`}
+                {`새로운 비밀번호로 변경되었습니다!\n${params.email}로 보낸\n메일을 확인해 보세요.`}
             </Text>
             <TouchableOpacity 
                 style={styles.button}
@@ -87,7 +94,7 @@ const CreateStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 20,
             fontFamily: 'NanumGothic',
-            lineHeight: 24,
+            lineHeight: 30,
             textAlign: 'center',
         },
         button:{

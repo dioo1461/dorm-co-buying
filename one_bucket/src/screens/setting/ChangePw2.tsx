@@ -23,9 +23,10 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const ChangePw2: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        onLogOut: state.onLogOut,
     }))
     // 다크모드 변경 감지
     useEffect(() => {
@@ -60,16 +61,16 @@ const ChangePw2: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <Text style={{fontSize: 30}}>
-                비밀번호가 변경되었습니다!
+            <Text style={{fontSize: 25, textAlign: 'center'}}>
+                {`비밀번호가 변경되었습니다!\n새 비밀번호로 다시 로그인해 보세요.`}
             </Text>
             <TouchableOpacity 
                 style={styles.button}
                 onPress = {() => {
                     onPressBackBtn(false)
-                    navigation.pop(2)}
-                }>
-                <Text style={styles.buttonText}>설정 화면으로 돌아가기</Text>
+                    onLogOut()
+                }}>
+                <Text style={styles.buttonText}>다시 로그인하기</Text>
             </TouchableOpacity>
         </View>
     )

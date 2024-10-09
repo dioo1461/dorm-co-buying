@@ -16,7 +16,9 @@ export type RootStackParamList = {
     SignUp6: undefined
     SignUp7: undefined
     NewPw: undefined
-    NewPw2: undefined
+    NewPw2: {
+        email: string
+    }
 
     Board: {
         pendingRefresh: boolean

@@ -107,12 +107,11 @@ const ChangePw: React.FC = (): React.JSX.Element => {
         }
 
         const form: ChangePwRequestBody = {
-            oldpassword: oldPw,
-            newpassword: password,
+            oldPassword: oldPw,
+            newPassword: password,
         }
         postChangePwForm(form)
             .then(res => {
-                Toast.show({ text1: '잠시만 기다려 주세요..' })
                 navigation.navigate('ChangePw2')
             })
             .catch(err => {

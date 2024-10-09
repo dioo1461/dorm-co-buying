@@ -10,6 +10,7 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
         },
         baseURL: BASE_URL,
         // baseURL: "http://192.168.250.104:8080",
+        // baseURL: "http://jack8226.ddns.net:8080",
         ...options,
     })
 }
@@ -26,6 +27,7 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
         headers: { Authorization: `Bearer ${token}` },
         baseURL: BASE_URL,
         // baseURL: "http://192.168.250.104:8080",
+        // baseURL: "http://jack8226.ddns.net:8080",
         ...options,
     })
     authAxios.interceptors.request.use(

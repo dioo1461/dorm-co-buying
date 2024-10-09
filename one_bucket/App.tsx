@@ -140,6 +140,9 @@ function App(): React.JSX.Element {
             await getBoardList().then(res => {
                 setBoardList(res)
             })
+            .catch(error => {
+                
+            })
             SplashScreen.hide()
         }
 
