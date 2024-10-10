@@ -5,12 +5,16 @@ import IcRefridgeratedItem from '@/assets/drawable/ic-refridgerated-item.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { useEffect, useRef, useState } from 'react'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '@/screens/navigation/NativeStackNavigation'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     FlatList,
     ListRenderItem,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
@@ -18,32 +22,55 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { MarketCategory } from '@/data/MarketCategory'
+import { queryMarketPostList } from '@/hooks/useQuery/marketQuery'
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
+import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'
+import Loading from '@/components/Loading'
 
-const enum Category {
-    'none' = 0,
-    'refridgerated' = 1,
-    'frozen' = 2,
-    'disposable' = 3,
-    'others' = 4,
-}
+const FETCH_SIZE = 10
 
-type ItemProps = {
-    id: string
-    title: string
-    location: string
-    createdAt: string
-    deadline: number
-    amount: number
-    price: number
-    imageUri: string
-    participants: number
-    maxParticipants: number
-}
+// TODO: 스크롤 시 헤더 숨김 / 표시
+const categoryProps = [
+    {
+        categoryName: '기타',
+        icon: <></>,
+    },
+    {
+        categoryName: '가공식품',
+        icon: <IcFrozenItem />,
+    },
+    {
+        categoryName: '신선식품',
+        icon: <IcRefridgeratedItem />,
+    },
+    {
+        categoryName: '음료/물',
+        icon: <></>,
+    },
+    {
+        categoryName: '의약폼',
+        icon: <></>,
+    },
+    {
+        categoryName: '일회용품',
+        icon: <IcDisposableItem />,
+    },
+    {
+        categoryName: '전자기기',
+        icon: <></>,
+    },
+    {
+        categoryName: '쿠폰',
+        icon: <></>,
+    },
+]
 
 const Market: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        boardList: state.boardList,
     }))
 
     // 다크모드 변경 감지
@@ -59,46 +86,21 @@ const Market: React.FC = (): JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     const flatlistRef = useRef(null)
-    const flatlistData: ItemProps[] = [
-        {
-            id: '1',
-            title: '물티슈',
-            location: '제 2기숙사',
-            createdAt: 'createdAt1',
-            deadline: 5,
-            amount: 7,
-            price: 5600,
-            imageUri: 'imageUri',
-            participants: 3,
-            maxParticipants: 4,
-        },
-        {
-            id: '2',
-            title: '두루마리 휴지',
-            location: 'T동 3층 휴게실',
-            createdAt: 'createdAt2',
-            deadline: 4,
-            amount: 6,
-            price: 2700,
-            imageUri: 'imageUri',
-            participants: 2,
-            maxParticipants: 5,
-        },
-        {
-            id: '3',
-            title: '일회용 플라스틱 숟가락',
-            location: '제 3기숙사',
-            createdAt: 'createdAt3',
-            deadline: 1,
-            amount: 20,
-            price: 900,
-            imageUri: 'imageUri',
-            participants: 5,
-            maxParticipants: 5,
-        },
-    ]
 
-    const [currentCategory, setCurrentCategory] = useState(Category.none)
+    type MarketRouteProp = RouteProp<RootStackParamList, 'Market'>
+    const { params } = useRoute<MarketRouteProp>()
+
+    var refetchCallback: () => void
+
+    useFocusEffect(() => {
+        if (!!refetchCallback && params?.pendingRefresh) {
+            refetchCallback()
+            navigation.setParams({ pendingRefresh: false })
+        }
+    })
+
+    const [currentCategory, setCurrentCategory] =
+        useState<MarketCategory>('기타')
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -107,13 +109,87 @@ const Market: React.FC = (): JSX.Element => {
         )
     }
 
-    const Post = (data: ItemProps) => {
+    const PostFlatList: React.FC = (): JSX.Element => {
+        const [isRefreshing, setIsRefreshing] = useState(false)
+
+        const handleRefresh = async () => {
+            setIsRefreshing(true)
+            await refetch()
+            setIsRefreshing(false)
+        }
+
+        // ### 게시글 목록 flatlist ###
+        const renderItem: ListRenderItem<MarketPostReduced> = ({ item }) => (
+            <Post {...item} />
+        )
+
+        const boardId = boardList
+            ? boardList.find(board => board.type === 'marketPost')?.id
+            : undefined
+
+        const {
+            data, // 각 페이지의 데이터를 담고 있음
+            fetchNextPage, // 다음 페이지 불러오기 함수
+            hasNextPage, // 다음 페이지가 있는지 여부
+            isFetchingNextPage, // 다음 페이지 불러오는 중인지 여부
+            isLoading, // 첫 번째 페이지 로딩 여부
+            error,
+            refetch,
+        } = queryMarketPostList(
+            boardId!,
+            {
+                sortType: 'createdDate',
+                sort: 'desc',
+            },
+            FETCH_SIZE,
+            { enabled: !!boardId },
+        )
+        refetchCallback = refetch
+
+        if (error) return <Text>Error...</Text>
+
+        if (isLoading) return <Loading theme={themeColor} />
+
+        const posts = data?.pages?.flatMap(page => page.content)
+        return (
+            <View style={styles.flatList}>
+                <FlatList
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={handleRefresh}
+                        />
+                    }
+                    showsVerticalScrollIndicator={true}
+                    ref={flatlistRef}
+                    data={posts}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.postId.toString()}
+                    onEndReached={() => {
+                        if (!isFetchingNextPage && hasNextPage) fetchNextPage()
+                    }}
+                    onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
+                    // ListFooterComponent={
+                    //     isFetchingNextPage ? (
+                    //         <ActivityIndicator size='small' color='#0000ff' />
+                    //     ) : null
+                    // }
+                />
+            </View>
+        )
+    }
+
+    const Post = (data: MarketPostReduced) => {
         return (
             <View>
                 <TouchableNativeFeedback
                     style={styles.postContainer}
                     background={touchableNativeFeedbackBg()}
-                    onPress={() => navigation.navigate('MarketPost')}>
+                    onPress={() =>
+                        navigation.navigate('MarketPost', {
+                            postId: data.postId,
+                        })
+                    }>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
                         <View
                             style={[
@@ -142,18 +218,27 @@ const Market: React.FC = (): JSX.Element => {
                                     }}>
                                     <IcLocation />
                                     <Text style={styles.postLocation}>
-                                        {`${data.location}ㆍ${data.deadline}일 남음`}
+                                        {`${data.trade_location}ㆍ${Math.max(
+                                            0,
+                                            Math.ceil(
+                                                (new Date(
+                                                    data.trade_dueDate,
+                                                ).getTime() -
+                                                    new Date().getTime()) /
+                                                    (1000 * 60 * 60 * 24),
+                                            ),
+                                        )}일 남음`}
                                     </Text>
                                 </View>
                                 <View style={{ marginTop: 10 }}>
                                     <Text style={styles.postPrice}>{`${
-                                        data.amount
-                                    }개  ${data.price.toLocaleString()} 원`}</Text>
+                                        data.trade_count
+                                    }개  ${data.trade_price.toLocaleString()} 원`}</Text>
                                 </View>
                                 <View style={{ marginTop: 10 }}>
                                     <Text
                                         style={styles.postEachPrice}>{`개당 ${(
-                                        data.price / data.amount
+                                        data.trade_price / data.trade_count
                                     ).toFixed(0)} 원`}</Text>
                                 </View>
                             </View>
@@ -185,7 +270,8 @@ const Market: React.FC = (): JSX.Element => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                             }}>
-                            {data.participants < data.maxParticipants ? (
+                            {data.trade_memberIds.length + 1 <
+                            data.trade_wanted ? (
                                 <View
                                     style={{
                                         backgroundColor: themeColor.BUTTON_BG,
@@ -221,7 +307,9 @@ const Market: React.FC = (): JSX.Element => {
                                 </View>
                             )}
                             <Text style={styles.postParticipants}>
-                                {`${data.participants} / ${data.maxParticipants}명`}
+                                {`${data.trade_memberIds.length + 1} / ${
+                                    data.trade_wanted
+                                }명`}
                             </Text>
                         </View>
                         <View style={styles.line} />
@@ -232,17 +320,13 @@ const Market: React.FC = (): JSX.Element => {
         )
     }
 
-    const handleCategorySelect = (category: Category) => {
+    const handleCategorySelect = (category: MarketCategory) => {
         if (currentCategory === category) {
-            setCurrentCategory(Category.none)
+            setCurrentCategory(category)
             return
         }
         setCurrentCategory(category)
     }
-
-    const renderItem: ListRenderItem<ItemProps> = ({ item }) => (
-        <Post {...item} />
-    )
 
     return (
         <View style={styles.container}>
@@ -251,69 +335,29 @@ const Market: React.FC = (): JSX.Element => {
                 horizontal
                 contentContainerStyle={{ flexGrow: 1 }}
                 showsHorizontalScrollIndicator={false}>
-                <TouchableOpacity
-                    style={[
-                        styles.categoryButton,
-                        currentCategory === Category.refridgerated
-                            ? styles.selectedCategoryButton
-                            : styles.unselectedCategoryButton,
-                    ]}
-                    onPress={() =>
-                        handleCategorySelect(Category.refridgerated)
-                    }>
-                    <IcRefridgeratedItem fill={themeColor.TEXT} />
-                    <Text style={styles.categoryText}>냉장식품</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[
-                        styles.categoryButton,
-                        currentCategory === Category.frozen
-                            ? styles.selectedCategoryButton
-                            : styles.unselectedCategoryButton,
-                    ]}
-                    onPress={() => handleCategorySelect(Category.frozen)}>
-                    <IcFrozenItem fill={themeColor.TEXT} />
-                    <Text style={styles.categoryText}>냉동식품</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[
-                        styles.categoryButton,
-                        currentCategory === Category.disposable
-                            ? styles.selectedCategoryButton
-                            : styles.unselectedCategoryButton,
-                    ]}
-                    onPress={() => handleCategorySelect(Category.disposable)}>
-                    <IcDisposableItem fill={themeColor.TEXT} />
-                    <Text style={styles.categoryText}>일회용품</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[
-                        {
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginVertical: 8,
-                            marginStart: 10,
-                            borderRadius: 30,
-                            backgroundColor: baseColors.GRAY_2,
-                            paddingHorizontal: 24,
-                        },
-                        currentCategory === Category.others
-                            ? styles.selectedCategoryButton
-                            : styles.unselectedCategoryButton,
-                    ]}
-                    onPress={() => handleCategorySelect(Category.others)}>
-                    <Text style={styles.categoryText}>기타</Text>
-                </TouchableOpacity>
+                {categoryProps.map((value, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={[
+                            styles.categoryButton,
+                            currentCategory === value.categoryName
+                                ? styles.selectedCategoryButton
+                                : styles.unselectedCategoryButton,
+                        ]}
+                        onPress={() =>
+                            handleCategorySelect(
+                                value.categoryName as MarketCategory,
+                            )
+                        }>
+                        {value.icon}
+                        <Text style={styles.categoryText}>
+                            {value.categoryName}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
             </ScrollView>
             <View style={styles.flatList}>
-                <FlatList
-                    showsVerticalScrollIndicator={false}
-                    ref={flatlistRef}
-                    data={flatlistData}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                />
+                <PostFlatList />
             </View>
         </View>
     )

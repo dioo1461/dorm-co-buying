@@ -19,22 +19,21 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
  * @returns An instance of Axios with authentication headers.
  */
 export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
-    const token = await getAccessToken();
-    console.log(token)
+    const token = await getAccessToken()
     const authAxios = axios.create({
         headers: { Authorization: `Bearer ${token}` },
         baseURL: BASE_URL,
         ...options,
     })
     authAxios.interceptors.request.use(
-        (config) => {
+        config => {
             console.log('Request config: ' + config.baseURL + config.url)
             return config
         },
-        (error) => {
+        error => {
             console.log('Request Error: ' + error)
             return error
-        } 
+        },
     )
     authAxios.interceptors.response.use(
         response => {

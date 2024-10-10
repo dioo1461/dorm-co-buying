@@ -133,9 +133,13 @@ function App(): React.JSX.Element {
                         // TODO: refreshToken으로 accessToken 갱신
                     }
                 })
-            await getBoardList().then(res => {
-                setBoardList(res)
-            })
+            await getBoardList()
+                .then(res => {
+                    setBoardList(res)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
             SplashScreen.hide()
         }
 

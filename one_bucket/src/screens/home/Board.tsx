@@ -247,6 +247,7 @@ const Board: React.FC = (): JSX.Element => {
         if (error) return <Text>Error...</Text>
 
         if (isLoading) return <Loading theme={themeColor} />
+        
         const posts = data?.pages?.flatMap(page => page.content)
         return (
             <View style={styles.flatList}>

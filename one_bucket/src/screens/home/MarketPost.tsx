@@ -16,9 +16,18 @@ import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcShare from '@/assets/drawable/ic-share.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import { TouchableOpacity } from 'react-native'
-import { stackNavigation } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
+import Loading from '@/components/Loading'
+import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
+
+// link preview 보안 문제 ?
 
 const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
     Dimensions.get('window').width,
@@ -46,6 +55,13 @@ const MarketPost: React.FC = (): JSX.Element => {
 
     const [imageUriList, setImageUriList] = useState<string[]>(['1', '2'])
 
+    type MarketPostRouteProp = RouteProp<RootStackParamList, 'MarketPost'>
+    const { params } = useRoute<MarketPostRouteProp>()
+
+    const { data, isLoading, error } = queryMarketPost(params.postId)
+
+    const [metaData, setMetaData] = useState<any>(null)
+
     const scrollY = useRef(new Animated.Value(0)).current
 
     const headerOpacity = scrollY.interpolate({
@@ -58,6 +74,26 @@ const MarketPost: React.FC = (): JSX.Element => {
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false },
     )
+
+    useEffect(() => {
+        const parseMetaData = async (url: string) => {
+            OpenGraphParser.extractMeta(url)
+                .then(data => {
+                    console.log(data)
+                    setMetaData(data)
+                })
+                .catch(error => {
+                    console.log('error occurred while parsing url -' + error)
+                })
+        }
+
+        if (data?.trade_linkUrl) {
+            parseMetaData(data.trade_linkUrl)
+        }
+    }, [])
+
+    if (error) return <Text>Error...</Text>
+    if (isLoading) return <Loading theme={themeColor} />
 
     return (
         <View style={styles.container}>
@@ -83,42 +119,48 @@ const MarketPost: React.FC = (): JSX.Element => {
                 <View style={styles.profileContainer}>
                     {/* TODO: 프로필 사진 */}
                     <View></View>
-                    <Text style={styles.usernameText}>user0123</Text>
+                    <Text style={styles.usernameText}>
+                        {data?.authorNickname}
+                    </Text>
                 </View>
                 {/* ### 본문 ### */}
                 <View style={styles.bodyContainer}>
-                    <Text style={styles.titleText}>물티슈</Text>
-                    <Text style={styles.metadataText}>2시간 전ㆍ일회용품</Text>
-                    <Text style={styles.contentText}>물티슈입니다.</Text>
-                    {/* ### 사이트 링크 썸네일 ### */}
-                    <TouchableNativeFeedback
-                        background={TouchableNativeFeedback.Ripple(
-                            baseColors.GRAY_2,
-                            false,
-                        )}>
-                        <View style={styles.hyperlinkContainer}>
-                            <View
-                                style={{
-                                    width: 112,
-                                    height: 112,
-                                    backgroundColor: 'white',
-                                }}></View>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    padding: 10,
-                                    justifyContent: 'space-between',
-                                }}>
-                                <Text style={styles.hyperlinkTitleText}>
-                                    한스웰 H2O 초순수 저자극 물티슈 캡형 -
-                                    물티슈 | 쿠팡
-                                </Text>
-                                <Text style={styles.hyperlinkUrlText}>
-                                    www.coupang.com
-                                </Text>
+                    <Text style={styles.titleText}>{data?.title}</Text>
+                    <Text
+                        style={
+                            styles.metadataText
+                        }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
+                    <Text style={styles.contentText}>{data?.text}</Text>
+                    {/* ### 사이트 링크 프리뷰 ### */}
+                    {data?.trade_linkUrl && (
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple(
+                                baseColors.GRAY_2,
+                                false,
+                            )}>
+                            <View style={styles.linkPreviewContainer}>
+                                <View
+                                    style={{
+                                        width: 112,
+                                        height: 112,
+                                        backgroundColor: 'white',
+                                    }}></View>
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        padding: 10,
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <Text style={styles.linkPreviewTitleText}>
+                                        {metaData?.title}
+                                    </Text>
+                                    <Text style={styles.linkPreviewUrlText}>
+                                        {metaData?.url}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                    </TouchableNativeFeedback>
+                        </TouchableNativeFeedback>
+                    )}
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
@@ -229,7 +271,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             marginBottom: 20,
         },
-        hyperlinkContainer: {
+        linkPreviewContainer: {
             backgroundColor:
                 theme === lightColors ? baseColors.WHITE : baseColors.GRAY_1,
             flexDirection: 'row',
@@ -238,12 +280,12 @@ const createStyles = (theme: Icolor) =>
             elevation: 3,
             marginBottom: 20,
         },
-        hyperlinkTitleText: {
+        linkPreviewTitleText: {
             color: theme.TEXT,
             fontFamily: 'NanumGothic',
             fontSize: 14,
         },
-        hyperlinkUrlText: {
+        linkPreviewUrlText: {
             color: theme.TEXT_SECONDARY,
             fontFamily: 'NanumGothic',
             fontSize: 12,
