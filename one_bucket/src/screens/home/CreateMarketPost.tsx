@@ -114,19 +114,23 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
 
     const onSubmit = async () => {
         const form: CreateMarketPostRequestBody = {
-            boardId: findMarketBoardId(),
-            title: itemName,
-            text: descriptionTextInput,
-            item: itemName,
-            wanted: Number(totalAmount),
-            price: Number(price),
-            count: peopleCount ?? 0,
-            // TODO: 지도에 마커 찍어서 위치 선택하도록 구현
-            location: '서울시 강남구',
-            linkUrl: siteLink,
-            // TODO: 태그 선택 구현
-            tag: '신선식품',
-            dueDays: deadline ?? -1,
+            marketPostCreateDto: {
+                boardId: findMarketBoardId(),
+                title: itemName,
+                text: descriptionTextInput,
+            },
+            tradeCreateDto: {
+                item: itemName,
+                wanted: Number(totalAmount),
+                price: Number(price),
+                count: peopleCount ?? 0,
+                // TODO: 지도에 마커 찍어서 위치 선택하도록 구현
+                location: '서울시 강남구',
+                linkUrl: siteLink,
+                // TODO: 태그 선택 구현
+                tag: '신선식품',
+                dueDays: deadline ?? -1,
+            },
         }
 
         createMarketPost(form)

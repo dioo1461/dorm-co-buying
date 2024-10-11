@@ -20,6 +20,13 @@ export type RootStackParamList = {
         email: string
     }
 
+    Market: {
+        pendingRefresh: boolean
+    }
+    MarketPost: {
+        postId: number
+    }
+    CreateMarketPost: undefined
     Board: {
         pendingRefresh: boolean
     }
@@ -33,9 +40,7 @@ export type RootStackParamList = {
     }
 
     Search: undefined
-
     Notification: undefined
-
     Setting: undefined
 
     SchoolAuth1: undefined
@@ -63,8 +68,6 @@ export type RootStackParamList = {
     }
 
     ProfileDetails: undefined
-    MarketPost: undefined
-    CreateMarketPost: undefined
 
     ImageEnlargement: {
         imageUriList: string[]
