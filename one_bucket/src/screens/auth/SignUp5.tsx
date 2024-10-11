@@ -1,6 +1,7 @@
 import { postSignupForm, requestLogin } from '@/apis/authService'
 import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import IcHide from '@/assets/drawable/bxs_hide.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
@@ -59,6 +60,10 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const scrollViewRef = useRef<ScrollView>(null)
     const passwordRef = useRef<TextInput>(null)
     const passwordConfirmRef = useRef<TextInput>(null)
+
+    const [hidePw, setHidePw] = useState(true)
+    const viewPw = () => {setHidePw(false)}
+    const maskPw = () => {setHidePw(true)}
 
     const handleEmailChange = (text: string) => {
         if (emailError == signUpErrorMessage.duplicatedEmailOrNickname) {
@@ -229,20 +234,31 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             scrollEnabled={false}>
                             <View style={{ width: ScreenWidth - 40 }}>
                                 <Text style={styles.label}>비밀번호 입력</Text>
-                                <TextInput
-                                    ref={passwordRef}
-                                    style={styles.input}
-                                    onChangeText={handlePasswordChange}
-                                    onBlur={onPasswordInputBlur}
-                                    value={password}
-                                    placeholder='비밀번호(숫자, 대소문자, 특수문자 모두 포함하여 8~20자)'
-                                    placeholderTextColor={
-                                        themeColor.TEXT_SECONDARY
-                                    }
-                                    keyboardType='default'
-                                    secureTextEntry={true}
-                                    scrollEnabled={false}
-                                />
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                    }}>
+                                    <TextInput
+                                        ref={passwordRef}
+                                        style={styles.input}
+                                        onChangeText={handlePasswordChange}
+                                        onBlur={onPasswordInputBlur}
+                                        value={password}
+                                        placeholder='비밀번호(숫자, 대소문자, 특수문자 모두 포함하여 8~20자)'
+                                        placeholderTextColor={
+                                            themeColor.TEXT_SECONDARY
+                                        }
+                                        keyboardType='default'
+                                        secureTextEntry={hidePw}
+                                        scrollEnabled={false}
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.viewPw}
+                                        onPressIn={viewPw}
+                                        onPressOut={maskPw}>
+                                        <IcHide />
+                                    </TouchableOpacity>
+                                </View>
                                 <View
                                     style={[
                                         { opacity: passwordError ? 1 : 0 },
@@ -257,7 +273,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     </Text>
                                 </View>
                             </View>
-                            <View style={{ width: ScreenWidth - 40 }}>
+                            <View style={{ width: ScreenWidth - 80 }}>
                                 <View
                                     style={{
                                         flexDirection: 'row',
@@ -391,6 +407,12 @@ const createStyles = (theme: Icolor) =>
             paddingBottom: 4,
             fontSize: 16,
             marginBottom: 10,
+        },
+        viewPw:{
+            height: 24,
+            width: 24,
+            justifyContent: "center",
+            alignItems: "center",
         },
         errorLabelContainer: {
             flexDirection: 'row',

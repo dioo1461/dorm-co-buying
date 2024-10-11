@@ -18,6 +18,7 @@ import BouncyCheckbox, {
     BouncyCheckboxHandle,
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import IcHide from '@/assets/drawable/bxs_hide.svg'
 
 const Login: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
@@ -73,6 +74,10 @@ const Login: React.FC = (): React.JSX.Element => {
     const openEE = () => { setEEVisible(true); }
     const closeEE = () => { setEEVisible(false); }
 
+    const [hidePw, setHidePw] = React.useState(true)
+    const viewPw = () => {setHidePw(false)}
+    const maskPw = () => {setHidePw(true)}
+
     return (
         <View style={[styles.container]}>
             <View
@@ -122,14 +127,25 @@ const Login: React.FC = (): React.JSX.Element => {
                     keyboardType='email-address'
                     onChangeText={setId}
                 />
-                <TextInput
-                    style={styles.textInput}
-                    placeholder='비밀번호'
-                    placeholderTextColor={themeColor.TEXT_SECONDARY}
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
+                <View style={{
+                    flexDirection: "row",
+                    alignItems: "center"
+                }}>
+                    <TextInput
+                        style={{...styles.textInput, width: '90%'}}
+                        placeholder='비밀번호'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        secureTextEntry={hidePw}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    <TouchableOpacity
+                        style={styles.viewPw}
+                        onPressIn={viewPw}
+                        onPressOut={maskPw}>
+                        <IcHide />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.autoLoginContainer}>
                     <View style={{ width: '5%' }}>
                         <BouncyCheckbox
@@ -195,13 +211,20 @@ const createStyles = (theme: Icolor) =>
             borderBottomColor: baseColors.GRAY_1,
             fontFamily: 'NanumGothic',
             fontSize: 14,
-            width: '100%',
+            width: '95%',
             borderBottomWidth: 1,
             padding: 6,
             marginStart: 20,
             marginEnd: 20,
             marginBottom: 10,
             backgroundColor: 'transparent',
+        },
+        viewPw:{
+            height: 24,
+            width: 24,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingRight: 20,
         },
         autoLoginContainer: {
             flexDirection: 'row',

@@ -103,9 +103,12 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
         const sec = time % 60
         if(time==0) Alert.alert('인증 코드가 만료되었습니다. 다시 발급받아 보세요.')
         return (
-            <Text style={{color: count<=30 ? "red" : ''}}>
-                {`인증 코드 입력 (${min}:${String(sec).padStart(2,"0")})`}
-            </Text>
+            <View>
+                <Text>인증 코드 입력</Text>
+                <Text style={{color: count<=30 ? "red" : 'dodgerblue'}}>
+                    {`(${min}:${String(sec).padStart(2,"0")})`}
+                </Text>
+            </View>
         )
     }
 

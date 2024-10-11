@@ -19,8 +19,8 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
-import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
@@ -56,7 +56,7 @@ const Setting: React.FC = (): React.JSX.Element => {
     
     const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
     const [colorValue, setColorValue] = useState(0)
-
+    
     const [logoutVisible, setLogoutVisible] = useState(false)
     const openLogout = () => { setLogoutVisible(true); }
     const closeLogout = () => { setLogoutVisible(false); }
@@ -446,7 +446,7 @@ const createStyles = (theme: Icolor) =>
             alignItems: 'center',
         },
         modalContent: {
-            padding: 20,
+            padding: 25,
             backgroundColor: theme.BG,
             justifyContent: 'center',
             alignItems: 'center',
