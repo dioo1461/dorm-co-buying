@@ -30,6 +30,7 @@ import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 
 const FETCH_SIZE = 10
 
+// TODO: 사진 올리기
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const Board: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
@@ -157,9 +158,7 @@ const Board: React.FC = (): JSX.Element => {
                                     justifyContent: 'space-between',
                                 }}>
                                 <Text style={styles.postMetaDataText}>
-                                    {`${
-                                        data.createdDate
-                                    }ㆍ조회 ${'data.views'}`}
+                                    {`${data.createdDate}ㆍ조회 ${data.views}`}
                                 </Text>
                             </View>
                             {/* ### 추천수, 댓글 ### */}
@@ -176,7 +175,7 @@ const Board: React.FC = (): JSX.Element => {
                                         styles.postlikeCountText,
                                         { marginStart: 1, marginEnd: 6 },
                                     ]}>
-                                    {/* {data.likes} */}
+                                    {data.likes}
                                 </Text>
                                 <IcComment />
                                 <Text
@@ -184,7 +183,7 @@ const Board: React.FC = (): JSX.Element => {
                                         styles.postCommentCountText,
                                         { marginStart: 2 },
                                     ]}>
-                                    {/* {data.comments} */}
+                                    {data.commentsCount}
                                 </Text>
                             </View>
                         </View>
@@ -247,7 +246,7 @@ const Board: React.FC = (): JSX.Element => {
         if (error) return <Text>Error...</Text>
 
         if (isLoading) return <Loading theme={themeColor} />
-        
+
         const posts = data?.pages?.flatMap(page => page.content)
         return (
             <View style={styles.flatList}>
