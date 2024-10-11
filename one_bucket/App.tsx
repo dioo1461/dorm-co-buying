@@ -11,47 +11,46 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 
+import { getBoardList } from '@/apis/boardService'
 import { getMemberInfo } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import ImageEnlargement from '@/screens/ImageEnlargement'
-import Notification from '@/screens/Notification'
-import ProfileModify from '@/screens/PofileModify'
-import CreateMarketPost from '@/screens/home/CreateMarketPost'
-import ProfileDetails from '@/screens/ProfileDetails'
-import Search from '@/screens/Search'
-import Setting from '@/screens/setting/Setting'
-import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
-import SchoolAuth2 from '@/screens/setting/SchoolAuth2'
-import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
-import PhoneAuth1 from '@/screens/setting/PhoneAuth1'
-import PhoneAuth2 from '@/screens/setting/PhoneAuth2'
-import PhoneAuth3 from '@/screens/setting/PhoneAuth3'
-import ChangePw from '@/screens/setting/ChangePw'
-import ChangePw2 from '@/screens/setting/ChangePw2'
-import AlertSetting from '@/screens/setting/AlertSetting'
-import Announcement from '@/screens/setting/Announcement'
-import Support from '@/screens/setting/Support'
-import VersionCheck from '@/screens/setting/VersionCheck'
 import Login from '@/screens/auth/Login'
+import NewPw from '@/screens/auth/NewPw'
+import NewPw2 from '@/screens/auth/NewPw2'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
-import NewPw from '@/screens/auth/NewPw'
-import NewPw2 from '@/screens/auth/NewPw2'
 import Chat from '@/screens/chat/Chat'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
+import CreateMarketPost from '@/screens/home/CreateMarketPost'
+import MarketPost from '@/screens/home/MarketPost'
+import ImageEnlargement from '@/screens/ImageEnlargement'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import Notification from '@/screens/Notification'
+import ProfileModify from '@/screens/PofileModify'
+import ProfileDetails from '@/screens/ProfileDetails'
+import Search from '@/screens/Search'
+import AlertSetting from '@/screens/setting/AlertSetting'
+import Announcement from '@/screens/setting/Announcement'
+import ChangePw from '@/screens/setting/ChangePw'
+import ChangePw2 from '@/screens/setting/ChangePw2'
+import PhoneAuth1 from '@/screens/setting/PhoneAuth1'
+import PhoneAuth2 from '@/screens/setting/PhoneAuth2'
+import PhoneAuth3 from '@/screens/setting/PhoneAuth3'
+import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
+import SchoolAuth2 from '@/screens/setting/SchoolAuth2'
+import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
+import Setting from '@/screens/setting/Setting'
+import Support from '@/screens/setting/Support'
+import VersionCheck from '@/screens/setting/VersionCheck'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
-import MarketPost from '@/screens/home/MarketPost'
-import { color } from 'react-native-elements/dist/helpers'
-import { getBoardList } from '@/apis/boardService'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -118,6 +117,7 @@ function App(): React.JSX.Element {
     useEffect(() => {
         const ac = new AbortController()
         const checkLoginStatus = async () => {
+            console.log('app - checkLoginStatus')
             await getMemberInfo()
                 .then(response => {
                     if (response) {
@@ -142,7 +142,7 @@ function App(): React.JSX.Element {
                     setBoardList(res)
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(`getBoardList - ${err}`)
                 })
             SplashScreen.hide()
         }
@@ -152,7 +152,7 @@ function App(): React.JSX.Element {
         return function cleanup() {
             ac.abort()
         }
-    }, [])
+    }, [loginState])
 
     return (
         <QueryClientProvider client={queryClient}>

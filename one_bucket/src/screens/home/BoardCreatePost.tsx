@@ -4,7 +4,6 @@ import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
-import { queryBoardList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
@@ -33,11 +32,13 @@ import {
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
     const {
+        boardList,
         themeColor,
         setThemeColor,
         pendingBoardRefresh,
         setPendingBoardRefresh,
     } = useBoundStore(state => ({
+        boardList: state.boardList,
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
         pendingBoardRefresh: state.pendingBoardRefresh,
@@ -73,11 +74,6 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [dropdownValue, setDropdownValue] = useState<number>(-1)
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
-    const {
-        data: boardListData,
-        isLoading: boardListIsLoading,
-        error: boardListError,
-    } = queryBoardList()
 
     const [dropdownItems, setDropdownItems] = useState<
         { label: string; value: number }[]
@@ -85,7 +81,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
 
     useEffect(() => {
         setDropdownItems(
-            boardListData!.map(board => {
+            boardList.map(board => {
                 return {
                     label: board.name,
                     value: board.id,
@@ -148,10 +144,6 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 console.log(err)
             })
     }
-
-    if (boardListIsLoading) return <Loading theme={themeColor} />
-
-    if (boardListError) return <Text>Error...</Text>
 
     return (
         <View style={styles.container}>
