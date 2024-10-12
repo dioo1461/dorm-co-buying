@@ -5,7 +5,6 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 import React, { useEffect, useRef } from 'react'
 import {
-    Alert,
     Appearance,
     Image,
     Modal,
@@ -71,8 +70,12 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const [easterEgg, setEE] = React.useState(10)
     const [eeVisible, setEEVisible] = React.useState(false)
-    const openEE = () => { setEEVisible(true); }
-    const closeEE = () => { setEEVisible(false); }
+    const openEE = () => {
+        setEEVisible(true)
+    }
+    const closeEE = () => {
+        setEEVisible(false)
+    }
 
     const [hidePw, setHidePw] = React.useState(true)
     const viewPw = () => {setHidePw(false)}
@@ -87,10 +90,10 @@ const Login: React.FC = (): React.JSX.Element => {
                     alignItems: 'center',
                     marginBottom: 50,
                 }}>
-                <TouchableOpacity 
-                    onPress={()=>{
-                        setEE(easterEgg => easterEgg -1 )
-                        if(easterEgg == 1) {
+                <TouchableOpacity
+                    onPress={() => {
+                        setEE(easterEgg => easterEgg - 1)
+                        if (easterEgg == 1) {
                             setEEVisible(true)
                             setEE(10)
                         }
@@ -103,15 +106,15 @@ const Login: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
             </View>
             <Modal
-                animationType="slide"
+                animationType='slide'
                 transparent={true}
                 visible={eeVisible}
                 onRequestClose={closeEE}>
-                    <View style={{alignItems: 'center'}}>
-                        <Image
-                            source={require('@/assets/drawable/mungmoonge.jpg')}
-                        />
-                    </View>
+                <View style={{ alignItems: 'center' }}>
+                    <Image
+                        source={require('@/assets/drawable/mungmoonge.jpg')}
+                    />
+                </View>
             </Modal>
             <View
                 style={{
@@ -182,7 +185,9 @@ const Login: React.FC = (): React.JSX.Element => {
                 </View>
                 <View style={styles.linkTextContainer}>
                     <TouchableOpacity
-                        onPress={()=>{navigation.navigate('NewPw')}}>
+                        onPress={() => {
+                            navigation.navigate('NewPw')
+                        }}>
                         <Text style={styles.linkText}>
                             비밀번호를 잊으셨나요?
                         </Text>
