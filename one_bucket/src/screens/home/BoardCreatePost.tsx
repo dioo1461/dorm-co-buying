@@ -1,11 +1,10 @@
 import { createBoardPost, saveImage } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
     Appearance,
@@ -29,7 +28,8 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import { SaveImageRequestBody } from '@/data/request/board/SaveImageRequestBody'
+
+// TODO : 이미지 보내기 전 크기 축소하기
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
     const {

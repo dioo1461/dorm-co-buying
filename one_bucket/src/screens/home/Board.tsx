@@ -27,6 +27,8 @@ import {
 } from '../navigation/NativeStackNavigation'
 import Loading from '@/components/Loading'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
+import { CachedImage } from '@/utils/CachedImage'
+import { STORAGE_BASE_URL } from '@env'
 
 const FETCH_SIZE = 10
 
@@ -127,17 +129,29 @@ const Board: React.FC = (): JSX.Element => {
                                 </View>
                             </View>
                             {/* ### 이미지 ### */}
-                            {true ? (
+                            {data.imageUrls.length > 0 ? (
                                 <View
                                     style={[
                                         styles.postImage,
                                         {
+                                            borderWidth: 1,
+                                            borderColor: 'white',
+                                        },
+                                    ]}>
+                                    <CachedImage
+                                        imageStyle={{
                                             width: 72,
                                             height: 72,
-                                            backgroundColor: 'white',
-                                        },
-                                    ]}
-                                />
+                                            borderRadius: 8,
+                                            borderWidth: 1,
+                                            borderColor: 'white',
+                                        }}
+                                        imageSource={{
+                                            id: data.imageUrls[0],
+                                            imageUri: `${STORAGE_BASE_URL}${data.imageUrls[0]}`,
+                                        }}
+                                    />
+                                </View>
                             ) : (
                                 <></>
                             )}
