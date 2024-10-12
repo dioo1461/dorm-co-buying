@@ -17,7 +17,9 @@ import BouncyCheckbox, {
     BouncyCheckboxHandle,
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import IcHide from '@/assets/drawable/bxs_hide.svg'
+// import IcHide from '@/assets/drawable/bxs_hide.svg'
+import IcHide from '@/assets/drawable/clarity_eye-hide-solid.svg'
+import IcShow from '@/assets/drawable/clarity_eye-show-solid.svg'
 
 const Login: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
@@ -78,8 +80,14 @@ const Login: React.FC = (): React.JSX.Element => {
     }
 
     const [hidePw, setHidePw] = React.useState(true)
-    const viewPw = () => {setHidePw(false)}
-    const maskPw = () => {setHidePw(true)}
+    const viewPwIcon = (hidePw: boolean) => {
+        if(hidePw == true) return (
+            <View><IcHide /></View>
+        )
+        else return (
+            <View><IcShow /></View>
+        )
+    }
 
     return (
         <View style={[styles.container]}>
@@ -135,7 +143,7 @@ const Login: React.FC = (): React.JSX.Element => {
                     alignItems: "center"
                 }}>
                     <TextInput
-                        style={{...styles.textInput, width: '90%'}}
+                        style={{...styles.textInput, width: '85%'}}
                         placeholder='비밀번호'
                         placeholderTextColor={themeColor.TEXT_SECONDARY}
                         secureTextEntry={hidePw}
@@ -144,9 +152,8 @@ const Login: React.FC = (): React.JSX.Element => {
                     />
                     <TouchableOpacity
                         style={styles.viewPw}
-                        onPressIn={viewPw}
-                        onPressOut={maskPw}>
-                        <IcHide />
+                        onPress={()=>{setHidePw(!hidePw)}}>
+                        {viewPwIcon(hidePw)}
                     </TouchableOpacity>
                 </View>
                 <View style={styles.autoLoginContainer}>
@@ -225,11 +232,11 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: 'transparent',
         },
         viewPw:{
-            height: 24,
-            width: 24,
+            height: 36,
+            width: 36,
             justifyContent: "center",
             alignItems: "center",
-            paddingRight: 20,
+            paddingRight: 30,
         },
         autoLoginContainer: {
             flexDirection: 'row',
