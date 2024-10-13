@@ -20,11 +20,15 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import { IComment } from '@/data/response/success/board/GetBoardPostResponse'
 import { addComment } from '@/apis/boardService'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
+import { CachedImage } from '@/components/CachedImage'
 
 const IMAGE_SIZE = 112
 
@@ -49,10 +53,11 @@ const BoardPost: React.FC = (): JSX.Element => {
     type BoardPostProp = RouteProp<RootStackParamList, 'BoardPost'>
     const { params } = useRoute<BoardPostProp>()
 
-    const [imageUriList, setImageUriList] = useState<string[]>([])
+    const navigation = stackNavigation()
+
     const [commentValue, setCommentValue] = useState('')
 
-    const [isImageInView, setImageInView] = useState(true)
+    const [isImageInView, setImageInView] = useState(false)
     const scrollViewRef = useRef<ScrollView>(null)
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
@@ -62,8 +67,6 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [backdropEnabled, setBackdropEnabled] = useState(false)
 
     const { data, isLoading, error, refetch } = queryBoardPost(params.postId)
-
-    useEffect(() => {}, [])
 
     const handleCommentSubmit = async () => {
         setBackdropEnabled(true)
@@ -89,12 +92,16 @@ const BoardPost: React.FC = (): JSX.Element => {
         const threshold = 0
         const scrollY = event.nativeEvent.contentOffset.y
         const windowHeight = event.nativeEvent.layoutMeasurement.height
+        const contentHeight = event.nativeEvent.contentSize.height
 
         // console.log(`scrollY: ${scrollY}, windowHeight: ${windowHeight}`)
         // 스크롤 위치가 댓글 영역에 근접하면 이미지 컨테이너를 본문 내로 이동
-        if (scrollY + windowHeight >= commentPosition + threshold) {
+        if (
+            scrollY + windowHeight >= commentPosition + threshold ||
+            contentHeight <= windowHeight
+        ) {
             if (isImageInView) setImageInView(false)
-        } else if (scrollY + windowHeight < commentPosition - threshold) {
+        } else {
             if (!isImageInView) setImageInView(true)
         }
 
@@ -118,6 +125,8 @@ const BoardPost: React.FC = (): JSX.Element => {
         const position = event.nativeEvent.contentOffset.x
         setImageScrollPos(position)
     }
+
+    const loadCheck = () => {}
 
     const Comment: React.FC<{ data: IComment }> = ({ data }): JSX.Element => {
         return (
@@ -144,7 +153,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                         <Text style={styles.commentTimeText}>9/01 13:32</Text>
                     </View>
                     <View style={styles.commentActions}>
-                        {/* ### 좋아요 버튼 ### */}
+                        {/* ### 좋아요 버튼 ###
                         <TouchableOpacity style={styles.commentActionButton}>
                             <IcThumbUp />
                             <Text
@@ -154,7 +163,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                                 ]}>
                                 2
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         {/* ### 답글 달기 버튼 ### */}
                         <TouchableOpacity style={styles.commentActionButton}>
                             <IcComment />
@@ -163,7 +172,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     styles.commentActionText,
                                     { color: baseColors.LIGHT_BLUE },
                                 ]}>
-                                6
+                                답글 달기
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -193,6 +202,30 @@ const BoardPost: React.FC = (): JSX.Element => {
                 />
             </View>
         )
+
+    const ImageScrollView = () => {
+        return (
+            <ScrollView
+                ref={imageScrollViewRef}
+                horizontal
+                style={{ flexDirection: 'row' }}
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onMomentumScrollEnd}
+                contentOffset={{ x: imageScrollPos, y: 0 }}>
+                {data!.imageUrls.map((url, index) => (
+                    <View style={styles.imageContainer} key={index}>
+                        <CachedImage
+                            imageStyle={{
+                                width: IMAGE_SIZE,
+                                height: IMAGE_SIZE,
+                            }}
+                            imageUrl={url}
+                        />
+                    </View>
+                ))}
+            </ScrollView>
+        )
+    }
 
     return (
         <View style={styles.container}>
@@ -229,22 +262,39 @@ const BoardPost: React.FC = (): JSX.Element => {
                     {data?.text}
                 </Text>
                 {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
-                {!isImageInView && imageUriList.length > 0 && (
+                {!isImageInView && data!.imageUrls.length > 0 && (
                     <ScrollView
                         ref={scrollViewRef}
                         horizontal
                         style={{ flexDirection: 'row' }}
                         showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ flexGrow: 1 }}
                         onMomentumScrollEnd={onMomentumScrollEnd}
                         contentOffset={{ x: imageScrollPos, y: 0 }}>
-                        {imageUriList.map((uri, index) => (
-                            <View style={styles.imageContainer} key={index}>
-                                <Text>이미지</Text>
-                            </View>
+                        {data!.imageUrls.map((url, index) => (
+                            <TouchableOpacity
+                                style={styles.imageContainer}
+                                key={index}
+                                onPress={() =>
+                                    navigation.navigate('ImageEnlargement', {
+                                        imageUriList: data!.imageUrls,
+                                        index: index,
+                                        isLocalUri: false,
+                                    })
+                                }>
+                                <CachedImage
+                                    imageStyle={{
+                                        width: IMAGE_SIZE,
+                                        height: IMAGE_SIZE,
+                                        borderRadius: 8,
+                                    }}
+                                    imageUrl={url}
+                                />
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                 )}
-                {isImageInView && imageUriList.length > 0 && (
+                {isImageInView && data!.imageUrls.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
                 )}
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
@@ -311,7 +361,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 </View>
             </View>
             {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ### */}
-            {isImageInView && imageUriList.length > 0 && (
+            {isImageInView && data!.imageUrls.length > 0 && (
                 <ScrollView
                     ref={scrollViewRef}
                     horizontal
@@ -322,14 +372,29 @@ const BoardPost: React.FC = (): JSX.Element => {
                         marginBottom: 20,
                         marginHorizontal: 20,
                     }}
+                    contentContainerStyle={{ flexGrow: 1 }}
                     showsHorizontalScrollIndicator={false}
                     onMomentumScrollEnd={onMomentumScrollEnd}
                     contentOffset={{ x: imageScrollPos, y: 0 }}>
-                    {imageUriList.map((uri, index) => (
+                    {data!.imageUrls.map((url, index) => (
                         <TouchableOpacity
                             style={styles.imageContainer}
-                            key={index}>
-                            {/* <Image source={require(uri)} /> */}
+                            key={index}
+                            onPress={() =>
+                                navigation.navigate('ImageEnlargement', {
+                                    imageUriList: data!.imageUrls,
+                                    index: index,
+                                    isLocalUri: false,
+                                })
+                            }>
+                            <CachedImage
+                                imageStyle={{
+                                    width: IMAGE_SIZE,
+                                    height: IMAGE_SIZE,
+                                    borderRadius: 8,
+                                }}
+                                imageUrl={url}
+                            />
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
@@ -357,8 +422,6 @@ const createStyles = (theme: Icolor) =>
         imageContainer: {
             width: IMAGE_SIZE,
             height: IMAGE_SIZE,
-            backgroundColor: 'white',
-            borderWidth: 1,
             marginRight: 8,
             borderRadius: 8,
         },

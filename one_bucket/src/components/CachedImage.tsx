@@ -1,3 +1,4 @@
+import { STORAGE_BASE_URL } from '@env'
 import { useEffect, useState } from 'react'
 import {
     Image,
@@ -11,27 +12,36 @@ import * as RNFS from 'react-native-fs'
 
 interface Props {
     imageStyle: StyleProp<ImageStyle>
-    imageSource: { id: string; imageUri: string }
+    imageUrl: string
+    onLoad?: (res: Promise<void>) => void
 }
 
 export const CachedImage = ({
     imageStyle,
-    imageSource,
+    imageUrl,
+    onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
     const extension = Platform.OS === 'android' ? 'file://' : ''
 
-    const path = `${extension}${RNFS.DocumentDirectoryPath}${imageSource.id}`
+    const path = `${extension}${RNFS.DocumentDirectoryPath}${imageUrl.substring(
+        imageUrl.lastIndexOf('/') + 1,
+    )}`
 
     const loadFile = (path: string) => {
         setSource({ uri: path })
     }
 
+    useEffect(() => {
+        if (source) {
+        }
+    }, [source])
+
     const downloadFile = async (uri: string, path: string) => {
         const directoryPath = path.substring(0, path.lastIndexOf('/')) // 디렉터리 경로 추출
 
         // 디렉터리 존재 여부 확인 후 없으면 생성
-        RNFS.exists(directoryPath)
+        return RNFS.exists(directoryPath)
             .then(exists => {
                 if (!exists) {
                     return RNFS.mkdir(directoryPath) // 디렉터리 생성
@@ -41,11 +51,11 @@ export const CachedImage = ({
             .then(() => {
                 // 파일 다운로드
                 return RNFS.downloadFile({
-                    fromUrl: uri,
+                    fromUrl: STORAGE_BASE_URL + imageUrl,
                     toFile: path,
                 }).promise
             })
-            .then(() => {
+            .then(res => {
                 loadFile(path) // 파일 로드
             })
             .catch(error => {
@@ -54,20 +64,18 @@ export const CachedImage = ({
     }
 
     useEffect(() => {
-        RNFS.exists(path).then(exists => {
+        const promise = RNFS.exists(path).then(exists => {
             if (exists) {
                 loadFile(path)
-                console.log('loadfile - path:', path)
             } else {
-                downloadFile(imageSource.imageUri, path)
-                console.log(
-                    'downloadfile - uri:',
-                    imageSource.imageUri,
-                    'path:',
-                    path,
-                )
+                return downloadFile(imageUrl, path)
             }
         })
+
+        if (onLoad) {
+            console.log('onLoad')
+            onLoad(promise)
+        }
     }, [])
 
     if (!source) return <></>
