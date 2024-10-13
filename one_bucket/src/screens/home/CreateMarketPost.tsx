@@ -175,6 +175,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                                     navigation.navigate('ImageEnlargement', {
                                         imageUriList: imageUriList,
                                         index: index,
+                                        isLocalUri: true,
                                     })
                                 }>
                                 <Image

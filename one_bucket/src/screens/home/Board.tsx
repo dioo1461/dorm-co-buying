@@ -27,6 +27,9 @@ import {
 } from '../navigation/NativeStackNavigation'
 import Loading from '@/components/Loading'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
+import { CachedImage } from '@/components/CachedImage'
+import { STORAGE_BASE_URL } from '@env'
+import { formatTimeAgo } from '@/utils/formatUtils'
 
 const FETCH_SIZE = 10
 
@@ -127,17 +130,17 @@ const Board: React.FC = (): JSX.Element => {
                                 </View>
                             </View>
                             {/* ### 이미지 ### */}
-                            {true ? (
-                                <View
-                                    style={[
-                                        styles.postImage,
-                                        {
+                            {data.imageUrls.length > 0 ? (
+                                <View style={styles.postImage}>
+                                    <CachedImage
+                                        imageStyle={{
                                             width: 72,
                                             height: 72,
-                                            backgroundColor: 'white',
-                                        },
-                                    ]}
-                                />
+                                            borderRadius: 8,
+                                        }}
+                                        imageUrl={data.imageUrls[0]}
+                                    />
+                                </View>
                             ) : (
                                 <></>
                             )}
@@ -158,7 +161,9 @@ const Board: React.FC = (): JSX.Element => {
                                     justifyContent: 'space-between',
                                 }}>
                                 <Text style={styles.postMetaDataText}>
-                                    {`${data.createdDate}ㆍ조회 ${data.views}`}
+                                    {`${formatTimeAgo(
+                                        data.createdDate,
+                                    )}ㆍ조회 ${data.views}`}
                                 </Text>
                             </View>
                             {/* ### 추천수, 댓글 ### */}

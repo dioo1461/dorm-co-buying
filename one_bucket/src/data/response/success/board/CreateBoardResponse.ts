@@ -1,6 +1,4 @@
 export interface CreateBoardPostResponse {
+    message: string
     id: number
-    boardName: string
-    university: string
-    boardType: string
 }

@@ -72,6 +72,7 @@ export type RootStackParamList = {
     ImageEnlargement: {
         imageUriList: string[]
         index: number
+        isLocalUri: boolean
     }
 }
 

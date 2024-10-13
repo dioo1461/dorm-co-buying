@@ -1,9 +1,12 @@
 import { AddCommentRequestBody } from '@/data/request/board/AddCommentRequestBody'
 import { AddReplyCommentRequestBody } from '@/data/request/board/AddReplyCommentRequestBody'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
+import { SaveImageRequestBody } from '@/data/request/board/SaveImageRequestBody'
+import { CreateBoardPostResponse } from '@/data/response/success/board/CreateBoardResponse'
 import { GetBoardListResponse } from '@/data/response/success/board/GetBoardListResponse'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 /** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장
@@ -25,7 +28,7 @@ export const getBoardList = async (): Promise<GetBoardListResponse> => {
 
 export const createBoardPost = async (
     data: CreateBoardPostRequestBody,
-): Promise<CreateBoardPostRequestBody> => {
+): Promise<CreateBoardPostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .post('/post/create', data)
@@ -39,6 +42,25 @@ export const createBoardPost = async (
                 // onLogOut(false)
             }
             throw error
+        })
+}
+
+export const saveImage = async (postId: number, data: any) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`/post/save/image/${postId}`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`saveImage Error - ${err}`)
+            throw err
         })
 }
 

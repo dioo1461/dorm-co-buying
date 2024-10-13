@@ -1,11 +1,10 @@
-import { createBoardPost } from '@/apis/boardService'
+import { createBoardPost, saveImage } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
     Appearance,
@@ -29,6 +28,8 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
+
+// TODO : 이미지 보내기 전 크기 축소하기
 
 const BoardCreatePost: React.FC = (): JSX.Element => {
     const {
@@ -127,12 +128,29 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
             title: title,
             text: content,
         }
+
         createBoardPost(submitForm)
             .then(res => {
                 console.log('board post created')
                 // setPendingBoardRefresh(true)
                 // useBoundStore.setState({ pendingBoardRefresh: true })
                 // params.setPendingRefresh(true)
+                if (imageUriList.length > 0) {
+                    const formData = new FormData()
+                    imageUriList.forEach((value, index) => {
+                        // 파일 정보 추출
+                        const filename = value.split('/').pop() // 파일 이름 추출
+                        const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
+                        // FormData에 파일 추가
+                        formData.append('file', {
+                            uri: value,
+                            name: filename, // 파일 이름
+                            type: `image/${fileExtension}`, // MIME 타입 설정
+                        })
+                    })
+                    console.log(res.id, formData)
+                    saveImage(res.id, formData)
+                }
                 setTimeout(() => {
                     navigation.navigate('Board', {
                         pendingRefresh: true,

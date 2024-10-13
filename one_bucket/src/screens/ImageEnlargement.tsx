@@ -5,6 +5,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '@/screens/navigation/NativeStackNavigation'
+import { CachedImage } from '@/components/CachedImage'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -48,6 +49,9 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
 
     const [currentIndex, setCurrentIndex] = useState<number>(params.index)
 
+    const imagePromiseList = useRef<Promise<void>[]>([])
+    const [isImageLoaded, setImageLoaded] = useState(false)
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -59,11 +63,20 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
     }, [])
 
     useEffect(() => {
+        console.log(imagePromiseList.current.length)
+        Promise.all(imagePromiseList.current)
+            .then(() => setImageLoaded(true))
+            .catch(err => {
+                console.log(err)
+            })
+    }, [])
+
+    useEffect(() => {
         scrollViewRef.current?.scrollTo({
             x: SCREEN_WIDTH * params.index,
             animated: false,
         })
-    }, [])
+    }, [isImageLoaded])
 
     const handleScroll = useCallback(
         (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -79,6 +92,8 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
 
+    const loadCheck = new Array(params.imageUriList.length).fill(false)
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -91,7 +106,7 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
                 scrollEventThrottle={16}
                 maximumZoomScale={4}
                 minimumZoomScale={1}>
-                {params.imageUriList.map((value: string, idx: number) => {
+                {params.imageUriList.map((uri: string, idx: number) => {
                     const scale = useRef(new Animated.Value(1)).current
                     const translateX = useRef(new Animated.Value(0)).current
                     const translateY = useRef(new Animated.Value(0)).current
@@ -159,52 +174,59 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
                         [{ nativeEvent: { scale: scale } }],
                         { useNativeDriver: false },
                     )
-                    return (
+                    return params.isLocalUri ? (
                         <Image
                             key={idx}
                             style={[styles.image, {}]}
-                            source={{ uri: value }}
+                            source={{ uri: uri }}
                         />
-                        // TODO: 이미지 확대 및 축소 기능 추가
-                        //
-                        // <PanGestureHandler
-                        //     minPointers={1}
-                        //     maxPointers={1}
-                        //     key={idx}
-                        //     onGestureEvent={onPanEvent}
-                        //     onHandlerStateChange={onPanStateChange}
-                        //     simultaneousHandlers={[pinchRef, scrollViewRef]}>
-                        //     {/* <Animated.View> */}
-                        //     <PinchGestureHandler
-                        //         minPointers={2}
-                        //         maxPointers={2}
-                        //         onGestureEvent={onPinchEvent}
-                        //         onHandlerStateChange={onPinchStateChange}
-                        //         simultaneousHandlers={[
-                        //             pinchRef,
-                        //             scrollViewRef,
-                        //         ]}>
-                        //         <Animated.View
-                        //             style={{
-                        //                 transform: [
-                        //                     { scale: scale },
-                        //                     {
-                        //                         translateX: translateX,
-                        //                     },
-                        //                     {
-                        //                         translateY: translateY,
-                        //                     },
-                        //                 ],
-                        //             }}>
-                        //             <Image
-                        //                 style={[styles.image, {}]}
-                        //                 source={{ uri: value }}
-                        //             />
-                        //         </Animated.View>
-                        //     </PinchGestureHandler>
-                        //     {/* </Animated.View> */}
-                        // </PanGestureHandler>
+                    ) : (
+                        <CachedImage
+                            key={idx}
+                            imageStyle={styles.image}
+                            imageUrl={uri}
+                            onLoad={res => imagePromiseList.current.push(res)}
+                        />
                     )
+                    // TODO: 이미지 확대 및 축소 기능 추가
+                    //
+                    // <PanGestureHandler
+                    //     minPointers={1}
+                    //     maxPointers={1}
+                    //     key={idx}
+                    //     onGestureEvent={onPanEvent}
+                    //     onHandlerStateChange={onPanStateChange}
+                    //     simultaneousHandlers={[pinchRef, scrollViewRef]}>
+                    //     {/* <Animated.View> */}
+                    //     <PinchGestureHandler
+                    //         minPointers={2}
+                    //         maxPointers={2}
+                    //         onGestureEvent={onPinchEvent}
+                    //         onHandlerStateChange={onPinchStateChange}
+                    //         simultaneousHandlers={[
+                    //             pinchRef,
+                    //             scrollViewRef,
+                    //         ]}>
+                    //         <Animated.View
+                    //             style={{
+                    //                 transform: [
+                    //                     { scale: scale },
+                    //                     {
+                    //                         translateX: translateX,
+                    //                     },
+                    //                     {
+                    //                         translateY: translateY,
+                    //                     },
+                    //                 ],
+                    //             }}>
+                    //             <Image
+                    //                 style={[styles.image, {}]}
+                    //                 source={{ uri: value }}
+                    //             />
+                    //         </Animated.View>
+                    //     </PinchGestureHandler>
+                    //     {/* </Animated.View> */}
+                    // </PanGestureHandler>
                 })}
             </ScrollView>
             <View style={styles.header}>
