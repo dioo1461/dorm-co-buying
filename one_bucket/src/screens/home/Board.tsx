@@ -2,34 +2,32 @@ import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import Backdrop from '@/components/Backdrop'
+import { CachedImage } from '@/components/CachedImage'
+import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardList, queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { formatTimeAgo } from '@/utils/formatUtils'
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import { useEffect, useRef, useState } from 'react'
 import {
-    RefreshControl,
     Animated,
     Appearance,
     FlatList,
     ListRenderItem,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
-    ActivityIndicator,
 } from 'react-native'
 import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import Loading from '@/components/Loading'
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
-import { CachedImage } from '@/components/CachedImage'
-import { STORAGE_BASE_URL } from '@env'
-import { formatTimeAgo } from '@/utils/formatUtils'
 
 const FETCH_SIZE = 10
 
