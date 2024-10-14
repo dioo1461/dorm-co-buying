@@ -28,6 +28,8 @@ const strings = {
     newPwScreenName: 'NewPw',
     newPw2ScreenName: 'NewPw2',
 
+    unauthHomeScreenName: 'UnauthHome',
+
     createMarketPostScreenName: 'CreateMarketPost',
 
     profileDetailsScreenName: 'ProfileDetails',
@@ -89,6 +91,7 @@ export const signUpErrorMessage = {
     invalidPasswordFormat:
         '비밀번호는 최소 1개의 대소문자와 숫자 및 특수문자를 포함해야 합니다.',
     passwordMismatch: '두 비밀번호가 일치하지 않아요.',
+    passwordUnchanged: '현재와 다른 비밀번호로 설정해 주세요.',
 
     duplicatedNickname: '중복된 닉네임이 존재해요.',
     invalidNicknameLength: '닉네임은 4자 이상 14자 이하로 설정해야 해요.',

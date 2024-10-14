@@ -56,7 +56,7 @@ const Setting: React.FC = (): React.JSX.Element => {
     
     const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
     const [colorValue, setColorValue] = useState(0)
-    
+
     const [logoutVisible, setLogoutVisible] = useState(false)
     const openLogout = () => { setLogoutVisible(true); }
     const closeLogout = () => { setLogoutVisible(false); }
@@ -307,6 +307,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
                 <View style={styles.line} />
+                {/*
                 <View
                     style={[
                         styles.contextContainer,
@@ -350,6 +351,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
                 <View style={styles.line} />
+                */}
                 <View>
                     <Text style={styles.subjectLabel}>기타</Text>
                     <TouchableOpacity 

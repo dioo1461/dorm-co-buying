@@ -20,6 +20,8 @@ export type RootStackParamList = {
         email: string
     }
 
+    UnauthHome: undefined
+
     Market: {
         pendingRefresh: boolean
     }

@@ -76,7 +76,6 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
         }
         postSchoolForm(form)
             .then(res => {
-                Toast.show({ text1: '잠시만 기다려 주세요..' })
                 navigation.navigate('SchoolAuth2', {
                     schoolName: schoolName,
                     schoolEmail: schoolEmail

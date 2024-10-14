@@ -8,7 +8,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 
 import { getBoardList } from '@/apis/boardService'
@@ -21,6 +21,7 @@ import NewPw2 from '@/screens/auth/NewPw2'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
+import UnauthHome from '@/screens/UnauthHome'
 import Chat from '@/screens/chat/Chat'
 import BoardCreatePost from '@/screens/home/BoardCreatePost'
 import BoardPost from '@/screens/home/BoardPost'
@@ -52,6 +53,7 @@ import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 
+
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 function App(): React.JSX.Element {
@@ -73,46 +75,8 @@ function App(): React.JSX.Element {
     }, [])
 
     const queryClient = new QueryClient()
-
-    const MainScreen: React.FC = () => {
-        return (
-            <Tab.Navigator
-                initialRouteName={strings.homeScreenName}
-                screenOptions={{
-                    tabBarStyle: {
-                        backgroundColor: themeColor.BG,
-                    },
-                    headerStyle: {
-                        backgroundColor: themeColor.HEADER_BG,
-                    },
-                }}>
-                {mainRoutes.map(route => (
-                    <Tab.Screen
-                        key={route.name}
-                        name={route.name}
-                        component={route.component}
-                        options={{
-                            title: route.title,
-                            tabBarLabel: route.tabBarLabel,
-                            headerRight: route.headerRight,
-                            headerTintColor: themeColor.HEADER_TEXT,
-                            tabBarIcon: ({ focused }) => {
-                                if (themeColor === lightColors) {
-                                    return focused
-                                        ? route.activeIconLight
-                                        : route.inactiveIconLight
-                                } else {
-                                    return focused
-                                        ? route.activeIconDark
-                                        : route.inactiveIconDark
-                                }
-                            },
-                        }}
-                    />
-                ))}
-            </Tab.Navigator>
-        )
-    }
+    
+    const [authed, setAuthed] = useState(0)
 
     useEffect(() => {
         const ac = new AbortController()
@@ -140,9 +104,11 @@ function App(): React.JSX.Element {
             await getBoardList()
                 .then(res => {
                     setBoardList(res)
+                    setAuthed(0)
                 })
                 .catch(err => {
                     console.log(`getBoardList - ${err}`)
+                    setAuthed(1)
                 })
             SplashScreen.hide()
         }
@@ -153,6 +119,92 @@ function App(): React.JSX.Element {
             ac.abort()
         }
     }, [loginState])
+
+    const home = (authed: number) => {
+        if(authed == 0) return strings.homeScreenName
+        else return strings.unauthHomeScreenName
+    }
+
+    const MainScreen: React.FC = () => {
+        return (
+            <Tab.Navigator
+                initialRouteName={home(authed)}
+                screenOptions={{
+                    tabBarStyle: {
+                        backgroundColor: themeColor.BG,
+                    },
+                    headerStyle: {
+                        backgroundColor: themeColor.HEADER_BG,
+                    },
+                }}>
+                {mainRoutes[authed].map(route => (
+                    <Tab.Screen
+                        key={route.name}
+                        name={route.name}
+                        component={route.component}
+                        options={{
+                            title: route.title,
+                            tabBarLabel: route.tabBarLabel,
+                            headerRight: route.headerRight,
+                            headerTintColor: themeColor.HEADER_TEXT,
+                            tabBarIcon: ({ focused }) => {
+                                if (themeColor === lightColors) {
+                                    return focused
+                                        ? route.activeIconLight
+                                        : route.inactiveIconLight
+                                } else {
+                                    return focused
+                                        ? route.activeIconDark
+                                        : route.inactiveIconDark
+                                }
+                            },
+                        }}
+                    />
+                ))}
+            </Tab.Navigator>
+        )
+    }
+    /*
+    const MainScreen: React.FC = () => {
+        return (
+            <Tab.Navigator
+                initialRouteName={strings.homeScreenName}
+                screenOptions={{
+                    tabBarStyle: {
+                        backgroundColor: themeColor.BG,
+                    },
+                    headerStyle: {
+                        backgroundColor: themeColor.HEADER_BG,
+                    },
+                }}>
+                {mainRoutes[0].map(route => (
+                    <Tab.Screen
+                        key={route.name}
+                        name={route.name}
+                        component={route.component}
+                        options={{
+                            title: route.title,
+                            tabBarLabel: route.tabBarLabel,
+                            headerRight: route.headerRight,
+                            headerTintColor: themeColor.HEADER_TEXT,
+                            tabBarIcon: ({ focused }) => {
+                                if (themeColor === lightColors) {
+                                    return focused
+                                        ? route.activeIconLight
+                                        : route.inactiveIconLight
+                                } else {
+                                    return focused
+                                        ? route.activeIconDark
+                                        : route.inactiveIconDark
+                                }
+                            },
+                        }}
+                    />
+                ))}
+            </Tab.Navigator>
+        )
+    }
+    */
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -167,6 +219,11 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name='Main'
                             component={MainScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name={strings.unauthHomeScreenName}
+                            component={UnauthHome}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen

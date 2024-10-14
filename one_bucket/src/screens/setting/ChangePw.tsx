@@ -111,15 +111,14 @@ const ChangePw: React.FC = (): React.JSX.Element => {
             setPasswordConfirmError(signUpErrorMessage.passwordMismatch)
             return
         }
+        if (text == oldPw) {
+            setPasswordConfirmError(signUpErrorMessage.passwordUnchanged)
+            return
+        }
         setPasswordConfirmError(null)
     }
 
     const handleSubmit = async () => {
-        if (oldPw == password) {
-            Alert.alert('현재와 다른 비밀번호로 설정해 주세요.')
-            return
-        }
-
         const form: ChangePwRequestBody = {
             oldPassword: oldPw,
             newPassword: password,

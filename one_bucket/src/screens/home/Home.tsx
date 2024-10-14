@@ -23,7 +23,6 @@ const Home: React.FC = (): JSX.Element => {
 
     // 다크모드 변경 감지
     useEffect(() => {
-        // onLogOut()
         const themeSubscription = Appearance.addChangeListener(
             ({ colorScheme }) => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)

@@ -1,6 +1,7 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcClose from '@/assets/drawable/ic-close.svg'
 import IcNotification from '@/assets/drawable/ic-angle-left.svg'
+import IcUnauth from '@/assets/drawable/tabler_school-off.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useState } from 'react'
@@ -19,18 +20,17 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import strings from '@/constants/strings'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
-const SchoolAuth3: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
+const UnauthHome: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
-        onLogOut: state.onLogOut,
     }))
     // 다크모드 변경 감지
     useEffect(() => {
-        onPressBackBtn(true);
         const themeSubscription = Appearance.addChangeListener(
             ({ colorScheme }) => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
@@ -61,17 +61,10 @@ const SchoolAuth3: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <Text style={{fontSize: 25, textAlign: 'center'}}>
-                {`학교 인증이 완료되었습니다!\n재로그인하면 모든 서비스를 이용할 수 있습니다.`}
+            <IcUnauth />
+            <Text style={{fontSize: 20, textAlign: 'center'}}>
+                {`학교 인증을 완료하셔야\n모든 서비스를 이용하실 수 있습니다.`}
             </Text>
-            <TouchableOpacity 
-                style={styles.button}
-                onPress = {() => {
-                    onPressBackBtn(false)
-                    onLogOut()
-                }}>
-                <Text style={styles.buttonText}>다시 로그인하기</Text>
-            </TouchableOpacity>
         </View>
     )
 }
@@ -99,4 +92,4 @@ const CreateStyles = (theme: Icolor) =>
         }
     })
 
-export default SchoolAuth3
+export default UnauthHome
