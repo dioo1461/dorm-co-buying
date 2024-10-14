@@ -18,8 +18,8 @@ import BouncyCheckbox, {
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 // import IcHide from '@/assets/drawable/bxs_hide.svg'
-import IcHide from '@/assets/drawable/clarity_eye-hide-solid.svg'
-import IcShow from '@/assets/drawable/clarity_eye-show-solid.svg'
+import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
+import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
 
 const Login: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
