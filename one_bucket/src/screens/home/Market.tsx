@@ -30,12 +30,10 @@ import Loading from '@/components/Loading'
 
 const FETCH_SIZE = 10
 
-// TODO: 스크롤 시 헤더 숨김 / 표시
+// TODO: 선택한 카테고리에 대한 공동구매글만 렌더링하도록 구현
+// TODO: 스크롤 시 동적으로 헤더 숨김 / 표시
 const categoryProps = [
-    {
-        categoryName: '기타',
-        icon: <></>,
-    },
+    { categoryName: '전체', icon: <></> },
     {
         categoryName: '가공식품',
         icon: <IcFrozenItem />,
@@ -62,6 +60,10 @@ const categoryProps = [
     },
     {
         categoryName: '쿠폰',
+        icon: <></>,
+    },
+    {
+        categoryName: '기타',
         icon: <></>,
     },
 ]

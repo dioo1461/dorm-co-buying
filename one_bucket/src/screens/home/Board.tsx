@@ -347,26 +347,29 @@ const Board: React.FC = (): JSX.Element => {
                     style={styles.boardTypeSelectionContainer}
                     contentContainerStyle={styles.boardTypeSelectionContent}
                     showsVerticalScrollIndicator={false}>
-                    {boardList!.map((boardType, index) => (
-                        <TouchableNativeFeedback
-                            key={index}
-                            background={touchableNativeFeedbackBg()}
-                            onPress={() => {
-                                toggleDropdown()
-                                setCurrentBoardIndex(index)
-                            }}>
-                            <View style={styles.boardTypeItem}>
-                                <Text
-                                    style={[
-                                        styles.boardTypeText,
-                                        currentBoardIndex === index &&
-                                            styles.boardTypeTextActive,
-                                    ]}>
-                                    {boardType.name}
-                                </Text>
-                            </View>
-                        </TouchableNativeFeedback>
-                    ))}
+                    {boardList!.map(
+                        (board, index) =>
+                            board.type === 'post' && (
+                                <TouchableNativeFeedback
+                                    key={index}
+                                    background={touchableNativeFeedbackBg()}
+                                    onPress={() => {
+                                        toggleDropdown()
+                                        setCurrentBoardIndex(index)
+                                    }}>
+                                    <View style={styles.boardTypeItem}>
+                                        <Text
+                                            style={[
+                                                styles.boardTypeText,
+                                                currentBoardIndex === index &&
+                                                    styles.boardTypeTextActive,
+                                            ]}>
+                                            {board.name}
+                                        </Text>
+                                    </View>
+                                </TouchableNativeFeedback>
+                            ),
+                    )}
                 </ScrollView>
             </Animated.View>
             <TouchableOpacity
