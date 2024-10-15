@@ -136,3 +136,31 @@ export const addReplyComment = async (
             throw error
         })
 }
+
+export const addLike = async (postId: number): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(`/post/${postId}/like`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('addLike - ' + err)
+            throw err
+        })
+}
+
+export const deleteLike = async (
+    postId: number,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(`/post/${postId}/like`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('deleteLike - ' + err)
+            throw err
+        })
+}

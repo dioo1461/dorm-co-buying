@@ -270,7 +270,7 @@ const Market: React.FC = (): JSX.Element => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                             }}>
-                            {data.trade_memberIds.length + 1 <
+                            {data.trade_nickNames.length + 1 <
                             data.trade_wanted ? (
                                 <View
                                     style={{
@@ -307,7 +307,7 @@ const Market: React.FC = (): JSX.Element => {
                                 </View>
                             )}
                             <Text style={styles.postParticipants}>
-                                {`${data.trade_memberIds.length + 1} / ${
+                                {`${data.trade_nickNames.length + 1} / ${
                                     data.trade_wanted
                                 }명`}
                             </Text>

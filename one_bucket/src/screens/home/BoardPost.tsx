@@ -10,6 +10,7 @@ import {
     ActivityIndicator,
     Animated,
     Appearance,
+    GestureResponderEvent,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
@@ -26,12 +27,18 @@ import {
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
 import IcSend from '@/assets/drawable/ic-send.svg'
-import { IComment } from '@/data/response/success/board/GetBoardPostResponse'
-import { addComment } from '@/apis/boardService'
+import {
+    GetBoardPostResponse,
+    IComment,
+} from '@/data/response/success/board/GetBoardPostResponse'
+import { addComment, addLike, deleteLike } from '@/apis/boardService'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { CachedImage } from '@/components/CachedImage'
+import { sleep } from '@/utils/asyncUtils'
 
 const IMAGE_SIZE = 112
+// 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
+const LOCK_SLEEP_TIME = 3000
 
 const BoardPost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -56,20 +63,33 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const navigation = stackNavigation()
 
-    const [commentValue, setCommentValue] = useState('')
-
+    // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
     const scrollViewRef = useRef<ScrollView>(null)
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
 
+    // 상태 관리 변수
+    const userLiked = useRef<boolean>(true)
+    const likeLock = useRef<boolean>(false)
+    const [likeAdded, setLikeAdded] = useState(0)
+
+    const [commentValue, setCommentValue] = useState('')
     const [parentCommentId, setParentCommentId] = useState(-1)
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [backdropEnabled, setBackdropEnabled] = useState(false)
 
-    const { data, isLoading, error, refetch } = queryBoardPost(params.postId)
+    const onSuccessCallback = (data: GetBoardPostResponse) => {
+        userLiked.current = data.userAlreadyLikes
+        setLikeAdded(0)
+    }
+
+    const { data, isLoading, error, refetch } = queryBoardPost(
+        params.postId,
+        onSuccessCallback,
+    )
 
     const animationList: Animated.Value[] = []
 
@@ -243,6 +263,35 @@ const BoardPost: React.FC = (): JSX.Element => {
         )
     }
 
+    const handleLikeButtonPress = async () => {
+        if (likeLock.current) {
+            // TODO: 좋아요 lock 알림 출력
+            return
+        }
+
+        if (userLiked.current) {
+            // TODO: 좋아요 취소 dialog 출력
+            likeLock.current = true
+            userLiked.current = false
+            setLikeAdded(likeAdded - 1)
+            await deleteLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
+
+        if (!userLiked.current) {
+            // TODO: 좋아요 완료 dialog 출력
+            likeLock.current = true
+            userLiked.current = true
+            setLikeAdded(likeAdded + 1)
+            await addLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
+    }
+
     if (error) return <Text>Error...</Text>
 
     if (isLoading)
@@ -361,14 +410,16 @@ const BoardPost: React.FC = (): JSX.Element => {
                 )}
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
                     {/* ### 좋아요 버튼 ### */}
-                    <TouchableOpacity style={styles.commentActionButton}>
+                    <TouchableOpacity
+                        style={styles.commentActionButton}
+                        onPress={handleLikeButtonPress}>
                         <IcThumbUp />
                         <Text
                             style={[
                                 styles.commentActionText,
                                 { color: baseColors.LIGHT_RED },
                             ]}>
-                            {data?.likes}
+                            {data!.likes + likeAdded}
                         </Text>
                     </TouchableOpacity>
                     {/* ### 답글 달기 버튼 ### */}
