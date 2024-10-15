@@ -8,6 +8,7 @@ import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
+    Animated,
     Appearance,
     LayoutChangeEvent,
     NativeScrollEvent,
@@ -63,16 +64,34 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
 
+    const [parentCommentId, setParentCommentId] = useState(-1)
+
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [backdropEnabled, setBackdropEnabled] = useState(false)
 
     const { data, isLoading, error, refetch } = queryBoardPost(params.postId)
 
+    const animationList: Animated.Value[] = []
+
+    // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
         setBackdropEnabled(true)
-        addComment({ postId: params.postId, text: commentValue })
+        var requestBody
+        if (parentCommentId !== -1) {
+            requestBody = {
+                postId: params.postId,
+                text: commentValue,
+                parentCommentId: parentCommentId,
+            }
+        } else {
+            requestBody = {
+                postId: params.postId,
+                text: commentValue,
+            }
+        }
+
+        addComment(requestBody)
             .then(res => {
-                console.log(res)
                 setCommentValue('')
                 refetch()
                 setBackdropEnabled(false)
@@ -126,34 +145,67 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const loadCheck = () => {}
+    const Comment: React.FC<{
+        data: IComment
+        isReply: boolean
+        highlight: boolean
+    }> = ({ data, isReply, highlight }): JSX.Element => {
+        const animation = useRef(new Animated.Value(0)).current
 
-    const Comment: React.FC<{ data: IComment }> = ({ data }): JSX.Element => {
+        // TODO: 하이라이트 Fade-out 구현
+
+        const replyAnimatedStyle = {
+            opacity: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 0.3],
+            }),
+        }
+
+        useEffect(() => {
+            Animated.timing(animation, {
+                toValue: highlight ? 1 : 0,
+                duration: 300,
+                useNativeDriver: false,
+            }).start()
+        }, [])
+
         return (
-            <View style={styles.commentContainer}>
-                <View style={styles.commentHeader}>
-                    {/* ### 프로필 이미지 ### */}
-                    <View style={styles.commentProfileImage}></View>
-                    {/* ### 닉네임 ### */}
-                    <View style={styles.commentNicknameContainer}>
-                        <Text style={styles.commentNicknameText}>
-                            {data.authorNickname}
-                        </Text>
+            <View
+                style={
+                    !isReply
+                        ? styles.commentContainer
+                        : styles.replyCommentContainer
+                }>
+                <Animated.View
+                    style={[styles.commentHighlight, replyAnimatedStyle]}
+                />
+                <View>
+                    <View style={styles.commentHeader}>
+                        {/* ### 프로필 이미지 ### */}
+                        <View style={styles.commentProfileImage}></View>
+                        {/* ### 닉네임 ### */}
+                        <View style={styles.commentNicknameContainer}>
+                            <Text style={styles.commentNicknameText}>
+                                {data.authorNickname}
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            style={{ position: 'relative', top: -8 }}>
+                            <IcOthers fill='white' />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={{ position: 'relative', top: -8 }}>
-                        <IcOthers fill='white' />
-                    </TouchableOpacity>
-                </View>
-                {/* ### 댓글 본문 ### */}
-                <View style={styles.commentBody}>
-                    <Text style={styles.commentBodyText}>{data.text}</Text>
-                </View>
-                <View style={styles.commentFooter}>
-                    <View style={styles.commentTime}>
-                        <Text style={styles.commentTimeText}>9/01 13:32</Text>
+                    {/* ### 댓글 본문 ### */}
+                    <View style={styles.commentBody}>
+                        <Text style={styles.commentBodyText}>{data.text}</Text>
                     </View>
-                    <View style={styles.commentActions}>
-                        {/* ### 좋아요 버튼 ###
+                    <View style={styles.commentFooter}>
+                        <View style={styles.commentTime}>
+                            <Text style={styles.commentTimeText}>
+                                9/01 13:32
+                            </Text>
+                        </View>
+                        <View style={styles.commentActions}>
+                            {/* ### 좋아요 버튼 ###
                         <TouchableOpacity style={styles.commentActionButton}>
                             <IcThumbUp />
                             <Text
@@ -164,17 +216,27 @@ const BoardPost: React.FC = (): JSX.Element => {
                                 2
                             </Text>
                         </TouchableOpacity> */}
-                        {/* ### 답글 달기 버튼 ### */}
-                        <TouchableOpacity style={styles.commentActionButton}>
-                            <IcComment />
-                            <Text
-                                style={[
-                                    styles.commentActionText,
-                                    { color: baseColors.LIGHT_BLUE },
-                                ]}>
-                                답글 달기
-                            </Text>
-                        </TouchableOpacity>
+
+                            {/* ### 답글 달기 버튼 ### */}
+                            <TouchableOpacity
+                                style={styles.commentActionButton}
+                                onPress={() => {
+                                    if (parentCommentId === data.commentId) {
+                                        setParentCommentId(-1)
+                                    } else {
+                                        setParentCommentId(data.commentId)
+                                    }
+                                }}>
+                                <IcComment />
+                                <Text
+                                    style={[
+                                        styles.commentActionText,
+                                        { color: baseColors.LIGHT_BLUE },
+                                    ]}>
+                                    답글 달기
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -324,9 +386,26 @@ const BoardPost: React.FC = (): JSX.Element => {
                 <View onLayout={handleCommentLayout} style={styles.line} />
                 {/* ### 댓글 리스트 ### */}
                 <View>
-                    {data?.comments.map((comment, index) => (
-                        <Comment key={index} data={comment} />
-                    ))}
+                    {data?.comments.map((comment, index) => {
+                        var highlight = comment.commentId === parentCommentId
+                        return (
+                            <View key={index}>
+                                <Comment
+                                    data={comment}
+                                    isReply={false}
+                                    highlight={highlight}
+                                />
+                                {comment.replies.map((val, idx) => (
+                                    <Comment
+                                        key={idx}
+                                        data={val}
+                                        isReply={true}
+                                        highlight={false}
+                                    />
+                                ))}
+                            </View>
+                        )
+                    })}
                 </View>
             </ScrollView>
             {/* ### 댓글 입력 container ### */}
@@ -427,6 +506,18 @@ const createStyles = (theme: Icolor) =>
         },
         commentContainer: {
             flex: 1,
+        },
+        commentHighlight: {
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            backgroundColor: baseColors.SCHOOL_BG,
+        },
+        replyCommentContainer: {
+            flex: 1,
+            marginStart: 20,
         },
         commentHeader: {
             flexDirection: 'row',

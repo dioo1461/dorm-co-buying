@@ -11,6 +11,8 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
         baseURL: BASE_URL,
         // baseURL: "http://192.168.250.104:8080",
         // baseURL: "http://jack8226.ddns.net:8080",
+        maxContentLength: Infinity, // 요청 본문 크기 제한 해제
+        maxBodyLength: Infinity, // POST 요청 크기 제한 해제
         ...options,
     })
 }
@@ -25,8 +27,8 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
     const authAxios = axios.create({
         headers: { Authorization: `Bearer ${token}` },
         baseURL: BASE_URL,
-        // baseURL: "http://192.168.250.104:8080",
-        // baseURL: "http://jack8226.ddns.net:8080",
+        maxContentLength: Infinity, // 요청 본문 크기 제한 해제
+        maxBodyLength: Infinity, // POST 요청 크기 제한 해제
         ...options,
     })
     authAxios.interceptors.request.use(

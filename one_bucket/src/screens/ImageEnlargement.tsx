@@ -63,7 +63,6 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
     }, [])
 
     useEffect(() => {
-        console.log(imagePromiseList.current.length)
         Promise.all(imagePromiseList.current)
             .then(() => setImageLoaded(true))
             .catch(err => {
