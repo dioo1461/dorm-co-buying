@@ -41,8 +41,17 @@ export const queryMarketPostList = (
     )
 }
 
-export const queryMarketPost = (postId: number) => {
-    return useQuery<GetMarketPostResponse>(['marketPost', postId], () =>
-        getMarketPost(postId),
+export const queryMarketPost = (
+    postId: number,
+    onSuccessCallback?: (data: GetMarketPostResponse) => void,
+) => {
+    return useQuery<GetMarketPostResponse>(
+        ['marketPost', postId],
+        () => getMarketPost(postId),
+        {
+            onSuccess: data => {
+                if (onSuccessCallback) onSuccessCallback(data)
+            },
+        },
     )
 }

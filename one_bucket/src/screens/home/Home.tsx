@@ -136,11 +136,6 @@ const Home: React.FC = (): JSX.Element => {
                 onMomentumScrollEnd={onScrollEnd}
                 contentContainerStyle={styles.postList}
             />
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={() => navigation.navigate('CreateMarketPost')}>
-                <Text style={styles.fabIcon}>+</Text>
-            </TouchableOpacity>
         </View>
     )
 }
@@ -223,22 +218,6 @@ const createStyles = (theme: Icolor) =>
             alignItems: 'center',
             borderRadius: 10,
             borderWidth: 0,
-        },
-        fab: {
-            backgroundColor: theme.BUTTON_BG,
-            position: 'absolute',
-            width: 56,
-            height: 56,
-            alignItems: 'center',
-            justifyContent: 'center',
-            right: 25,
-            bottom: 70,
-            borderRadius: 30,
-            elevation: 8,
-        },
-        fabIcon: {
-            fontSize: 40,
-            color: theme.BUTTON_TEXT,
         },
     })
 

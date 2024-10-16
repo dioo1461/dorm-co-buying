@@ -26,8 +26,10 @@ import { RouteProp, useRoute } from '@react-navigation/native'
 import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
 import Loading from '@/components/Loading'
 import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
+import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
+import { CachedImage } from '@/components/CachedImage'
 
-// link preview 보안 문제 ?
+// link preview 보안 문제 ? (악의적 스크립트 삽입)
 
 const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
     Dimensions.get('window').width,
@@ -53,17 +55,48 @@ const MarketPost: React.FC = (): JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    const [imageUriList, setImageUriList] = useState<string[]>(['1', '2'])
-
     type MarketPostRouteProp = RouteProp<RootStackParamList, 'MarketPost'>
     const { params } = useRoute<MarketPostRouteProp>()
 
-    const { data, isLoading, error } = queryMarketPost(params.postId)
-
-    const [metaData, setMetaData] = useState<any>(null)
-
+    // 레이아웃 관련 변수
     const scrollY = useRef(new Animated.Value(0)).current
 
+    // 상태 관리 변수
+    const [metaData, setMetaData] = useState<any>(null)
+
+    const onSuccessCallback = (data: GetMarketPostResponse) => {
+        const parseMetaData = async (url: string) => {
+            OpenGraphParser.extractMeta(url)
+                .then(data => {
+                    console.log(data)
+                    const hostname = data[0].url.split('/')[2]
+
+                    const meta = {
+                        title: data[0].title,
+                        description: data[0].description,
+                        url: hostname,
+                        image: data[0].image,
+                        'image:width': data[0]['image:width'],
+                        'image:height': data[0]['image:height'],
+                    }
+                    setMetaData(meta)
+                    console.log(meta)
+                })
+                .catch(error => {
+                    setMetaData(null)
+                    console.log('error occurred while parsing url -' + error)
+                })
+        }
+
+        if (data.trade_linkUrl) {
+            parseMetaData(data.trade_linkUrl)
+        }
+    }
+
+    const { data, isLoading, error } = queryMarketPost(
+        params.postId,
+        onSuccessCallback,
+    )
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 300], // 스크롤 범위
         outputRange: [0, 1], // opacity 값 변화
@@ -74,23 +107,6 @@ const MarketPost: React.FC = (): JSX.Element => {
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false },
     )
-
-    useEffect(() => {
-        const parseMetaData = async (url: string) => {
-            OpenGraphParser.extractMeta(url)
-                .then(data => {
-                    console.log(data)
-                    setMetaData(data)
-                })
-                .catch(error => {
-                    console.log('error occurred while parsing url -' + error)
-                })
-        }
-
-        if (data?.trade_linkUrl) {
-            parseMetaData(data.trade_linkUrl)
-        }
-    }, [])
 
     if (error) return <Text>Error...</Text>
     if (isLoading) return <Loading theme={themeColor} />
@@ -106,11 +122,14 @@ const MarketPost: React.FC = (): JSX.Element => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled>
-                    {imageUriList.map((uri, index) => (
-                        <View key={index} style={styles.imageView}>
-                            <Image
-                                source={{ uri }}
-                                style={{ width: 100, height: 100 }}
+                    {data?.imageUrls?.map((url, index) => (
+                        <View key={index} style={styles.imageContainer}>
+                            <CachedImage
+                                imageStyle={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                                imageUrl={url}
                             />
                         </View>
                     ))}
@@ -132,35 +151,50 @@ const MarketPost: React.FC = (): JSX.Element => {
                         }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
                     <Text style={styles.contentText}>{data?.text}</Text>
                     {/* ### 사이트 링크 프리뷰 ### */}
-                    {data?.trade_linkUrl && (
-                        <TouchableNativeFeedback
-                            background={TouchableNativeFeedback.Ripple(
-                                baseColors.GRAY_2,
-                                false,
-                            )}>
-                            <View style={styles.linkPreviewContainer}>
-                                <View
-                                    style={{
-                                        width: 112,
-                                        height: 112,
-                                        backgroundColor: 'white',
-                                    }}></View>
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        padding: 10,
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text style={styles.linkPreviewTitleText}>
-                                        {metaData?.title}
-                                    </Text>
-                                    <Text style={styles.linkPreviewUrlText}>
-                                        {metaData?.url}
-                                    </Text>
+                    {data?.trade_linkUrl &&
+                        (metaData ? (
+                            <TouchableNativeFeedback
+                                background={TouchableNativeFeedback.Ripple(
+                                    baseColors.GRAY_2,
+                                    false,
+                                )}>
+                                <View style={styles.linkPreviewContainer}>
+                                    {/* ### 프리뷰 이미지 ### */}
+                                    {metaData!.image && (
+                                        <View
+                                            style={{
+                                                width: 112,
+                                                height: 112,
+                                            }}>
+                                            <CachedImage
+                                                imageUrl={metaData!.image}
+                                                imageStyle={{
+                                                    width: 112,
+                                                    height: 112,
+                                                }}
+                                                externalUrl={true}
+                                            />
+                                        </View>
+                                    )}
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            padding: 10,
+                                            justifyContent: 'space-between',
+                                        }}>
+                                        <Text
+                                            style={styles.linkPreviewTitleText}>
+                                            {metaData?.title}
+                                        </Text>
+                                        <Text style={styles.linkPreviewUrlText}>
+                                            {metaData?.url}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableNativeFeedback>
-                    )}
+                            </TouchableNativeFeedback>
+                        ) : (
+                            <Text>{data?.trade_linkUrl}</Text>
+                        ))}
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
@@ -235,7 +269,7 @@ const MarketPost: React.FC = (): JSX.Element => {
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
-        imageView: {
+        imageContainer: {
             width: SCREEN_WIDTH,
             height: SCREEN_WIDTH,
             backgroundColor: 'gray',

@@ -361,6 +361,11 @@ const Market: React.FC = (): JSX.Element => {
             <View style={styles.flatList}>
                 <PostFlatList />
             </View>
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('CreateMarketPost')}>
+                <Text style={styles.fabIcon}>+</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -437,6 +442,22 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT,
             fontSize: 13,
             fontFamily: 'NanumGothic',
+        },
+        fab: {
+            backgroundColor: theme.BUTTON_BG,
+            position: 'absolute',
+            width: 56,
+            height: 56,
+            alignItems: 'center',
+            justifyContent: 'center',
+            right: 25,
+            bottom: 70,
+            borderRadius: 30,
+            elevation: 8,
+        },
+        fabIcon: {
+            fontSize: 40,
+            color: theme.BUTTON_TEXT,
         },
     })
 

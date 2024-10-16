@@ -22,7 +22,6 @@ import ChatList from 'screens/chat/ChatList'
 import Mypage from 'screens/Mypage'
 import HomeTab from 'screens/navigation/HomeTab'
 import { notifsNum } from 'screens/Notification'
-import ChatTest from '../chat/ChatTest'
 import { stackNavigation } from './NativeStackNavigation'
 
 export const mainRoutes = [
@@ -137,28 +136,5 @@ export const mainRoutes = [
                 </View>
             )
         },
-    },
-    {
-        name: 'chatTest',
-        title: 'chatTest',
-        tabBarLabel: 'chatTest',
-        component: ChatTest,
-        activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
-        inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,
-        activeIconDark: <IcTabChatActive fill={baseColors.WHITE} />,
-        inactiveIconDark: <IcTabChatInactive fill={baseColors.WHITE} />,
-        headerRight: () => (
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginEnd: 15,
-                    }}>
-                    <IcOthers fill='white' />
-                </TouchableOpacity>
-            </View>
-        ),
     },
 ]

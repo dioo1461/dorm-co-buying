@@ -13,12 +13,14 @@ import * as RNFS from 'react-native-fs'
 interface Props {
     imageStyle: StyleProp<ImageStyle>
     imageUrl: string
+    externalUrl?: boolean
     onLoad?: (res: Promise<void>) => void
 }
 
 export const CachedImage = ({
     imageStyle,
     imageUrl,
+    externalUrl,
     onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
@@ -31,11 +33,6 @@ export const CachedImage = ({
     const loadFile = (path: string) => {
         setSource({ uri: path })
     }
-
-    useEffect(() => {
-        if (source) {
-        }
-    }, [source])
 
     const downloadFile = async (uri: string, path: string) => {
         const directoryPath = path.substring(0, path.lastIndexOf('/')) // 디렉터리 경로 추출
@@ -50,8 +47,11 @@ export const CachedImage = ({
             })
             .then(() => {
                 // 파일 다운로드
+                const downloadUrl = externalUrl
+                    ? imageUrl
+                    : STORAGE_BASE_URL + imageUrl
                 return RNFS.downloadFile({
-                    fromUrl: STORAGE_BASE_URL + imageUrl,
+                    fromUrl: downloadUrl,
                     toFile: path,
                 }).promise
             })

@@ -335,8 +335,8 @@ const BoardPost: React.FC = (): JSX.Element => {
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={onMomentumScrollEnd}
                 contentOffset={{ x: imageScrollPos, y: 0 }}>
-                {data!.imageUrls.map((url, index) => (
-                    <View style={styles.imageContainer} key={index}>
+                {data!.imageUrls?.map((url, index) => (
+                    <View key={index} style={styles.imageContainer}>
                         <CachedImage
                             imageStyle={{
                                 width: IMAGE_SIZE,

@@ -133,6 +133,8 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
             },
         }
 
+        console.log(form)
+
         createMarketPost(form)
             .then(res => {
                 navigation.goBack()
