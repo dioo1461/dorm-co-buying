@@ -12,6 +12,9 @@ export const createMarketPost = async (data: CreateMarketPostRequestBody) => {
         .then(res => {
             return res.data
         })
+    // .catch(err => {
+    //     console.log('createMarketPost - ' + err)
+    // })
 }
 
 export const getMarketPostList = async (

@@ -16,7 +16,7 @@ import {
 
 export const queryBoardPost = (
     postId: number,
-    onSuccessCallback: (data: GetBoardPostResponse) => void,
+    onSuccessCallback?: (data: GetBoardPostResponse) => void,
 ) => {
     return useQuery<GetBoardPostResponse>(
         ['boardPost', postId],
@@ -25,7 +25,7 @@ export const queryBoardPost = (
             // 유저가 이미 좋아요를 눌렀는지에 대해,
             // boardPost의 userLiked state를 true/false 로 set
             onSuccess: data => {
-                onSuccessCallback(data)
+                if (onSuccessCallback) onSuccessCallback(data)
             },
         },
     )
