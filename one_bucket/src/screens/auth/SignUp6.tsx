@@ -18,6 +18,7 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+
 const SignUp6: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onSignUpSuccess } = useBoundStore(
         state => ({
@@ -42,12 +43,15 @@ const SignUp6: React.FC = (): React.JSX.Element => {
 
     const navigation = stackNavigation()
 
-    const [name, setName] = useState('tUser')
-    const [gender, setGender] = useState('man')
+    const [name, setName] = useState('')
+    const [male, setMale] = useState(true)
+    const gender = (male == true) ? 'man' : 'woman'
+    const [year, setYear] = useState('')
+    const [month, setMonth] = useState('')
+    const [day, setDay] = useState('')
     const [age, setAge] = useState(0)
+    const birth = String('1999-'+ String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
     const [bio, setBio] = useState('')
-    const [birth, setBirth] = useState('')
-
     const [isDormitory, setIsDormitory] = useState(false)
 
     const handleNameChange = (text: string) => {
@@ -78,10 +82,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     }, [])
 
     return (
-        <KeyboardAvoidingView
-            style={signUpStyles.container}
-            behavior={Platform.OS === 'android' ? 'position' : 'padding'}>
-            <View>
+            <View style={signUpStyles.container}>
                 <View style={{ marginTop: 46 }}>
                     <Text style={signUpStyles.subStep}>1. 인증 정보 설정</Text>
                     <Text style={signUpStyles.currentStep}>
@@ -92,10 +93,82 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </Text>
                 </View>
                 <ScrollView>
+                    <Text style={styles.label}>이름</Text>
+                    <TextInput
+                            style={styles.input}
+                            value={name}
+                            onChangeText={setName}
+                            placeholder='이름'
+                            placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        />
+                    <Text style={styles.label}>성별</Text>
+                    <View style={{flexDirection: "row"}}>
+                        <TouchableOpacity
+                            onPress={() => setMale(true)}
+                            style={styles.dormContainer}>
+                            <CheckBox
+                                disabled={false}
+                                value={male}
+                                onValueChange={newVal => setMale(newVal)}
+                                tintColors={{
+                                    true: baseColors.SCHOOL_BG,
+                                    false: baseColors.GRAY_1,
+                                }}
+                            />
+                            <Text style={styles.dormText}>
+                                남성
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMale(false)}
+                            style={styles.dormContainer}>
+                            <CheckBox
+                                disabled={false}
+                                value={!male}
+                                onValueChange={newVal => setMale(!newVal)}
+                                tintColors={{
+                                    true: baseColors.SCHOOL_BG,
+                                    false: baseColors.GRAY_1,
+                                }}
+                            />
+                            <Text style={styles.dormText}>
+                                여성
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={styles.label}>생년월일</Text>
+                    <View style={{flexDirection:"row", alignItems: 'center'}}>
+                        {/*
+                        <TextInput
+                                style={styles.birthInput}
+                                onChangeText={() => setYear(year)}
+                                placeholder='년'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 20, marginBottom: 10}}> / </Text>
+                        */}
+                        <TextInput
+                                style={styles.birthInput}
+                                value={month}
+                                onChangeText={setMonth}
+                                placeholder='월'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 월 </Text>
+                        <TextInput
+                                style={styles.birthInput}
+                                value={day}
+                                onChangeText={setDay}
+                                placeholder='일'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 일 </Text>
+                    </View>
                     <Text style={styles.label}>자기소개</Text>
                     <TextInput
                         style={styles.bioInput}
-                        onChangeText={() => setBio(bio)}
+                        value={bio}
+                        onChangeText={setBio}
                         placeholder='간단한 자기소개를 작성해 주세요.'
                         keyboardType='default'
                         multiline={true}
@@ -119,13 +192,12 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={handleSubmit}>
-                        {/* onPress={() => navigation.navigate('SignUp7')}> */}
+                        // onPress={handleSubmit}>
+                        onPress={() => navigation.navigate('SignUp7')}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </View>
-        </KeyboardAvoidingView>
     )
 }
 
@@ -138,10 +210,18 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT,
             fontSize: 18,
             fontFamily: 'NanumGothic-Bold',
-            marginTop: 30,
+            marginTop: 15,
             marginBottom: 10,
         },
         input: {
+            borderBottomWidth: 1,
+            paddingBottom: 4,
+            borderBottomColor: baseColors.GRAY_1,
+            fontSize: 16,
+            marginBottom: 20,
+        },
+        birthInput:{
+            width: 75,
             borderBottomWidth: 1,
             paddingBottom: 4,
             borderBottomColor: baseColors.GRAY_1,
@@ -171,6 +251,7 @@ const createStyles = (theme: Icolor) =>
             flexDirection: 'row',
             alignItems: 'center',
             marginBottom: 20,
+            padding: 10,
         },
         dormText: {
             color: theme.TEXT_SECONDARY,
