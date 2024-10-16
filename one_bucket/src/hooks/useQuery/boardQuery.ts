@@ -6,6 +6,7 @@ import {
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { MutableRefObject } from 'react'
 import {
     useInfiniteQuery,
     UseInfiniteQueryOptions,
@@ -13,9 +14,20 @@ import {
     UseQueryOptions,
 } from 'react-query'
 
-export const queryBoardPost = (postId: number) => {
-    return useQuery<GetBoardPostResponse>(['boardPost', postId], () =>
-        getBoardPost(postId),
+export const queryBoardPost = (
+    postId: number,
+    onSuccessCallback: (data: GetBoardPostResponse) => void,
+) => {
+    return useQuery<GetBoardPostResponse>(
+        ['boardPost', postId],
+        () => getBoardPost(postId),
+        {
+            // 유저가 이미 좋아요를 눌렀는지에 대해,
+            // boardPost의 userLiked state를 true/false 로 set
+            onSuccess: data => {
+                onSuccessCallback(data)
+            },
+        },
     )
 }
 
