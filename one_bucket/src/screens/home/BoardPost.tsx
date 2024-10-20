@@ -484,7 +484,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                                 styles.commentActionText,
                                 { color: baseColors.LIGHT_BLUE },
                             ]}>
-                            {data?.commentsCount}
+                            {data?.commentsCount ?? 0}
                         </Text>
                     </TouchableOpacity>
                 </View>

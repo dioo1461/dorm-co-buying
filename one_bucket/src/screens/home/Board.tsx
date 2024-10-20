@@ -186,7 +186,7 @@ const Board: React.FC = (): JSX.Element => {
                                         styles.postCommentCountText,
                                         { marginStart: 2 },
                                     ]}>
-                                    {data.commentsCount}
+                                    {data.commentsCount ?? 0}
                                 </Text>
                             </View>
                         </View>
