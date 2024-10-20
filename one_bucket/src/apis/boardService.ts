@@ -164,3 +164,18 @@ export const deleteLike = async (
             throw err
         })
 }
+
+export const deletePost = async (
+    postId: number,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(`/post/${postId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('deletePost - ' + err)
+            throw err
+        })
+}

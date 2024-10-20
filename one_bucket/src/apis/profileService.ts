@@ -15,6 +15,7 @@ export const getProfile = async () => {
         })
         .catch(error => {
             // 401 unauthorized
+            console.log(error.response)
             throw error
         })
 }

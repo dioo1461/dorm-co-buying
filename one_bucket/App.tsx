@@ -12,7 +12,7 @@ import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 
 import { getBoardList } from '@/apis/boardService'
-import { getMemberInfo } from '@/apis/profileService'
+import { getMemberInfo, getProfile } from '@/apis/profileService'
 import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import Login from '@/screens/auth/Login'
@@ -53,18 +53,23 @@ import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 
-
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
-    const { loginState, setLoginState, setMemberInfo, setBoardList } =
-        useBoundStore(state => ({
-            loginState: state.loginState,
-            setLoginState: state.setLoginState,
-            setMemberInfo: state.setMemberInfo,
-            setBoardList: state.setBoardList,
-        }))
+    const {
+        loginState,
+        setLoginState,
+        setMemberInfo,
+        setProfile,
+        setBoardList,
+    } = useBoundStore(state => ({
+        loginState: state.loginState,
+        setLoginState: state.setLoginState,
+        setMemberInfo: state.setMemberInfo,
+        setProfile: state.setProfile,
+        setBoardList: state.setBoardList,
+    }))
 
     const themeColor = useBoundStore(state => state.themeColor)
     const setThemeColor = useBoundStore(state => state.setThemeColor)
@@ -75,7 +80,7 @@ function App(): React.JSX.Element {
     }, [])
 
     const queryClient = new QueryClient()
-    
+
     const [authed, setAuthed] = useState(0)
 
     useEffect(() => {
@@ -110,6 +115,13 @@ function App(): React.JSX.Element {
                     console.log(`getBoardList - ${err}`)
                     setAuthed(1)
                 })
+            await getProfile()
+                .then(res => {
+                    setProfile(res)
+                })
+                .catch(err => {
+                    console.log(`getProfile - ${err}`)
+                })
             SplashScreen.hide()
         }
 
@@ -121,7 +133,7 @@ function App(): React.JSX.Element {
     }, [loginState])
 
     const home = (authed: number) => {
-        if(authed == 0) return strings.homeScreenName
+        if (authed == 0) return strings.homeScreenName
         else return strings.unauthHomeScreenName
     }
 
@@ -164,47 +176,6 @@ function App(): React.JSX.Element {
             </Tab.Navigator>
         )
     }
-    /*
-    const MainScreen: React.FC = () => {
-        return (
-            <Tab.Navigator
-                initialRouteName={strings.homeScreenName}
-                screenOptions={{
-                    tabBarStyle: {
-                        backgroundColor: themeColor.BG,
-                    },
-                    headerStyle: {
-                        backgroundColor: themeColor.HEADER_BG,
-                    },
-                }}>
-                {mainRoutes[0].map(route => (
-                    <Tab.Screen
-                        key={route.name}
-                        name={route.name}
-                        component={route.component}
-                        options={{
-                            title: route.title,
-                            tabBarLabel: route.tabBarLabel,
-                            headerRight: route.headerRight,
-                            headerTintColor: themeColor.HEADER_TEXT,
-                            tabBarIcon: ({ focused }) => {
-                                if (themeColor === lightColors) {
-                                    return focused
-                                        ? route.activeIconLight
-                                        : route.inactiveIconLight
-                                } else {
-                                    return focused
-                                        ? route.activeIconDark
-                                        : route.inactiveIconDark
-                                }
-                            },
-                        }}
-                    />
-                ))}
-            </Tab.Navigator>
-        )
-    }
-    */
 
     return (
         <QueryClientProvider client={queryClient}>

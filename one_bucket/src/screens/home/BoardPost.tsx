@@ -35,6 +35,7 @@ import { addComment, addLike, deleteLike } from '@/apis/boardService'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { CachedImage } from '@/components/CachedImage'
 import { sleep } from '@/utils/asyncUtils'
+import { SelectablePopup } from '@/components/SelectablePopup'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
@@ -48,9 +49,10 @@ const LOCK_SLEEP_TIME = 3000
 // TODO: 본인 글에 좋아요 못하게 설정
 //      -> authorNickname 외에도 authorUsername이 추가로 필요함
 const BoardPost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        memberInfo: state.memberInfo,
     }))
 
     // 다크모드 변경 감지
@@ -86,23 +88,51 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [parentCommentId, setParentCommentId] = useState(-1)
 
     const [isRefreshing, setIsRefreshing] = useState(false)
-    const [backdropEnabled, setBackdropEnabled] = useState(false)
+    const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
+
+    const [selectablePopupEnabled, setSelectablePopupEnabled] = useState(false)
+    const [selectablePopupButtonProps, setSelectablePopupButtonProps] =
+        useState<any>([])
 
     const onSuccessCallback = (data: GetBoardPostResponse) => {
         userLiked.current = data.userAlreadyLikes
         setLikeAdded(0)
+        if (data.authorNickname == memberInfo!.nickname) {
+            setSelectablePopupButtonProps([
+                {
+                    text: '수정하기',
+                    style: 'default',
+                    onPress: onModifyPostButtonPress,
+                },
+                {
+                    text: '삭제하기',
+                    style: 'default',
+                    onPress: onDeletePostButtonPress,
+                },
+            ])
+        } else {
+            setSelectablePopupButtonProps([
+                {
+                    text: '신고하기',
+                    style: 'destructive',
+                    onPress: onReportPostButtonPress,
+                },
+            ])
+        }
     }
+
+    const onModifyPostButtonPress = () => {}
+    const onDeletePostButtonPress = () => {}
+    const onReportPostButtonPress = () => {}
 
     const { data, isLoading, error, refetch } = queryBoardPost(
         params.postId,
         onSuccessCallback,
     )
 
-    const animationList: Animated.Value[] = []
-
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
-        setBackdropEnabled(true)
+        setLoadingBackdropEnabled(true)
         var requestBody
         if (parentCommentId !== -1) {
             requestBody = {
@@ -121,7 +151,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             .then(res => {
                 setCommentValue('')
                 refetch()
-                setBackdropEnabled(false)
+                setLoadingBackdropEnabled(false)
             })
             .catch(err => {
                 console.log(err)
@@ -232,18 +262,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                             </Text>
                         </View>
                         <View style={styles.commentActions}>
-                            {/* ### 좋아요 버튼 ###
-                        <TouchableOpacity style={styles.commentActionButton}>
-                            <IcThumbUp />
-                            <Text
-                                style={[
-                                    styles.commentActionText,
-                                    { color: baseColors.LIGHT_RED },
-                                ]}>
-                                2
-                            </Text>
-                        </TouchableOpacity> */}
-
                             {/* ### 답글 달기 버튼 ### */}
                             {!isReply && (
                                 <TouchableOpacity
@@ -541,7 +559,18 @@ const BoardPost: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
             )}
-            <LoadingBackdrop enabled={backdropEnabled} theme={themeColor} />
+            <LoadingBackdrop
+                enabled={loadingBackdropEnabled}
+                theme={themeColor}
+            />
+            <SelectablePopup
+                theme={themeColor}
+                onBackgroundPress={() =>
+                    setSelectablePopupEnabled(!selectablePopupEnabled)
+                }
+                enabled={selectablePopupEnabled}
+                buttons={selectablePopupButtonProps}
+            />
         </View>
     )
 }

@@ -53,6 +53,7 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
             return Promise.reject(error)
         },
     )
+
     return authAxios
 }
 

@@ -1,9 +1,12 @@
 import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
+import { GetProfileResponse } from '@/data/response/success/GetProfileResponse'
 import { StateCreator } from 'zustand'
 
 export interface ProfileSlice {
     memberInfo: GetMemberInfoResponse | null
     setMemberInfo: (memberInfo: GetMemberInfoResponse) => void
+    profile: GetProfileResponse | null
+    setProfile: (profile: GetProfileResponse) => void
 }
 
 export const createProfileSlice: StateCreator<ProfileSlice, [], []> = set => ({
@@ -11,5 +14,9 @@ export const createProfileSlice: StateCreator<ProfileSlice, [], []> = set => ({
     memberInfo: null,
     setMemberInfo: (memberInfo: GetMemberInfoResponse) => {
         set({ memberInfo })
+    },
+    profile: null,
+    setProfile: (profile: GetProfileResponse) => {
+        set({ profile })
     },
 })

@@ -21,10 +21,14 @@ import {
 } from 'react-native'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
-        themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
-    }))
+    const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(
+        state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            memberInfo: state.memberInfo,
+            profile: state.profile,
+        }),
+    )
 
     // 다크모드 변경 감지
     useEffect(() => {
@@ -39,23 +43,11 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
     const navigation = useNavigation()
 
-    const {
-        data: profileData,
-        isLoading: isProfileLoading,
-        error: profileError,
-    } = queryGetProfile()
-
-    const {
-        data: memberInfoData,
-        isLoading: isMemberInfoLoading,
-        error: memberInfoError,
-    } = queryGetMemberInfo()
-
-    const {
-        data: profileImageData,
-        isLoading: isProfileImageLoading,
-        error: profileImageError,
-    } = queryGetProfileImage()
+    // const {
+    //     data: profileImageData,
+    //     isLoading: isProfileImageLoading,
+    //     error: profileImageError,
+    // } = queryGetProfileImage()
 
     const formatDate = (raw: any) => {
         const date = new Date(raw)
@@ -68,21 +60,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     const onProfileModifyButtonClick = () => {
         navigation.navigate('ProfileModify')
     }
-
-    if (profileError || memberInfoError || profileImageError)
-        return <Text>Error...</Text>
-
-    if (isProfileLoading || isMemberInfoLoading || isProfileImageLoading)
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator size='large' color={baseColors.SCHOOL_BG} />
-            </View>
-        )
 
     return (
         <View style={styles.container}>
@@ -101,7 +78,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.profileImage}
                     />
                     <Text style={styles.nicknameText}>
-                        {memberInfoData!.nickname}
+                        {memberInfo!.nickname}
                     </Text>
                 </View>
                 <View style={styles.bioContainer}>
@@ -113,7 +90,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.bioTextScrollView}
                         showsVerticalScrollIndicator={false}>
                         <Text style={styles.bioText}>
-                            {profileData!.description}
+                            {profile!.description}
                         </Text>
                     </ScrollView>
                 </View>
@@ -123,15 +100,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     <View>
                         <Text style={styles.profileLabel}>이름</Text>
                         <Text style={styles.profileContext}>
-                            {profileData!.name}
+                            {profile!.name}
                         </Text>
                         <Text style={styles.profileLabel}>성별</Text>
                         <Text style={styles.profileContext}>
-                            {Gender[profileData!.gender]}
+                            {Gender[profile!.gender]}
                         </Text>
                         <Text style={styles.profileLabel}>생년월일</Text>
                         <Text style={styles.profileContext}>
-                            {formatDate(profileData!.birth)}
+                            {formatDate(profile!.birth)}
                         </Text>
                         <Text style={styles.profileLabel}>학교명</Text>
                         <Text style={styles.profileContext}>홍대</Text>
@@ -139,7 +116,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         <Text style={styles.profileContext}>컴붕</Text>
                         <Text style={styles.profileLabel}>가입한 날짜</Text>
                         <Text style={styles.profileContext}>
-                            {formatDate(profileData!.createAt)}
+                            {formatDate(profile!.createAt)}
                         </Text>
                     </View>
                 </ScrollView>
