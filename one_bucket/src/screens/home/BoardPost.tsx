@@ -29,6 +29,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    ToastAndroid,
     TouchableOpacity,
     View,
 } from 'react-native'
@@ -36,6 +37,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
+import Comment from '@/components/Comment'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
@@ -226,105 +228,18 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const Comment: React.FC<{
-        data: IComment
-        isReply: boolean
-        highlight: boolean
-    }> = ({ data, isReply, highlight }): JSX.Element => {
-        const animation = useRef(new Animated.Value(0)).current
-
-        // TODO: 하이라이트 Fade-out 구현
-
-        const replyAnimatedStyle = {
-            opacity: animation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 0.3],
-            }),
-        }
-
-        useEffect(() => {
-            Animated.timing(animation, {
-                toValue: highlight ? 1 : 0,
-                duration: 300,
-                useNativeDriver: false,
-            }).start()
-        }, [])
-
-        return (
-            <View
-                style={
-                    !isReply
-                        ? styles.commentContainer
-                        : styles.replyCommentContainer
-                }>
-                <Animated.View
-                    style={[styles.commentHighlight, replyAnimatedStyle]}
-                />
-                <View>
-                    <View style={styles.commentHeader}>
-                        {/* ### 프로필 이미지 ### */}
-                        <View style={styles.commentProfileImage}></View>
-                        {/* ### 닉네임 ### */}
-                        <View style={styles.commentNicknameContainer}>
-                            <Text style={styles.commentNicknameText}>
-                                {data.authorNickname}
-                            </Text>
-                        </View>
-                        <TouchableOpacity
-                            style={{ position: 'relative', top: -8 }}>
-                            <IcOthers fill='white' />
-                        </TouchableOpacity>
-                    </View>
-                    {/* ### 댓글 본문 ### */}
-                    <View style={styles.commentBody}>
-                        <Text style={styles.commentBodyText}>{data.text}</Text>
-                    </View>
-                    <View style={styles.commentFooter}>
-                        <View style={styles.commentTime}>
-                            <Text style={styles.commentTimeText}>
-                                9/01 13:32
-                            </Text>
-                        </View>
-                        <View style={styles.commentActions}>
-                            {/* ### 답글 달기 버튼 ### */}
-                            {!isReply && (
-                                <TouchableOpacity
-                                    style={styles.commentActionButton}
-                                    onPress={() => {
-                                        if (
-                                            parentCommentId === data.commentId
-                                        ) {
-                                            setParentCommentId(-1)
-                                        } else {
-                                            setParentCommentId(data.commentId)
-                                        }
-                                    }}>
-                                    <IcComment />
-                                    <Text
-                                        style={[
-                                            styles.commentActionText,
-                                            { color: baseColors.LIGHT_BLUE },
-                                        ]}>
-                                        답글 달기
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
-                </View>
-            </View>
-        )
-    }
-
     const handleLikeButtonPress = async () => {
         if (data!.authorNickname)
             if (likeLock.current) {
-                // TODO: 좋아요 lock 알림 출력
+                ToastAndroid.show(
+                    '좋아요는 3초에 한 번 이상 누를 수 없습니다.',
+                    ToastAndroid.SHORT,
+                )
                 return
             }
 
         if (userLiked.current) {
-            // TODO: 좋아요 취소 dialog 출력
+            ToastAndroid.show('좋아요를 취소했습니다.', ToastAndroid.SHORT)
             likeLock.current = true
             userLiked.current = false
             setLikeAdded(likeAdded - 1)
@@ -335,7 +250,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         }
 
         if (!userLiked.current) {
-            // TODO: 좋아요 완료 dialog 출력
+            // TODO: 좋아요 완료 toast 출력
             likeLock.current = true
             userLiked.current = true
             setLikeAdded(likeAdded + 1)
@@ -367,30 +282,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 />
             </View>
         )
-
-    const ImageScrollView = () => {
-        return (
-            <ScrollView
-                ref={imageScrollViewRef}
-                horizontal
-                style={{ flexDirection: 'row' }}
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={onMomentumScrollEnd}
-                contentOffset={{ x: imageScrollPos, y: 0 }}>
-                {data!.imageUrls?.map((url, index) => (
-                    <View key={index} style={styles.imageContainer}>
-                        <CachedImage
-                            imageStyle={{
-                                width: IMAGE_SIZE,
-                                height: IMAGE_SIZE,
-                            }}
-                            imageUrl={url}
-                        />
-                    </View>
-                ))}
-            </ScrollView>
-        )
-    }
 
     return (
         <View style={styles.container}>
@@ -496,15 +387,21 @@ const BoardPost: React.FC = (): JSX.Element => {
                         return (
                             <View key={index}>
                                 <Comment
+                                    theme={themeColor}
                                     data={comment}
                                     isReply={false}
+                                    parentCommentId={parentCommentId}
+                                    setParentCommentId={setParentCommentId}
                                     highlight={highlight}
                                 />
                                 {comment.replies.map((val, idx) => (
                                     <Comment
                                         key={idx}
+                                        theme={themeColor}
                                         data={val}
                                         isReply={true}
+                                        parentCommentId={parentCommentId}
+                                        setParentCommentId={setParentCommentId}
                                         highlight={false}
                                     />
                                 ))}
