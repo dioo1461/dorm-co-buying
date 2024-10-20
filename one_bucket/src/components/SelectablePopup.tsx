@@ -63,6 +63,7 @@ export const SelectablePopup: React.FC<SelectablePopupProps> = ({
                 styles.overlay,
                 { pointerEvents: enabled ? 'auto' : 'none' },
             ]}>
+            <Backdrop enabled={enabled} onPress={handleClose} />
             <Animated.View
                 style={[
                     styles.container,
@@ -104,8 +105,6 @@ export const SelectablePopup: React.FC<SelectablePopupProps> = ({
                     </TouchableOpacity>
                 </View>
             </Animated.View>
-            {/* Backdrop 클릭 시 팝업 닫기 */}
-            <Backdrop enabled={enabled} onPress={handleClose} />
         </View>
     )
 }
@@ -113,7 +112,14 @@ export const SelectablePopup: React.FC<SelectablePopupProps> = ({
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         overlay: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+        },
+        container: {
             backgroundColor: theme.BG,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
             position: 'absolute',
             padding: 18,
             left: 0,
@@ -121,12 +127,6 @@ const createStyles = (theme: Icolor) =>
             bottom: 0,
             justifyContent: 'flex-end',
             zIndex: 1,
-        },
-        container: {
-            width: '100%',
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            zIndex: 2,
         },
         buttonsContainer: {
             backgroundColor: theme.BG_SECONDARY,
