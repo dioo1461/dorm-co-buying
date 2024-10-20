@@ -45,7 +45,7 @@ const Comment: React.FC<{
             duration: 300,
             useNativeDriver: false,
         }).start()
-    }, [])
+    }, [highlight])
 
     return (
         <View

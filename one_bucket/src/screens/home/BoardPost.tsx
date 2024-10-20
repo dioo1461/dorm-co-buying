@@ -391,7 +391,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     data={comment}
                                     isReply={false}
                                     parentCommentId={parentCommentId}
-                                    setParentCommentId={setParentCommentId}
+                                    setParentCommentId={id =>
+                                        setParentCommentId(id)
+                                    }
                                     highlight={highlight}
                                 />
                                 {comment.replies.map((val, idx) => (
@@ -401,7 +403,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                         data={val}
                                         isReply={true}
                                         parentCommentId={parentCommentId}
-                                        setParentCommentId={setParentCommentId}
+                                        setParentCommentId={id =>
+                                            setParentCommentId(id)
+                                        }
                                         highlight={false}
                                     />
                                 ))}
