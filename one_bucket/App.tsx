@@ -445,28 +445,6 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.boardPostScreenName}
                             component={BoardPost}
-                            options={{
-                                headerLeft: () => {
-                                    const navigation = stackNavigation()
-                                    return (
-                                        <TouchableOpacity
-                                            style={{ marginLeft: 16 }}
-                                            onPress={() => navigation.goBack()}>
-                                            <IcAngleLeft
-                                                fill={themeColor.HEADER_TEXT}
-                                            />
-                                        </TouchableOpacity>
-                                    )
-                                },
-                                headerStyle: {
-                                    backgroundColor: themeColor.HEADER_BG,
-                                },
-                                headerTitleStyle: {
-                                    color: themeColor.HEADER_TEXT,
-                                    fontFamily: 'NanumGothic',
-                                    fontSize: 18,
-                                },
-                            }}
                         />
                         <Stack.Screen
                             name={strings.imageEnlargementScreenName}

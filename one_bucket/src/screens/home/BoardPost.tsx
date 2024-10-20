@@ -1,16 +1,26 @@
+import { addComment, addLike, deleteLike } from '@/apis/boardService'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcComment from '@/assets/drawable/ic-comment.svg'
-import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
+import IcSend from '@/assets/drawable/ic-send.svg'
+import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
+import { CachedImage } from '@/components/CachedImage'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
+import { SelectablePopup } from '@/components/SelectablePopup'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import {
+    GetBoardPostResponse,
+    IComment,
+} from '@/data/response/success/board/GetBoardPostResponse'
 import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { sleep } from '@/utils/asyncUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
     Animated,
     Appearance,
-    GestureResponderEvent,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
@@ -26,16 +36,6 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import IcSend from '@/assets/drawable/ic-send.svg'
-import {
-    GetBoardPostResponse,
-    IComment,
-} from '@/data/response/success/board/GetBoardPostResponse'
-import { addComment, addLike, deleteLike } from '@/apis/boardService'
-import LoadingBackdrop from '@/components/LoadingBackdrop'
-import { CachedImage } from '@/components/CachedImage'
-import { sleep } from '@/utils/asyncUtils'
-import { SelectablePopup } from '@/components/SelectablePopup'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
@@ -46,8 +46,6 @@ const LOCK_SLEEP_TIME = 3000
 // TODO: 댓글 수정 기능 구현
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
-// TODO: 본인 글에 좋아요 못하게 설정
-//      -> authorNickname 외에도 authorUsername이 추가로 필요함
 const BoardPost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
@@ -71,6 +69,32 @@ const BoardPost: React.FC = (): JSX.Element => {
     const { params } = useRoute<BoardPostProp>()
 
     const navigation = stackNavigation()
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity
+                    style={{ marginLeft: 16 }}
+                    onPress={() => navigation.goBack()}>
+                    <IcAngleLeft fill={themeColor.HEADER_TEXT} />
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ marginRight: 16 }}
+                    onPress={() => setSelectablePopupEnabled(true)}>
+                    <IcOthers fill={themeColor.HEADER_TEXT} />
+                </TouchableOpacity>
+            ),
+            headerStyle: {
+                backgroundColor: themeColor.HEADER_BG,
+            },
+            headerTitleStyle: {
+                color: themeColor.HEADER_TEXT,
+                fontFamily: 'NanumGothic',
+                fontSize: 18,
+            },
+        })
+    }, [navigation])
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
@@ -565,7 +589,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             />
             <SelectablePopup
                 theme={themeColor}
-                onBackgroundPress={() =>
+                handleClose={() =>
                     setSelectablePopupEnabled(!selectablePopupEnabled)
                 }
                 enabled={selectablePopupEnabled}

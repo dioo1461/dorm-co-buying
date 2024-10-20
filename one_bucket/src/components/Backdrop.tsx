@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Animated, Pressable } from 'react-native'
+import { Animated, Dimensions, Pressable } from 'react-native'
 
 interface BackdropProps {
     enabled: boolean
@@ -32,8 +32,8 @@ const Backdrop: React.FC<BackdropProps> = ({
             style={[
                 {
                     position: 'absolute',
-                    width: '100%',
-                    height: '100%',
+                    width: Dimensions.get('window').width,
+                    height: Dimensions.get('window').height,
                     backgroundColor: 'black',
                     zIndex: 1,
                 },

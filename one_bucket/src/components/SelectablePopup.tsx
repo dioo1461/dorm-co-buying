@@ -1,5 +1,6 @@
 import { baseColors, Icolor } from '@/constants/colors'
 import {
+    Animated,
     Dimensions,
     StyleSheet,
     Text,
@@ -8,10 +9,11 @@ import {
 } from 'react-native'
 import Backdrop from './Backdrop'
 import Line from './Line'
+import { useEffect, useRef } from 'react'
 
 type SelectablePopupProps = {
     enabled: boolean
-    onBackgroundPress: () => void
+    handleClose: () => void
     theme: Icolor
     buttons: {
         text: string
@@ -22,16 +24,51 @@ type SelectablePopupProps = {
 
 export const SelectablePopup: React.FC<SelectablePopupProps> = ({
     enabled,
-    onBackgroundPress,
+    handleClose,
     theme,
     buttons,
 }): JSX.Element => {
     const styles = createStyles(theme)
 
-    console.log(buttons)
+    const animation = useRef(new Animated.Value(0)).current
+
+    const commonAnimatedStyle = {
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+        }),
+    }
+    const popupAnimatedStyle = {
+        transform: [
+            {
+                translateY: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [Dimensions.get('window').height, 0], // 아래에서 위로 올라옴
+                }),
+            },
+        ],
+    }
+
+    useEffect(() => {
+        Animated.timing(animation, {
+            toValue: enabled ? 1 : 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }, [enabled])
+
     return (
-        <View style={styles.overlay}>
-            <View style={styles.container}>
+        <View
+            style={[
+                styles.overlay,
+                { pointerEvents: enabled ? 'auto' : 'none' },
+            ]}>
+            <Animated.View
+                style={[
+                    styles.container,
+                    commonAnimatedStyle,
+                    popupAnimatedStyle,
+                ]}>
                 <View style={styles.buttonsContainer}>
                     {buttons.map((buttonProp, index) => {
                         let textStyle
@@ -60,13 +97,15 @@ export const SelectablePopup: React.FC<SelectablePopupProps> = ({
                     })}
                 </View>
                 <View style={[styles.buttonsContainer, { marginTop: 10 }]}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleClose}>
                         <Text style={styles.buttonText}>닫기</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </Animated.View>
             {/* Backdrop 클릭 시 팝업 닫기 */}
-            <Backdrop enabled={enabled} onPress={onBackgroundPress} />
+            <Backdrop enabled={enabled} onPress={handleClose} />
         </View>
     )
 }
