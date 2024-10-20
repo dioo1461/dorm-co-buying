@@ -18,6 +18,7 @@ const Comment: React.FC<{
     parentCommentId: number
     setParentCommentId: (id: number) => void
     highlight: boolean
+    onReplyButtonPress?: () => void
 }> = ({
     theme,
     data,
@@ -25,6 +26,7 @@ const Comment: React.FC<{
     parentCommentId,
     setParentCommentId,
     highlight,
+    onReplyButtonPress,
 }): JSX.Element => {
     const animation = useRef(new Animated.Value(0)).current
 
@@ -85,6 +87,8 @@ const Comment: React.FC<{
                             <TouchableOpacity
                                 style={styles.commentActionButton}
                                 onPress={() => {
+                                    onReplyButtonPress && onReplyButtonPress()
+
                                     if (parentCommentId === data.commentId) {
                                         setParentCommentId(-1)
                                     } else {

@@ -21,6 +21,8 @@ import {
     ActivityIndicator,
     Animated,
     Appearance,
+    BackHandler,
+    Keyboard,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
@@ -101,6 +103,7 @@ const BoardPost: React.FC = (): JSX.Element => {
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
     const scrollViewRef = useRef<ScrollView>(null)
+    const commentInputRef = useRef<TextInput>(null)
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
@@ -119,6 +122,20 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [selectablePopupEnabled, setSelectablePopupEnabled] = useState(false)
     const [selectablePopupButtonProps, setSelectablePopupButtonProps] =
         useState<any>([])
+
+    useEffect(() => {
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                commentInputRef.current?.blur()
+                setParentCommentId(-1)
+            },
+        )
+
+        return () => {
+            keyboardDidHideListener.remove()
+        }
+    }, [])
 
     const onSuccessCallback = (data: GetBoardPostResponse) => {
         userLiked.current = data.userAlreadyLikes
@@ -367,8 +384,12 @@ const BoardPost: React.FC = (): JSX.Element => {
                             {data!.likes + likeAdded}
                         </Text>
                     </TouchableOpacity>
-                    {/* ### 답글 달기 버튼 ### */}
-                    <TouchableOpacity style={styles.commentActionButton}>
+                    {/* ### 댓글 수 ### */}
+                    <TouchableOpacity
+                        style={styles.commentActionButton}
+                        onPress={() => {
+                            console.log(parentCommentId)
+                        }}>
                         <IcComment />
                         <Text
                             style={[
@@ -395,6 +416,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                         setParentCommentId(id)
                                     }
                                     highlight={highlight}
+                                    onReplyButtonPress={() => {
+                                        commentInputRef.current?.focus()
+                                    }}
                                 />
                                 {comment.replies.map((val, idx) => (
                                     <Comment
@@ -426,6 +450,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 }}>
                 <View style={styles.commentInputContainer}>
                     <TextInput
+                        ref={commentInputRef}
                         style={styles.commentTextInput}
                         placeholder='댓글을 입력하세요.'
                         placeholderTextColor={themeColor.TEXT_SECONDARY}
