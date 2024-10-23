@@ -38,6 +38,8 @@
         "react-native-cheerio": "^1.0.0-rc.4",
         "react-native-dialog": "^9.3.0",
         "react-native-dropdown-picker": "^5.4.6",
+        "react-native-dropdown-select-list": "^2.0.5",
+        "react-native-element-dropdown": "^2.12.2",
         "react-native-elements": "^3.4.3",
         "react-native-encrypted-storage": "^4.0.3",
         "react-native-fs": "^2.20.0",

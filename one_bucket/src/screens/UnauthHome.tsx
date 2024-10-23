@@ -39,23 +39,6 @@ const UnauthHome: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
-    const onPressBackBtn = (action: boolean) => {
-        const backAction = (): boolean => {
-            if (action) {
-                return action;
-            }
-            else {
-                navigation.goBack();
-                return action;
-            }
-        }
-        BackHandler.addEventListener(
-            'hardwareBackPress',
-            backAction,
-        );
-        return () => { BackHandler.removeEventListener('hardwareBackPress', backAction); }
-    }
-
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
@@ -65,6 +48,11 @@ const UnauthHome: React.FC = (): React.JSX.Element => {
             <Text style={{fontSize: 20, textAlign: 'center'}}>
                 {`학교 인증을 완료하셔야\n모든 서비스를 이용하실 수 있습니다.`}
             </Text>
+            <TouchableOpacity 
+                style={styles.button}
+                onPress = {() => {navigation.navigate('SchoolAuth1')}}>
+                <Text style={styles.buttonText}>학교 인증 바로가기</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -88,7 +76,8 @@ const CreateStyles = (theme: Icolor) =>
             marginTop: 50,
         },
         buttonText:{
-            color: theme.BUTTON_TEXT
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
         }
     })
 

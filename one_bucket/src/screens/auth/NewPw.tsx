@@ -42,6 +42,7 @@ const NewPw: React.FC = (): React.JSX.Element => {
     const navigation = stackNavigation()
     const [id, setId] = useState('')
     const [myEmail, setMyEmail] = useState('')
+    const [buttonText, setButtonText] = useState('새 비밀번호 발급 요청')
 
     const handleIdChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
@@ -56,6 +57,7 @@ const NewPw: React.FC = (): React.JSX.Element => {
     const handleSubmit = async () => {
         if (!validateInfo(myEmail)) {
             Alert.alert('형식에 맞는 메일 주소를 입력해주세요.')
+            setButtonText('새 비밀번호 발급 요청')
             return
         }
 
@@ -68,6 +70,7 @@ const NewPw: React.FC = (): React.JSX.Element => {
                 navigation.navigate('NewPw2',{ email: myEmail})
             })
             .catch(err => {
+                setButtonText('새 비밀번호 발급 요청')
                 console.log(`FindPw - submitSignUpForm: ${err}`)
                 {/* if (err.response.status === 409) {
                     if (err.response.data.code == 1000) {
@@ -140,9 +143,11 @@ const NewPw: React.FC = (): React.JSX.Element => {
                         },
                     styles.button,
                     ]}
-                    onPress={handleSubmit}>
-                    {/* onPress={()=>navigation.navigate('NewPw2')}> */}
-                    <Text style={styles.buttonText}>새 비밀번호 발급 요청</Text>
+                    onPress={()=>{
+                        setButtonText('잠시만 기다려 주세요...')
+                        handleSubmit()
+                    }}>
+                    <Text style={styles.buttonText}>{buttonText}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

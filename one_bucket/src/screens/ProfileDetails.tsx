@@ -111,7 +111,9 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                             {formatDate(profile!.birth)}
                         </Text>
                         <Text style={styles.profileLabel}>학교명</Text>
-                        <Text style={styles.profileContext}>홍대</Text>
+                        <Text style={styles.profileContext}>
+                            {memberInfo!.university}
+                        </Text>
                         <Text style={styles.profileLabel}>학부</Text>
                         <Text style={styles.profileContext}>컴붕</Text>
                         <Text style={styles.profileLabel}>가입한 날짜</Text>

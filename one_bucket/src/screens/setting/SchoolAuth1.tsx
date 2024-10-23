@@ -1,5 +1,8 @@
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import IcRefresh from '@/assets/drawable/ic-refresh.svg'
+import IcSelectArrow from '@/assets/drawable/ic-select-arrow.svg'
+import IcSelectClose from '@/assets/drawable/ic-select-close.svg'
+import IcSelectSearch from '@/assets/drawable/ic-select-search.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
@@ -16,6 +19,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { SelectList } from 'react-native-dropdown-select-list'
+import { schoolNames } from '@/screens/setting/SchoolNames'
 import Toast from 'react-native-toast-message'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
@@ -42,6 +47,7 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
     const navigation = stackNavigation()
     const [schoolName, setSchoolName] = useState('')
     const [schoolEmail, setSchoolEmail] = useState('')
+    const [buttonText, setButtonText] = useState('인증 코드 발송')
 
     const handleSchoolNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
@@ -54,7 +60,7 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
     }
 
     const handleSchoolInfoSubmit = () => {
-        if (validateInfo(schoolName, schoolEmail) === true) {
+        if (validateInfo(schoolEmail) === true) {
             navigation.navigate('SchoolAuth2', {
                 schoolName: schoolName,
                 schoolEmail: schoolEmail,
@@ -65,8 +71,9 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
     }
 
     const handleSubmit = async () => {
-        if (!validateInfo(schoolName,schoolEmail)) {
-            Alert.alert('형식에 맞는 학교 이름 또는 메일 주소를 입력해주세요.')
+        if (!validateInfo(schoolEmail)) {
+            Alert.alert('형식에 맞는 메일 주소를 입력해주세요.')
+            setButtonText('인증 코드 발송')
             return
         }
 
@@ -82,8 +89,12 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                 })
             })
             .catch(err => {
+                setButtonText('인증 코드 발송')
                 console.log(`SchoolAuth1 - submitSignUpForm: ${err}`)
-                {/* if (err.response.status === 409) {
+                if(err.response.status === 409){
+                    Alert.alert('이미 해당 메일로 인증한 계정이 존재합니다.')
+                }
+                {/*
                     if (err.response.data.code == 1000) {
                         setEmailError(
                             signUpErrorMessage.duplicatedEmailOrNickname,
@@ -97,8 +108,8 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                 )
     }
     
-    const validateInfo = (name: string, email: string) => {
-        if(!name.endsWith("대학교") || email.indexOf('@') == -1)
+    const validateInfo = (email: string) => {
+        if(email.indexOf('@') == -1)
             return false
         else return true
     }
@@ -112,15 +123,19 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                     <IcArrowLeft />
                 </TouchableOpacity>
                 <Text style={styles.schoolInfoLabel}>
-                    학교 이름 입력
+                    학교 선택
                 </Text>
-                <TextInput
-                    style={styles.textInput}
-                    onChangeText={handleSchoolNameChange}
-                    value={schoolName}
-                    placeholder='약칭이 아닌 전체 이름을 입력해 주세요. ex) **대학교'
-                    placeholderTextColor={themeColor.TEXT_SECONDARY}
-                    autoFocus={true}
+                <SelectList
+                    setSelected={setSchoolName}
+                    data={schoolNames}
+                    save="value"
+                    placeholder={"본인의 학교를 선택해 주세요."}
+                    searchPlaceholder={"학교 이름 검색"}
+                    notFoundText={"일치하는 결과 없음"}
+                    inputStyles={styles.textSelect}
+                    arrowicon={<IcSelectArrow />}
+                    closeicon={<IcSelectClose />}
+                    searchicon={<IcSelectSearch />}
                 />
                 <Text style={styles.schoolInfoLabel}>
                     학교 이메일 주소 입력
@@ -151,13 +166,11 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                         },
                     styles.button,
                     ]}
-                    onPress={handleSubmit}>
-                    {/*
-                    onPress = {()=>{navigation.navigate('SchoolAuth2', {
-                        schoolName: schoolName,
-                        schoolEmail: schoolEmail,
-                    })}}> */}
-                    <Text style={styles.buttonText}>인증 코드 발송</Text>
+                    onPress={()=>{
+                        setButtonText('잠시만 기다려 주세요...')
+                        handleSubmit()
+                    }}>
+                    <Text style={styles.buttonText}>{buttonText}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -172,7 +185,7 @@ const createStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic-Bold',
             alignSelf: 'center',
             marginTop: 30,
-            marginBottom: 10,
+            marginBottom: 30,
         },
         textInput: {
             color: theme.TEXT,
@@ -182,6 +195,10 @@ const createStyles = (theme: Icolor) =>
             borderBottomColor: 'gray',
             paddingBottom: 4,
             marginBottom: 30,
+        },
+        textSelect: {
+            color: theme.TEXT,
+            fontSize: 16,
         },
         button: {
             paddingVertical: 15,

@@ -72,7 +72,8 @@ const CreateStyles = (theme: Icolor) =>
             marginTop: 50,
         },
         updateButtonText:{
-            color: theme.BUTTON_TEXT
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
         }
     })
 

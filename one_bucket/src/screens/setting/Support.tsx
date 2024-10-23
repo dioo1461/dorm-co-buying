@@ -90,7 +90,8 @@ const CreateStyles = (theme: Icolor) =>
             marginTop: 10,
         },
         reportButtonText:{
-            color: theme.BUTTON_TEXT
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
         }
     })
 

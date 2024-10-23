@@ -55,17 +55,6 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
     const [nextIndex, setNextIndex] = useState(0)
-    const [count, setCount] = useState(300)
-
-    useEffect(() => {
-        const id = setInterval(() => {
-          setCount(count => count - 1); 
-        }, 1000);
-        if(count === 0){
-          clearInterval(id);
-        }
-        return () => clearInterval(id);
-      }, [count]);
 
     useEffect(() => {
         // 키패드 팝업이 되지 않는 문제를 해결하기 위해, 렌더링이 완료된 후
@@ -98,20 +87,6 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
         }
     }, [nextIndex, verificationCode])
 
-    const infoWithTimer = (time: number) => {
-        const min = Math.floor(time/60)
-        const sec = time % 60
-        if(time==0) Alert.alert('인증 코드가 만료되었습니다. 다시 발급받아 보세요.')
-        return (
-            <View style={{flexDirection: "row"}}>
-                <Text style={styles.inputLabel}>인증 코드 입력</Text>
-                <Text style={{...styles.inputLabel, color: count<=30 ? "red" : 'dodgerblue'}}>
-                    {`(${min}:${String(sec).padStart(2,"0")})`}
-                </Text>
-            </View>
-        )
-    }
-
     const refreshCodeInput = () => {
         inputRef.current.map(input => {
             input?.clear()
@@ -126,7 +101,6 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
         postSchoolForm(form)
             .then(res => {
                 Toast.show({ text1: '인증 코드를 재발급했습니다.' })
-                setCount(300)
             })
             .catch(err => {
                 console.log(`refreshCodeInput - submitSignUpForm: ${err}`)
@@ -161,9 +135,9 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                     {maskSchoolEmail(params?.schoolEmail)}
                 </Text>
                 <Text style={styles.infoText}>
-                    이메일로 발송된 인증 코드를 입력해 주세요.
+                    이메일로 발송된 인증 코드를 5분 이내로 입력해 주세요.
                 </Text>
-                {infoWithTimer(count)}
+                <Text style={styles.inputLabel}>인증 코드 입력</Text>
                 <View style={styles.codeInputContainer}>
                     {Array(6)
                         .fill(0)

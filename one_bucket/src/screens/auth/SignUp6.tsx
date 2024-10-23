@@ -50,7 +50,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
     const [month, setMonth] = useState('')
     const [day, setDay] = useState('')
     const [age, setAge] = useState(0)
-    const birth = String('1999-'+ String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
+    const birth = String(year + '-' + String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
     const [bio, setBio] = useState('')
     const [isDormitory, setIsDormitory] = useState(false)
 
@@ -138,28 +138,30 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </View>
                     <Text style={styles.label}>생년월일</Text>
                     <View style={{flexDirection:"row", alignItems: 'center'}}>
-                        {/*
                         <TextInput
                                 style={styles.birthInput}
-                                onChangeText={() => setYear(year)}
-                                placeholder='년'
+                                value={year}
+                                onChangeText={setYear}
+                                keyboardType='number-pad'
+                                textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
                             />
-                        <Text style={{fontSize: 20, marginBottom: 10}}> / </Text>
-                        */}
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 년  </Text>
                         <TextInput
                                 style={styles.birthInput}
                                 value={month}
                                 onChangeText={setMonth}
-                                placeholder='월'
+                                keyboardType='number-pad'
+                                textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
                             />
-                        <Text style={{fontSize: 16, marginBottom: 16}}> 월 </Text>
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 월  </Text>
                         <TextInput
                                 style={styles.birthInput}
                                 value={day}
                                 onChangeText={setDay}
-                                placeholder='일'
+                                keyboardType='number-pad'
+                                textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
                             />
                         <Text style={{fontSize: 16, marginBottom: 16}}> 일 </Text>
@@ -192,8 +194,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
-                        // onPress={handleSubmit}>
-                        onPress={() => navigation.navigate('SignUp7')}>
+                        onPress={handleSubmit}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>
                 </ScrollView>
@@ -221,9 +222,11 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 20,
         },
         birthInput:{
-            width: 75,
-            borderBottomWidth: 1,
-            paddingBottom: 4,
+            width: 50,
+            height: 36,
+            borderWidth: 1,
+            borderRadius: 5,
+            paddingBottom: 5,
             borderBottomColor: baseColors.GRAY_1,
             fontSize: 16,
             marginBottom: 20,
