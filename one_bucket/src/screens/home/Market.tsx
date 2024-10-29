@@ -22,7 +22,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { MarketCategory } from '@/data/MarketCategory'
+import { TMarketCategory } from '@/data/TMarketCategory'
 import { queryMarketPostList } from '@/hooks/useQuery/marketQuery'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'
@@ -102,7 +102,7 @@ const Market: React.FC = (): JSX.Element => {
     })
 
     const [currentCategory, setCurrentCategory] =
-        useState<MarketCategory>('기타')
+        useState<TMarketCategory>('기타')
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -322,7 +322,7 @@ const Market: React.FC = (): JSX.Element => {
         )
     }
 
-    const handleCategorySelect = (category: MarketCategory) => {
+    const handleCategorySelect = (category: TMarketCategory) => {
         if (currentCategory === category) {
             setCurrentCategory(category)
             return
@@ -348,7 +348,7 @@ const Market: React.FC = (): JSX.Element => {
                         ]}
                         onPress={() =>
                             handleCategorySelect(
-                                value.categoryName as MarketCategory,
+                                value.categoryName as TMarketCategory,
                             )
                         }>
                         {value.icon}

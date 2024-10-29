@@ -1,4 +1,4 @@
-export interface GetRoomsForMemberResponse extends Array<ChatRoom> {}
+export interface GetChatRoomListResponse extends Array<ChatRoom> {}
 
 export interface ChatRoom {
     roomId: string

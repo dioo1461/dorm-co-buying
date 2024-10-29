@@ -1,5 +1,8 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { ChatRoom } from '@/data/response/success/chat/GetRoomsForMemberResponse'
+import {
+    ChatRoom,
+    GetChatRoomListResponse,
+} from '@/data/response/success/chat/GetChatRoomListResponse'
 import { queryGetChatroomsForMember } from '@/hooks/useQuery/chatQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useRef } from 'react'
@@ -34,7 +37,28 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    const { data, isLoading, error } = queryGetChatroomsForMember()
+    // const { data, isLoading, error } = queryGetChatroomsForMember()
+
+    const data: GetChatRoomListResponse = [
+        {
+            roomId: '1',
+            name: 'test',
+            createdAt: '2021-09-01',
+            createdBy: 'test',
+            members: [{ nickname: 'test' }],
+            messages: [],
+            maxMembers: 5,
+        },
+        {
+            roomId: '2',
+            name: 'example',
+            createdAt: '2021-09-02',
+            createdBy: 'exampleUser',
+            members: [{ nickname: 'exampleUser' }],
+            messages: [],
+            maxMembers: 10,
+        },
+    ]
 
     const flatlistRef = useRef<FlatList>(null)
 
@@ -56,7 +80,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                 onPress={() =>
                     navigation.navigate('Chat', { roomId: data.roomId })
                 }>
-                <View style={styles.container}>
+                <View style={styles.chatContainer}>
                     <View style={styles.imageContainer}></View>
                     <View>
                         <View style={styles.headerContainer}>
@@ -108,27 +132,27 @@ const ChatList: React.FC = (): React.JSX.Element => {
         <ChatItem {...item} />
     )
 
-    if (error) return <Text>Error...</Text>
+    // if (error) return <Text>Error...</Text>
 
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
+    // if (isLoading)
+    // return (
+    //     <View
+    //         style={{
+    //             backgroundColor: themeColor.BG,
+    //             flex: 1,
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}>
+    //         <ActivityIndicator
+    //             size='large'
+    //             color={
+    //                 themeColor === lightColors
+    //                     ? baseColors.SCHOOL_BG
+    //                     : baseColors.GRAY_2
+    //             }
+    //         />
+    //     </View>
+    // )
 
     return (
         <View style={styles.container}>
@@ -157,6 +181,11 @@ const createChatitemStyles = (theme: Icolor) =>
             flex: 1,
             flexDirection: 'row',
             backgroundColor: theme.BG,
+        },
+        chatContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            paddingVertical: 6,
         },
         imageContainer: {
             width: 80,

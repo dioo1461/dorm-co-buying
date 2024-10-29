@@ -1,5 +1,5 @@
 import { getChatroomsForMember } from '@/apis/chatService'
-import { GetRoomsForMemberResponse } from '@/data/response/success/chat/GetRoomsForMemberResponse'
+import { GetRoomsForMemberResponse } from '@/data/response/success/chat/GetChatRoomListResponse'
 import { useQuery } from 'react-query'
 
 export const queryGetChatroomsForMember = () => {
