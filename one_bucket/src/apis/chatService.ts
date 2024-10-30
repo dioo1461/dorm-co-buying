@@ -2,22 +2,17 @@ import { GetChatLogAfterTimestampRequestBody } from '@/data/request/chat/GetChat
 import { GetChatRoomListResponse } from '@/data/response/success/chat/GetChatRoomListResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createAuthAxios } from '@/utils/axiosFactory'
+import EventSource, {
+    OpenEvent,
+    MessageEvent,
+    ErrorEvent,
+    CloseEvent,
+    TimeoutEvent,
+    ExceptionEvent,
+} from 'react-native-sse'
+import { BASE_URL } from '@env'
 
 const CHAT_BASE_URL = '/chat'
-
-export const getChatRoomList = async (): Promise<GetChatRoomListResponse> => {
-    const authAxios = await createAuthAxios()
-    const memberInfo = useBoundStore.getState().memberInfo
-
-    return authAxios
-        .get(CHAT_BASE_URL + `/chat/sse/chatList`)
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            throw err
-        })
-}
 
 export const getChatLogAfterTimestamp = async (
     data: GetChatLogAfterTimestampRequestBody,

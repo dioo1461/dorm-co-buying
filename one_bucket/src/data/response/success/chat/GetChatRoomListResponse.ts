@@ -2,12 +2,9 @@ export interface GetChatRoomListResponse extends Array<ChatRoom> {}
 
 export interface ChatRoom {
     roomId: string
-    name: string
-    createdAt: string
-    createdBy: string
-    members: { nickname: string }[]
-    messages: Message[]
-    maxMembers: number
+    roomName: string
+    memberCount: number
+    stackMessage: number
+    recentMessage: string
+    recentMessageTime: Date
 }
-
-interface Message {}

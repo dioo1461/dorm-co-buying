@@ -3,9 +3,8 @@ import {
     ChatRoom,
     GetChatRoomListResponse,
 } from '@/data/response/success/chat/GetChatRoomListResponse'
-import { queryGetChatroomsForMember } from '@/hooks/useQuery/chatQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -17,6 +16,7 @@ import {
 } from 'react-native'
 import { Text } from 'react-native-elements'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import { createSSEConnection } from '@/utils/sseFactory'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -39,26 +39,34 @@ const ChatList: React.FC = (): React.JSX.Element => {
 
     // const { data, isLoading, error } = queryGetChatroomsForMember()
 
-    const data: GetChatRoomListResponse = [
-        {
-            roomId: '1',
-            name: 'test',
-            createdAt: '2021-09-01',
-            createdBy: 'test',
-            members: [{ nickname: 'test' }],
-            messages: [],
-            maxMembers: 5,
-        },
-        {
-            roomId: '2',
-            name: 'example',
-            createdAt: '2021-09-02',
-            createdBy: 'exampleUser',
-            members: [{ nickname: 'exampleUser' }],
-            messages: [],
-            maxMembers: 10,
-        },
-    ]
+    useEffect(() => {
+        const esPromise = createSSEConnection({
+            endpoint: 'chat/sse/chatList',
+            onOpen: event => {
+                console.log('onOpen', event)
+            },
+            onMessage: event => {
+                console.log('onMessage', event)
+            },
+            onClose: event => {
+                console.log('onClose', event)
+            },
+            onError: event => {
+                console.log('onError', event)
+            },
+        })
+
+        return () => {
+            esPromise.then(es => {
+                es.removeAllEventListeners()
+                es.close()
+            })
+        }
+    }, [])
+
+    const [data, setData] = useState<GetChatRoomListResponse>()
+
+    useEffect(() => {}, [data])
 
     const flatlistRef = useRef<FlatList>(null)
 
@@ -86,7 +94,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                         <View style={styles.headerContainer}>
                             <View style={styles.headerFirstContainer}>
                                 <Text style={styles.titleText}>
-                                    {data.name}
+                                    {data?.roomName}
                                 </Text>
                                 {/* <Text style={styles.lastChatTimeText}>
                                     {data.lastChatTime
@@ -159,7 +167,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
             <FlatList
                 // ListHeaderComponent={FlatlistHeader}
                 ref={flatlistRef}
-                data={data}
+                data={data ?? []}
                 renderItem={renderItem}
                 keyExtractor={item => item.roomId.toString()}
             />
