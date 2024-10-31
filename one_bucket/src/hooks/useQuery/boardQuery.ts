@@ -1,17 +1,10 @@
-import {
-    getBoardList,
-    getBoardPost,
-    getBoardPostList,
-} from '@/apis/boardService'
+import { getBoardPost, getBoardPostList } from '@/apis/boardService'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
-import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { MutableRefObject } from 'react'
 import {
     useInfiniteQuery,
     UseInfiniteQueryOptions,
     useQuery,
-    UseQueryOptions,
 } from 'react-query'
 
 export const queryBoardPost = (
@@ -65,9 +58,4 @@ export const queryBoardPostList = (
             ...options,
         },
     )
-}
-
-export const queryBoardList = () => {
-    // TODO: 캐싱 파라미터 수정
-    return useQuery('boardList', getBoardList)
 }

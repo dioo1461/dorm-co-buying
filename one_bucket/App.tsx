@@ -52,6 +52,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
+import axios, { AxiosError } from 'axios'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -87,42 +88,42 @@ function App(): React.JSX.Element {
         const ac = new AbortController()
         const checkLoginStatus = async () => {
             console.log('app - checkLoginStatus')
-            await getMemberInfo()
-                .then(response => {
-                    if (response) {
-                        // memberInfo를 profileStore에 저장
-                        setMemberInfo(response)
-                        setLoginState(true)
-                    }
-                })
-                .catch(error => {
-                    setLoginState(false)
-                    if (
-                        error.response.status === 401 ||
-                        error.response.status === 403
-                    ) {
-                        console.log(`App - checkLoginStatus error: ${error}`)
 
-                        // TODO: refreshToken으로 accessToken 갱신
-                    }
-                })
-            await getBoardList()
-                .then(res => {
-                    setBoardList(res)
+            try {
+                // Step 1: getMemberInfo 요청
+                const memberInfo = await getMemberInfo()
+                if (memberInfo) {
+                    setMemberInfo(memberInfo) // memberInfo 저장
                     setAuthed(0)
-                })
-                .catch(err => {
-                    console.log(`getBoardList - ${err}`)
-                    setAuthed(1)
-                })
-            await getProfile()
-                .then(res => {
-                    setProfile(res)
-                })
-                .catch(err => {
-                    console.log(`getProfile - ${err}`)
-                })
-            SplashScreen.hide()
+                }
+
+                // Step 2: getBoardList 요청 (memberInfo가 성공한 경우에 실행)
+                const boardList = await getBoardList()
+                setBoardList(boardList)
+
+                // Step 3: getProfile 요청 (getBoardList가 성공한 경우에 실행)
+                const profile = await getProfile()
+                setProfile(profile)
+                setLoginState(true)
+            } catch (error) {
+                // 요청 실패 시 처리
+                setLoginState(false)
+                if (!axios.isAxiosError(error)) return
+
+                if (
+                    error.response &&
+                    (error.response.status === 401 ||
+                        error.response.status === 403)
+                ) {
+                    console.log(`App - checkLoginStatus error: ${error}`)
+                    // TODO: refreshToken으로 accessToken 갱신
+                }
+                if (error.message) {
+                    console.log(`Error: ${error.message}`)
+                }
+            } finally {
+                SplashScreen.hide() // 모든 요청이 끝난 후 SplashScreen 숨기기
+            }
         }
 
         checkLoginStatus()
@@ -130,7 +131,7 @@ function App(): React.JSX.Element {
         return function cleanup() {
             ac.abort()
         }
-    }, [loginState])
+    }, [])
 
     const home = (authed: number) => {
         if (authed == 0) return strings.homeScreenName
