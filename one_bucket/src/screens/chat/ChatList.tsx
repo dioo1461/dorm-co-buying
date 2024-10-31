@@ -17,6 +17,7 @@ import {
 import { Text } from 'react-native-elements'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { createSSEConnection } from '@/utils/sseFactory'
+import EventSource from 'react-native-sse'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -37,36 +38,38 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    // const { data, isLoading, error } = queryGetChatroomsForMember()
+    const [es, setEs] = useState<EventSource | null>(null)
+    const [chatRoomList, setData] = useState<GetChatRoomListResponse>()
 
     useEffect(() => {
-        const esPromise = createSSEConnection({
-            endpoint: 'chat/sse/chatList',
-            onOpen: event => {
-                console.log('onOpen', event)
-            },
-            onMessage: event => {
-                console.log('onMessage', event)
-            },
-            onClose: event => {
-                console.log('onClose', event)
-            },
-            onError: event => {
-                console.log('onError', event)
-            },
-        })
+        const initializeSSEConnection = async () => {
+            const eventSource = await createSSEConnection({
+                endpoint: 'chat/sse/chatList',
+                onOpen: event => {
+                    console.log('onOpen', event)
+                },
+                onMessage: event => {
+                    console.log('onMessage', event)
+                },
+                onClose: event => {
+                    console.log('onClose', event)
+                },
+                onError: event => {
+                    console.log('onError', event)
+                },
+            })
+            setEs(eventSource)
+        }
+
+        initializeSSEConnection()
 
         return () => {
-            esPromise.then(es => {
-                es.removeAllEventListeners()
-                es.close()
-            })
+            es?.removeAllEventListeners()
+            es?.close()
         }
     }, [])
 
-    const [data, setData] = useState<GetChatRoomListResponse>()
-
-    useEffect(() => {}, [data])
+    useEffect(() => {}, [chatRoomList])
 
     const flatlistRef = useRef<FlatList>(null)
 
@@ -79,14 +82,14 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const ChatItem = (data: ChatRoom) => {
+    const ChatItem = (chatRoomList: ChatRoom) => {
         const styles = createChatitemStyles(themeColor)
 
         return (
             <TouchableNativeFeedback
                 background={touchableNativeFeedbackBg()}
                 onPress={() =>
-                    navigation.navigate('Chat', { roomId: data.roomId })
+                    navigation.navigate('Chat', { roomId: chatRoomList.roomId })
                 }>
                 <View style={styles.chatContainer}>
                     <View style={styles.imageContainer}></View>
@@ -94,28 +97,28 @@ const ChatList: React.FC = (): React.JSX.Element => {
                         <View style={styles.headerContainer}>
                             <View style={styles.headerFirstContainer}>
                                 <Text style={styles.titleText}>
-                                    {data?.roomName}
+                                    {chatRoomList?.roomName}
                                 </Text>
-                                {/* <Text style={styles.lastChatTimeText}>
-                                    {data.lastChatTime
+                                <Text style={styles.lastChatTimeText}>
+                                    {chatRoomList.recentMessageTime
                                         .getHours()
                                         .toString()
                                         .padStart(2, '0')}
                                     :
-                                    {data.lastChatTime
+                                    {chatRoomList.recentMessageTime
                                         .getMinutes()
                                         .toString()
                                         .padStart(2, '0')}
-                                </Text> */}
+                                </Text>
                             </View>
                             <View style={styles.headerSecondContainer}></View>
                         </View>
                         <View style={styles.bodyContainer}>
                             <View>
-                                {/* {data.isMyChat ? (
+                                {/* {chatRoomList.isMyChat ? (
                                     <View style={{ backgroundColor: 'yellow' }}>
                                         <Text style={styles.lastChatText}>
-                                            {data.lastChat}
+                                            {chatRoomList.lastChat}
                                         </Text>
                                     </View>
                                 ) : (
@@ -124,7 +127,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                             backgroundColor: baseColors.GRAY_2,
                                         }}>
                                         <Text style={styles.lastChatText}>
-                                            {data.lastChat}
+                                            {chatRoomList.lastChat}
                                         </Text>
                                     </View>
                                 )} */}
@@ -167,7 +170,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
             <FlatList
                 // ListHeaderComponent={FlatlistHeader}
                 ref={flatlistRef}
-                data={data ?? []}
+                data={chatRoomList ?? []}
                 renderItem={renderItem}
                 keyExtractor={item => item.roomId.toString()}
             />
