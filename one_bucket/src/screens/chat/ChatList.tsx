@@ -15,8 +15,9 @@ import {
     View,
 } from 'react-native'
 import { Text } from 'react-native-elements'
-import EventSource from 'react-native-sse'
+import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -37,36 +38,45 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    const [es, setEs] = useState<EventSource | null>(null)
+    type esEventType = 'initial-room-list'
+
+    const esRef = useRef<EventSource<esEventType> | null>(null)
     const [chatRoomList, setData] = useState<GetChatRoomListResponse>()
 
     useEffect(() => {
         const initializeSSEConnection = async () => {
             const eventSource = await createSSEConnection({
                 endpoint: '/chat/sse/chatList',
-                eventHandlers: {
-                    'initial-room-list': event => {
-                        console.log('initial-room-list', event)
-                        console.log(event.data)
+                options: {
+                    headers: {
+                        Authorization: `Bearer ${await getAccessToken()}`,
                     },
                 },
+                eventHandlers: {
+                    'initial-room-list': initialRoomListHandler,
+                },
+                debug: true,
             })
 
-            setEs(eventSource)
+            esRef.current = eventSource
+        }
+
+        const initialRoomListHandler = (event: SSEMessage) => {
+            console.log('initial-room-list', event.data)
         }
 
         initializeSSEConnection()
 
         return () => {
             console.log('cleanup')
-            es?.removeAllEventListeners()
-            es?.close()
+            esRef.current?.remove(initialRoomListHandler)
+            esRef.current?.close()
         }
     }, [])
 
     useEffect(() => {
-        console.log(es)
-    }, [es])
+        console.log(esRef.current)
+    }, [esRef.current])
 
     const flatlistRef = useRef<FlatList>(null)
 
