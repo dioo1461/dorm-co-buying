@@ -4,9 +4,9 @@ import {
     GetChatRoomListResponse,
 } from '@/data/response/success/chat/GetChatRoomListResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { createSSEConnection } from '@/utils/sseFactory'
 import { useEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
     Appearance,
     FlatList,
     ListRenderItem,
@@ -15,9 +15,8 @@ import {
     View,
 } from 'react-native'
 import { Text } from 'react-native-elements'
-import { stackNavigation } from '../navigation/NativeStackNavigation'
-import { createSSEConnection } from '@/utils/sseFactory'
 import EventSource from 'react-native-sse'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -44,32 +43,30 @@ const ChatList: React.FC = (): React.JSX.Element => {
     useEffect(() => {
         const initializeSSEConnection = async () => {
             const eventSource = await createSSEConnection({
-                endpoint: 'chat/sse/chatList',
-                onOpen: event => {
-                    console.log('onOpen', event)
-                },
-                onMessage: event => {
-                    console.log('onMessage', event)
-                },
-                onClose: event => {
-                    console.log('onClose', event)
-                },
-                onError: event => {
-                    console.log('onError', event)
+                endpoint: '/chat/sse/chatList',
+                eventHandlers: {
+                    'initial-room-list': event => {
+                        console.log('initial-room-list', event)
+                        console.log(event.data)
+                    },
                 },
             })
+
             setEs(eventSource)
         }
 
         initializeSSEConnection()
 
         return () => {
+            console.log('cleanup')
             es?.removeAllEventListeners()
             es?.close()
         }
     }, [])
 
-    useEffect(() => {}, [chatRoomList])
+    useEffect(() => {
+        console.log(es)
+    }, [es])
 
     const flatlistRef = useRef<FlatList>(null)
 

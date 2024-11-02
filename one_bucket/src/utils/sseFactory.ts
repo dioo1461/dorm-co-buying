@@ -1,22 +1,14 @@
-import EventSource, {
-    EventSourceOptions,
-    OpenEvent,
-    MessageEvent,
-    ErrorEvent,
-    CloseEvent,
-    TimeoutEvent,
-    ExceptionEvent,
-} from 'react-native-sse'
+import EventSource, { EventSourceOptions, CustomEvent } from 'react-native-sse'
 import { BASE_URL } from '@env'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 
+interface EventHandlers {
+    [key: string]: (event: CustomEvent<string>) => void
+}
 interface Props {
     endpoint: string
     options?: EventSourceOptions
-    onOpen?: (event: OpenEvent) => void
-    onMessage?: (event: MessageEvent) => void
-    onError?: (event: ErrorEvent | TimeoutEvent | ExceptionEvent) => void
-    onClose?: (event: CloseEvent) => void
+    eventHandlers: EventHandlers
 }
 
 /**
@@ -49,22 +41,25 @@ interface Props {
  */
 export const createSSEConnection = async ({
     endpoint,
-    onOpen,
-    onMessage,
-    onError,
-    onClose,
-}: Props): Promise<EventSource> => {
+    options,
+    eventHandlers,
+}: Props): Promise<EventSource<string>> => {
     const token = await getAccessToken()
-    const es = new EventSource(BASE_URL + endpoint, {
+    const es = new EventSource<string>(BASE_URL + endpoint, {
         headers: {
             Authorization: `Bearer ${token}`,
+            ...options,
         },
+        debug: false,
     })
 
-    onOpen && es.addEventListener('open', onOpen)
-    onMessage && es.addEventListener('message', onMessage)
-    onError && es.addEventListener('error', onError)
-    onClose && es.addEventListener('close', onClose)
-
+    for (const [event, handler] of Object.entries(eventHandlers)) {
+        if (typeof handler === 'function') {
+            console.log(`Adding event handler for '${event}'`)
+            es.addEventListener(event, handler)
+        } else {
+            console.log(`Event handler for '${event}' is not a function.`)
+        }
+    }
     return es
 }
