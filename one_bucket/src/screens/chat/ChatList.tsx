@@ -1,10 +1,12 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { ChatRoom } from '@/data/response/success/chat/GetRoomsForMemberResponse'
-import { queryGetChatroomsForMember } from '@/hooks/useQuery/chatQuery'
-import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect, useRef } from 'react'
 import {
-    ActivityIndicator,
+    ChatRoom,
+    GetChatRoomListResponse,
+} from '@/data/response/success/chat/GetChatRoomListResponse'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { createSSEConnection } from '@/utils/sseFactory'
+import { useEffect, useRef, useState } from 'react'
+import {
     Appearance,
     FlatList,
     ListRenderItem,
@@ -13,7 +15,9 @@ import {
     View,
 } from 'react-native'
 import { Text } from 'react-native-elements'
+import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -34,7 +38,45 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    const { data, isLoading, error } = queryGetChatroomsForMember()
+    type esEventType = 'initial-room-list'
+
+    const esRef = useRef<EventSource<esEventType> | null>(null)
+    const [chatRoomList, setData] = useState<GetChatRoomListResponse>()
+
+    useEffect(() => {
+        const initializeSSEConnection = async () => {
+            const eventSource = await createSSEConnection({
+                endpoint: '/chat/sse/chatList',
+                options: {
+                    headers: {
+                        Authorization: `Bearer ${await getAccessToken()}`,
+                    },
+                },
+                eventHandlers: {
+                    'initial-room-list': initialRoomListHandler,
+                },
+                debug: true,
+            })
+
+            esRef.current = eventSource
+        }
+
+        const initialRoomListHandler = (event: SSEMessage) => {
+            console.log('initial-room-list', event.data)
+        }
+
+        initializeSSEConnection()
+
+        return () => {
+            console.log('cleanup')
+            esRef.current?.remove(initialRoomListHandler)
+            esRef.current?.close()
+        }
+    }, [])
+
+    useEffect(() => {
+        console.log(esRef.current)
+    }, [esRef.current])
 
     const flatlistRef = useRef<FlatList>(null)
 
@@ -47,43 +89,43 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const ChatItem = (data: ChatRoom) => {
+    const ChatItem = (chatRoomList: ChatRoom) => {
         const styles = createChatitemStyles(themeColor)
 
         return (
             <TouchableNativeFeedback
                 background={touchableNativeFeedbackBg()}
                 onPress={() =>
-                    navigation.navigate('Chat', { roomId: data.roomId })
+                    navigation.navigate('Chat', { roomId: chatRoomList.roomId })
                 }>
-                <View style={styles.container}>
+                <View style={styles.chatContainer}>
                     <View style={styles.imageContainer}></View>
                     <View>
                         <View style={styles.headerContainer}>
                             <View style={styles.headerFirstContainer}>
                                 <Text style={styles.titleText}>
-                                    {data.name}
+                                    {chatRoomList?.roomName}
                                 </Text>
-                                {/* <Text style={styles.lastChatTimeText}>
-                                    {data.lastChatTime
+                                <Text style={styles.lastChatTimeText}>
+                                    {chatRoomList.recentMessageTime
                                         .getHours()
                                         .toString()
                                         .padStart(2, '0')}
                                     :
-                                    {data.lastChatTime
+                                    {chatRoomList.recentMessageTime
                                         .getMinutes()
                                         .toString()
                                         .padStart(2, '0')}
-                                </Text> */}
+                                </Text>
                             </View>
                             <View style={styles.headerSecondContainer}></View>
                         </View>
                         <View style={styles.bodyContainer}>
                             <View>
-                                {/* {data.isMyChat ? (
+                                {/* {chatRoomList.isMyChat ? (
                                     <View style={{ backgroundColor: 'yellow' }}>
                                         <Text style={styles.lastChatText}>
-                                            {data.lastChat}
+                                            {chatRoomList.lastChat}
                                         </Text>
                                     </View>
                                 ) : (
@@ -92,7 +134,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                             backgroundColor: baseColors.GRAY_2,
                                         }}>
                                         <Text style={styles.lastChatText}>
-                                            {data.lastChat}
+                                            {chatRoomList.lastChat}
                                         </Text>
                                     </View>
                                 )} */}
@@ -108,34 +150,34 @@ const ChatList: React.FC = (): React.JSX.Element => {
         <ChatItem {...item} />
     )
 
-    if (error) return <Text>Error...</Text>
+    // if (error) return <Text>Error...</Text>
 
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
+    // if (isLoading)
+    // return (
+    //     <View
+    //         style={{
+    //             backgroundColor: themeColor.BG,
+    //             flex: 1,
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}>
+    //         <ActivityIndicator
+    //             size='large'
+    //             color={
+    //                 themeColor === lightColors
+    //                     ? baseColors.SCHOOL_BG
+    //                     : baseColors.GRAY_2
+    //             }
+    //         />
+    //     </View>
+    // )
 
     return (
         <View style={styles.container}>
             <FlatList
                 // ListHeaderComponent={FlatlistHeader}
                 ref={flatlistRef}
-                data={data}
+                data={chatRoomList ?? []}
                 renderItem={renderItem}
                 keyExtractor={item => item.roomId.toString()}
             />
@@ -157,6 +199,11 @@ const createChatitemStyles = (theme: Icolor) =>
             flex: 1,
             flexDirection: 'row',
             backgroundColor: theme.BG,
+        },
+        chatContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            paddingVertical: 6,
         },
         imageContainer: {
             width: 80,

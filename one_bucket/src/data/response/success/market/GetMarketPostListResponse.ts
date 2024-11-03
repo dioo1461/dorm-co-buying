@@ -1,4 +1,4 @@
-import { MarketCategory } from '@/data/MarketCategory'
+import { TMarketCategory } from '@/data/TMarketCategory'
 import {
     BoardPostReduced,
     GetBoardPostListResponse,
@@ -17,7 +17,7 @@ export interface MarketPostReduced extends BoardPostReduced {
     trade_count: number
     trade_location: string
     trade_linkUrl: string
-    trade_tag: MarketCategory
+    trade_tag: TMarketCategory
     trade_userId: number
     trade_dueDate: Date
     trade_joins: any

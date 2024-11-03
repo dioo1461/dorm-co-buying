@@ -81,12 +81,18 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const [hidePw, setHidePw] = React.useState(true)
     const viewPwIcon = (hidePw: boolean) => {
-        if(hidePw == true) return (
-            <View><IcHide /></View>
-        )
-        else return (
-            <View><IcShow /></View>
-        )
+        if (hidePw == true)
+            return (
+                <View>
+                    <IcHide />
+                </View>
+            )
+        else
+            return (
+                <View>
+                    <IcShow />
+                </View>
+            )
     }
 
     return (
@@ -138,12 +144,13 @@ const Login: React.FC = (): React.JSX.Element => {
                     keyboardType='email-address'
                     onChangeText={setId}
                 />
-                <View style={{
-                    flexDirection: "row",
-                    alignItems: "center"
-                }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}>
                     <TextInput
-                        style={{...styles.textInput, width: '85%'}}
+                        style={{ ...styles.textInput, width: '85%' }}
                         placeholder='비밀번호'
                         placeholderTextColor={themeColor.TEXT_SECONDARY}
                         secureTextEntry={hidePw}
@@ -152,7 +159,9 @@ const Login: React.FC = (): React.JSX.Element => {
                     />
                     <TouchableOpacity
                         style={styles.viewPw}
-                        onPress={()=>{setHidePw(!hidePw)}}>
+                        onPress={() => {
+                            setHidePw(!hidePw)
+                        }}>
                         {viewPwIcon(hidePw)}
                     </TouchableOpacity>
                 </View>
@@ -231,11 +240,11 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 10,
             backgroundColor: 'transparent',
         },
-        viewPw:{
+        viewPw: {
             height: 36,
             width: 36,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
             paddingRight: 30,
         },
         autoLoginContainer: {

@@ -19,6 +19,7 @@ const Comment: React.FC<{
     setParentCommentId: (id: number) => void
     highlight: boolean
     onReplyButtonPress?: () => void
+    onOptionButtonPress?: () => void
 }> = ({
     theme,
     data,
@@ -27,6 +28,7 @@ const Comment: React.FC<{
     setParentCommentId,
     highlight,
     onReplyButtonPress,
+    onOptionButtonPress,
 }): JSX.Element => {
     const animation = useRef(new Animated.Value(0)).current
 
@@ -69,7 +71,11 @@ const Comment: React.FC<{
                             {data.authorNickname}
                         </Text>
                     </View>
-                    <TouchableOpacity style={{ position: 'relative', top: -8 }}>
+                    <TouchableOpacity
+                        style={{ position: 'relative', top: -8 }}
+                        onPress={() =>
+                            onOptionButtonPress && onOptionButtonPress()
+                        }>
                         <IcOthers fill='white' />
                     </TouchableOpacity>
                 </View>

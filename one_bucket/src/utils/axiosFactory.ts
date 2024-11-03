@@ -9,8 +9,6 @@ export const createAxios = (options: AxiosRequestConfig = {}) => {
             'Content-Type': 'application/json;charset=UTF-8',
         },
         baseURL: BASE_URL,
-        // baseURL: "http://192.168.250.104:8080",
-        // baseURL: "http://jack8226.ddns.net:8080",
         maxContentLength: Infinity, // 요청 본문 크기 제한 해제
         maxBodyLength: Infinity, // POST 요청 크기 제한 해제
         ...options,
