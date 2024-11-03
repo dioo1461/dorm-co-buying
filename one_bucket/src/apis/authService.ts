@@ -29,7 +29,7 @@ export const postSchoolForm = async (
     const authAxios = await createAuthAxios()
     console.log("SchoolAuthRequestBody:",data)
     return authAxios
-        .post('/univ/send-code', data)
+        .post('/univ/verify-code', data)
         .then(res => {
             return res
         })

@@ -57,6 +57,11 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         return `${year}년 ${month}년 ${day}일`
     }
 
+    const schoolName = (school: string) => {
+        if (school == 'null') return '미인증'
+        else return school
+    }
+
     const onProfileModifyButtonClick = () => {
         navigation.navigate('ProfileModify')
     }
@@ -112,10 +117,14 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         </Text>
                         <Text style={styles.profileLabel}>학교명</Text>
                         <Text style={styles.profileContext}>
-                            {memberInfo!.university}
+                            {schoolName(memberInfo!.university)}
                         </Text>
                         <Text style={styles.profileLabel}>학부</Text>
-                        <Text style={styles.profileContext}>컴붕</Text>
+                        {/*
+                        <Text style={styles.profileContext}>
+                            컴붕
+                        </Text>
+                        */}
                         <Text style={styles.profileLabel}>가입한 날짜</Text>
                         <Text style={styles.profileContext}>
                             {formatDate(profile!.createAt)}

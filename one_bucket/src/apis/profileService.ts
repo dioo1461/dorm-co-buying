@@ -56,6 +56,7 @@ export const getProfileImage = async () => {
 
 export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
+    console.log("AddProfileRequestBody:",data)
     return authAxios
         .post('/profile/update', data)
         .then(response => {

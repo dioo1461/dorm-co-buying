@@ -21,7 +21,6 @@ import {
 } from 'react-native'
 import { SelectList } from 'react-native-dropdown-select-list'
 import { schoolNames } from '@/screens/setting/SchoolNames'
-import Toast from 'react-native-toast-message'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
 import { postSchoolForm } from '@/apis/authService'
