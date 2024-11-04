@@ -99,5 +99,5 @@ export const signUpErrorMessage = {
 
     duplicatedEmailOrNickname: '중복된 이메일 또는 닉네임이 존재해요.',
 
-    wrongPassword: '비밀번호가 일치하지 않아요.'
+    wrongPassword: '비밀번호가 틀렸습니다.'
 }

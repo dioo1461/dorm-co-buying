@@ -48,6 +48,7 @@ const ChangePw: React.FC = (): React.JSX.Element => {
     const signUpStyles = createSignUpStyles(themeColor)
 
     const navigation = stackNavigation()
+    const [buttonText, setButtonText] = useState('변경하기')
     const [oldPw, setOldPw] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -64,20 +65,23 @@ const ChangePw: React.FC = (): React.JSX.Element => {
     }
 
 
-    const [emailError, setEmailError] = useState<string | null>(null)
+    const [oldPwError, setOldPwError] = useState<string | null>(null)
     const [passwordError, setPasswordError] = useState<string | null>(null)
     const [passwordConfirmError, setPasswordConfirmError] = useState<
         string | null
     >(null)
+    const [changeError, setChangeError] = useState<string | null>(null)
 
     const scrollViewRef = useRef<ScrollView>(null)
     const passwordRef = useRef<TextInput>(null)
     const passwordConfirmRef = useRef<TextInput>(null)
 
     const handleOldPwChange = (text: string) => {
-        if (emailError == signUpErrorMessage.wrongPassword) {
-            setEmailError(null)
+        if (text == passwordConfirm) {
+            setChangeError(signUpErrorMessage.passwordUnchanged)
+            return
         }
+        setChangeError(null)
         var cleaned = StringFilter.removeSpaces(text)
         setOldPw(cleaned)
     }
@@ -111,14 +115,16 @@ const ChangePw: React.FC = (): React.JSX.Element => {
             setPasswordConfirmError(signUpErrorMessage.passwordMismatch)
             return
         }
+        setPasswordConfirmError(null)
         if (text == oldPw) {
-            setPasswordConfirmError(signUpErrorMessage.passwordUnchanged)
+            setChangeError(signUpErrorMessage.passwordUnchanged)
             return
         }
-        setPasswordConfirmError(null)
+        setChangeError(null)
     }
 
     const handleSubmit = async () => {
+        setOldPwError(null)
         const form: ChangePwRequestBody = {
             oldPassword: oldPw,
             newPassword: password,
@@ -128,7 +134,12 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                 navigation.navigate('ChangePw2')
             })
             .catch(err => {
+                setButtonText('변경하기')
                 console.log(`ChangePw - submitSignUpForm: ${err}`)
+                if(err.response.status === 400){
+                    setOldPwError(signUpErrorMessage.wrongPassword)
+                    return
+                }
                 {/* if (err.response.status === 409) {
                     if (err.response.data.code == 1000) {
                         setEmailError(
@@ -203,14 +214,14 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                         </View>
                         <View
                             style={[
-                                { opacity: emailError ? 1 : 0 },
+                                { opacity: oldPwError ? 1 : 0 },
                                 styles.errorLabelContainer,
                             ]}>
                             <Exclamation
                                 fill={themeColor.ACCENT_TEXT}
                                 style={styles.exclamation}
                             />
-                            <Text style={styles.errorLabel}>{emailError}</Text>
+                            <Text style={styles.errorLabel}>{oldPwError}</Text>
                         </View>
 
                         {/* ### 비밀번호 입력 ### */}
@@ -321,15 +332,32 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                                         {passwordConfirmError}
                                     </Text>
                                 </View>
+                                <View
+                                    style={[
+                                        {
+                                            opacity: changeError
+                                                ? 1
+                                                : 0,
+                                        },
+                                        styles.errorLabelContainer,
+                                    ]}>
+                                    <Exclamation
+                                        fill={themeColor.ACCENT_TEXT}
+                                        style={styles.exclamation}
+                                    />
+                                    <Text style={styles.errorLabel}>
+                                        {changeError}
+                                    </Text>
+                                </View>
                             </View>
                         {/* </ScrollView> */}
 
                         <TouchableOpacity
                             disabled={
                                 !!(
-                                    emailError ||
                                     passwordError ||
                                     passwordConfirmError ||
+                                    changeError ||
                                     !oldPw ||
                                     !password ||
                                     !passwordConfirm
@@ -338,9 +366,9 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                             style={[
                                 {
                                     backgroundColor:
-                                        emailError ||
                                         passwordError ||
                                         passwordConfirmError ||
+                                        changeError ||
                                         !oldPw ||
                                         !password ||
                                         !passwordConfirm
@@ -349,9 +377,12 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                                 },
                                 styles.button,
                             ]}
-                            onPress={handleSubmit}>
+                            onPress={()=>{
+                                setButtonText('잠시만 기다려 주세요...')
+                                handleSubmit()
+                            }}>
                             {/* onPress={() => navigation.navigate('ChangePw2')}> */}
-                            <Text style={styles.buttonText}>다음</Text>
+                            <Text style={styles.buttonText}>{buttonText}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
