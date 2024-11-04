@@ -131,7 +131,7 @@ function App(): React.JSX.Element {
         return function cleanup() {
             ac.abort()
         }
-    }, [])
+    }, [loginState])
 
     const home = (authed: number) => {
         if (authed == 0) return strings.homeScreenName
