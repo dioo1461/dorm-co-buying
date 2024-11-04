@@ -18,6 +18,7 @@ import { Text } from 'react-native-elements'
 import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
+import { useFocusEffect } from '@react-navigation/native'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -43,7 +44,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const esRef = useRef<EventSource<esEventType> | null>(null)
     const [chatRoomList, setData] = useState<GetChatRoomListResponse>()
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const initializeSSEConnection = async () => {
             const eventSource = await createSSEConnection({
                 endpoint: '/chat/sse/chatList',
@@ -72,7 +73,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
             esRef.current?.remove(initialRoomListHandler)
             esRef.current?.close()
         }
-    }, [])
+    })
 
     useEffect(() => {
         console.log(esRef.current)
