@@ -119,8 +119,8 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         <Text style={styles.profileContext}>
                             {schoolName(memberInfo!.university)}
                         </Text>
-                        <Text style={styles.profileLabel}>학부</Text>
                         {/*
+                        <Text style={styles.profileLabel}>학부</Text>
                         <Text style={styles.profileContext}>
                             컴붕
                         </Text>
@@ -137,7 +137,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     style={styles.profileModifyButton}
                     onPress={onProfileModifyButtonClick}>
                     <Text style={styles.profileModifyButtonText}>
-                        프로필 변경
+                        프로필 수정
                     </Text>
                 </TouchableOpacity>
             </View>

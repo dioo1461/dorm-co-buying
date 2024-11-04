@@ -63,6 +63,7 @@ const Setting: React.FC = (): React.JSX.Element => {
     const [delIDVisible, setDelIDVisible] = useState(false)
     const openDelID = () => { setDelIDVisible(true); }
     const closeDelID = () => { setDelIDVisible(false); }
+    const [countDelID, setCountDelID] = useState(3);
 
     const { data, isLoading, error } = queryGetMemberInfo()
     
@@ -167,7 +168,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                         onRequestClose={closeLogout}>
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text>정말 로그아웃 하시겠습니까?</Text>
+                                <Text>{`정말 로그아웃 하시겠습니까?\n`}</Text>
                                 <View style={{flexDirection: "row"}}>
                                     <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
                                         <Text>예</Text>
@@ -197,12 +198,30 @@ const Setting: React.FC = (): React.JSX.Element => {
                         onRequestClose={closeDelID}>
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text style={{color: baseColors.RED}}>정말 회원탈퇴 하시겠습니까?</Text>
+                                <Text style={{
+                                    color: baseColors.RED,
+                                    textAlign: 'center',
+                                    }}>
+                                    {`정말 회원탈퇴 하시겠습니까?\n삭제된 회원정보는 되돌릴 수 없습니다.\n`}
+                                </Text>
                                 <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={closeDelID}>
-                                        <Text>예</Text>
+                                    <TouchableOpacity 
+                                        style={styles.confirmButton} 
+                                        onPress={()=>{
+                                            setCountDelID(countDelID => countDelID - 1)
+                                            if(countDelID == 1) {
+                                                closeDelID() // 회원탈퇴
+                                                setCountDelID(3)
+                                            }
+                                        }}>
+                                        <Text style={{fontWeight: 'bold'}}>{`예(${countDelID}회 터치)`}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeDelID}>
+                                    <TouchableOpacity 
+                                        style={styles.cancelButton} 
+                                        onPress={()=>{
+                                            closeDelID()
+                                            setCountDelID(3)
+                                        }}>
                                         <Text>아니오</Text>
                                     </TouchableOpacity>
                                 </View>

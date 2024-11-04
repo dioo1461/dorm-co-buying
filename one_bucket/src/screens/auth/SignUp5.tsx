@@ -192,7 +192,6 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     <TouchableOpacity
                         onPress={() => {
                             navigation.goBack()
-                            navigation.goBack()
                         }}
                         style={signUpStyles.backButton}>
                         <IcArrowLeft />

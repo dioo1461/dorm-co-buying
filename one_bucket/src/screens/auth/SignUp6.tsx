@@ -8,6 +8,7 @@ import CheckBox from '@react-native-community/checkbox'
 import React, { useEffect, useState } from 'react'
 import {
     Appearance,
+    BackHandler,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -30,6 +31,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
 
     // 다크모드 변경 감지
     useEffect(() => {
+        onPressBackBtn(true);
         const themeSubscription = Appearance.addChangeListener(
             ({ colorScheme }) => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
@@ -37,6 +39,23 @@ const SignUp6: React.FC = (): React.JSX.Element => {
         )
         return () => themeSubscription.remove()
     }, [])
+
+    const onPressBackBtn = (action: boolean) => {
+        const backAction = (): boolean => {
+            if (action) {
+                return action;
+            }
+            else {
+                navigation.goBack();
+                return action;
+            }
+        }
+        BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction,
+        );
+        return () => { BackHandler.removeEventListener('hardwareBackPress', backAction); }
+    }
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
@@ -71,6 +90,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
         postProfile(form)
             .then(res => {
                 navigation.navigate('SignUp7')
+                onPressBackBtn(false)
             })
             .catch(err => {
                 console.log(err)

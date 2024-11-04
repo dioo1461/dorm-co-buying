@@ -29,7 +29,7 @@ export const postSchoolForm = async (
     const authAxios = await createAuthAxios()
     console.log("SchoolAuthRequestBody:",data)
     return authAxios
-        .post('/univ/verify-code', data)
+        .post('/guest/univ/verify-code', data)
         .then(res => {
             return res
         })
@@ -43,7 +43,7 @@ export const postCodeForm = async (data: any): Promise<any> => {
     const authAxios = await createAuthAxios()
     console.log("CodeValRequestBody:",data)
     return authAxios
-        .post('/univ/verify-code', data)
+        .post('/guest/univ/verify-code', data)
         .then(res => {
             return res
         })

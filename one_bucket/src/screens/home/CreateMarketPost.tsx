@@ -52,6 +52,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     const [totalAmount, setTotalAmount] = useState('')
     const [peopleCount, setPeopleCount] = useState<number | null>(null)
     const [deadline, setDeadline] = useState<number | null>(null)
+    const [location, setLocation] = useState('')
     const [descriptionTextInput, setDescriptionTextInput] = useState('')
     const [keyboardHeight, setKeyboardHeight] = useState(0)
     const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
@@ -125,7 +126,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                 price: Number(price),
                 count: peopleCount ?? 0,
                 // TODO: 지도에 마커 찍어서 위치 선택하도록 구현
-                location: '서울시 강남구',
+                location: location,
                 linkUrl: siteLink,
                 // TODO: 태그 선택 구현
                 tag: '신선식품',
@@ -406,10 +407,17 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.label}>거래 희망 장소</Text>
                     <Text style={styles.accent}> *</Text>
                 </View>
-                <TouchableOpacity style={styles.locationSelectionButton}>
+                <TextInput 
+                    style={styles.textInput}
+                    onChangeText={setLocation}
+                    value={location}
+                    placeholder='구체적인 장소를 입력해주세요. ex) XX관 XXX호'
+                    placeholderTextColor={themeColor.TEXT_SECONDARY}
+                />
+                    {/*
                     <Text style={styles.locationText}>장소 선택</Text>
                     <IcAngleRight width={16} height={16} fill='gray' />
-                </TouchableOpacity>
+                    */}
                 <TouchableOpacity
                     style={styles.checkBoxContainer}
                     onPress={() =>
