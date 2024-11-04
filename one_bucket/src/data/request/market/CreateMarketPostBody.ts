@@ -14,4 +14,5 @@ export interface CreateMarketPostRequestBody {
         tag: string
         dueDays: number
     }
+    chatRoomName: string
 }
