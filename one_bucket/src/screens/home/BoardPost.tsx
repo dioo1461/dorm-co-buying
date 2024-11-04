@@ -6,7 +6,7 @@ import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
-import { SelectablePopup } from '@/components/SelectablePopup'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import {
     GetBoardPostResponse,
@@ -16,7 +16,13 @@ import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { sleep } from '@/utils/asyncUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react'
 import {
     ActivityIndicator,
     Animated,
@@ -85,7 +91,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             headerRight: () => (
                 <TouchableOpacity
                     style={{ marginRight: 16 }}
-                    onPress={() => setSelectablePopupEnabled(true)}>
+                    onPress={() => setBottomSheetEnabled(true)}>
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
@@ -119,9 +125,10 @@ const BoardPost: React.FC = (): JSX.Element => {
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
 
-    const [selectablePopupEnabled, setSelectablePopupEnabled] = useState(false)
-    const [selectablePopupButtonProps, setSelectablePopupButtonProps] =
-        useState<any>([])
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    const [bottomSheetButtonProps, setBottomSheetButtonProps] = useState<any>(
+        [],
+    )
 
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener(
@@ -141,7 +148,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         userLiked.current = data.userAlreadyLikes
         setLikeAdded(0)
         if (data.authorNickname == memberInfo!.nickname) {
-            setSelectablePopupButtonProps([
+            setBottomSheetButtonProps([
                 {
                     text: '수정하기',
                     style: 'default',
@@ -154,7 +161,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 },
             ])
         } else {
-            setSelectablePopupButtonProps([
+            setBottomSheetButtonProps([
                 {
                     text: '신고하기',
                     style: 'destructive',
@@ -513,13 +520,11 @@ const BoardPost: React.FC = (): JSX.Element => {
                 enabled={loadingBackdropEnabled}
                 theme={themeColor}
             />
-            <SelectablePopup
+            <SelectableBottomSheet
                 theme={themeColor}
-                handleClose={() =>
-                    setSelectablePopupEnabled(!selectablePopupEnabled)
-                }
-                enabled={selectablePopupEnabled}
-                buttons={selectablePopupButtonProps}
+                onClose={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                enabled={bottomSheetEnabled}
+                buttons={bottomSheetButtonProps}
             />
         </View>
     )

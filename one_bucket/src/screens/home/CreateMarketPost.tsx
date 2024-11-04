@@ -2,6 +2,7 @@ import { createMarketPost } from '@/apis/marketService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
+import { BottomSheet } from '@/components/bottomSheet/BottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -62,6 +63,10 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     const peopleCountManualInputRef = useRef<TextInput>(null)
     const [deadlineManualInputEnabled, setDeadlineManualInputEnabled] =
         useState(false)
+
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    const [chatRoomName, setChatRoomName] = useState('')
+
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
 
@@ -113,6 +118,10 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
         throw new Error('CreateMarketPost - Market board not found')
     }
 
+    const onSubmitButtonPress = () => {
+        setBottomSheetEnabled(true)
+    }
+
     const onSubmit = async () => {
         const form: CreateMarketPostRequestBody = {
             marketPostCreateDto: {
@@ -132,6 +141,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                 tag: '신선식품',
                 dueDays: deadline ?? -1,
             },
+            chatRoomName: chatRoomName,
         }
 
         console.log(form)
@@ -407,14 +417,14 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.label}>거래 희망 장소</Text>
                     <Text style={styles.accent}> *</Text>
                 </View>
-                <TextInput 
+                <TextInput
                     style={styles.textInput}
                     onChangeText={setLocation}
                     value={location}
                     placeholder='구체적인 장소를 입력해주세요. ex) XX관 XXX호'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                 />
-                    {/*
+                {/*
                     <Text style={styles.locationText}>장소 선택</Text>
                     <IcAngleRight width={16} height={16} fill='gray' />
                     */}
@@ -484,7 +494,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                                 : themeColor.BUTTON_SECONDARY_BG_DARKER,
                         },
                     ]}
-                    onPress={onSubmit}
+                    onPress={onSubmitButtonPress}
                     disabled={!checkFormAvailable()}>
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>

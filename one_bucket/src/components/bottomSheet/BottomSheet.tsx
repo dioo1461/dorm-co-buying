@@ -1,32 +1,20 @@
 import { baseColors, Icolor } from '@/constants/colors'
-import {
-    Animated,
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native'
-import Backdrop from './Backdrop'
-import Line from './Line'
 import { useEffect, useRef } from 'react'
+import { Animated, Dimensions, StyleSheet, View } from 'react-native'
+import Backdrop from '../Backdrop'
 
-type SelectablePopupProps = {
+type BottomSheetProps = {
     enabled: boolean
-    handleClose: () => void
+    onClose: () => void
     theme: Icolor
-    buttons: {
-        text: string
-        style: 'default' | 'destructive'
-        onPress: () => void
-    }[]
+    jsxElement: () => JSX.Element
 }
 
-export const SelectablePopup: React.FC<SelectablePopupProps> = ({
+const BottomSheet: React.FC<BottomSheetProps> = ({
     enabled,
-    handleClose,
+    onClose,
     theme,
-    buttons,
+    jsxElement,
 }): JSX.Element => {
     const styles = createStyles(theme)
 
@@ -63,47 +51,14 @@ export const SelectablePopup: React.FC<SelectablePopupProps> = ({
                 styles.overlay,
                 { pointerEvents: enabled ? 'auto' : 'none' },
             ]}>
-            <Backdrop enabled={enabled} onPress={handleClose} />
+            <Backdrop enabled={enabled} onPress={onClose} />
             <Animated.View
                 style={[
                     styles.container,
                     commonAnimatedStyle,
                     popupAnimatedStyle,
                 ]}>
-                <View style={styles.buttonsContainer}>
-                    {buttons.map((buttonProp, index) => {
-                        let textStyle
-                        switch (buttonProp.style) {
-                            case 'default':
-                                textStyle = styles.buttonText
-                                break
-                            case 'destructive':
-                                textStyle = styles.destructiveButtonText
-                                break
-                        }
-                        return (
-                            <View key={index}>
-                                <TouchableOpacity
-                                    style={styles.button}
-                                    onPress={buttonProp.onPress}>
-                                    <Text style={textStyle}>
-                                        {buttonProp.text}
-                                    </Text>
-                                </TouchableOpacity>
-                                {index !== buttons.length - 1 && (
-                                    <Line theme={theme} />
-                                )}
-                            </View>
-                        )
-                    })}
-                </View>
-                <View style={[styles.buttonsContainer, { marginTop: 10 }]}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleClose}>
-                        <Text style={styles.buttonText}>닫기</Text>
-                    </TouchableOpacity>
-                </View>
+                {jsxElement()}
             </Animated.View>
         </View>
     )
@@ -151,3 +106,5 @@ const createStyles = (theme: Icolor) =>
             color: baseColors.RED,
         },
     })
+
+export default BottomSheet
