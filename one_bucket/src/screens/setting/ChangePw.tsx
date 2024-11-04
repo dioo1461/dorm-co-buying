@@ -214,12 +214,13 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                         </View>
 
                         {/* ### 비밀번호 입력 ### */}
+                        {/*
                         <ScrollView
                             ref={scrollViewRef}
                             horizontal
                             pagingEnabled
                             showsHorizontalScrollIndicator={false}
-                            scrollEnabled={false}>
+                            scrollEnabled={false}> */}
                             <View style={{ width: ScreenWidth - 40 }}>
                                 <Text style={styles.label}>새 비밀번호 입력</Text>
                                 <View style={{
@@ -270,6 +271,7 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                                     <Text style={styles.label}>
                                         비밀번호 확인
                                     </Text>
+                                    {/*
                                     <TouchableOpacity
                                         style={styles.pwReEnterButton}
                                         onPress={onPasswordReEnterButtonPress}>
@@ -277,7 +279,7 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                                             style={styles.pwReEnterButtonText}>
                                             재입력
                                         </Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                 </View>
                                 <View style={{
                                     flexDirection: "row",
@@ -320,7 +322,7 @@ const ChangePw: React.FC = (): React.JSX.Element => {
                                     </Text>
                                 </View>
                             </View>
-                        </ScrollView>
+                        {/* </ScrollView> */}
 
                         <TouchableOpacity
                             disabled={

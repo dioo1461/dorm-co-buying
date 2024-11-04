@@ -205,6 +205,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT,
             fontFamily: 'NanumGothic',
             fontSize: 14,
+            paddingLeft: 10,
         },
         profilesContainer: {
             backgroundColor: theme.BG,
