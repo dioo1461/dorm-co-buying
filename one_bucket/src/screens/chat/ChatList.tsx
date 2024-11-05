@@ -5,7 +5,7 @@ import {
 } from '@/data/response/success/chat/GetChatRoomListResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSSEConnection } from '@/utils/sseFactory'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     FlatList,
@@ -42,41 +42,45 @@ const ChatList: React.FC = (): React.JSX.Element => {
     type esEventType = 'initial-room-list'
 
     const esRef = useRef<EventSource<esEventType> | null>(null)
-    const [chatRoomList, setChatRoomData] = useState<GetChatRoomListResponse>()
+    const [chatRoomList, setChatRoomData] =
+        useState<GetChatRoomListResponse | null>(null)
 
-    useFocusEffect(() => {
-        const initializeSSEConnection = async () => {
-            const eventSource = await createSSEConnection({
-                endpoint: '/chat/sse/chatList',
-                options: {
-                    headers: {
-                        Authorization: `Bearer ${await getAccessToken()}`,
+    useFocusEffect(
+        useCallback(() => {
+            const initializeSSEConnection = async () => {
+                if (esRef.current) return // 이미 연결이 있다면 중복 연결 방지
+                const eventSource = await createSSEConnection({
+                    endpoint: '/chat/sse/chatList',
+                    options: {
+                        headers: {
+                            Authorization: `Bearer ${await getAccessToken()}`,
+                        },
                     },
-                },
-                eventHandlers: {
-                    'initial-room-list': initialRoomListHandler,
-                },
-                debug: true,
-            })
+                    eventHandlers: {
+                        'initial-room-list': initialRoomListHandler,
+                    },
+                    debug: true,
+                })
+                esRef.current = eventSource
+            }
 
-            esRef.current = eventSource
-        }
+            const initialRoomListHandler = (event: SSEMessage) => {
+                console.log('initial-room-list', event.data)
+                setChatRoomData(JSON.parse(event.data))
+            }
 
-        const initialRoomListHandler = (event: SSEMessage) => {
-            console.log('initial-room-list', event.data)
-            setChatRoomData(JSON.parse(event.data))
-        }
+            initializeSSEConnection()
 
-        initializeSSEConnection()
-
-        return () => {
-            console.log('cleanup')
-            esRef.current?.remove(initialRoomListHandler)
-            esRef.current?.close()
-        }
-    })
-
-    // useEffect(() => {}, [chatRoomList])
+            return () => {
+                console.log('cleanup')
+                if (esRef.current) {
+                    esRef.current.remove(initialRoomListHandler)
+                    esRef.current.close()
+                    esRef.current = null
+                }
+            }
+        }, [setChatRoomData]),
+    )
 
     const flatlistRef = useRef<FlatList>(null)
 
@@ -89,14 +93,15 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const ChatItem = (chatRoomList: ChatRoom) => {
+    const ChatItem = (chatRoom: ChatRoom) => {
         const styles = createChatitemStyles(themeColor)
+        console.log(chatRoom.recentMessageTime)
 
         return (
             <TouchableNativeFeedback
                 background={touchableNativeFeedbackBg()}
                 onPress={() =>
-                    navigation.navigate('Chat', { roomId: chatRoomList.roomId })
+                    navigation.navigate('Chat', { roomId: chatRoom.roomId })
                 }>
                 <View style={styles.chatContainer}>
                     <View style={styles.imageContainer}></View>
@@ -104,18 +109,15 @@ const ChatList: React.FC = (): React.JSX.Element => {
                         <View style={styles.headerContainer}>
                             <View style={styles.headerFirstContainer}>
                                 <Text style={styles.titleText}>
-                                    {chatRoomList?.roomName}
+                                    {chatRoom?.roomName}
                                 </Text>
                                 <Text style={styles.lastChatTimeText}>
-                                    {chatRoomList.recentMessageTime
-                                        .getHours()
-                                        .toString()
-                                        .padStart(2, '0')}
-                                    :
-                                    {chatRoomList.recentMessageTime
-                                        .getMinutes()
-                                        .toString()
-                                        .padStart(2, '0')}
+                                    {chatRoom.recentMessageTime
+                                        ? new Date(chatRoom.recentMessageTime)
+                                              .getHours()
+                                              .toString()
+                                              .padStart(2, '0')
+                                        : '방금'}
                                 </Text>
                             </View>
                             <View style={styles.headerSecondContainer}></View>
