@@ -10,6 +10,7 @@ import { getAccessToken } from '@/utils/accessTokenUtils'
 import { Button, Text } from 'react-native-elements'
 import { TextInput } from 'react-native-gesture-handler'
 import { CHAT_BASE_URL } from '@env'
+import { ChatMessageBody } from '@/data/request/chat/ChatMessage'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -29,6 +30,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
             },
         )
+
         return () => themeSubscription.remove()
     }, [])
 
@@ -51,23 +53,29 @@ const Chat: React.FC = (): React.JSX.Element => {
                 connectHeaders: {
                     Authorization: `Bearer ${await getAccessToken()}`,
                 },
+
                 debug: (str: string) => {
                     console.log(str)
                 },
                 reconnectDelay: 5000,
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
+                forceBinaryWSFrames: true,
+                appendMissingNULLonIncoming: true,
             })
 
             // 연결 성공 시
             stompClient.onConnect = () => {
                 console.log('Connected')
                 // 구독
-                stompClient.subscribe('/sub/chat/room', message => {
-                    const msg = JSON.parse(message.body)
-                    console.log(msg)
-                    // setChatMessages(prev => [...prev, msg.content])
-                })
+                stompClient.subscribe(
+                    `/sub/chat/room/${params.roomId}`,
+                    message => {
+                        const msg = JSON.parse(message.body)
+                        console.log(msg)
+                        // setChatMessages(prev => [...prev, msg.content])
+                    },
+                )
             }
 
             // 연결 시도
@@ -86,9 +94,17 @@ const Chat: React.FC = (): React.JSX.Element => {
     // 메시지 전송 함수
     const sendMessage = () => {
         message.trim()
+        const messageForm: ChatMessageBody = {
+            type: 'TALK',
+            roomId: params.roomId,
+            sender: useBoundStore.getState().memberInfo?.nickname!,
+            message: message,
+            time: new Date().toISOString(),
+        }
+        console.log(messageForm)
         stompClientRef.current?.publish({
             destination: '/pub/message',
-            body: JSON.stringify({ content: message, sender: 'test' }),
+            body: JSON.stringify(messageForm),
         })
         setMessage('')
     }
