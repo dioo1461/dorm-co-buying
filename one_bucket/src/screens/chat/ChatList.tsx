@@ -42,7 +42,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
     type esEventType = 'initial-room-list'
 
     const esRef = useRef<EventSource<esEventType> | null>(null)
-    const [chatRoomList, setData] = useState<GetChatRoomListResponse>()
+    const [chatRoomList, setChatRoomData] = useState<GetChatRoomListResponse>()
 
     useFocusEffect(() => {
         const initializeSSEConnection = async () => {
@@ -64,6 +64,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
 
         const initialRoomListHandler = (event: SSEMessage) => {
             console.log('initial-room-list', event.data)
+            setChatRoomData(JSON.parse(event.data))
         }
 
         initializeSSEConnection()
@@ -75,9 +76,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
         }
     })
 
-    useEffect(() => {
-        console.log(esRef.current)
-    }, [esRef.current])
+    // useEffect(() => {}, [chatRoomList])
 
     const flatlistRef = useRef<FlatList>(null)
 

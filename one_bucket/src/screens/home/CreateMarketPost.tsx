@@ -2,7 +2,8 @@ import { createMarketPost } from '@/apis/marketService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { BottomSheet } from '@/components/bottomSheet/BottomSheet'
+import BottomSheet from '@/components/bottomSheet/BottomSheet'
+import { CreateMarketPostBottomSheet } from '@/components/bottomSheet/CreateMarketPostBottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -65,7 +66,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
         useState(false)
 
     const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
-    const [chatRoomName, setChatRoomName] = useState('')
 
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
@@ -122,39 +122,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
         setBottomSheetEnabled(true)
     }
 
-    const onSubmit = async () => {
-        const form: CreateMarketPostRequestBody = {
-            marketPostCreateDto: {
-                boardId: findMarketBoardId(),
-                title: itemName,
-                text: descriptionTextInput,
-            },
-            tradeCreateDto: {
-                item: itemName,
-                wanted: Number(totalAmount),
-                price: Number(price),
-                count: peopleCount ?? 0,
-                // TODO: 지도에 마커 찍어서 위치 선택하도록 구현
-                location: location,
-                linkUrl: siteLink,
-                // TODO: 태그 선택 구현
-                tag: '신선식품',
-                dueDays: deadline ?? -1,
-            },
-            chatRoomName: chatRoomName,
-        }
-
-        console.log(form)
-
-        createMarketPost(form)
-            .then(res => {
-                navigation.goBack()
-            })
-            .catch(err => {
-                console.log(`createMarketPost error - ${err}`)
-            })
-    }
-
     const checkFormAvailable = () => {
         return (
             // TODO: 장소도 추가
@@ -165,6 +132,34 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
             peopleCount !== null &&
             deadline !== null
         )
+    }
+
+    const makeSubmitForm = () => {
+        const submitForm: CreateMarketPostRequestBody = {
+            marketPostCreateDto: {
+                boardId: findMarketBoardId(),
+                title: itemName,
+                text: descriptionTextInput,
+            },
+            tradeCreateDto: {
+                item: itemName,
+                wanted: Number(totalAmount),
+                price: Number(price),
+                count: peopleCount ?? 0,
+                location: location,
+                linkUrl: siteLink,
+                tag: '신선식품',
+                dueDays: deadline ?? -1,
+            },
+            chatRoomName: '',
+        }
+
+        return submitForm
+    }
+
+    const onSubmitComplete = (postId: number) => {
+        navigation.goBack()
+        navigation.navigate('MarketPost', { postId: postId })
     }
 
     return (
@@ -499,6 +494,13 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
+            <CreateMarketPostBottomSheet
+                enabled={bottomSheetEnabled}
+                theme={themeColor}
+                submitForm={makeSubmitForm()}
+                onClose={() => setBottomSheetEnabled(false)}
+                onSubmitComplete={onSubmitComplete}
+            />
         </KeyboardAvoidingView>
     )
 }

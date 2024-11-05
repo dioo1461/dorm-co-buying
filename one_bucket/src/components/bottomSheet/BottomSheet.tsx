@@ -5,7 +5,7 @@ import Backdrop from '../Backdrop'
 
 type BottomSheetProps = {
     enabled: boolean
-    onClose: () => void
+    onClose?: () => void
     theme: Icolor
     jsxElement: () => JSX.Element
 }
@@ -51,7 +51,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
                 styles.overlay,
                 { pointerEvents: enabled ? 'auto' : 'none' },
             ]}>
-            <Backdrop enabled={enabled} onPress={onClose} />
+            <Backdrop enabled={enabled} onPress={onClose ?? (() => {})} />
             <Animated.View
                 style={[
                     styles.container,
@@ -67,9 +67,11 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         overlay: {
+            flex: 1,
             position: 'absolute',
             width: '100%',
             height: '100%',
+            elevation: 5,
         },
         container: {
             backgroundColor: theme.BG,

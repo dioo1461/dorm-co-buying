@@ -1,11 +1,14 @@
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
+import { CreateMarketPostResponse } from '@/data/response/success/board/CreateMarketPostResponse'
 import { GetMarketPostListResponse } from '@/data/response/success/market/GetMarketPostListResponse'
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 const MARKET_ENDPOINT_PREFIX = 'market-post'
 
-export const createMarketPost = async (data: CreateMarketPostRequestBody) => {
+export const createMarketPost = async (
+    data: CreateMarketPostRequestBody,
+): Promise<CreateMarketPostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .post(`/${MARKET_ENDPOINT_PREFIX}/create`, data)

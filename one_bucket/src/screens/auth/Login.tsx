@@ -230,10 +230,10 @@ const createStyles = (theme: Icolor) =>
         textInput: {
             color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
+            borderBottomWidth: 1,
             fontFamily: 'NanumGothic',
             fontSize: 14,
             width: '95%',
-            borderBottomWidth: 1,
             padding: 6,
             marginStart: 20,
             marginEnd: 20,
