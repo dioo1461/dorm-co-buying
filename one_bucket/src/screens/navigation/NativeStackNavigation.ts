@@ -1,3 +1,4 @@
+import { ChatRoom } from '@/data/response/success/chat/GetChatRoomListResponse'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
@@ -65,9 +66,7 @@ export type RootStackParamList = {
     VersionCheck: undefined
 
     ChatList: undefined
-    Chat: {
-        roomId: string
-    }
+    Chat: ChatRoom
 
     ProfileDetails: undefined
 

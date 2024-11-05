@@ -65,14 +65,12 @@ const ChatList: React.FC = (): React.JSX.Element => {
             }
 
             const initialRoomListHandler = (event: SSEMessage) => {
-                console.log('initial-room-list', event.data)
                 setChatRoomData(JSON.parse(event.data))
             }
 
             initializeSSEConnection()
 
             return () => {
-                console.log('cleanup')
                 if (esRef.current) {
                     esRef.current.remove(initialRoomListHandler)
                     esRef.current.close()
@@ -128,14 +126,11 @@ const ChatList: React.FC = (): React.JSX.Element => {
 
     const ChatItem = (chatRoom: ChatRoom) => {
         const styles = createChatitemStyles(themeColor)
-        console.log(chatRoom.recentMessageTime)
 
         return (
             <TouchableNativeFeedback
                 background={touchableNativeFeedbackBg()}
-                onPress={() =>
-                    navigation.navigate('Chat', { roomId: chatRoom.roomId })
-                }>
+                onPress={() => navigation.navigate('Chat', chatRoom)}>
                 <View style={styles.chatContainer}>
                     {/* ### 채팅 이미지 ### */}
                     <View style={styles.imageContainer}></View>

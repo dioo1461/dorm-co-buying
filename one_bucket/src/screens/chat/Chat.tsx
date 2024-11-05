@@ -1,16 +1,15 @@
-import { darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { ChatMessageBody } from '@/data/request/chat/ChatMessage'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { getAccessToken } from '@/utils/accessTokenUtils'
+import { CHAT_BASE_URL } from '@env'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
-import { Appearance, StyleSheet, View } from 'react-native'
+import { Appearance, FlatList, StyleSheet, TextInput, View } from 'react-native'
+import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { Client } from '@stomp/stompjs'
-import { getAccessToken } from '@/utils/accessTokenUtils'
-import { Button, Text } from 'react-native-elements'
-import { TextInput } from 'react-native-gesture-handler'
-import { CHAT_BASE_URL } from '@env'
-import { ChatMessageBody } from '@/data/request/chat/ChatMessage'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -18,6 +17,7 @@ Object.assign(global, {
 })
 
 const Chat: React.FC = (): React.JSX.Element => {
+    const navigation = useNavigation()
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -30,7 +30,6 @@ const Chat: React.FC = (): React.JSX.Element => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
             },
         )
-
         return () => themeSubscription.remove()
     }, [])
 
@@ -38,25 +37,30 @@ const Chat: React.FC = (): React.JSX.Element => {
     const { params } = useRoute<ChatRouteProp>()
 
     const [message, setMessage] = useState('')
-    // const [chatMessages, setChatMessages] = useState<string[]>([])
-    const chatMessages = ['']
+    const [chatMessages, setChatMessages] = useState<ChatMessageBody[]>([])
 
-    const stompClientRef = useRef<Client | null>(null) // Stomp 클라이언트를 useRef로 저장
+    const stompClientRef = useRef<Client | null>(null)
 
     const styles = createStyles(themeColor)
 
+    // 헤더 옵션 설정
+    useEffect(() => {
+        navigation.setOptions({
+            title: params.roomName,
+            headerStyle: { backgroundColor: themeColor.BG },
+            headerTintColor: themeColor.TEXT,
+            headerTitleStyle: { fontWeight: 'bold' },
+        })
+    }, [navigation, params.roomName, themeColor])
+
     useEffect(() => {
         const initializeStompClient = async () => {
-            // Stomp 클라이언트 생성
             const stompClient = new Client({
                 brokerURL: CHAT_BASE_URL,
                 connectHeaders: {
                     Authorization: `Bearer ${await getAccessToken()}`,
                 },
-
-                debug: (str: string) => {
-                    console.log(str)
-                },
+                debug: (str: string) => console.log(str),
                 reconnectDelay: 5000,
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
@@ -64,23 +68,18 @@ const Chat: React.FC = (): React.JSX.Element => {
                 appendMissingNULLonIncoming: true,
             })
 
-            // 연결 성공 시
             stompClient.onConnect = () => {
                 console.log('Connected')
-                // 구독
                 stompClient.subscribe(
                     `/sub/chat/room/${params.roomId}`,
                     message => {
                         const msg = JSON.parse(message.body)
-                        console.log(msg)
-                        // setChatMessages(prev => [...prev, msg.content])
+                        setChatMessages(prev => [...prev, msg])
                     },
                 )
             }
 
-            // 연결 시도
             stompClient.activate()
-
             stompClientRef.current = stompClient
         }
 
@@ -91,42 +90,68 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    // 메시지 전송 함수
+    const validateMessage = () => message.trim() !== ''
+
     const sendMessage = () => {
-        message.trim()
+        if (!validateMessage()) return
         const messageForm: ChatMessageBody = {
             type: 'TALK',
             roomId: params.roomId,
             sender: useBoundStore.getState().memberInfo?.nickname!,
-            message: message,
+            message,
             time: new Date().toISOString(),
         }
-        console.log(messageForm)
         stompClientRef.current?.publish({
             destination: '/pub/message',
             body: JSON.stringify(messageForm),
         })
         setMessage('')
     }
+
+    const renderMessageItem = ({ item }: { item: ChatMessageBody }) => {
+        const isMyMessage =
+            item.sender === useBoundStore.getState().memberInfo?.nickname
+        return isMyMessage ? (
+            <View style={[styles.messageContainer, styles.myMessage]}>
+                <Text style={styles.messageSender}></Text>
+                <Text style={styles.myMessageText}>{item.message}</Text>
+                <Text style={styles.messageTime}>
+                    {new Date(item.time).toLocaleTimeString()}
+                </Text>
+            </View>
+        ) : (
+            <View style={[styles.messageContainer, styles.otherMessage]}>
+                <Text style={styles.messageSender}>{item.sender}</Text>
+                <Text style={styles.otherMessageText}>{item.message}</Text>
+                <Text style={styles.messageTime}>
+                    {new Date(item.time).toLocaleTimeString()}
+                </Text>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.chatContainer}>
-                {/* 채팅 메시지 목록 */}
-                {chatMessages.map((msg, index) => (
-                    <View key={index} style={styles.message}>
-                        <Text>{msg}</Text>
-                    </View>
-                ))}
-            </View>
-
-            {/* 메시지 입력 필드 */}
-            <TextInput
-                style={styles.input}
-                value={message}
-                onChangeText={setMessage}
-                placeholder='메시지를 입력하세요'
+            <FlatList
+                data={chatMessages}
+                renderItem={renderMessageItem}
+                keyExtractor={(_, index) => index.toString()}
+                contentContainerStyle={styles.chatContainer}
             />
-            <Button title='전송' onPress={sendMessage} />
+
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    value={message}
+                    onChangeText={setMessage}
+                    placeholder='메시지를 입력하세요'
+                />
+                <Button
+                    title='전송'
+                    onPress={sendMessage}
+                    buttonStyle={styles.sendButton}
+                />
+            </View>
         </View>
     )
 }
@@ -135,23 +160,66 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: {
             flex: 1,
-            padding: 16,
+            backgroundColor: theme.BG,
         },
         chatContainer: {
-            flex: 1,
-            marginBottom: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 20,
         },
-        message: {
-            padding: 8,
-            marginVertical: 4,
+        messageContainer: {
+            maxWidth: '70%',
+            marginVertical: 5,
+            padding: 10,
+            borderRadius: 10,
+        },
+        myMessage: {
+            backgroundColor: theme.BUTTON_BG,
+            alignSelf: 'flex-end',
+        },
+        myMessageText: {
+            color: theme.BUTTON_TEXT,
+            fontSize: 16,
+        },
+        otherMessageText: {
+            color: theme.TEXT,
+            fontSize: 16,
+        },
+        otherMessage: {
+            backgroundColor: theme.BG_SECONDARY,
+            alignSelf: 'flex-start',
+        },
+        messageSender: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+        },
+        messageTime: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+            alignSelf: 'flex-end',
+            marginTop: 4,
+        },
+        inputContainer: {
+            flexDirection: 'row',
+            paddingHorizontal: 10,
+            paddingVertical: 10,
+            borderTopWidth: 1,
+            borderTopColor: theme.TEXT_SECONDARY,
             backgroundColor: theme.BG,
-            borderRadius: 5,
         },
         input: {
+            flex: 1,
             height: 40,
-            borderColor: theme.TEXT_SECONDARY,
-            borderWidth: 1,
-            paddingHorizontal: 10,
+            borderRadius: 20,
+            paddingHorizontal: 15,
+            backgroundColor: theme.BG_SECONDARY,
+            color: theme.TEXT,
+        },
+        sendButton: {
+            marginLeft: 10,
+            borderRadius: 20,
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            backgroundColor: theme.TEXT_SECONDARY,
         },
     })
 
