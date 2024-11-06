@@ -1,16 +1,17 @@
 import { postSignupForm, requestLogin } from '@/apis/authService'
 import Exclamation from '@/assets/drawable/exclamation.svg'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
+import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
-import { LoginRequestBody } from '@/data/request/loginRequestBody'
-import { SignUpRequestBody } from '@/data/request/signUpRequestBody'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { LoginRequestBody } from '@/data/request/LoginRequestBody'
+import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { setAccessToken } from '@/utils/accessTokenUtils'
 import { StringFilter } from '@/utils/StringFilter'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     Alert,
     Appearance,
@@ -24,8 +25,13 @@ import {
     View,
 } from 'react-native'
 import { ScreenWidth } from 'react-native-elements/dist/helpers'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp5: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -39,8 +45,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
 
-    const { onSignUpFailure } = useContext(AppContext)
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -56,6 +61,16 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     const scrollViewRef = useRef<ScrollView>(null)
     const passwordRef = useRef<TextInput>(null)
     const passwordConfirmRef = useRef<TextInput>(null)
+
+    const [hidePw, setHidePw] = useState(true)
+    const viewPwIcon = (hidePw: boolean) => {
+        if(hidePw == true) return (
+            <View><IcHide /></View>
+        )
+        else return (
+            <View><IcShow /></View>
+        )
+    }
 
     const handleEmailChange = (text: string) => {
         if (emailError == signUpErrorMessage.duplicatedEmailOrNickname) {
@@ -131,9 +146,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                 requestLogin(loginForm)
                     .then(res => {
                         setAccessToken(res.accessToken)
-                        navigation.navigate('SignUp6', {
-                            accessToken: res.accessToken,
-                        })
+                        navigation.navigate('SignUp6')
                     })
                     .catch(err => {
                         console.log(`signUp5 - requestLogin: ${err}`)
@@ -179,7 +192,6 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     <TouchableOpacity
                         onPress={() => {
                             navigation.goBack()
-                            navigation.goBack()
                         }}
                         style={signUpStyles.backButton}>
                         <IcArrowLeft />
@@ -187,30 +199,25 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                 </View>
                 <View>
                     <View style={signUpStyles.headerContainer}>
-                        <Text style={signUpStyles.subStep}>1. 본인 인증</Text>
-                        <Text style={signUpStyles.subStep}>2. 학교 인증</Text>
                         <Text style={signUpStyles.currentStep}>
-                            3. 인증 정보 설정
+                            1. 인증 정보 설정
                         </Text>
                         <Text style={signUpStyles.title}>
                             {`로그인 시 사용할 인증 정보를 설정해 주세요.`}
                         </Text>
                         <Text style={signUpStyles.subStep}>
-                            4. 프로필 정보 입력
+                            2. 프로필 정보 입력
                         </Text>
                     </View>
                     <View>
                         {/* ### 이메일 입력 ### */}
-                        <Text style={styles.label}>
-                            로그인 이메일 주소 입력
-                        </Text>
+                        <Text style={styles.label}>로그인 아이디 입력</Text>
                         <TextInput
                             style={styles.input}
                             onChangeText={handleEmailChange}
                             value={email}
-                            placeholder='이메일'
+                            placeholder='아이디(8~20자)'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
-                            keyboardType='email-address'
                         />
                         <View
                             style={[
@@ -225,28 +232,39 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         </View>
 
                         {/* ### 비밀번호 입력 ### */}
+                        {/*
                         <ScrollView
                             ref={scrollViewRef}
                             horizontal
                             pagingEnabled
                             showsHorizontalScrollIndicator={false}
-                            scrollEnabled={false}>
+                            scrollEnabled={false}> */}
                             <View style={{ width: ScreenWidth - 40 }}>
                                 <Text style={styles.label}>비밀번호 입력</Text>
-                                <TextInput
-                                    ref={passwordRef}
-                                    style={styles.input}
-                                    onChangeText={handlePasswordChange}
-                                    onBlur={onPasswordInputBlur}
-                                    value={password}
-                                    placeholder='비밀번호'
-                                    placeholderTextColor={
-                                        themeColor.TEXT_SECONDARY
-                                    }
-                                    keyboardType='default'
-                                    secureTextEntry={true}
-                                    scrollEnabled={false}
-                                />
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                    }}>
+                                    <TextInput
+                                        ref={passwordRef}
+                                        style={styles.input}
+                                        onChangeText={handlePasswordChange}
+                                        onBlur={onPasswordInputBlur}
+                                        value={password}
+                                        placeholder='숫자, 대소문자, 특수문자 모두 포함하여 8~20자'
+                                        placeholderTextColor={
+                                            themeColor.TEXT_SECONDARY
+                                        }
+                                        keyboardType='default'
+                                        secureTextEntry={hidePw}
+                                        scrollEnabled={false}
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.viewPw}
+                                        onPress={()=>{setHidePw(!hidePw)}}>
+                                        {viewPwIcon(hidePw)}
+                                    </TouchableOpacity>
+                                </View>
                                 <View
                                     style={[
                                         { opacity: passwordError ? 1 : 0 },
@@ -261,7 +279,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     </Text>
                                 </View>
                             </View>
-                            <View style={{ width: ScreenWidth - 40 }}>
+                            <View style={{ width: ScreenWidth - 41 }}>
                                 <View
                                     style={{
                                         flexDirection: 'row',
@@ -271,6 +289,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     <Text style={styles.label}>
                                         비밀번호 확인
                                     </Text>
+                                    {/*
                                     <TouchableOpacity
                                         style={styles.pwReEnterButton}
                                         onPress={onPasswordReEnterButtonPress}>
@@ -278,21 +297,31 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                             style={styles.pwReEnterButtonText}>
                                             재입력
                                         </Text>
+                                    </TouchableOpacity> */}
+                                </View>
+                                <View style={{
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                    }}>
+                                    <TextInput
+                                        ref={passwordConfirmRef}
+                                        style={styles.input}
+                                        onChangeText={handlePasswordConfirmChange}
+                                        value={passwordConfirm}
+                                        placeholder='비밀번호를 다시 한 번 입력해 주세요.'
+                                        placeholderTextColor={
+                                            themeColor.TEXT_SECONDARY
+                                        }
+                                        keyboardType='default'
+                                        secureTextEntry={hidePw}
+                                        scrollEnabled={false}
+                                    />
+                                    <TouchableOpacity
+                                        style={styles.viewPw}
+                                        onPress={()=>{setHidePw(!hidePw)}}>
+                                        {viewPwIcon(hidePw)}
                                     </TouchableOpacity>
                                 </View>
-                                <TextInput
-                                    ref={passwordConfirmRef}
-                                    style={styles.input}
-                                    onChangeText={handlePasswordConfirmChange}
-                                    value={passwordConfirm}
-                                    placeholder='비밀번호를 다시 한 번 입력해 주세요.'
-                                    placeholderTextColor={
-                                        themeColor.TEXT_SECONDARY
-                                    }
-                                    keyboardType='default'
-                                    secureTextEntry={true}
-                                    scrollEnabled={false}
-                                />
                                 <View
                                     style={[
                                         {
@@ -311,7 +340,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                     </Text>
                                 </View>
                             </View>
-                        </ScrollView>
+                        {/* </ScrollView> */}
 
                         {/* ### 닉네임 입력 ### */}
                         <Text style={styles.label}>닉네임 입력</Text>
@@ -319,7 +348,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             style={styles.input}
                             onChangeText={handleNicknameChange}
                             value={nickname}
-                            placeholder='닉네임'
+                            placeholder='닉네임(4~14자)'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
                             keyboardType='default'
                             scrollEnabled={false}
@@ -368,6 +397,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                 styles.button,
                             ]}
                             onPress={handleSubmit}>
+                            {/* onPress={() => navigation.navigate('SignUp6')}> */}
                             <Text style={styles.buttonText}>다음</Text>
                         </TouchableOpacity>
                     </View>
@@ -388,11 +418,19 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 5,
         },
         input: {
+            width: ScreenWidth - 80,
+            color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
             borderBottomWidth: 1,
             paddingBottom: 4,
             fontSize: 16,
             marginBottom: 10,
+        },
+        viewPw:{
+            height: 36,
+            width: 36,
+            justifyContent: "center",
+            alignItems: "center",
         },
         errorLabelContainer: {
             flexDirection: 'row',

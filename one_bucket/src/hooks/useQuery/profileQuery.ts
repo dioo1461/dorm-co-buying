@@ -3,39 +3,38 @@ import {
     getProfile,
     getProfileImage,
 } from '@/apis/profileService'
-import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
-import { GetProfileResponse } from '@/data/response/GetProfileResponse'
+import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
+import { GetProfileResponse } from '@/data/response/success/GetProfileResponse'
 import { useQuery } from 'react-query'
-import { useProfileStore } from '../useStore/useProfileStore'
+import { useBoundStore } from '../useStore/useBoundStore'
 
 export const queryGetMemberInfo = () => {
-    const memberInfoData = useProfileStore.getState().memberInfo
+    const memberInfo = useBoundStore.getState().memberInfo
     // TODO: 캐싱 제대로 작동하는지 확인
 
-    const checkProfileImageCached = async () => {
-        const image: ArrayBuffer = await getProfileImage()
-        return image
-    }
+    // const checkProfileImageCached = async () => {
+    //     const image: ArrayBuffer = await getProfileImage()
+    //     return image
+    // }
 
-    return useQuery<[GetMemberInfoResponse, ArrayBuffer]>(
-        ['memberInfo', memberInfoData],
-        async () => {
-            const promise = await Promise.all([
-                getMemberInfo(),
-                checkProfileImageCached(),
-            ])
-            return promise
-        },
+    return useQuery<GetMemberInfoResponse>(
+        // TODO: cache 갱신 parameter 수정
+        ['memberInfo', memberInfo],
+        getMemberInfo,
     )
 }
 
 export const queryGetProfile = () => {
-    return useQuery<GetProfileResponse>(['profile'], getProfile)
+    const memberInfo = useBoundStore.getState().memberInfo
+    // TODO: 캐싱 제대로 작동하는지 확인
+
+    return useQuery<GetProfileResponse>(['profile', memberInfo], getProfile)
 }
 
-export const queryGetProfileImage = (token: string) => {
-    return useQuery<GetMemberInfoResponse>(
-        ['profileImage', token],
+export const queryGetProfileImage = () => {
+    return useQuery<ArrayBuffer>(
+        // TODO: cache 갱신 parameter 수정
+        ['profileImage'],
         getProfileImage,
     )
 }

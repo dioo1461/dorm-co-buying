@@ -15,3 +15,14 @@ export const setAlertVibrationEnabled = async (value: boolean) => {
 export const getAlertVibrationEnabled = async () => {
     return AsyncStorage.getItem('alertVibrationEnabled')
 }
+
+export const setLastTimestampOfChatRoom = async (
+    roomId: string,
+    timestamp: string,
+) => {
+    return AsyncStorage.setItem(`chatRoomLastTimestamp:${roomId}`, timestamp)
+}
+
+export const getLastTimestampOfChatRoom = async (roomId: string) => {
+    return AsyncStorage.getItem(`chatRoomLastTimestamp:${roomId}`)
+}

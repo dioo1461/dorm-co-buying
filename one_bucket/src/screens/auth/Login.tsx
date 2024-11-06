@@ -1,12 +1,13 @@
 import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAccessToken } from '@/utils/accessTokenUtils'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
     Appearance,
     Image,
+    Modal,
     StyleSheet,
     Text,
     TextInput,
@@ -16,9 +17,19 @@ import BouncyCheckbox, {
     BouncyCheckboxHandle,
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+// import IcHide from '@/assets/drawable/bxs_hide.svg'
+import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
+import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
 
 const Login: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
+        useBoundStore(state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onLogInSuccess: state.onLogInSuccess,
+            onLoginFailure: state.onLoginFailure,
+        }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -34,8 +45,7 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const [isAutoLogin, setIsAutoLogin] = React.useState(false)
-    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
+    const [autoLoginEnabled, setAutoLoginEnabled] = React.useState(false)
     const navigation = stackNavigation()
 
     let bouncyCheckboxRef = useRef<BouncyCheckboxHandle>(null)
@@ -51,6 +61,7 @@ const Login: React.FC = (): React.JSX.Element => {
                 onLogInSuccess()
             })
             .catch(err => {
+                console.log(err)
                 onLoginFailure()
             })
     }
@@ -58,6 +69,31 @@ const Login: React.FC = (): React.JSX.Element => {
     const handleForgotPassword = () => {}
 
     const handleGoogleLogin = () => {}
+
+    const [easterEgg, setEE] = React.useState(10)
+    const [eeVisible, setEEVisible] = React.useState(false)
+    const openEE = () => {
+        setEEVisible(true)
+    }
+    const closeEE = () => {
+        setEEVisible(false)
+    }
+
+    const [hidePw, setHidePw] = React.useState(true)
+    const viewPwIcon = (hidePw: boolean) => {
+        if (hidePw == true)
+            return (
+                <View>
+                    <IcHide />
+                </View>
+            )
+        else
+            return (
+                <View>
+                    <IcShow />
+                </View>
+            )
+    }
 
     return (
         <View style={[styles.container]}>
@@ -68,11 +104,32 @@ const Login: React.FC = (): React.JSX.Element => {
                     alignItems: 'center',
                     marginBottom: 50,
                 }}>
-                <Image
-                    source={require('@/assets/drawable/login_logo.png')}
-                    style={styles.logoImage}
-                />
+                <TouchableOpacity
+                    onPress={() => {
+                        setEE(easterEgg => easterEgg - 1)
+                        if (easterEgg == 1) {
+                            setEEVisible(true)
+                            setEE(10)
+                        }
+                    }}
+                    activeOpacity={1}>
+                    <Image
+                        source={require('@/assets/drawable/login_logo.png')}
+                        style={styles.logoImage}
+                    />
+                </TouchableOpacity>
             </View>
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={eeVisible}
+                onRequestClose={closeEE}>
+                <View style={{ alignItems: 'center' }}>
+                    <Image
+                        source={require('@/assets/drawable/mungmoonge.jpg')}
+                    />
+                </View>
+            </Modal>
             <View
                 style={{
                     flex: 5,
@@ -84,25 +141,37 @@ const Login: React.FC = (): React.JSX.Element => {
                     placeholder='아이디'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     value={id}
+                    keyboardType='email-address'
                     onChangeText={setId}
                 />
-                <TextInput
-                    style={styles.textInput}
-                    placeholder='비밀번호'
-                    placeholderTextColor={themeColor.TEXT_SECONDARY}
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}>
+                    <TextInput
+                        style={{ ...styles.textInput, width: '85%' }}
+                        placeholder='비밀번호'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        secureTextEntry={hidePw}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    <TouchableOpacity
+                        style={styles.viewPw}
+                        onPress={() => {
+                            setHidePw(!hidePw)
+                        }}>
+                        {viewPwIcon(hidePw)}
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.autoLoginContainer}>
                     <View style={{ width: '5%' }}>
                         <BouncyCheckbox
                             ref={bouncyCheckboxRef}
                             size={25}
                             fillColor={themeColor.BUTTON_BG}
-                            onPress={isAutoLogin =>
-                                setIsAutoLogin(!isAutoLogin)
-                            }
+                            onPress={value => setAutoLoginEnabled(!value)}
                         />
                     </View>
                     <View>
@@ -126,12 +195,15 @@ const Login: React.FC = (): React.JSX.Element => {
                 <View style={[styles.signUpButtonContainer]}>
                     <TouchableOpacity
                         style={styles.signUpButton}
-                        onPress={() => navigation.navigate('SignUp')}>
+                        onPress={() => navigation.navigate('SignUp5')}>
                         <Text style={styles.signUpButtonText}>계정 생성</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.linkTextContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate('NewPw')
+                        }}>
                         <Text style={styles.linkText}>
                             비밀번호를 잊으셨나요?
                         </Text>
@@ -158,15 +230,22 @@ const createStyles = (theme: Icolor) =>
         textInput: {
             color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
+            borderBottomWidth: 1,
             fontFamily: 'NanumGothic',
             fontSize: 14,
-            width: '100%',
-            borderBottomWidth: 1,
+            width: '95%',
             padding: 6,
             marginStart: 20,
             marginEnd: 20,
             marginBottom: 10,
             backgroundColor: 'transparent',
+        },
+        viewPw: {
+            height: 36,
+            width: 36,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingRight: 30,
         },
         autoLoginContainer: {
             flexDirection: 'row',
@@ -206,13 +285,13 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 10,
         },
         signUpButton: {
-            backgroundColor: theme.BUTTON_SECONDARY_BG,
+            backgroundColor: baseColors.SCHOOL_BG_LIGHT,
             padding: 18,
             alignItems: 'center',
             borderRadius: 5,
         },
         signUpButtonText: {
-            color: theme.BUTTON_SECONDARY_TEXT,
+            color: theme.BUTTON_TEXT,
             fontSize: 14,
             fontFamily: 'NanumGothic',
         },

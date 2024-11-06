@@ -1,6 +1,7 @@
-import { AddProfileRequestBody } from '@/data/request/addProfileRequestBody'
-import { GetMemberInfoResponse } from '@/data/response/getMemberInfoResponse'
-import { createAuthAxios } from 'utils/axiosFactory'
+import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
+import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
+import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
+import { createAuthAxios, createStorageAxios } from 'utils/axiosFactory'
 
 /**
  * @returns:
@@ -14,6 +15,7 @@ export const getProfile = async () => {
         })
         .catch(error => {
             // 401 unauthorized
+            console.log(error.response)
             throw error
         })
 }
@@ -39,7 +41,7 @@ export const getMemberInfo = async () => {
  * @returns:
  */
 export const getProfileImage = async () => {
-    const authAxios = await createAuthAxios()
+    const authAxios = await createStorageAxios()
     return await authAxios
         .get('/profile/image', { responseType: 'arraybuffer' })
         .then(response => {
@@ -54,8 +56,21 @@ export const getProfileImage = async () => {
 
 export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
+    console.log("AddProfileRequestBody:",data)
     return authAxios
-        .post('/profile/update', data)
+        .post('/guest/profile/update', data)
+        .then(response => {
+            return response
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const updateUniversity = async (data: SetUniversityRequestBody) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/member/univ', data)
         .then(response => {
             return response
         })

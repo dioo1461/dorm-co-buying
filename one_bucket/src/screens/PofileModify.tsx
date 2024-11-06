@@ -1,24 +1,37 @@
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
+import { postProfile } from '@/apis/profileService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
+import { StringFilter } from '@/utils/StringFilter'
+import CheckBox from '@react-native-community/checkbox'
+import React, { useEffect, useState } from 'react'
 import {
-    queryGetMemberInfo,
-    queryGetProfile,
-} from '@/hooks/useQuery/profileQuery'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
-import {
-    ActivityIndicator,
     Appearance,
-    Image,
+    BackHandler,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import Toast from 'react-native-toast-message'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(
+        state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            memberInfo: state.memberInfo,
+            profile: state.profile,
+        }),
+    )
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -30,7 +43,300 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    const navigation = useNavigation()
+    const signUpStyles = createSignUpStyles(themeColor)
+
+    const navigation = stackNavigation()
+
+    const getYear = (raw: any) => {
+        const date = new Date(raw)
+        const year = String(date.getFullYear())
+        return year
+    }
+    const getMonth = (raw: any) => {
+        const date = new Date(raw)
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        return month
+    }
+    const getDay = (raw: any) => {
+        const date = new Date(raw)
+        const day = String(date.getDate()).padStart(2, '0')
+        return day
+    }
+    const getGender = (gender: any) => {
+        if(gender == 'man') return true
+        else return false
+    }
+
+    const [name, setName] = useState(profile!.name)
+    const [male, setMale] = useState(getGender(profile!.gender))
+    const gender = (male == true) ? 'man' : 'woman'
+    const [year, setYear] = useState(getYear(profile!.birth))
+    const [month, setMonth] = useState(getMonth(profile!.birth))
+    const [day, setDay] = useState(getDay(profile!.birth))
+    const [age, setAge] = useState(0)
+    const birth = String(year + '-' + String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
+    const [bio, setBio] = useState(String(profile!.description))
+    const [isDormitory, setIsDormitory] = useState(false)
+
+    const handleNameChange = (text: string) => {
+        const cleaned = StringFilter.sqlFilter(text)
+        setName(cleaned)
+    }
+
+    const handleSubmit = async () => {
+        // const result = await submitSignupForm(signUpForm)
+        const form: AddProfileRequestBody = {
+            name: name,
+            gender: gender,
+            age: age,
+            description: bio,
+            birth: birth,
+        }
+        postProfile(form)
+            .then(res => {
+                Toast.show({ text1: '프로필이 성공적으로 수정되었습니다.' })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    return (
+            <View style={signUpStyles.container}>
+                <View>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.goBack()
+                        }}
+                        style={signUpStyles.backButton}>
+                        <IcArrowLeft />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.verificationContainer}>
+                        <Text style={styles.infoText}>
+                            입력했던 프로필을 수정할 수 있습니다.
+                        </Text>
+                    </View>
+                <ScrollView>
+                    <Text style={styles.label}>이름</Text>
+                    <TextInput
+                            style={styles.input}
+                            value={name}
+                            onChangeText={setName}
+                            placeholder='이름'
+                            placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        />
+                    <Text style={styles.label}>성별</Text>
+                    <View style={{flexDirection: "row"}}>
+                        <TouchableOpacity
+                            onPress={() => setMale(true)}
+                            style={styles.dormContainer}>
+                            <CheckBox
+                                disabled={false}
+                                value={male}
+                                onValueChange={newVal => setMale(newVal)}
+                                tintColors={{
+                                    true: baseColors.SCHOOL_BG,
+                                    false: baseColors.GRAY_1,
+                                }}
+                            />
+                            <Text style={styles.dormText}>
+                                남성
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => setMale(false)}
+                            style={styles.dormContainer}>
+                            <CheckBox
+                                disabled={false}
+                                value={!male}
+                                onValueChange={newVal => setMale(!newVal)}
+                                tintColors={{
+                                    true: baseColors.SCHOOL_BG,
+                                    false: baseColors.GRAY_1,
+                                }}
+                            />
+                            <Text style={styles.dormText}>
+                                여성
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={styles.label}>생년월일</Text>
+                    <View style={{flexDirection:"row", alignItems: 'center'}}>
+                        <TextInput
+                                style={styles.birthInput}
+                                value={year}
+                                onChangeText={setYear}
+                                keyboardType='number-pad'
+                                textAlign='center'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 년  </Text>
+                        <TextInput
+                                style={styles.birthInput}
+                                value={month}
+                                onChangeText={setMonth}
+                                keyboardType='number-pad'
+                                textAlign='center'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 월  </Text>
+                        <TextInput
+                                style={styles.birthInput}
+                                value={day}
+                                onChangeText={setDay}
+                                keyboardType='number-pad'
+                                textAlign='center'
+                                placeholderTextColor={themeColor.TEXT_SECONDARY}
+                            />
+                        <Text style={{fontSize: 16, marginBottom: 16}}> 일 </Text>
+                    </View>
+                    <Text style={styles.label}>자기소개</Text>
+                    <TextInput
+                        style={styles.bioInput}
+                        value={bio}
+                        onChangeText={setBio}
+                        placeholder='간단한 자기소개를 작성해 주세요.'
+                        keyboardType='default'
+                        multiline={true}
+                        numberOfLines={3}
+                    />
+                    <TouchableOpacity
+                        onPress={() => setIsDormitory(!isDormitory)}
+                        style={styles.dormContainer}>
+                        <CheckBox
+                            disabled={false}
+                            value={isDormitory}
+                            onValueChange={newVal => setIsDormitory(newVal)}
+                            tintColors={{
+                                true: baseColors.SCHOOL_BG,
+                                false: baseColors.GRAY_1,
+                            }}
+                        />
+                        <Text style={styles.dormText}>
+                            기숙사에 거주 중이신가요?
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleSubmit}>
+                        <Text style={styles.buttonText}>수정하기</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
+    )
+}
+
+const createStyles = (theme: Icolor) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+        },
+        infoText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        verificationContainer: {
+            marginVertical: 20,
+            alignItems: 'center',
+        },
+        label: {
+            color: theme.TEXT,
+            fontSize: 18,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 15,
+            marginBottom: 10,
+        },
+        input: {
+            borderBottomWidth: 1,
+            paddingBottom: 4,
+            borderBottomColor: baseColors.GRAY_1,
+            fontSize: 16,
+            marginBottom: 20,
+        },
+        birthInput:{
+            width: 50,
+            height: 36,
+            borderWidth: 1,
+            borderRadius: 5,
+            paddingBottom: 5,
+            borderBottomColor: baseColors.GRAY_1,
+            fontSize: 16,
+            marginBottom: 20,
+        },
+        bioInput: {
+            borderColor: baseColors.GRAY_1,
+            borderWidth: 1,
+            borderRadius: 5,
+            textAlignVertical: 'top',
+            fontSize: 14,
+            marginBottom: 10,
+        },
+        button: {
+            backgroundColor: lightColors.BUTTON_BG,
+            paddingVertical: 15,
+            borderRadius: 5,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        buttonText: {
+            color: 'white',
+            fontSize: 16,
+        },
+        dormContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 20,
+            padding: 10,
+        },
+        dormText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 16,
+            marginBottom: 4,
+        },
+    })
+
+export default ProfileDetails
+
+{/*
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import {
+    queryGetMemberInfo,
+    queryGetProfile,
+} from '@/hooks/useQuery/profileQuery'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import React, { useEffect } from 'react'
+import {
+    ActivityIndicator,
+    Appearance,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native'
+import { stackNavigation } from './navigation/NativeStackNavigation'
+
+const ProfileDetails: React.FC = (): React.JSX.Element => {
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
+
+    const styles = createStyles(themeColor)
+    const navigation = stackNavigation()
 
     const {
         data: profileData,
@@ -56,10 +362,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         formattedCreateDate = formatDate(profileData.createAt)
     }
 
-    const onProfileModifyButtonClick = () => {
-        navigation.navigate('ProfileModify')
-    }
-
     if (profileError || memberInfoError) return <Text>Error...</Text>
 
     if (isProfileLoading || isMemberInfoLoading)
@@ -76,6 +378,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
+            
             <View style={styles.backButtonContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <IcAngleLeft
@@ -198,3 +501,4 @@ const createStyles = (theme: Icolor) =>
     })
 
 export default ProfileDetails
+*/}

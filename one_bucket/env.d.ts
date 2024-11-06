@@ -15,4 +15,6 @@
 
 declare module '@env' {
     export const BASE_URL: string
+    export const CHAT_BASE_URL: string
+    export const STORAGE_BASE_URL: string
 }

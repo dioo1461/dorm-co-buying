@@ -1,8 +1,7 @@
 import { darkColors, Icolor, lightColors } from '@/constants/colors'
-import { AppContext } from '@/hooks/useContext/AppContext'
-import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
-import { RouteProp, useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { RouteProp } from '@react-navigation/native'
+import React, { useEffect } from 'react'
 import {
     Appearance,
     StyleSheet,
@@ -11,8 +10,16 @@ import {
     View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+
 const SignUp7: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
+        useBoundStore(state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            onLogInSuccess: state.onLogInSuccess,
+            onLoginFailure: state.onLoginFailure,
+        }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -24,10 +31,7 @@ const SignUp7: React.FC = (): React.JSX.Element => {
     }, [])
 
     const styles = createStyles(themeColor)
-    const signUpStyles = createSignUpStyles(themeColor)
 
-    const navigation = useNavigation()
-    const { onLogInSuccess, onLoginFailure } = useContext(AppContext)
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
 
     const handleLogin = async () => {
@@ -40,9 +44,6 @@ const SignUp7: React.FC = (): React.JSX.Element => {
                 style={
                     styles.title1
                 }>{`한바구니에 오신 것을\n환영합니다!`}</Text>
-            <Text style={styles.subtitle}>
-                {`이제 한바구니의 서비스를 모두\n이용하실 수 있습니다.`}
-            </Text>
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>시작하기</Text>
             </TouchableOpacity>

@@ -1,13 +1,14 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { Gender } from '@/data/response/GetProfileResponse'
-import { AppContext } from '@/hooks/useContext/AppContext'
+import { Gender } from '@/data/response/success/GetProfileResponse'
 import {
     queryGetMemberInfo,
     queryGetProfile,
+    queryGetProfileImage,
 } from '@/hooks/useQuery/profileQuery'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
     ActivityIndicator,
     Appearance,
@@ -20,7 +21,15 @@ import {
 } from 'react-native'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(
+        state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            memberInfo: state.memberInfo,
+            profile: state.profile,
+        }),
+    )
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -30,22 +39,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         )
         return () => themeSubscription.remove()
     }, [])
-
     const styles = createStyles(themeColor)
 
     const navigation = useNavigation()
 
-    const {
-        data: profileData,
-        isLoading: isProfileLoading,
-        error: profileError,
-    } = queryGetProfile()
-
-    const {
-        data: memberInfoData,
-        isLoading: isMemberInfoLoading,
-        error: memberInfoError,
-    } = queryGetMemberInfo()
+    // const {
+    //     data: profileImageData,
+    //     isLoading: isProfileImageLoading,
+    //     error: profileImageError,
+    // } = queryGetProfileImage()
 
     const formatDate = (raw: any) => {
         const date = new Date(raw)
@@ -54,28 +56,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         const day = String(date.getDate()).padStart(2, '0')
         return `${year}년 ${month}년 ${day}일`
     }
-    var formattedCreateDate
-    if (profileData) {
-        formattedCreateDate = formatDate(profileData.createAt)
+
+    const schoolName = (school: string) => {
+        if (school == 'null') return '미인증'
+        else return school
     }
 
     const onProfileModifyButtonClick = () => {
         navigation.navigate('ProfileModify')
     }
-
-    if (profileError || memberInfoError) return <Text>Error...</Text>
-
-    if (isProfileLoading || isMemberInfoLoading)
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator size='large' color={baseColors.SCHOOL_BG} />
-            </View>
-        )
 
     return (
         <View style={styles.container}>
@@ -94,7 +83,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.profileImage}
                     />
                     <Text style={styles.nicknameText}>
-                        {memberInfoData![0].nickname}
+                        {memberInfo!.nickname}
                     </Text>
                 </View>
                 <View style={styles.bioContainer}>
@@ -106,7 +95,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         style={styles.bioTextScrollView}
                         showsVerticalScrollIndicator={false}>
                         <Text style={styles.bioText}>
-                            ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
+                            {profile!.description}
                         </Text>
                     </ScrollView>
                 </View>
@@ -116,23 +105,29 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     <View>
                         <Text style={styles.profileLabel}>이름</Text>
                         <Text style={styles.profileContext}>
-                            {profileData!.name}
+                            {profile!.name}
                         </Text>
                         <Text style={styles.profileLabel}>성별</Text>
                         <Text style={styles.profileContext}>
-                            {Gender[profileData!.gender]}
+                            {Gender[profile!.gender]}
                         </Text>
                         <Text style={styles.profileLabel}>생년월일</Text>
                         <Text style={styles.profileContext}>
-                            {profileData!.birth}
+                            {formatDate(profile!.birth)}
                         </Text>
                         <Text style={styles.profileLabel}>학교명</Text>
-                        <Text style={styles.profileContext}>홍대</Text>
+                        <Text style={styles.profileContext}>
+                            {schoolName(memberInfo!.university)}
+                        </Text>
+                        {/*
                         <Text style={styles.profileLabel}>학부</Text>
-                        <Text style={styles.profileContext}>ㅎㅇ</Text>
+                        <Text style={styles.profileContext}>
+                            컴붕
+                        </Text>
+                        */}
                         <Text style={styles.profileLabel}>가입한 날짜</Text>
                         <Text style={styles.profileContext}>
-                            {formattedCreateDate}
+                            {formatDate(profile!.createAt)}
                         </Text>
                     </View>
                 </ScrollView>
@@ -142,7 +137,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     style={styles.profileModifyButton}
                     onPress={onProfileModifyButtonClick}>
                     <Text style={styles.profileModifyButtonText}>
-                        프로필 변경
+                        프로필 수정
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -210,6 +205,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT,
             fontFamily: 'NanumGothic',
             fontSize: 14,
+            paddingLeft: 10,
         },
         profilesContainer: {
             backgroundColor: theme.BG,

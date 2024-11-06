@@ -34,7 +34,7 @@ const colors = (x: number) => {
 
 const schoolColors = {
     HONGIK_NAVY: '#002c62',
-    HONGIK_LIGHT_NAVY: '#285792',
+    HONGIK_LIGHT_NAVY: '#3e82d6', //'#285792',
     HONGIK_DARK_NAVY: '#001f4d',
     HONGIK_TEXT: '#FFFFFF',
 }
@@ -51,11 +51,15 @@ export const baseColors = {
     GRAY_1: '#505050',
     GRAY_2: '#808080',
     GRAY_3: '#C0C0C0',
-    RED: '#FF7070',
+    GRAY_4: '#F0F0F0',
+    RED: '#FF0000',
+    LIGHT_RED: '#FF7070',
+    LIGHT_BLUE: '#699BF7',
 }
 
 export type Icolor = {
     BG: string
+    BG_SECONDARY: string
     HEADER_BG: string
     HEADER_TEXT: string
     TAB_BG: string
@@ -79,6 +83,7 @@ export type Icolor = {
 
 export const lightColors: Icolor = {
     BG: baseColors.WHITE,
+    BG_SECONDARY: baseColors.GRAY_4,
     HEADER_BG: baseColors.SCHOOL_BG,
     HEADER_TEXT: baseColors.WHITE,
     TAB_BG: baseColors.WHITE,
@@ -105,6 +110,7 @@ export const lightColors: Icolor = {
 
 export const darkColors: Icolor = {
     BG: baseColors.DARK_BG,
+    BG_SECONDARY: baseColors.GRAY_0,
     HEADER_BG: baseColors.GRAY_0,
     HEADER_TEXT: baseColors.WHITE,
 

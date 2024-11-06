@@ -2,25 +2,32 @@ import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
 import IcPlus from '@/assets/drawable/ic-plus.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import strings from '@/constants/strings'
-import { AppContext } from '@/hooks/useContext/AppContext'
-import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect } from 'react'
+import {
+    queryGetMemberInfo,
+    queryGetProfile,
+} from '@/hooks/useQuery/profileQuery'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import React, { useEffect, useState } from 'react'
 import {
     ActivityIndicator,
     Appearance,
     Dimensions,
+    Modal,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native'
+import { stackNavigation } from './navigation/NativeStackNavigation'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useContext(AppContext)
+    const { themeColor, setThemeColor } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
+    }))
+
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -34,18 +41,20 @@ const Mypage = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     // const [nickName, setNickName] = useState('')
-    const { onLogOut } = useContext(AppContext)
 
     const { data, isLoading, error } = queryGetMemberInfo()
-    const [memberInfo, profileImage] = data ? data : [null, null]
+    // const [memberInfo, profileImage] = data ? data : [null, null]
+    const [goAuthVisible, setGoAuthVisible] = useState(false)
+    const openGoAuth = () => { setGoAuthVisible(true); }
+    const closeGoAuth = () => { setGoAuthVisible(false); }
 
-    const navigation = useNavigation()
+    const navigation = stackNavigation()
 
     const handleProfileDetailNavigation = () => {
-        navigation.navigate(strings.profileDetailsScreenName)
+        navigation.navigate('ProfileDetails')
     }
 
-    if (error) return <Text>Error...</Text>
+    if (error) return <Text>error</Text>
 
     if (isLoading)
         return (
@@ -76,12 +85,35 @@ const Mypage = (): React.JSX.Element => {
                         image={data![1]}
                         imageId='profile2'
                     /> */}
-                    <Text style={styles.username}>{memberInfo!.nickname}</Text>
+                    <Text style={styles.username}>{data?.nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건 · 친구 4명</Text>
                 </View>
-                <TouchableOpacity onPress={handleProfileDetailNavigation}>
+                <TouchableOpacity 
+                    onPress={()=>{
+                        if(data?.university == 'null') {openGoAuth()}
+                        else {handleProfileDetailNavigation()}
+                    }}>
                     <Text style={styles.profileLink}>프로필 보기</Text>
                 </TouchableOpacity>
+                <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={goAuthVisible}
+                        onRequestClose={closeGoAuth}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text>{`프로필 조회를 위해 먼저 학교 인증을 실시해 주세요.\n`}</Text>
+                                <View style={{flexDirection: "row"}}>
+                                    <TouchableOpacity style={styles.confirmButton} onPress={()=>{navigation.navigate('SchoolAuth1')}}>
+                                        <Text>바로가기</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={closeGoAuth}>
+                                        <Text>닫기</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                </Modal>
             </View>
             <View style={styles.payMoneyContainer}>
                 <View style={styles.payMoneyTextContainer}>
@@ -259,6 +291,40 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             fontFamily: 'NanumGothic',
             marginLeft: 8,
+        },
+        modalContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        modalContent: {
+            padding: 25,
+            backgroundColor: theme.BG,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 8,
+            width: '80%',
+            borderWidth: 0.5,
+            borderColor: theme.TEXT
+        },
+        confirmButton: {
+            marginTop: 10,
+            backgroundColor : "rgba(0, 0, 255, 0.2)",
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 30,
+            width: '50%',
+            borderRadius: 8,
+            
+        },
+        cancelButton:{
+            marginTop: 10,
+            backgroundColor: theme.BG,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 30,
+            width: '50%',
+            borderRadius: 8,
         },
     })
 
