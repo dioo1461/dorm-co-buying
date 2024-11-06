@@ -400,7 +400,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <View onLayout={handleCommentLayout} style={styles.line} />
+                {/* <View onLayout={handleCommentLayout} style={styles.line} /> */}
                 {/* ### 댓글 리스트 ### */}
                 <View>
                     {data?.comments.map((comment, index) => {
@@ -459,7 +459,15 @@ const BoardPost: React.FC = (): JSX.Element => {
                     />
                     <TouchableOpacity
                         style={{ marginEnd: 10 }}
-                        onPress={handleCommentSubmit}>
+                        onPress={() => {
+                            if(!commentValue) {
+                                ToastAndroid.showWithGravity(
+                                    '내용을 입력해 주세요.',
+                                    ToastAndroid.SHORT,
+                                    ToastAndroid.CENTER,
+                                  );
+                            }
+                            else handleCommentSubmit()}}>
                         <IcSend
                             fill={
                                 themeColor === lightColors
