@@ -78,7 +78,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 [],
                 () =>
                     debug &&
-                    console.log('[createTableIfNotExists] Table created'),
+                    console.log(
+                        '[createTableIfNotExists] create table if not exists:',
+                        tableName,
+                    ),
                 error => {
                     debug &&
                         console.log('[createTableIfNotExists] Error:', error)
@@ -157,17 +160,17 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getCachesByCondition = async (whereClause: string) => {
+    const getCachesByWhereClause = async (whereClause: string) => {
         const database = await waitForDb()
         if (!database) {
-            debug && console.log('[getCachesByCondition] db is not set yet')
+            debug && console.log('[getCachesByWhereClause] db is not set yet')
             return []
         }
 
         return new Promise<T[]>((resolve, reject) => {
             database.transaction(tx => {
                 tx.executeSql(
-                    `SELECT * FROM ${tableName} WHERE ${whereClause}`,
+                    `SELECT * FROM ${tableName} ${whereClause}`,
                     [],
                     (_, results) => {
                         const rows = results.rows
@@ -177,14 +180,17 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                         }
                         debug &&
                             console.log(
-                                '[getCachesByCondition] Retrieved data:',
+                                '[getCachesByWhereClause] Retrieved data:',
                                 data,
                             )
                         resolve(data)
                     },
                     error => {
                         debug &&
-                            console.log('[getCachesByCondition] Error:', error)
+                            console.log(
+                                '[getCachesByWhereClause] Error:',
+                                error,
+                            )
                         reject(error)
                     },
                 )
@@ -270,7 +276,14 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         return dbRef.current
     }
 
-    return { getAllCaches, getCachesByKeys, addCache, removeCache, dropTable }
+    return {
+        getAllCaches,
+        getCachesByKeys,
+        getCachesByWhereClause,
+        addCache,
+        removeCache,
+        dropTable,
+    }
 }
 
 export default useCache

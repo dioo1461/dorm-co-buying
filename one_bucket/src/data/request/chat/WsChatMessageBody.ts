@@ -1,5 +1,5 @@
 export interface WsChatMessageBody {
-    type: 'TALK' | 'ENTER'
+    type: 'TALK' | 'ENTER' | 'IMAGE' | 'LEAVE'
     roomId: string
     sender: string
     message: string

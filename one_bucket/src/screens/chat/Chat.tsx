@@ -1,12 +1,21 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { WsChatMessageBody } from '@/data/request/chat/ChatMessage'
+import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { CHAT_BASE_URL } from '@env'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
-import { Appearance, FlatList, StyleSheet, TextInput, View } from 'react-native'
+import {
+    Appearance,
+    FlatList,
+    InteractionManager,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    StyleSheet,
+    TextInput,
+    View,
+} from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
@@ -15,6 +24,7 @@ import {
     getLastTimestampOfChatRoom,
     setLastTimestampOfChatRoom,
 } from '@/utils/asyncStorageUtils'
+import Loading from '@/components/Loading'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -49,24 +59,36 @@ const Chat: React.FC = (): React.JSX.Element => {
     const { params } = useRoute<ChatRouteProp>()
     const styles = createStyles(themeColor)
 
+    const [isLoading, setIsLoading] = useState(true)
+    const [lastTimestamp, setLastTimestamp] = useState<string | null>(null)
     const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[]>([])
-    const [messageRenderCount, setMessageRenderCount] = useState(20)
+    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[] | null>(
+        null,
+    )
+
+    const isLoadingMore = useRef<Boolean>(false)
+    const [messageRenderLimit, setMessageRenderLimit] = useState(20)
+    const [messageRenderOffset, setMessageRenderOffset] = useState(20)
 
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const { dropTable, getAllCaches, getCachesByKeys, addCache, removeCache } =
-        useCache<ChatCacheColumns>({
-            tableName: 'chat',
-            columns: {
-                roomId: 'string',
-                sender: 'string',
-                message: 'string',
-                time: 'string',
-            },
-            debug: false,
-        })
+    const {
+        dropTable,
+        getCachesByWhereClause,
+        getCachesByKeys,
+        addCache,
+        removeCache,
+    } = useCache<ChatCacheColumns>({
+        tableName: 'chat',
+        columns: {
+            roomId: 'string',
+            sender: 'string',
+            message: 'string',
+            time: 'string',
+        },
+        // debug: true,
+    })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -78,9 +100,24 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }, [navigation, params.roomName, themeColor])
 
+    const retrieveMessages = async (
+        limit: number,
+        offset: number,
+        lastTimestamp: string,
+    ) => {
+        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
+        const messages = await getCachesByWhereClause(
+            `WHERE roomId = '${params.roomId}' AND time < '${
+                lastTimestamp ?? new Date().toISOString()
+            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+        )
+        console.log(`<retrieved> ${messages.length} messages`)
+        return messages
+    }
+
     // ### STOMP CONNECTION ###
     useEffect(() => {
-        const initializeStompClient = async () => {
+        const initStompClient = async () => {
             const stompClient = new Client({
                 brokerURL: CHAT_BASE_URL,
                 connectHeaders: {
@@ -101,38 +138,42 @@ const Chat: React.FC = (): React.JSX.Element => {
                     message => {
                         const msg = JSON.parse(message.body)
                         onMessageReceive(msg)
+                        scrollToBottom()
                     },
                 )
             }
-            console.log(
-                'last timestamp:',
-                await getLastTimestampOfChatRoom(params.roomId),
-            )
+
             stompClient.activate()
             stompClientRef.current = stompClient
         }
 
-        initializeStompClient()
+        const initChatMessages = async (): Promise<Boolean> => {
+            const messages = await retrieveMessages(
+                messageRenderLimit,
+                0,
+                lastTimestamp ?? new Date().toISOString(),
+            )
+            if (messages) setChatMessages(messages)
+            return true
+        }
+
+        const executeSynchoronously = async () => {
+            setLastTimestamp(await getLastTimestampOfChatRoom(params.roomId))
+            await initChatMessages()
+            initStompClient()
+        }
+
+        executeSynchoronously()
 
         return () => {
             stompClientRef.current?.deactivate()
         }
     }, [])
 
-    useEffect(() => {
-        const initChatMessages = async () => {
-            const newMessages = await getCachesByKeys({ roomId: params.roomId })
-            if (newMessages) setChatMessages([...newMessages, ...chatMessages])
-        }
-        initChatMessages()
-    }, [])
-
-    const validateMessage = () => message.trim() !== ''
-
     const onMessageReceive = (messageBody: WsChatMessageBody) => {
-        console.log(messageBody)
+        // console.log(messageBody)
         const { type, ...message } = messageBody
-        setChatMessages(prev => [...prev, message])
+        setChatMessages(prev => [message, ...prev!])
         addCache({
             roomId: messageBody.roomId,
             sender: messageBody.sender,
@@ -145,7 +186,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const sendMessage = () => {
-        if (!validateMessage()) return
+        if (message.trim() == '') return
         const messageForm: WsChatMessageBody = {
             type: 'TALK',
             roomId: params.roomId,
@@ -163,11 +204,50 @@ const Chat: React.FC = (): React.JSX.Element => {
     // ### RENDER FUNCTIONS ###
 
     useEffect(() => {
-        scrollToBottom()
+        if (chatMessages != null) {
+            // console.log(chatMessages)
+            setIsLoading(false)
+        }
     }, [chatMessages])
 
+    useEffect(() => {
+        console.log('isloading', isLoading)
+        if (!isLoading) {
+            InteractionManager.runAfterInteractions(() => {
+                // scrollToBottom()
+            })
+        }
+    }, [isLoading])
+
     const scrollToBottom = () => {
-        flatListRef.current?.scrollToEnd({ animated: true })
+        flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
+    }
+
+    // 스크롤 핸들러
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const { contentOffset, contentSize, layoutMeasurement } =
+            event.nativeEvent
+
+        const scrollPosition = contentOffset.y
+        const contentHeight = contentSize.height
+        const visibleHeight = layoutMeasurement.height
+
+        // inverted를 사용했으므로, 스크롤 위치 계산이 반대가 됩니다.
+        const distanceFromTop = scrollPosition
+    }
+
+    // 메시지 로드 함수
+    const loadMoreMessages = async () => {
+        isLoadingMore.current = true
+        const moreMessages = await retrieveMessages(
+            messageRenderLimit,
+            messageRenderOffset,
+            lastTimestamp ?? new Date().toISOString(),
+        )
+        setChatMessages([...chatMessages!, ...moreMessages])
+        setMessageRenderLimit(messageRenderLimit * 2)
+        setMessageRenderOffset(messageRenderOffset + moreMessages.length)
+        isLoadingMore.current = false
     }
 
     // ### RENDER ###
@@ -194,14 +274,23 @@ const Chat: React.FC = (): React.JSX.Element => {
         )
     }
 
+    if (isLoading) return <Loading theme={themeColor} />
+
     return (
         <View style={styles.container}>
             <FlatList
+                initialNumToRender={20}
                 ref={flatListRef}
                 data={chatMessages}
                 renderItem={renderMessageItem}
                 keyExtractor={(_, index) => index.toString()}
                 contentContainerStyle={styles.chatContainer}
+                inverted
+                // scrollEventThrottle={8}
+                // onScroll={handleScroll}
+                onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
+                onEndReachedThreshold={0.6} // 리스트 끝에서 10% 지점 도달 시 loadMoreMessages 호출
+                // onStartReachedThreshold={0.1} // 리스트 끝에서 50% 지점 도달 시 loadMoreMessages 호출
             />
 
             <View style={styles.inputContainer}>
