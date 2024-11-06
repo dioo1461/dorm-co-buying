@@ -1,7 +1,7 @@
-export interface ChatMessageBody {
+export interface WsChatMessageBody {
     type: 'TALK' | 'ENTER'
     roomId: string
     sender: string
     message: string
-    time: string // ISO8601
+    timeStamp: string // ISO8601
 }

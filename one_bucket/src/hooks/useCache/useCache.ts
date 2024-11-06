@@ -146,15 +146,15 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     /**
-     * 특정 조건에 맞는 데이터를 가져오는 함수
+     * 특정 키-값 쌍에 맞는 데이터를 가져오는 함수
      * @param params 검색 조건으로 사용할 객체 (키-값 쌍)
      * @returns 조건에 맞는 T 타입의 데이터 배열
      *
      * @example
-     * const users = await getCaches({ isActive: true })
+     * const users = await getCachesByKeys({ isActive: true })
      * console.log(users) // 활성화된 사용자 데이터만 출력
      */
-    const getCaches = async (params: Partial<T>) => {
+    const getCachesByKeys = async (params: Partial<T>) => {
         if (!db) return
 
         const whereClause = Object.keys(params)
@@ -167,6 +167,40 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 tx.executeSql(
                     `SELECT * FROM ${tableName} WHERE ${whereClause}`,
                     values,
+                    (_, results) => {
+                        const rows = results.rows
+                        const data: T[] = []
+                        for (let i = 0; i < rows.length; i++) {
+                            data.push(rows.item(i) as T)
+                        }
+                        resolve(data)
+                    },
+                    error => {
+                        console.log('Error:', error)
+                        reject(error)
+                    },
+                )
+            })
+        })
+    }
+
+    /**
+     * 특정 키-값 쌍에 맞는 데이터를 가져오는 함수
+     * @param params 검색 조건으로 사용할 객체 (키-값 쌍)
+     * @returns 조건에 맞는 T 타입의 데이터 배열
+     *
+     * @example
+     * const users = await getCachesByKeys({ isActive: true })
+     * console.log(users) // 활성화된 사용자 데이터만 출력
+     */
+    const getCachesByCondition = async (whereClause: string) => {
+        if (!db) return
+
+        return new Promise<T[]>((resolve, reject) => {
+            db.transaction(tx => {
+                tx.executeSql(
+                    `SELECT * FROM ${tableName} WHERE ${whereClause}`,
+                    [],
                     (_, results) => {
                         const rows = results.rows
                         const data: T[] = []
@@ -234,7 +268,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    return { getAllCaches, getCaches, addCache, removeCache }
+    return { getAllCaches, getCachesByKeys, addCache, removeCache }
 }
 
 export default useCache
