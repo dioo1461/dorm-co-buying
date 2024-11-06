@@ -25,6 +25,7 @@ import {
     setLastTimestampOfChatRoom,
 } from '@/utils/asyncStorageUtils'
 import Loading from '@/components/Loading'
+import { convertToKoreanTime } from '@/utils/dateUtils'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -251,6 +252,14 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     // ### RENDER ###
+    const formatMessageTime = (utcTime: string) => {
+        const time = convertToKoreanTime(new Date(utcTime))
+        const hour = time.getHours()
+        const minute = time.getMinutes()
+        const period = hour < 12 ? '오전' : '오후'
+        const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
+        return `${period} ${formattedHour}:${minute}`
+    }
 
     const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
         const isMyMessage =
@@ -260,7 +269,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 <Text style={styles.messageSenderText}></Text>
                 <Text style={styles.myMessageText}>{item.message}</Text>
                 <Text style={styles.messageTimeText}>
-                    {new Date(item.time).toLocaleTimeString()}
+                    {formatMessageTime(item.time)}
                 </Text>
             </View>
         ) : (

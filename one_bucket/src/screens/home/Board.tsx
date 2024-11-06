@@ -160,7 +160,7 @@ const Board: React.FC = (): JSX.Element => {
                                 }}>
                                 <Text style={styles.postMetaDataText}>
                                     {`${formatTimeAgo(
-                                        data.createdDate,
+                                        new Date(data.createdDate),
                                     )}ㆍ조회 ${data.views}`}
                                 </Text>
                             </View>

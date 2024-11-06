@@ -19,6 +19,7 @@ import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { useFocusEffect } from '@react-navigation/native'
+import { convertToKoreanTime } from '@/utils/dateUtils'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -80,17 +81,19 @@ const ChatList: React.FC = (): React.JSX.Element => {
         }, [setChatRoomData]),
     )
 
-    const formatRecentMessageTime = (time: Date) => {
-        const now = new Date()
-        const diff = now.getTime() - time.getTime()
+    const formatRecentMessageTime = (utcTime: Date) => {
+        const now = convertToKoreanTime(new Date())
+        const korTime = convertToKoreanTime(utcTime)
+
+        const diff = now.getTime() - korTime.getTime()
 
         const diffMinutes = Math.floor(diff / 1000 / 60)
         if (diffMinutes < 1) return '방금'
 
         const diffHours = Math.floor(diffMinutes / 60)
         if (diffHours < 24) {
-            const hour = time.getHours()
-            const minute = time.getMinutes().toString().padStart(2, '0')
+            const hour = korTime.getHours()
+            const minute = korTime.getMinutes().toString().padStart(2, '0')
             const period = hour < 12 ? '오전' : '오후'
             const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
             return `${period} ${formattedHour}:${minute}`
@@ -102,15 +105,15 @@ const ChatList: React.FC = (): React.JSX.Element => {
         if (diffDays < 7) return `${diffDays}일 전`
 
         // 해당 연도인지 확인
-        const isCurrentYear = time.getFullYear() === now.getFullYear()
+        const isCurrentYear = korTime.getFullYear() === now.getFullYear()
         if (isCurrentYear) {
-            return `${time.getMonth() + 1}월 ${time.getDate()}일` // 해당 연도 내에서는 월, 일로 표시
+            return `${korTime.getMonth() + 1}월 ${korTime.getDate()}일` // 해당 연도 내에서는 월, 일로 표시
         }
 
         // 연도가 다르면 YYYY.MM.DD 형식으로 표시
-        return `${time.getFullYear()}.${(time.getMonth() + 1)
+        return `${korTime.getFullYear()}.${(korTime.getMonth() + 1)
             .toString()
-            .padStart(2, '0')}.${time.getDate().toString().padStart(2, '0')}`
+            .padStart(2, '0')}.${korTime.getDate().toString().padStart(2, '0')}`
     }
 
     const flatlistRef = useRef<FlatList>(null)
