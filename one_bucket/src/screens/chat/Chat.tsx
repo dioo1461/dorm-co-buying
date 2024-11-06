@@ -246,8 +246,9 @@ const Chat: React.FC = (): React.JSX.Element => {
             lastTimestamp ?? new Date().toISOString(),
         )
         setChatMessages([...chatMessages!, ...moreMessages])
-        setMessageRenderLimit(messageRenderLimit * 2)
         setMessageRenderOffset(messageRenderOffset + moreMessages.length)
+        if (moreMessages.length > 0)
+            setMessageRenderLimit(messageRenderLimit * 2)
         isLoadingMore.current = false
     }
 
