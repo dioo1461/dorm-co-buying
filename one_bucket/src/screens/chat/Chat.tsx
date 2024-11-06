@@ -1,5 +1,5 @@
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { ChatMessageBody } from '@/data/request/chat/ChatMessage'
+import { WsChatMessageBody } from '@/data/request/chat/ChatMessage'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { CHAT_BASE_URL } from '@env'
@@ -10,11 +10,21 @@ import { Appearance, FlatList, StyleSheet, TextInput, View } from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
+import { setLastTimestampOfChatRoom } from '@/utils/asyncStorageUtils'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
     TextDecoder: encoding.TextDecoder,
 })
+
+interface ChatCacheColumns {
+    [key: string]: ColumnTypes
+    roomId: string
+    sender: string
+    message: string
+    time: string
+}
 
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
@@ -22,7 +32,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
     }))
-
     // 다크모드 변경 감지
     useEffect(() => {
         const themeSubscription = Appearance.addChangeListener(
@@ -35,15 +44,27 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>
     const { params } = useRoute<ChatRouteProp>()
+    const styles = createStyles(themeColor)
 
     const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<ChatMessageBody[]>([])
+    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[]>([])
+    const [messageRenderCount, setMessageRenderCount] = useState(20)
 
     const stompClientRef = useRef<Client | null>(null)
 
-    const styles = createStyles(themeColor)
+    const { dropTable, getAllCaches, getCachesByKeys, addCache, removeCache } =
+        useCache<ChatCacheColumns>({
+            tableName: 'chat',
+            columns: {
+                roomId: 'string',
+                sender: 'string',
+                message: 'string',
+                time: 'string',
+            },
+            debug: true,
+        })
 
-    // 헤더 옵션 설정
+    // navigation 헤더 옵션 설정
     useEffect(() => {
         navigation.setOptions({
             title: params.roomName,
@@ -53,6 +74,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }, [navigation, params.roomName, themeColor])
 
+    // ### STOMP CONNECTION ###
     useEffect(() => {
         const initializeStompClient = async () => {
             const stompClient = new Client({
@@ -60,7 +82,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 connectHeaders: {
                     Authorization: `Bearer ${await getAccessToken()}`,
                 },
-                debug: (str: string) => console.log(str),
+                // debug: (str: string) => console.log(str),
                 reconnectDelay: 5000,
                 heartbeatIncoming: 4000,
                 heartbeatOutgoing: 4000,
@@ -74,7 +96,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                     `/sub/chat/room/${params.roomId}`,
                     message => {
                         const msg = JSON.parse(message.body)
-                        setChatMessages(prev => [...prev, msg])
+                        onMessageReceive(msg)
                     },
                 )
             }
@@ -90,11 +112,35 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
+    useEffect(() => {
+        const initChatMessages = async () => {
+            const newMessages = await getCachesByKeys({ roomId: params.roomId })
+            console.log(newMessages)
+            if (newMessages) setChatMessages([...newMessages, ...chatMessages])
+        }
+        initChatMessages()
+    }, [])
+
     const validateMessage = () => message.trim() !== ''
+
+    const onMessageReceive = (messageBody: WsChatMessageBody) => {
+        console.log(messageBody)
+        const { type, ...message } = messageBody
+        setChatMessages(prev => [...prev, message])
+        addCache({
+            roomId: messageBody.roomId,
+            sender: messageBody.sender,
+            message: messageBody.message,
+            time: messageBody.time,
+        }).then(() => {
+            setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
+            setChatMessages
+        })
+    }
 
     const sendMessage = () => {
         if (!validateMessage()) return
-        const messageForm: ChatMessageBody = {
+        const messageForm: WsChatMessageBody = {
             type: 'TALK',
             roomId: params.roomId,
             sender: useBoundStore.getState().memberInfo?.nickname!,
@@ -108,22 +154,22 @@ const Chat: React.FC = (): React.JSX.Element => {
         setMessage('')
     }
 
-    const renderMessageItem = ({ item }: { item: ChatMessageBody }) => {
+    const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
         const isMyMessage =
             item.sender === useBoundStore.getState().memberInfo?.nickname
         return isMyMessage ? (
             <View style={[styles.messageContainer, styles.myMessage]}>
-                <Text style={styles.messageSender}></Text>
+                <Text style={styles.messageSenderText}></Text>
                 <Text style={styles.myMessageText}>{item.message}</Text>
-                <Text style={styles.messageTime}>
+                <Text style={styles.messageTimeText}>
                     {new Date(item.time).toLocaleTimeString()}
                 </Text>
             </View>
         ) : (
             <View style={[styles.messageContainer, styles.otherMessage]}>
-                <Text style={styles.messageSender}>{item.sender}</Text>
+                <Text style={styles.messageSenderText}>{item.sender}</Text>
                 <Text style={styles.otherMessageText}>{item.message}</Text>
-                <Text style={styles.messageTime}>
+                <Text style={styles.messageTimeText}>
                     {new Date(item.time).toLocaleTimeString()}
                 </Text>
             </View>
@@ -188,11 +234,11 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             alignSelf: 'flex-start',
         },
-        messageSender: {
+        messageSenderText: {
             fontSize: 10,
             color: theme.TEXT_SECONDARY,
         },
-        messageTime: {
+        messageTimeText: {
             fontSize: 10,
             color: theme.TEXT_SECONDARY,
             alignSelf: 'flex-end',

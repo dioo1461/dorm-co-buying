@@ -3,5 +3,5 @@ export interface WsChatMessageBody {
     roomId: string
     sender: string
     message: string
-    timeStamp: string // ISO8601
+    time: string // ISO8601
 }
