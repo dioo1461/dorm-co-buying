@@ -11,7 +11,10 @@ import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
-import { setLastTimestampOfChatRoom } from '@/utils/asyncStorageUtils'
+import {
+    getLastTimestampOfChatRoom,
+    setLastTimestampOfChatRoom,
+} from '@/utils/asyncStorageUtils'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -50,6 +53,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [chatMessages, setChatMessages] = useState<ChatCacheColumns[]>([])
     const [messageRenderCount, setMessageRenderCount] = useState(20)
 
+    const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
     const { dropTable, getAllCaches, getCachesByKeys, addCache, removeCache } =
@@ -61,7 +65,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 message: 'string',
                 time: 'string',
             },
-            debug: true,
+            debug: false,
         })
 
     // navigation 헤더 옵션 설정
@@ -91,7 +95,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             })
 
             stompClient.onConnect = () => {
-                console.log('Connected')
+                console.log('Stomp Connected')
                 stompClient.subscribe(
                     `/sub/chat/room/${params.roomId}`,
                     message => {
@@ -100,7 +104,10 @@ const Chat: React.FC = (): React.JSX.Element => {
                     },
                 )
             }
-
+            console.log(
+                'last timestamp:',
+                await getLastTimestampOfChatRoom(params.roomId),
+            )
             stompClient.activate()
             stompClientRef.current = stompClient
         }
@@ -115,7 +122,6 @@ const Chat: React.FC = (): React.JSX.Element => {
     useEffect(() => {
         const initChatMessages = async () => {
             const newMessages = await getCachesByKeys({ roomId: params.roomId })
-            console.log(newMessages)
             if (newMessages) setChatMessages([...newMessages, ...chatMessages])
         }
         initChatMessages()
@@ -154,6 +160,18 @@ const Chat: React.FC = (): React.JSX.Element => {
         setMessage('')
     }
 
+    // ### RENDER FUNCTIONS ###
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [chatMessages])
+
+    const scrollToBottom = () => {
+        flatListRef.current?.scrollToEnd({ animated: true })
+    }
+
+    // ### RENDER ###
+
     const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
         const isMyMessage =
             item.sender === useBoundStore.getState().memberInfo?.nickname
@@ -179,6 +197,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     return (
         <View style={styles.container}>
             <FlatList
+                ref={flatListRef}
                 data={chatMessages}
                 renderItem={renderMessageItem}
                 keyExtractor={(_, index) => index.toString()}
@@ -210,7 +229,6 @@ const createStyles = (theme: Icolor) =>
         },
         chatContainer: {
             paddingHorizontal: 10,
-            paddingVertical: 20,
         },
         messageContainer: {
             maxWidth: '70%',
@@ -248,6 +266,7 @@ const createStyles = (theme: Icolor) =>
             flexDirection: 'row',
             paddingHorizontal: 10,
             paddingVertical: 10,
+            marginTop: 10,
             borderTopWidth: 1,
             borderTopColor: theme.TEXT_SECONDARY,
             backgroundColor: theme.BG,
