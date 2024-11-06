@@ -60,8 +60,8 @@ const Comment: React.FC<{
     }, [highlight])
 
     return (
-        <View>
-            {commentLine(isReply)}
+        <View style={{paddingBottom: 8}}>
+            {commentLine(isReply)} 
             <View style={{flexDirection: 'row'}}>
                 {replyIcon(isReply)}
                 <Animated.View
@@ -134,7 +134,7 @@ const createStyles = (theme: Icolor) =>
         commentContainer: {
             flex: 1,
             paddingVertical: 2,
-            marginBottom: 8,
+            marginBottom: 2,
         },
         replyCommentContainer: {
             flex: 1,
@@ -143,7 +143,7 @@ const createStyles = (theme: Icolor) =>
             paddingBottom: 20,
             backgroundColor: theme.BG_SECONDARY,
             borderRadius: 8,
-            marginBottom: 8,
+            marginBottom: 2,
         },
         commentHighlight: {
             width: '100%',
@@ -152,6 +152,7 @@ const createStyles = (theme: Icolor) =>
             left: 0,
             top: 0,
             backgroundColor: baseColors.SCHOOL_BG,
+            borderRadius: 8,
         },
         commentHeader: {
             flexDirection: 'row',
