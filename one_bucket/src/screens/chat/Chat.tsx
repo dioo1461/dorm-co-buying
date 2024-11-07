@@ -329,6 +329,27 @@ const Chat: React.FC = (): React.JSX.Element => {
         // TODO: null check 관련 anomaly 발생 시 수정 필요
         if (!chatMessages) return null
 
+        if (item.type === 'ENTER') {
+            return (
+                <View style={styles.eventMessageContainer}>
+                    <Text style={styles.eventMessageText}>
+                        {item.sender}님이 채팅방에 참가했습니다.
+                    </Text>
+                </View>
+            )
+        }
+
+        if (item.type === 'LEAVE') {
+            return (
+                <View style={styles.eventMessageContainer}>
+                    <Text style={styles.eventMessageText}>
+                        {item.sender}님이 채팅방에서 나갔습니다.
+                    </Text>
+                </View>
+            )
+        }
+
+        // ### item.type === 'TALK' ###
         // (참고: 맨 밑에 표시되는 메시지의 index는 0임 - FlatList is inverted)
         // 다음 메시지와 발신자가 다른지 확인
         const shouldShowSenderName =
@@ -429,15 +450,14 @@ const createStyles = (theme: Icolor) =>
         chatContainer: {
             paddingHorizontal: 10,
         },
-        // 본인 메시지 스타일
         myMessageContainer: {
             alignSelf: 'flex-end',
             marginVertical: 5,
             alignItems: 'flex-end',
-            maxWidth: '80%', // 메시지 최대 너비 제한
+            maxWidth: '80%',
         },
         myMessageContent: {
-            flexDirection: 'row', // 메시지와 시간을 수평으로 배치
+            flexDirection: 'row',
             alignItems: 'flex-end',
         },
         myMessageBG: {
@@ -453,16 +473,15 @@ const createStyles = (theme: Icolor) =>
         myMessageTimeText: {
             fontSize: 10,
             color: theme.TEXT_SECONDARY,
-            marginRight: 5, // 메시지와 시간 사이 간격
+            marginRight: 5,
         },
-        // 상대방 메시지 스타일
         otherMessageContainer: {
             alignSelf: 'flex-start',
             marginVertical: 5,
-            maxWidth: '80%', // 메시지 최대 너비 제한
+            maxWidth: '80%',
         },
         otherMessageContent: {
-            flexDirection: 'row', // 메시지와 시간을 수평으로 배치
+            flexDirection: 'row',
             alignItems: 'flex-end',
         },
         otherMessageBG: {
@@ -478,12 +497,27 @@ const createStyles = (theme: Icolor) =>
         otherMessageTimeText: {
             fontSize: 10,
             color: theme.TEXT_SECONDARY,
-            marginLeft: 5, // 메시지와 시간 사이 간격
+            marginLeft: 5,
         },
         messageSenderText: {
             fontSize: 12,
             color: theme.TEXT_SECONDARY,
             marginBottom: 3,
+        },
+        eventMessageContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 30,
+            alignSelf: 'center',
+            alignItems: 'center',
+            marginVertical: 10,
+        },
+        eventMessageText: {
+            color: theme.TEXT_SECONDARY,
+            fontFamily: 'NanumGothic',
+            fontSize: 11,
+            textAlign: 'center',
         },
         inputContainer: {
             flexDirection: 'row',
