@@ -219,7 +219,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const sendMessage = () => {
+    const sendMessage = (message: string) => {
         if (message.trim() == '') return
         const messageForm: WsChatMessageBody = {
             type: 'TALK',
@@ -327,6 +327,13 @@ const Chat: React.FC = (): React.JSX.Element => {
         const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
         const formattedMinute = minute < 10 ? `0${minute}` : minute.toString() // 분이 한 자리일 경우 앞에 0 추가
         return `${period} ${formattedHour}:${formattedMinute}`
+    }
+
+    const validateMessage = (message: string): Boolean => {
+        if (message.trim() === '') {
+            return false
+        }
+        return true
     }
 
     // ############ ACTUAL RENDER ############
@@ -441,11 +448,24 @@ const Chat: React.FC = (): React.JSX.Element => {
                     onChangeText={setMessage}
                     placeholder='메시지를 입력하세요'
                 />
-                <Button
-                    title='전송'
-                    onPress={sendMessage}
-                    buttonStyle={styles.sendButton}
-                />
+                <TouchableOpacity
+                    style={
+                        validateMessage(message)
+                            ? styles.sendButtonActive
+                            : styles.sendButtonInactive
+                    }
+                    onPress={() => sendMessage(message)}>
+                    <Text
+                        style={
+                            validateMessage(message)
+                                ? styles.sendButtonTextActive
+                                : styles.sendButtonTextInactive
+                        }
+                        onPress={() => sendMessage(message)}
+                        disabled={!validateMessage(message)}>
+                        전송
+                    </Text>
+                </TouchableOpacity>
             </View>
             <SelectableBottomSheet
                 enabled={bottomSheetEnabled}
@@ -484,7 +504,7 @@ const createStyles = (theme: Icolor) =>
         },
         myMessageText: {
             color: theme.BUTTON_TEXT,
-            fontSize: 16,
+            fontSize: 14,
         },
         myMessageTimeText: {
             fontSize: 10,
@@ -508,7 +528,7 @@ const createStyles = (theme: Icolor) =>
         },
         otherMessageText: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 14,
         },
         otherMessageTimeText: {
             fontSize: 10,
@@ -537,6 +557,7 @@ const createStyles = (theme: Icolor) =>
         },
         inputContainer: {
             flexDirection: 'row',
+            justifyContent: 'center',
             paddingHorizontal: 10,
             paddingVertical: 10,
             marginTop: 10,
@@ -552,12 +573,33 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             color: theme.TEXT,
         },
-        sendButton: {
+        sendButtonActive: {
+            backgroundColor: theme.BUTTON_BG,
+            justifyContent: 'center',
+            alignContent: 'center',
             marginLeft: 10,
             borderRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 15,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+        },
+        sendButtonTextActive: {
+            color: theme.BUTTON_TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 12,
+        },
+        sendButtonInactive: {
             backgroundColor: theme.TEXT_SECONDARY,
+            justifyContent: 'center',
+            alignContent: 'center',
+            marginLeft: 10,
+            borderRadius: 20,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+        },
+        sendButtonTextInactive: {
+            color: theme.BUTTON_SECONDARY_TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 12,
         },
     })
 

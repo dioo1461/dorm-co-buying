@@ -171,7 +171,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                     ellipsizeMode='tail' // 넘칠 때 ... 처리
                                 >
                                     {chatRoom.recentMessage ||
-                                        '새로운 메시지가 없습니다'}
+                                        '첫 메시지를 남겨보세요!'}
                                 </Text>
                             </View>
                         </View>
