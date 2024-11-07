@@ -454,15 +454,15 @@ const Chat: React.FC = (): React.JSX.Element => {
                             ? styles.sendButtonActive
                             : styles.sendButtonInactive
                     }
-                    onPress={() => sendMessage(message)}>
+                    onPress={() => sendMessage(message)}
+                    disabled={!validateMessage(message)}>
                     <Text
                         style={
                             validateMessage(message)
                                 ? styles.sendButtonTextActive
                                 : styles.sendButtonTextInactive
                         }
-                        onPress={() => sendMessage(message)}
-                        disabled={!validateMessage(message)}>
+                        onPress={() => sendMessage(message)}>
                         전송
                     </Text>
                 </TouchableOpacity>
@@ -588,7 +588,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 12,
         },
         sendButtonInactive: {
-            backgroundColor: theme.TEXT_SECONDARY,
+            backgroundColor: theme.BUTTON_SECONDARY_BG,
             justifyContent: 'center',
             alignContent: 'center',
             marginLeft: 10,
