@@ -88,7 +88,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                 })
         }
 
-        if (data.trade_linkUrl) {
+        if (data?.trade_linkUrl) {
             parseMetaData(data.trade_linkUrl)
         }
     }

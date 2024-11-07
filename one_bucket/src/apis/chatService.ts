@@ -17,3 +17,35 @@ export const getChatLogAfterTimestamp = async (
             throw err
         })
 }
+
+export const joinChatRoom = async (chatRoomId: string): Promise<any> => {
+    const authAxios = await createAuthAxios()
+
+    return authAxios
+        .post(CHAT_BASE_URL + '/chat/join', {
+            roomId: chatRoomId,
+        })
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const quitChatRoom = async (chatRoomId: string): Promise<any> => {
+    const authAxios = await createAuthAxios()
+
+    return authAxios
+        .delete(CHAT_BASE_URL + '/chat/quit', {
+            params: {
+                roomId: chatRoomId,
+            },
+        })
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}

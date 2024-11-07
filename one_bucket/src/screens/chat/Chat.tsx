@@ -1,7 +1,13 @@
+import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
+import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
+import {
+    getLastTimestampOfChatRoom,
+    setLastTimestampOfChatRoom,
+} from '@/utils/asyncStorageUtils'
 import { CHAT_BASE_URL } from '@env'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
@@ -10,21 +16,16 @@ import {
     Appearance,
     FlatList,
     InteractionManager,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
     StyleSheet,
     TextInput,
+    TouchableOpacity,
     View,
 } from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
-import {
-    getLastTimestampOfChatRoom,
-    setLastTimestampOfChatRoom,
-} from '@/utils/asyncStorageUtils'
-import Loading from '@/components/Loading'
+import IcOthers from '@/assets/drawable/ic-others.svg'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -33,11 +34,14 @@ Object.assign(global, {
 
 interface ChatCacheColumns {
     [key: string]: ColumnTypes
+    type: string
     roomId: string
     sender: string
     message: string
     time: string
 }
+
+const RENDER_AMOUNT = 20
 
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
@@ -67,8 +71,12 @@ const Chat: React.FC = (): React.JSX.Element => {
     )
 
     const isLoadingMore = useRef<Boolean>(false)
-    const [messageRenderLimit, setMessageRenderLimit] = useState(20)
-    const [messageRenderOffset, setMessageRenderOffset] = useState(20)
+    const [hasMoreMessages, setHasMoreMessages] = useState(true)
+    const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
+    const [messageRenderOffset, setMessageRenderOffset] =
+        useState(RENDER_AMOUNT)
+
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
 
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
@@ -82,6 +90,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     } = useCache<ChatCacheColumns>({
         tableName: 'chat',
         columns: {
+            type: 'string',
             roomId: 'string',
             sender: 'string',
             message: 'string',
@@ -96,26 +105,29 @@ const Chat: React.FC = (): React.JSX.Element => {
             title: params.roomName,
             headerStyle: { backgroundColor: themeColor.BG },
             headerTintColor: themeColor.TEXT,
-            headerTitleStyle: { fontWeight: 'bold' },
+            headerTitle: () => (
+                <Text
+                    style={{
+                        color: themeColor.TEXT,
+                        fontSize: 15,
+                        fontFamily: 'NanumGothic-Bold',
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'>
+                    {params.roomName}
+                </Text>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                    style={{ marginRight: 16 }}>
+                    <IcOthers fill={baseColors.GRAY_2} />
+                </TouchableOpacity>
+            ),
         })
     }, [navigation, params.roomName, themeColor])
 
-    const retrieveMessages = async (
-        limit: number,
-        offset: number,
-        lastTimestamp: string,
-    ) => {
-        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
-        const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time < '${
-                lastTimestamp ?? new Date().toISOString()
-            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
-        )
-        console.log(`<retrieved> ${messages.length} messages`)
-        return messages
-    }
-
-    // ### STOMP CONNECTION ###
+    // ########## STATE MANAGEMENT ##########
     useEffect(() => {
         const initStompClient = async () => {
             const stompClient = new Client({
@@ -147,14 +159,13 @@ const Chat: React.FC = (): React.JSX.Element => {
             stompClientRef.current = stompClient
         }
 
-        const initChatMessages = async (): Promise<Boolean> => {
+        const initChatMessages = async (): Promise<void> => {
             const messages = await retrieveMessages(
                 messageRenderLimit,
                 0,
                 lastTimestamp ?? new Date().toISOString(),
             )
             if (messages) setChatMessages(messages)
-            return true
         }
 
         const executeSynchoronously = async () => {
@@ -162,7 +173,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             await initChatMessages()
             initStompClient()
         }
-
+        console.log(params.roomId)
         executeSynchoronously()
 
         return () => {
@@ -170,11 +181,34 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
+    const retrieveMessages = async (
+        limit: number,
+        offset: number,
+        lastTimestamp: string,
+    ) => {
+        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
+        const messages = await getCachesByWhereClause(
+            `WHERE roomId = '${params.roomId}' AND time <= '${
+                lastTimestamp ?? new Date().toISOString()
+            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+        )
+        console.log(`<retrieved> ${messages.length} messages`)
+        return messages
+    }
+
     const onMessageReceive = (messageBody: WsChatMessageBody) => {
-        // console.log(messageBody)
-        const { type, ...message } = messageBody
+        // 본인의 LEAVE 메시지는 캐시에 저장하지 않음
+        if (
+            messageBody.type === 'LEAVE' &&
+            messageBody.sender === useBoundStore.getState().memberInfo?.nickname
+        ) {
+            return
+        }
+
+        const message = messageBody as ChatCacheColumns
         setChatMessages(prev => [message, ...prev!])
         addCache({
+            type: messageBody.type,
             roomId: messageBody.roomId,
             sender: messageBody.sender,
             message: messageBody.message,
@@ -185,7 +219,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const sendMessage = () => {
+    const sendMessage = (message: string) => {
         if (message.trim() == '') return
         const messageForm: WsChatMessageBody = {
             type: 'TALK',
@@ -201,7 +235,69 @@ const Chat: React.FC = (): React.JSX.Element => {
         setMessage('')
     }
 
-    // ### RENDER FUNCTIONS ###
+    const loadMoreMessages = async () => {
+        if (isLoadingMore.current || !hasMoreMessages) return
+        isLoadingMore.current = true
+
+        const moreMessages = await retrieveMessages(
+            messageRenderLimit,
+            messageRenderOffset,
+            lastTimestamp ?? new Date().toISOString(),
+        )
+        if (moreMessages == null || moreMessages.length == 0) {
+            setHasMoreMessages(false)
+            isLoadingMore.current = false
+            return
+        }
+
+        setChatMessages([...chatMessages!, ...moreMessages])
+        setMessageRenderOffset(messageRenderOffset + moreMessages.length)
+
+        if (moreMessages.length < messageRenderLimit) {
+            // 더 이상 가져올 메시지가 없음
+            setHasMoreMessages(false)
+        } else {
+            // 다음 로드를 위해 limit를 늘림
+            setMessageRenderLimit(messageRenderLimit * 2)
+        }
+
+        isLoadingMore.current = false
+    }
+
+    // ############ BOTTOM SHEET PROPS ############
+
+    const onLeaveButtonPress = () => {
+        const messageForm: WsChatMessageBody = {
+            type: 'LEAVE',
+            roomId: params.roomId,
+            sender: useBoundStore.getState().memberInfo?.nickname!,
+            message: '',
+            time: new Date().toISOString(),
+        }
+        stompClientRef.current?.publish({
+            destination: '/pub/message',
+            body: JSON.stringify(messageForm),
+        })
+        removeCache({ roomId: params.roomId }).then(() => {
+            navigation.goBack()
+        })
+    }
+
+    // TODO: 버튼들의 기능 구현
+    const bottomSheetButtons = [
+        {
+            text: '신고하기',
+            style: 'default' as const,
+            onPress: () => console.log('신고하기'),
+        },
+        {
+            text: '채팅방 나가기',
+            style: 'destructive' as const,
+            onPress: onLeaveButtonPress,
+        },
+    ]
+
+    // ############ RENDERING PARTS ############
 
     useEffect(() => {
         if (chatMessages != null) {
@@ -223,53 +319,109 @@ const Chat: React.FC = (): React.JSX.Element => {
         flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
     }
 
-    // 스크롤 핸들러
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const { contentOffset, contentSize, layoutMeasurement } =
-            event.nativeEvent
-
-        const scrollPosition = contentOffset.y
-        const contentHeight = contentSize.height
-        const visibleHeight = layoutMeasurement.height
-
-        // inverted를 사용했으므로, 스크롤 위치 계산이 반대가 됩니다.
-        const distanceFromTop = scrollPosition
+    const formatMessageTime = (utcTime: string) => {
+        const time = new Date(utcTime)
+        const hour = time.getHours()
+        const minute = time.getMinutes()
+        const period = hour < 12 ? '오전' : '오후'
+        const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
+        const formattedMinute = minute < 10 ? `0${minute}` : minute.toString() // 분이 한 자리일 경우 앞에 0 추가
+        return `${period} ${formattedHour}:${formattedMinute}`
     }
 
-    // 메시지 로드 함수
-    const loadMoreMessages = async () => {
-        isLoadingMore.current = true
-        const moreMessages = await retrieveMessages(
-            messageRenderLimit,
-            messageRenderOffset,
-            lastTimestamp ?? new Date().toISOString(),
-        )
-        setChatMessages([...chatMessages!, ...moreMessages])
-        setMessageRenderLimit(messageRenderLimit * 2)
-        setMessageRenderOffset(messageRenderOffset + moreMessages.length)
-        isLoadingMore.current = false
+    const validateMessage = (message: string): Boolean => {
+        if (message.trim() === '') {
+            return false
+        }
+        return true
     }
 
-    // ### RENDER ###
+    // ############ ACTUAL RENDER ############
 
-    const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
+    const renderMessageItem = ({
+        item,
+        index,
+    }: {
+        item: ChatCacheColumns
+        index: number
+    }) => {
         const isMyMessage =
             item.sender === useBoundStore.getState().memberInfo?.nickname
+        const currentMessageTime = new Date(item.time)
+
+        // TODO: null check 관련 anomaly 발생 시 수정 필요
+        if (!chatMessages) return null
+
+        if (item.type === 'ENTER') {
+            return (
+                <View style={styles.eventMessageContainer}>
+                    <Text style={styles.eventMessageText}>
+                        {item.sender}님이 채팅방에 참가했습니다.
+                    </Text>
+                </View>
+            )
+        }
+
+        if (item.type === 'LEAVE') {
+            return (
+                <View style={styles.eventMessageContainer}>
+                    <Text style={styles.eventMessageText}>
+                        {item.sender}님이 채팅방에서 나갔습니다.
+                    </Text>
+                </View>
+            )
+        }
+
+        // ### item.type === 'TALK' ###
+        // (참고: 맨 밑에 표시되는 메시지의 index는 0임 - FlatList is inverted)
+        // 다음 메시지와 발신자가 다른지 확인
+        const shouldShowSenderName =
+            index === chatMessages.length - 1 ||
+            chatMessages[index + 1].sender !== item.sender
+
+        // 이전 메시지와 시간이 다른지, 발신자가 다른지 확인
+        const isLastInSameMinute =
+            index === 0 || // 첫 번째 메시지일 때 표시
+            chatMessages[index - 1].sender !== item.sender || // 이전 메시지의 발신자가 다를 때 표시
+            new Date(chatMessages[index - 1].time).getMinutes() !==
+                currentMessageTime.getMinutes() ||
+            new Date(chatMessages[index - 1].time).getHours() !==
+                currentMessageTime.getHours()
+
         return isMyMessage ? (
-            <View style={[styles.messageContainer, styles.myMessage]}>
-                <Text style={styles.messageSenderText}></Text>
-                <Text style={styles.myMessageText}>{item.message}</Text>
-                <Text style={styles.messageTimeText}>
-                    {new Date(item.time).toLocaleTimeString()}
-                </Text>
+            // ### 본인이 보낸 메시지 ###
+            <View style={styles.myMessageContainer}>
+                <View style={styles.myMessageContent}>
+                    {isLastInSameMinute && (
+                        <Text style={styles.myMessageTimeText}>
+                            {formatMessageTime(item.time)}
+                        </Text>
+                    )}
+                    <View style={styles.myMessageBG}>
+                        <Text style={styles.myMessageText}>{item.message}</Text>
+                    </View>
+                </View>
             </View>
         ) : (
-            <View style={[styles.messageContainer, styles.otherMessage]}>
-                <Text style={styles.messageSenderText}>{item.sender}</Text>
-                <Text style={styles.otherMessageText}>{item.message}</Text>
-                <Text style={styles.messageTimeText}>
-                    {new Date(item.time).toLocaleTimeString()}
-                </Text>
+            // ### 상대방이 보낸 메시지 ###
+            <View style={styles.otherMessageContainer}>
+                {/* 다음 메시지와 발신자가 다를 때만 닉네임 표시 */}
+                {shouldShowSenderName && (
+                    <Text style={styles.messageSenderText}>{item.sender}</Text>
+                )}
+                <View style={styles.otherMessageContent}>
+                    <View style={styles.otherMessageBG}>
+                        <Text style={styles.otherMessageText}>
+                            {item.message}
+                        </Text>
+                    </View>
+                    {/* 이전 메시지와 시간이 같지 않거나 발신자가 다를 때만 시간 표시 */}
+                    {isLastInSameMinute && (
+                        <Text style={styles.otherMessageTimeText}>
+                            {formatMessageTime(item.time)}
+                        </Text>
+                    )}
+                </View>
             </View>
         )
     }
@@ -286,13 +438,9 @@ const Chat: React.FC = (): React.JSX.Element => {
                 keyExtractor={(_, index) => index.toString()}
                 contentContainerStyle={styles.chatContainer}
                 inverted
-                // scrollEventThrottle={8}
-                // onScroll={handleScroll}
                 onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
                 onEndReachedThreshold={0.6} // 리스트 끝에서 10% 지점 도달 시 loadMoreMessages 호출
-                // onStartReachedThreshold={0.1} // 리스트 끝에서 50% 지점 도달 시 loadMoreMessages 호출
             />
-
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -300,12 +448,31 @@ const Chat: React.FC = (): React.JSX.Element => {
                     onChangeText={setMessage}
                     placeholder='메시지를 입력하세요'
                 />
-                <Button
-                    title='전송'
-                    onPress={sendMessage}
-                    buttonStyle={styles.sendButton}
-                />
+                <TouchableOpacity
+                    style={
+                        validateMessage(message)
+                            ? styles.sendButtonActive
+                            : styles.sendButtonInactive
+                    }
+                    onPress={() => sendMessage(message)}
+                    disabled={!validateMessage(message)}>
+                    <Text
+                        style={
+                            validateMessage(message)
+                                ? styles.sendButtonTextActive
+                                : styles.sendButtonTextInactive
+                        }
+                        onPress={() => sendMessage(message)}>
+                        전송
+                    </Text>
+                </TouchableOpacity>
             </View>
+            <SelectableBottomSheet
+                enabled={bottomSheetEnabled}
+                theme={themeColor}
+                onClose={() => setBottomSheetEnabled(false)}
+                buttons={bottomSheetButtons}
+            />
         </View>
     )
 }
@@ -319,40 +486,78 @@ const createStyles = (theme: Icolor) =>
         chatContainer: {
             paddingHorizontal: 10,
         },
-        messageContainer: {
-            maxWidth: '70%',
+        myMessageContainer: {
+            alignSelf: 'flex-end',
             marginVertical: 5,
+            alignItems: 'flex-end',
+            maxWidth: '80%',
+        },
+        myMessageContent: {
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+        },
+        myMessageBG: {
+            backgroundColor: theme.BUTTON_BG,
             padding: 10,
             borderRadius: 10,
-        },
-        myMessage: {
-            backgroundColor: theme.BUTTON_BG,
-            alignSelf: 'flex-end',
+            maxWidth: '100%',
         },
         myMessageText: {
             color: theme.BUTTON_TEXT,
-            fontSize: 16,
+            fontSize: 14,
+        },
+        myMessageTimeText: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+            marginRight: 5,
+        },
+        otherMessageContainer: {
+            alignSelf: 'flex-start',
+            marginVertical: 5,
+            maxWidth: '80%',
+        },
+        otherMessageContent: {
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+        },
+        otherMessageBG: {
+            backgroundColor: theme.BG_SECONDARY,
+            padding: 10,
+            borderRadius: 10,
+            maxWidth: '100%',
         },
         otherMessageText: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 14,
         },
-        otherMessage: {
-            backgroundColor: theme.BG_SECONDARY,
-            alignSelf: 'flex-start',
+        otherMessageTimeText: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+            marginLeft: 5,
         },
         messageSenderText: {
-            fontSize: 10,
+            fontSize: 12,
             color: theme.TEXT_SECONDARY,
+            marginBottom: 3,
         },
-        messageTimeText: {
-            fontSize: 10,
+        eventMessageContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 30,
+            alignSelf: 'center',
+            alignItems: 'center',
+            marginVertical: 10,
+        },
+        eventMessageText: {
             color: theme.TEXT_SECONDARY,
-            alignSelf: 'flex-end',
-            marginTop: 4,
+            fontFamily: 'NanumGothic',
+            fontSize: 11,
+            textAlign: 'center',
         },
         inputContainer: {
             flexDirection: 'row',
+            justifyContent: 'center',
             paddingHorizontal: 10,
             paddingVertical: 10,
             marginTop: 10,
@@ -368,12 +573,33 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             color: theme.TEXT,
         },
-        sendButton: {
+        sendButtonActive: {
+            backgroundColor: theme.BUTTON_BG,
+            justifyContent: 'center',
+            alignContent: 'center',
             marginLeft: 10,
             borderRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            backgroundColor: theme.TEXT_SECONDARY,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+        },
+        sendButtonTextActive: {
+            color: theme.BUTTON_TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 12,
+        },
+        sendButtonInactive: {
+            backgroundColor: theme.BUTTON_SECONDARY_BG,
+            justifyContent: 'center',
+            alignContent: 'center',
+            marginLeft: 10,
+            borderRadius: 20,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+        },
+        sendButtonTextInactive: {
+            color: theme.BUTTON_SECONDARY_TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 12,
         },
     })
 

@@ -19,6 +19,7 @@ import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { useFocusEffect } from '@react-navigation/native'
+import { convertToKoreanTime } from '@/utils/dateUtils'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -65,7 +66,13 @@ const ChatList: React.FC = (): React.JSX.Element => {
             }
 
             const initialRoomListHandler = (event: SSEMessage) => {
-                setChatRoomData(JSON.parse(event.data))
+                const data = JSON.parse(event.data) as GetChatRoomListResponse
+                const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
+                    const dateA = new Date(a.recentMessageTime).getTime()
+                    const dateB = new Date(b.recentMessageTime).getTime()
+                    return dateB - dateA
+                })
+                setChatRoomData(sortedData)
             }
 
             initializeSSEConnection()
@@ -80,17 +87,18 @@ const ChatList: React.FC = (): React.JSX.Element => {
         }, [setChatRoomData]),
     )
 
-    const formatRecentMessageTime = (time: Date) => {
-        const now = new Date()
-        const diff = now.getTime() - time.getTime()
+    const formatRecentMessageTime = (utcTime: Date) => {
+        const now = convertToKoreanTime(new Date())
+
+        const diff = now.getTime() - utcTime.getTime()
 
         const diffMinutes = Math.floor(diff / 1000 / 60)
         if (diffMinutes < 1) return '방금'
 
         const diffHours = Math.floor(diffMinutes / 60)
         if (diffHours < 24) {
-            const hour = time.getHours()
-            const minute = time.getMinutes().toString().padStart(2, '0')
+            const hour = utcTime.getHours()
+            const minute = utcTime.getMinutes().toString().padStart(2, '0')
             const period = hour < 12 ? '오전' : '오후'
             const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
             return `${period} ${formattedHour}:${minute}`
@@ -102,15 +110,15 @@ const ChatList: React.FC = (): React.JSX.Element => {
         if (diffDays < 7) return `${diffDays}일 전`
 
         // 해당 연도인지 확인
-        const isCurrentYear = time.getFullYear() === now.getFullYear()
+        const isCurrentYear = utcTime.getFullYear() === now.getFullYear()
         if (isCurrentYear) {
-            return `${time.getMonth() + 1}월 ${time.getDate()}일` // 해당 연도 내에서는 월, 일로 표시
+            return `${utcTime.getMonth() + 1}월 ${utcTime.getDate()}일` // 해당 연도 내에서는 월, 일로 표시
         }
 
         // 연도가 다르면 YYYY.MM.DD 형식으로 표시
-        return `${time.getFullYear()}.${(time.getMonth() + 1)
+        return `${utcTime.getFullYear()}.${(utcTime.getMonth() + 1)
             .toString()
-            .padStart(2, '0')}.${time.getDate().toString().padStart(2, '0')}`
+            .padStart(2, '0')}.${utcTime.getDate().toString().padStart(2, '0')}`
     }
 
     const flatlistRef = useRef<FlatList>(null)
@@ -163,7 +171,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                     ellipsizeMode='tail' // 넘칠 때 ... 처리
                                 >
                                     {chatRoom.recentMessage ||
-                                        '새로운 메시지가 없습니다'}
+                                        '첫 메시지를 남겨보세요!'}
                                 </Text>
                             </View>
                         </View>
@@ -251,14 +259,14 @@ const createChatitemStyles = (theme: Icolor) =>
         },
         titleText: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 15,
             fontFamily: 'NanumGothic-Bold',
             flex: 1, // 남은 공간을 차지하도록 설정
             paddingRight: 8,
         },
         lastChatTimeText: {
-            color: theme.TEXT_SECONDARY,
-            fontSize: 12,
+            color: theme.TEXT_TERTIARY,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
             paddingLeft: 8,
         },
@@ -272,8 +280,8 @@ const createChatitemStyles = (theme: Icolor) =>
             alignItems: 'center',
         },
         recentMessageText: {
-            color: theme.TEXT,
-            fontSize: 14,
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
         },
         noMessageText: {

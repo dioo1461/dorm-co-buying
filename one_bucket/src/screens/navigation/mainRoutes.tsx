@@ -26,14 +26,17 @@ import { notifsNum } from 'screens/Notification'
 import { stackNavigation } from './NativeStackNavigation'
 
 export const mainRoutes = [
-    [   // 학교 인증 돼있을 시
+    [
+        // 학교 인증 돼있을 시
         {
             name: strings.homeRouteScreenName,
             title: strings.homeRouteScreenTitle,
             tabBarLabel: strings.homeScreenTitle,
             component: HomeTab,
             activeIconLight: <IcTabHomeActive fill={baseColors.SCHOOL_BG} />,
-            inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,
+            inactiveIconLight: (
+                <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />
+            ),
             activeIconDark: <IcTabHomeActive fill={baseColors.WHITE} />,
             inactiveIconDark: <IcTabHomeInactive fill={baseColors.WHITE} />,
             headerRight: () => {
@@ -93,22 +96,24 @@ export const mainRoutes = [
             tabBarLabel: strings.chatListScreenTitle,
             component: ChatList,
             activeIconLight: <IcTabChatActive fill={baseColors.SCHOOL_BG} />,
-            inactiveIconLight: <IcTabChatInactive fill={baseColors.SCHOOL_BG} />,
+            inactiveIconLight: (
+                <IcTabChatInactive fill={baseColors.SCHOOL_BG} />
+            ),
             activeIconDark: <IcTabChatActive fill={baseColors.WHITE} />,
             inactiveIconDark: <IcTabChatInactive fill={baseColors.WHITE} />,
-            headerRight: () => (
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginEnd: 15,
-                        }}>
-                        <IcOthers fill='white' />
-                    </TouchableOpacity>
-                </View>
-            ),
+            // headerRight: () => (
+            //     <View style={{ flexDirection: 'row' }}>
+            //         <TouchableOpacity
+            //             style={{
+            //                 flex: 1,
+            //                 alignItems: 'center',
+            //                 justifyContent: 'center',
+            //                 marginEnd: 15,
+            //             }}>
+            //             <IcOthers fill='white' />
+            //         </TouchableOpacity>
+            //     </View>
+            // ),
         },
         {
             name: strings.myPageScreenName,
@@ -116,7 +121,9 @@ export const mainRoutes = [
             tabBarLabel: strings.myPageScreenTitle,
             component: Mypage,
             activeIconLight: <IcTabProfileActive fill={baseColors.SCHOOL_BG} />,
-            inactiveIconLight: <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />,
+            inactiveIconLight: (
+                <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />
+            ),
             activeIconDark: <IcTabProfileActive fill={baseColors.WHITE} />,
             inactiveIconDark: <IcTabProfileInactive fill={baseColors.WHITE} />,
             headerRight: () => {
@@ -139,15 +146,18 @@ export const mainRoutes = [
                 )
             },
         },
-    ], 
-    [   // 학교 인증 안돼있을 시
+    ],
+    [
+        // 학교 인증 안돼있을 시
         {
             name: strings.unauthHomeScreenName,
             title: strings.homeRouteScreenTitle,
             tabBarLabel: strings.homeScreenTitle,
             component: UnauthHome,
             activeIconLight: <IcTabHomeActive fill={baseColors.SCHOOL_BG} />,
-            inactiveIconLight: <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />,
+            inactiveIconLight: (
+                <IcTabHomeInactive fill={baseColors.SCHOOL_BG} />
+            ),
             activeIconDark: <IcTabHomeActive fill={baseColors.WHITE} />,
             inactiveIconDark: <IcTabHomeInactive fill={baseColors.WHITE} />,
         },
@@ -157,7 +167,9 @@ export const mainRoutes = [
             tabBarLabel: strings.myPageScreenTitle,
             component: Mypage,
             activeIconLight: <IcTabProfileActive fill={baseColors.SCHOOL_BG} />,
-            inactiveIconLight: <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />,
+            inactiveIconLight: (
+                <IcTabProfileInactive fill={baseColors.SCHOOL_BG} />
+            ),
             activeIconDark: <IcTabProfileActive fill={baseColors.WHITE} />,
             inactiveIconDark: <IcTabProfileInactive fill={baseColors.WHITE} />,
             headerRight: () => {
@@ -180,5 +192,5 @@ export const mainRoutes = [
                 )
             },
         },
-    ]
+    ],
 ]
