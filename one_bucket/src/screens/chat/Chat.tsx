@@ -71,6 +71,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     )
 
     const isLoadingMore = useRef<Boolean>(false)
+    const [hasMoreMessages, setHasMoreMessages] = useState(true)
     const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
     const [messageRenderOffset, setMessageRenderOffset] =
         useState(RENDER_AMOUNT)
@@ -187,7 +188,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     ) => {
         console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
         const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time < '${
+            `WHERE roomId = '${params.roomId}' AND time <= '${
                 lastTimestamp ?? new Date().toISOString()
             }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
         )
@@ -228,16 +229,31 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const loadMoreMessages = async () => {
+        if (isLoadingMore.current || !hasMoreMessages) return
         isLoadingMore.current = true
+
         const moreMessages = await retrieveMessages(
             messageRenderLimit,
             messageRenderOffset,
             lastTimestamp ?? new Date().toISOString(),
         )
+        if (moreMessages == null || moreMessages.length == 0) {
+            setHasMoreMessages(false)
+            isLoadingMore.current = false
+            return
+        }
+
         setChatMessages([...chatMessages!, ...moreMessages])
         setMessageRenderOffset(messageRenderOffset + moreMessages.length)
-        if (moreMessages.length > 0)
+
+        if (moreMessages.length < messageRenderLimit) {
+            // 더 이상 가져올 메시지가 없음
+            setHasMoreMessages(false)
+        } else {
+            // 다음 로드를 위해 limit를 늘림
             setMessageRenderLimit(messageRenderLimit * 2)
+        }
+
         isLoadingMore.current = false
     }
 
