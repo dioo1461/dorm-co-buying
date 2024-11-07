@@ -1,5 +1,11 @@
 import { baseColors, Icolor } from '@/constants/colors'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+    StyleSheet,
+    Text,
+    TouchableNativeFeedback,
+    View,
+    Platform,
+} from 'react-native'
 
 import BottomSheet from '@/components/bottomSheet/BottomSheet'
 import Line from '@/components/Line'
@@ -43,13 +49,20 @@ export const SelectableBottomSheet: React.FC<SelectableBottomSheetProps> = ({
                             }
                             return (
                                 <View key={index}>
-                                    <TouchableOpacity
-                                        style={styles.button}
-                                        onPress={buttonProp.onPress}>
-                                        <Text style={textStyle}>
-                                            {buttonProp.text}
-                                        </Text>
-                                    </TouchableOpacity>
+                                    <View style={styles.touchableWrapper}>
+                                        <TouchableNativeFeedback
+                                            onPress={buttonProp.onPress}
+                                            background={TouchableNativeFeedback.Ripple(
+                                                theme.TEXT_SECONDARY,
+                                                false, // 리플 효과가 경계를 넘지 않도록 설정
+                                            )}>
+                                            <View style={styles.button}>
+                                                <Text style={textStyle}>
+                                                    {buttonProp.text}
+                                                </Text>
+                                            </View>
+                                        </TouchableNativeFeedback>
+                                    </View>
                                     {index !== buttons.length - 1 && (
                                         <Line theme={theme} />
                                     )}
@@ -58,11 +71,18 @@ export const SelectableBottomSheet: React.FC<SelectableBottomSheetProps> = ({
                         })}
                     </View>
                     <View style={[styles.buttonsContainer, { marginTop: 10 }]}>
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={onClose}>
-                            <Text style={styles.buttonText}>닫기</Text>
-                        </TouchableOpacity>
+                        <View style={styles.touchableWrapper}>
+                            <TouchableNativeFeedback
+                                onPress={onClose}
+                                background={TouchableNativeFeedback.Ripple(
+                                    theme.TEXT_SECONDARY,
+                                    false,
+                                )}>
+                                <View style={styles.button}>
+                                    <Text style={styles.buttonText}>닫기</Text>
+                                </View>
+                            </TouchableNativeFeedback>
+                        </View>
                     </View>
                 </View>
             )}
@@ -95,6 +115,10 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 10,
             paddingVertical: 4,
             zIndex: 2,
+        },
+        touchableWrapper: {
+            borderRadius: 10, // 리플 효과가 맞춰질 radius
+            overflow: 'hidden', // 리플 효과가 반경을 넘지 않도록 설정
         },
         button: {
             paddingVertical: 15,
