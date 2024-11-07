@@ -1,7 +1,13 @@
+import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
+import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
+import {
+    getLastTimestampOfChatRoom,
+    setLastTimestampOfChatRoom,
+} from '@/utils/asyncStorageUtils'
 import { CHAT_BASE_URL } from '@env'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
@@ -10,22 +16,15 @@ import {
     Appearance,
     FlatList,
     InteractionManager,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
     StyleSheet,
     TextInput,
+    TouchableOpacity,
     View,
 } from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
-import {
-    getLastTimestampOfChatRoom,
-    setLastTimestampOfChatRoom,
-} from '@/utils/asyncStorageUtils'
-import Loading from '@/components/Loading'
-import { convertToKoreanTime } from '@/utils/dateUtils'
+import IcOthers from '@/assets/drawable/ic-others.svg'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -95,7 +94,25 @@ const Chat: React.FC = (): React.JSX.Element => {
             title: params.roomName,
             headerStyle: { backgroundColor: themeColor.BG },
             headerTintColor: themeColor.TEXT,
-            headerTitleStyle: { fontWeight: 'bold' },
+            headerTitle: () => (
+                <Text
+                    style={{
+                        color: themeColor.TEXT,
+                        fontSize: 15,
+                        fontFamily: 'NanumGothic-Bold',
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'>
+                    {params.roomName}
+                </Text>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => console.log('Right button pressed')}
+                    style={{ marginRight: 16 }}>
+                    <IcOthers fill={baseColors.GRAY_2} />
+                </TouchableOpacity>
+            ),
         })
     }, [navigation, params.roomName, themeColor])
 
