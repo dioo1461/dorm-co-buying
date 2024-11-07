@@ -197,7 +197,14 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const onMessageReceive = (messageBody: WsChatMessageBody) => {
-        // console.log(messageBody)
+        // 본인의 LEAVE 메시지는 캐시에 저장하지 않음
+        if (
+            messageBody.type === 'LEAVE' &&
+            messageBody.sender === useBoundStore.getState().memberInfo?.nickname
+        ) {
+            return
+        }
+
         const message = messageBody as ChatCacheColumns
         setChatMessages(prev => [message, ...prev!])
         addCache({
@@ -271,12 +278,21 @@ const Chat: React.FC = (): React.JSX.Element => {
             destination: '/pub/message',
             body: JSON.stringify(messageForm),
         })
+        removeCache({ roomId: params.roomId }).then(() => {
+            navigation.goBack()
+        })
     }
 
+    // TODO: 버튼들의 기능 구현
     const bottomSheetButtons = [
         {
+            text: '신고하기',
+            style: 'default' as const,
+            onPress: () => console.log('신고하기'),
+        },
+        {
             text: '채팅방 나가기',
-            style: 'destructive',
+            style: 'destructive' as const,
             onPress: onLeaveButtonPress,
         },
     ]
@@ -431,12 +447,12 @@ const Chat: React.FC = (): React.JSX.Element => {
                     buttonStyle={styles.sendButton}
                 />
             </View>
-            {/* <SelectableBottomSheet
+            <SelectableBottomSheet
                 enabled={bottomSheetEnabled}
                 theme={themeColor}
                 onClose={() => setBottomSheetEnabled(false)}
                 buttons={bottomSheetButtons}
-            /> */}
+            />
         </View>
     )
 }
