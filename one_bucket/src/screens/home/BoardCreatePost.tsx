@@ -68,6 +68,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [inputHeight, setInputHeight] = useState(200)
+    const [preventMultPost, setPreventMultPost] = useState(true)
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
 
@@ -238,8 +239,18 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 </ScrollView>
             </View>
             <View style={styles.postButtonContainer}>
-                <TouchableNativeFeedback onPress={onSubmit}>
-                    <View style={styles.postButton}>
+                <TouchableNativeFeedback 
+                    disabled={!!(!title || !content || !preventMultPost)}
+                    onPress={()=>{
+                        onSubmit()
+                        setPreventMultPost(false)
+                    }}>
+                    <View style={{...styles.postButton, 
+                        backgroundColor:
+                            !title || !content
+                                ? baseColors.GRAY_2
+                                : baseColors.SCHOOL_BG,
+                        }}>
                         <Text style={styles.postButtonText}>게시</Text>
                     </View>
                 </TouchableNativeFeedback>

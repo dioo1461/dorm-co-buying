@@ -126,6 +126,7 @@ const Setting: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View>
+                    {/*
                     <Text style={styles.subjectLabel}>계정</Text>
                     <View style={{...styles.authContainer,
                         backgroundColor: (data?.university == 'null') ? 
@@ -138,17 +139,6 @@ const Setting: React.FC = (): React.JSX.Element => {
                             <Text style={styles.contextLabel}>학교 인증</Text>
                             {authCompletedText(data?.university)}
                         </TouchableOpacity>
-                        {/* 휴대폰 인증?
-                        <TouchableOpacity 
-                            style={{...styles.contextContainer, flexDirection: "row"}}
-                            onPress={() => {
-                                setPhoneIsAuth(true)
-                                navigation.navigate('PhoneAuth1')
-                            }}>
-                            <Text style={styles.contextLabel}>휴대폰 인증</Text>
-                            {authCompletedText(phoneIsAuth)}
-                        </TouchableOpacity>
-                        */}
                     </View>
                     <TouchableOpacity 
                         style={styles.contextContainer}
@@ -228,7 +218,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                             </View>
                         </View>
                     </Modal>
-                    <View style={styles.line} />
+                    <View style={styles.line} /> */}
                     <Text style={styles.subjectLabel}>알림 설정</Text>
                     <TouchableOpacity 
                         style={styles.contextContainer}

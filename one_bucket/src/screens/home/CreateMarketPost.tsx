@@ -70,6 +70,8 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
 
+    const [preventMultPost, setPreventMultPost] = useState(true)
+
     const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -130,7 +132,8 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
             price.length > 0 &&
             totalAmount.length > 0 &&
             peopleCount !== null &&
-            deadline !== null
+            deadline !== null &&
+            location !== ''
         )
     }
 
@@ -489,8 +492,11 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                                 : themeColor.BUTTON_SECONDARY_BG_DARKER,
                         },
                     ]}
-                    onPress={onSubmitButtonPress}
-                    disabled={!checkFormAvailable()}>
+                    onPress={()=>{
+                        onSubmit()
+                        setPreventMultPost(false)
+                    }}
+                    disabled={!!(!checkFormAvailable() || !preventMultPost)}>
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>

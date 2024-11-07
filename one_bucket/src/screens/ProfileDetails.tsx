@@ -202,7 +202,8 @@ const createStyles = (theme: Icolor) =>
             height: '100%',
         },
         bioText: {
-            color: theme.TEXT,
+            // color: theme.TEXT,
+            color: 'black',
             fontFamily: 'NanumGothic',
             fontSize: 14,
             paddingLeft: 10,

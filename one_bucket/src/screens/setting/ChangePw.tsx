@@ -78,6 +78,10 @@ const ChangePw: React.FC = (): React.JSX.Element => {
 
     const handleOldPwChange = (text: string) => {
         if (text == passwordConfirm) {
+            Toast.show({
+                type: 'error', 
+                text1: '인증 코드를 재발급했습니다.' 
+            })
             setChangeError(signUpErrorMessage.passwordUnchanged)
             return
         }
