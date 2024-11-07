@@ -249,34 +249,67 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ ACTUAL RENDER ############
 
-    const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
+    const renderMessageItem = ({
+        item,
+        index,
+    }: {
+        item: ChatCacheColumns
+        index: number
+    }) => {
         const isMyMessage =
             item.sender === useBoundStore.getState().memberInfo?.nickname
+        const currentMessageTime = new Date(item.time)
+
+        if (!chatMessages) return null
+
+        // 참고: 맨 밑에 표시되는 메시지의 index는 0임 (invereted FlatList)
+        // 다음 메시지와 발신자가 다른지 확인
+        const shouldShowSenderName =
+            index === chatMessages.length - 1 ||
+            chatMessages[index + 1].sender !== item.sender
+
+        // 이전 메시지와 시간이 다른지, 발신자가 다른지 확인
+        const isLastInSameMinute =
+            index === 0 || // 첫 번째 메시지일 때 표시
+            chatMessages[index - 1].sender !== item.sender || // 이전 메시지의 발신자가 다를 때 표시
+            new Date(chatMessages[index - 1].time).getMinutes() !==
+                currentMessageTime.getMinutes() ||
+            new Date(chatMessages[index - 1].time).getHours() !==
+                currentMessageTime.getHours()
+
         return isMyMessage ? (
+            // ### 본인이 보낸 메시지 ###
             <View style={styles.myMessageContainer}>
                 <View style={styles.myMessageContent}>
-                    <Text style={styles.myMessageTimeText}>
-                        {formatMessageTime(item.time)}
-                    </Text>
+                    {isLastInSameMinute && (
+                        <Text style={styles.myMessageTimeText}>
+                            {formatMessageTime(item.time)}
+                        </Text>
+                    )}
                     <View style={styles.myMessageBG}>
                         <Text style={styles.myMessageText}>{item.message}</Text>
                     </View>
                 </View>
             </View>
         ) : (
+            // ### 상대방이 보낸 메시지 ###
             <View style={styles.otherMessageContainer}>
-                <View>
+                {/* 다음 메시지와 발신자가 다를 때만 닉네임 표시 */}
+                {shouldShowSenderName && (
                     <Text style={styles.messageSenderText}>{item.sender}</Text>
-                    <View style={styles.otherMessageContent}>
-                        <View style={styles.otherMessageBG}>
-                            <Text style={styles.otherMessageText}>
-                                {item.message}
-                            </Text>
-                        </View>
+                )}
+                <View style={styles.otherMessageContent}>
+                    <View style={styles.otherMessageBG}>
+                        <Text style={styles.otherMessageText}>
+                            {item.message}
+                        </Text>
+                    </View>
+                    {/* 이전 메시지와 시간이 같지 않거나 발신자가 다를 때만 시간 표시 */}
+                    {isLastInSameMinute && (
                         <Text style={styles.otherMessageTimeText}>
                             {formatMessageTime(item.time)}
                         </Text>
-                    </View>
+                    )}
                 </View>
             </View>
         )
