@@ -66,7 +66,13 @@ const ChatList: React.FC = (): React.JSX.Element => {
             }
 
             const initialRoomListHandler = (event: SSEMessage) => {
-                setChatRoomData(JSON.parse(event.data))
+                const data = JSON.parse(event.data) as GetChatRoomListResponse
+                const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
+                    const dateA = new Date(a.recentMessageTime).getTime()
+                    const dateB = new Date(b.recentMessageTime).getTime()
+                    return dateB - dateA
+                })
+                setChatRoomData(sortedData)
             }
 
             initializeSSEConnection()
