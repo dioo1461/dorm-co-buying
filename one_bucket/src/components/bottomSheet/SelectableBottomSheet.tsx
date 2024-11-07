@@ -27,7 +27,7 @@ type SelectableBottomSheetProps = {
  * 각 버튼은 사용자 정의 동작을 트리거할 수 있으며, 이 컴포넌트는 주로 화면 하단에서 여러 옵션을 제공할 때 사용됩니다.
  *
  * @param enabled - Bottom Sheet의 표시 여부를 제어하는 boolean 값입니다.
- * @param onClose - Bottom Sheet가 닫힐 때 호출되는 함수입니다.
+ * @param onClose - Bottom Sheet가 닫힐 때 호출할 함수입니다.
  * @param theme - 현재 테마에 따른 색상 정보를 담고 있는 객체로, Bottom Sheet의 스타일을 지정하는 데 사용됩니다.
  * @param buttons - 버튼 목록을 설정하는 배열입니다. 각 버튼은 `text`, `style` ('default' 또는 'destructive'), `onPress` 함수 속성을 가집니다.
  *

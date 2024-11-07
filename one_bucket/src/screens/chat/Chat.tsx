@@ -25,6 +25,7 @@ import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import IcOthers from '@/assets/drawable/ic-others.svg'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -33,6 +34,7 @@ Object.assign(global, {
 
 interface ChatCacheColumns {
     [key: string]: ColumnTypes
+    type: string
     roomId: string
     sender: string
     message: string
@@ -73,20 +75,28 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [messageRenderOffset, setMessageRenderOffset] =
         useState(RENDER_AMOUNT)
 
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const { getCachesByWhereClause, getCachesByKeys, addCache, removeCache } =
-        useCache<ChatCacheColumns>({
-            tableName: 'chat',
-            columns: {
-                roomId: 'string',
-                sender: 'string',
-                message: 'string',
-                time: 'string',
-            },
-            // debug: true,
-        })
+    const {
+        dropTable,
+        getCachesByWhereClause,
+        getCachesByKeys,
+        addCache,
+        removeCache,
+    } = useCache<ChatCacheColumns>({
+        tableName: 'chat',
+        columns: {
+            type: 'string',
+            roomId: 'string',
+            sender: 'string',
+            message: 'string',
+            time: 'string',
+        },
+        // debug: true,
+    })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -108,7 +118,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             ),
             headerRight: () => (
                 <TouchableOpacity
-                    onPress={() => console.log('Right button pressed')}
+                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
                     style={{ marginRight: 16 }}>
                     <IcOthers fill={baseColors.GRAY_2} />
                 </TouchableOpacity>
@@ -116,22 +126,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }, [navigation, params.roomName, themeColor])
 
-    const retrieveMessages = async (
-        limit: number,
-        offset: number,
-        lastTimestamp: string,
-    ) => {
-        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
-        const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time < '${
-                lastTimestamp ?? new Date().toISOString()
-            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
-        )
-        console.log(`<retrieved> ${messages.length} messages`)
-        return messages
-    }
-
-    // ############ STOMP CONNECTION ############
+    // ########## STATE MANAGEMENT ##########
     useEffect(() => {
         const initStompClient = async () => {
             const stompClient = new Client({
@@ -163,14 +158,13 @@ const Chat: React.FC = (): React.JSX.Element => {
             stompClientRef.current = stompClient
         }
 
-        const initChatMessages = async (): Promise<Boolean> => {
+        const initChatMessages = async (): Promise<void> => {
             const messages = await retrieveMessages(
                 messageRenderLimit,
                 0,
                 lastTimestamp ?? new Date().toISOString(),
             )
             if (messages) setChatMessages(messages)
-            return true
         }
 
         const executeSynchoronously = async () => {
@@ -178,7 +172,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             await initChatMessages()
             initStompClient()
         }
-
+        console.log(params.roomId)
         executeSynchoronously()
 
         return () => {
@@ -186,11 +180,27 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
+    const retrieveMessages = async (
+        limit: number,
+        offset: number,
+        lastTimestamp: string,
+    ) => {
+        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
+        const messages = await getCachesByWhereClause(
+            `WHERE roomId = '${params.roomId}' AND time < '${
+                lastTimestamp ?? new Date().toISOString()
+            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+        )
+        console.log(`<retrieved> ${messages.length} messages`)
+        return messages
+    }
+
     const onMessageReceive = (messageBody: WsChatMessageBody) => {
         // console.log(messageBody)
-        const { type, ...message } = messageBody
+        const message = messageBody as ChatCacheColumns
         setChatMessages(prev => [message, ...prev!])
         addCache({
+            type: messageBody.type,
             roomId: messageBody.roomId,
             sender: messageBody.sender,
             message: messageBody.message,
@@ -217,7 +227,45 @@ const Chat: React.FC = (): React.JSX.Element => {
         setMessage('')
     }
 
-    // ############## RENDERING PARTS ##############
+    const loadMoreMessages = async () => {
+        isLoadingMore.current = true
+        const moreMessages = await retrieveMessages(
+            messageRenderLimit,
+            messageRenderOffset,
+            lastTimestamp ?? new Date().toISOString(),
+        )
+        setChatMessages([...chatMessages!, ...moreMessages])
+        setMessageRenderOffset(messageRenderOffset + moreMessages.length)
+        if (moreMessages.length > 0)
+            setMessageRenderLimit(messageRenderLimit * 2)
+        isLoadingMore.current = false
+    }
+
+    // ############ BOTTOM SHEET PROPS ############
+
+    const onLeaveButtonPress = () => {
+        const messageForm: WsChatMessageBody = {
+            type: 'LEAVE',
+            roomId: params.roomId,
+            sender: useBoundStore.getState().memberInfo?.nickname!,
+            message: '',
+            time: new Date().toISOString(),
+        }
+        stompClientRef.current?.publish({
+            destination: '/pub/message',
+            body: JSON.stringify(messageForm),
+        })
+    }
+
+    const bottomSheetButtons = [
+        {
+            text: '채팅방 나가기',
+            style: 'destructive',
+            onPress: onLeaveButtonPress,
+        },
+    ]
+
+    // ############ RENDERING PARTS ############
 
     useEffect(() => {
         if (chatMessages != null) {
@@ -237,21 +285,6 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     const scrollToBottom = () => {
         flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
-    }
-
-    // 메시지 로드 함수
-    const loadMoreMessages = async () => {
-        isLoadingMore.current = true
-        const moreMessages = await retrieveMessages(
-            messageRenderLimit,
-            messageRenderOffset,
-            lastTimestamp ?? new Date().toISOString(),
-        )
-        setChatMessages([...chatMessages!, ...moreMessages])
-        setMessageRenderOffset(messageRenderOffset + moreMessages.length)
-        if (moreMessages.length > 0)
-            setMessageRenderLimit(messageRenderLimit * 2)
-        isLoadingMore.current = false
     }
 
     const formatMessageTime = (utcTime: string) => {
@@ -361,6 +394,12 @@ const Chat: React.FC = (): React.JSX.Element => {
                     buttonStyle={styles.sendButton}
                 />
             </View>
+            {/* <SelectableBottomSheet
+                enabled={bottomSheetEnabled}
+                theme={themeColor}
+                onClose={() => setBottomSheetEnabled(false)}
+                buttons={bottomSheetButtons}
+            /> */}
         </View>
     )
 }
