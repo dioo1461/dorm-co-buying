@@ -238,7 +238,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const formatMessageTime = (utcTime: string) => {
-        const time = convertToKoreanTime(new Date(utcTime))
+        const time = new Date(utcTime)
         const hour = time.getHours()
         const minute = time.getMinutes()
         const period = hour < 12 ? '오전' : '오후'
@@ -260,9 +260,10 @@ const Chat: React.FC = (): React.JSX.Element => {
             item.sender === useBoundStore.getState().memberInfo?.nickname
         const currentMessageTime = new Date(item.time)
 
+        // TODO: null check 관련 anomaly 발생 시 수정 필요
         if (!chatMessages) return null
 
-        // 참고: 맨 밑에 표시되는 메시지의 index는 0임 (invereted FlatList)
+        // (참고: 맨 밑에 표시되는 메시지의 index는 0임 - FlatList is inverted)
         // 다음 메시지와 발신자가 다른지 확인
         const shouldShowSenderName =
             index === chatMessages.length - 1 ||
