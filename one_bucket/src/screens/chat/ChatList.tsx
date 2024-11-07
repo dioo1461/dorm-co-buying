@@ -259,14 +259,14 @@ const createChatitemStyles = (theme: Icolor) =>
         },
         titleText: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 15,
             fontFamily: 'NanumGothic-Bold',
             flex: 1, // 남은 공간을 차지하도록 설정
             paddingRight: 8,
         },
         lastChatTimeText: {
-            color: theme.TEXT_SECONDARY,
-            fontSize: 12,
+            color: theme.TEXT_TERTIARY,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
             paddingLeft: 8,
         },
@@ -280,8 +280,8 @@ const createChatitemStyles = (theme: Icolor) =>
             alignItems: 'center',
         },
         recentMessageText: {
-            color: theme.TEXT,
-            fontSize: 14,
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
         },
         noMessageText: {
