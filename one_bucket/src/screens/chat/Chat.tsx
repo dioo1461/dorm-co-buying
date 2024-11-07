@@ -40,6 +40,8 @@ interface ChatCacheColumns {
     time: string
 }
 
+const RENDER_AMOUNT = 20
+
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -68,28 +70,24 @@ const Chat: React.FC = (): React.JSX.Element => {
     )
 
     const isLoadingMore = useRef<Boolean>(false)
-    const [messageRenderLimit, setMessageRenderLimit] = useState(20)
-    const [messageRenderOffset, setMessageRenderOffset] = useState(20)
+    const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
+    const [messageRenderOffset, setMessageRenderOffset] =
+        useState(RENDER_AMOUNT)
 
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const {
-        dropTable,
-        getCachesByWhereClause,
-        getCachesByKeys,
-        addCache,
-        removeCache,
-    } = useCache<ChatCacheColumns>({
-        tableName: 'chat',
-        columns: {
-            roomId: 'string',
-            sender: 'string',
-            message: 'string',
-            time: 'string',
-        },
-        // debug: true,
-    })
+    const { getCachesByWhereClause, getCachesByKeys, addCache, removeCache } =
+        useCache<ChatCacheColumns>({
+            tableName: 'chat',
+            columns: {
+                roomId: 'string',
+                sender: 'string',
+                message: 'string',
+                time: 'string',
+            },
+            // debug: true,
+        })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -116,7 +114,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         return messages
     }
 
-    // ### STOMP CONNECTION ###
+    // ############ STOMP CONNECTION ############
     useEffect(() => {
         const initStompClient = async () => {
             const stompClient = new Client({
@@ -202,7 +200,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         setMessage('')
     }
 
-    // ### RENDER FUNCTIONS ###
+    // ############## RENDERING PARTS ##############
 
     useEffect(() => {
         if (chatMessages != null) {
@@ -224,19 +222,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
     }
 
-    // 스크롤 핸들러
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const { contentOffset, contentSize, layoutMeasurement } =
-            event.nativeEvent
-
-        const scrollPosition = contentOffset.y
-        const contentHeight = contentSize.height
-        const visibleHeight = layoutMeasurement.height
-
-        // inverted를 사용했으므로, 스크롤 위치 계산이 반대가 됩니다.
-        const distanceFromTop = scrollPosition
-    }
-
     // 메시지 로드 함수
     const loadMoreMessages = async () => {
         isLoadingMore.current = true
@@ -252,34 +237,47 @@ const Chat: React.FC = (): React.JSX.Element => {
         isLoadingMore.current = false
     }
 
-    // ### RENDER ###
     const formatMessageTime = (utcTime: string) => {
         const time = convertToKoreanTime(new Date(utcTime))
         const hour = time.getHours()
         const minute = time.getMinutes()
         const period = hour < 12 ? '오전' : '오후'
         const formattedHour = (hour % 12 || 12).toString() // 12시간제, 0시는 12로 표시
-        return `${period} ${formattedHour}:${minute}`
+        const formattedMinute = minute < 10 ? `0${minute}` : minute.toString() // 분이 한 자리일 경우 앞에 0 추가
+        return `${period} ${formattedHour}:${formattedMinute}`
     }
+
+    // ############ ACTUAL RENDER ############
 
     const renderMessageItem = ({ item }: { item: ChatCacheColumns }) => {
         const isMyMessage =
             item.sender === useBoundStore.getState().memberInfo?.nickname
         return isMyMessage ? (
-            <View style={[styles.messageContainer, styles.myMessage]}>
-                <Text style={styles.messageSenderText}></Text>
-                <Text style={styles.myMessageText}>{item.message}</Text>
-                <Text style={styles.messageTimeText}>
-                    {formatMessageTime(item.time)}
-                </Text>
+            <View style={styles.myMessageContainer}>
+                <View style={styles.myMessageContent}>
+                    <Text style={styles.myMessageTimeText}>
+                        {formatMessageTime(item.time)}
+                    </Text>
+                    <View style={styles.myMessageBG}>
+                        <Text style={styles.myMessageText}>{item.message}</Text>
+                    </View>
+                </View>
             </View>
         ) : (
-            <View style={[styles.messageContainer, styles.otherMessage]}>
-                <Text style={styles.messageSenderText}>{item.sender}</Text>
-                <Text style={styles.otherMessageText}>{item.message}</Text>
-                <Text style={styles.messageTimeText}>
-                    {new Date(item.time).toLocaleTimeString()}
-                </Text>
+            <View style={styles.otherMessageContainer}>
+                <View>
+                    <Text style={styles.messageSenderText}>{item.sender}</Text>
+                    <View style={styles.otherMessageContent}>
+                        <View style={styles.otherMessageBG}>
+                            <Text style={styles.otherMessageText}>
+                                {item.message}
+                            </Text>
+                        </View>
+                        <Text style={styles.otherMessageTimeText}>
+                            {formatMessageTime(item.time)}
+                        </Text>
+                    </View>
+                </View>
             </View>
         )
     }
@@ -296,13 +294,9 @@ const Chat: React.FC = (): React.JSX.Element => {
                 keyExtractor={(_, index) => index.toString()}
                 contentContainerStyle={styles.chatContainer}
                 inverted
-                // scrollEventThrottle={8}
-                // onScroll={handleScroll}
                 onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
                 onEndReachedThreshold={0.6} // 리스트 끝에서 10% 지점 도달 시 loadMoreMessages 호출
-                // onStartReachedThreshold={0.1} // 리스트 끝에서 50% 지점 도달 시 loadMoreMessages 호출
             />
-
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -329,37 +323,61 @@ const createStyles = (theme: Icolor) =>
         chatContainer: {
             paddingHorizontal: 10,
         },
-        messageContainer: {
-            maxWidth: '70%',
+        // 본인 메시지 스타일
+        myMessageContainer: {
+            alignSelf: 'flex-end',
             marginVertical: 5,
+            alignItems: 'flex-end',
+            maxWidth: '80%', // 메시지 최대 너비 제한
+        },
+        myMessageContent: {
+            flexDirection: 'row', // 메시지와 시간을 수평으로 배치
+            alignItems: 'flex-end',
+        },
+        myMessageBG: {
+            backgroundColor: theme.BUTTON_BG,
             padding: 10,
             borderRadius: 10,
-        },
-        myMessage: {
-            backgroundColor: theme.BUTTON_BG,
-            alignSelf: 'flex-end',
+            maxWidth: '100%',
         },
         myMessageText: {
             color: theme.BUTTON_TEXT,
             fontSize: 16,
         },
+        myMessageTimeText: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+            marginRight: 5, // 메시지와 시간 사이 간격
+        },
+        // 상대방 메시지 스타일
+        otherMessageContainer: {
+            alignSelf: 'flex-start',
+            marginVertical: 5,
+            maxWidth: '80%', // 메시지 최대 너비 제한
+        },
+        otherMessageContent: {
+            flexDirection: 'row', // 메시지와 시간을 수평으로 배치
+            alignItems: 'flex-end',
+        },
+        otherMessageBG: {
+            backgroundColor: theme.BG_SECONDARY,
+            padding: 10,
+            borderRadius: 10,
+            maxWidth: '100%',
+        },
         otherMessageText: {
             color: theme.TEXT,
             fontSize: 16,
         },
-        otherMessage: {
-            backgroundColor: theme.BG_SECONDARY,
-            alignSelf: 'flex-start',
+        otherMessageTimeText: {
+            fontSize: 10,
+            color: theme.TEXT_SECONDARY,
+            marginLeft: 5, // 메시지와 시간 사이 간격
         },
         messageSenderText: {
-            fontSize: 10,
+            fontSize: 12,
             color: theme.TEXT_SECONDARY,
-        },
-        messageTimeText: {
-            fontSize: 10,
-            color: theme.TEXT_SECONDARY,
-            alignSelf: 'flex-end',
-            marginTop: 4,
+            marginBottom: 3,
         },
         inputContainer: {
             flexDirection: 'row',
