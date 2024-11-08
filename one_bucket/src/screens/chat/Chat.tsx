@@ -26,6 +26,7 @@ import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
+import { getChatLogAfterTimestamp } from '@/apis/chatService'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -262,6 +263,15 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         isLoadingMore.current = false
+    }
+
+    const fetchFreshChats = () => {
+        var timestamp = lastTimestamp ? new Date(lastTimestamp) : new Date()
+        getChatLogAfterTimestamp(params.roomId, timestamp)
+        .then(res => {
+            
+        })
+
     }
 
     // ############ BOTTOM SHEET PROPS ############
