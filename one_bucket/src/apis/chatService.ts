@@ -2,7 +2,7 @@ import { GetChatLogAfterTimestampResponse } from '@/data/response/success/chat/G
 import { GetChatRoomTradeInfoResponse } from '@/data/response/success/chat/GetChatRoomTradeInfoResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const CHAT_BASE_URL = '/chat'
+const CHAT_ENDPOINT_PREFIX = '/chat'
 
 export const getChatLogAfterTimestamp = async (
     roomId: string,
@@ -11,7 +11,7 @@ export const getChatLogAfterTimestamp = async (
     const authAxios = await createAuthAxios()
 
     return authAxios
-        .get(CHAT_BASE_URL + `/chat/logs`, {
+        .get(CHAT_ENDPOINT_PREFIX + `/logs`, {
             params: {
                 roomId: roomId,
                 timestamp: timestamp,
@@ -29,7 +29,7 @@ export const joinChatRoom = async (chatRoomId: string): Promise<any> => {
     const authAxios = await createAuthAxios()
 
     return authAxios
-        .post(CHAT_BASE_URL + '/chat/join', {
+        .post(CHAT_ENDPOINT_PREFIX + '/join', {
             roomId: chatRoomId,
         })
         .then(res => {
@@ -44,7 +44,7 @@ export const quitChatRoom = async (chatRoomId: string): Promise<any> => {
     const authAxios = await createAuthAxios()
 
     return authAxios
-        .delete(CHAT_BASE_URL + '/chat/quit', {
+        .delete(CHAT_ENDPOINT_PREFIX + '/quit', {
             params: {
                 roomId: chatRoomId,
             },
@@ -60,7 +60,7 @@ export const quitChatRoom = async (chatRoomId: string): Promise<any> => {
 export const destroyChatRoom = async (chatRoomId: string): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(CHAT_BASE_URL + `/chat/bomb/${chatRoomId}`)
+        .delete(CHAT_ENDPOINT_PREFIX + `/bomb/${chatRoomId}`)
         .then(res => {
             return res.data
         })
@@ -69,12 +69,12 @@ export const destroyChatRoom = async (chatRoomId: string): Promise<any> => {
         })
 }
 
-export const getChatRoomTradeInfo = async (
+export const getTradeInfoOfChatRoom = async (
     chatRoomId: string,
 ): Promise<GetChatRoomTradeInfoResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(CHAT_BASE_URL + `/chat/trade/${chatRoomId}`)
+        .get(CHAT_ENDPOINT_PREFIX + `/trade/${chatRoomId}`)
         .then(res => {
             return res.data
         })

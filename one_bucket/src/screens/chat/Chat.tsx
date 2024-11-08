@@ -26,7 +26,10 @@ import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
-import { getChatLogAfterTimestamp } from '@/apis/chatService'
+import {
+    getChatLogAfterTimestamp,
+    getTradeInfoOfChatRoom,
+} from '@/apis/chatService'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -78,6 +81,8 @@ const Chat: React.FC = (): React.JSX.Element => {
         useState(RENDER_AMOUNT)
 
     const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    // TODO: bottomSheetButton 동적 관리 - userId 필요
+    // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
 
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
@@ -183,9 +188,11 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const executeSynchoronously = async () => {
             setLastTimestamp(await getLastTimestampOfChatRoom(params.roomId))
+            await getTradeInfoOfChatRoom(params.roomId)
             await fetchFreshChats()
             await initChatMessages()
             initStompClient()
+            setIsLoading(false)
         }
         console.log(params.roomId)
         executeSynchoronously()
@@ -309,7 +316,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }
 
-    // TODO: 버튼들의 기능 구현
     const bottomSheetButtons = [
         {
             text: '신고하기',
@@ -322,24 +328,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             onPress: onLeaveButtonPress,
         },
     ]
-
     // ############ RENDERING PARTS ############
-
-    useEffect(() => {
-        if (chatMessages != null) {
-            // console.log(chatMessages)
-            setIsLoading(false)
-        }
-    }, [chatMessages])
-
-    useEffect(() => {
-        console.log('isloading', isLoading)
-        if (!isLoading) {
-            InteractionManager.runAfterInteractions(() => {
-                // scrollToBottom()
-            })
-        }
-    }, [isLoading])
 
     const scrollToBottom = () => {
         flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
