@@ -9,6 +9,7 @@ import {
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import React, { useEffect, useState } from 'react'
 import {
+    Alert,
     ActivityIndicator,
     Appearance,
     Dimensions,
@@ -19,7 +20,9 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import { stackNavigation } from './navigation/NativeStackNavigation'
+import { delProfile } from '@/apis/profileService'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -77,6 +80,21 @@ const Mypage = (): React.JSX.Element => {
                 }}>{`완료 (${school})`}</Text>
             </View>
         )
+    }
+
+    const delAccount = async () => {
+        if(data?.nickname=='test1') {
+            Alert.alert('관리자 계정입니다.')
+            return
+        } // 공용계정 삭제 방지
+        delProfile()
+            .then(res=>{
+                onLogOut(false)
+                Toast.show({ text1: '계정이 삭제되었습니다.' })
+            })
+            .catch(err=>{
+                console.log('delAccount: ',err)
+            })
     }
 
     const navigation = stackNavigation()
@@ -152,27 +170,6 @@ const Mypage = (): React.JSX.Element => {
                         </View>
                 </Modal>
             </View>
-            {/*
-            <View style={styles.payMoneyContainer}>
-                <View style={styles.payMoneyTextContainer}>
-                    <Text style={styles.payMoneyLabel}>페이머니</Text>
-                    <Text style={styles.payMoneyAmount}>12,000</Text>
-                    <TouchableOpacity style={styles.payMoneyDetailsButton}>
-                        <IcAngleRight fill={baseColors.GRAY_3} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.payMoneyButtonsContainer}>
-                    <TouchableOpacity style={styles.payMoneyButton}>
-                        <IcPlus style={styles.payMoneyButtonImage} />
-                        <Text style={styles.payMoneyButtonText}>충전</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.payMoneyButton}>
-                        <IcArrowCircle style={styles.payMoneyButtonImage} />
-                        <Text style={styles.payMoneyButtonText}>반환</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            */}
             <View style={styles.activityContainer}>
                 <Text style={styles.activityTitle}>나의 활동</Text>
                 <TouchableOpacity style={styles.activityItem}>
@@ -258,7 +255,9 @@ const Mypage = (): React.JSX.Element => {
                                         onPress={()=>{
                                             setCountDelID(countDelID => countDelID - 1)
                                             if(countDelID == 1) {
-                                                closeDelID() // 회원탈퇴
+                                                // 회원탈퇴
+                                                delAccount()
+                                                closeDelID()
                                                 setCountDelID(3)
                                             }
                                         }}>

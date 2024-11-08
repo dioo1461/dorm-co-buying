@@ -19,6 +19,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { getMemberInfo, getProfile } from '@/apis/profileService'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(

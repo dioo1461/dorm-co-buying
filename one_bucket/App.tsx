@@ -37,9 +37,6 @@ import AlertSetting from '@/screens/setting/AlertSetting'
 import Announcement from '@/screens/setting/Announcement'
 import ChangePw from '@/screens/setting/ChangePw'
 import ChangePw2 from '@/screens/setting/ChangePw2'
-import PhoneAuth1 from '@/screens/setting/PhoneAuth1'
-import PhoneAuth2 from '@/screens/setting/PhoneAuth2'
-import PhoneAuth3 from '@/screens/setting/PhoneAuth3'
 import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
 import SchoolAuth2 from '@/screens/setting/SchoolAuth2'
 import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
@@ -107,7 +104,8 @@ function App(): React.JSX.Element {
                 setLoginState(true)
             } catch (error) {
                 // 요청 실패 시 처리
-                setLoginState(false)
+                // setLoginState(false)
+                setAuthed(1)
                 if (!axios.isAxiosError(error)) return
 
                 if (
@@ -281,21 +279,6 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.schoolAuth3ScreenName}
                             component={SchoolAuth3}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name={strings.phoneAuth1ScreenName}
-                            component={PhoneAuth1}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name={strings.phoneAuth2ScreenName}
-                            component={PhoneAuth2}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen
-                            name={strings.phoneAuth3ScreenName}
-                            component={PhoneAuth3}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen

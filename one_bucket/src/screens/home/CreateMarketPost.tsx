@@ -493,7 +493,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                         },
                     ]}
                     onPress={()=>{
-                        onSubmit()
+                        onSubmitButtonPress()
                         setPreventMultPost(false)
                     }}
                     disabled={!!(!checkFormAvailable() || !preventMultPost)}>
