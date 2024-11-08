@@ -492,7 +492,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                                 : themeColor.BUTTON_SECONDARY_BG_DARKER,
                         },
                     ]}
-                    onPress={()=>{
+                    onPress={() => {
                         onSubmitButtonPress()
                         setPreventMultPost(false)
                     }}

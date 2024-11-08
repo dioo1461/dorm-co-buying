@@ -76,7 +76,7 @@ export const getProfileImage = async () => {
  */
 export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
-    console.log("AddProfileRequestBody:",data)
+    console.log('AddProfileRequestBody:', data)
     return authAxios
         .post('/guest/profile/update', data)
         .then(response => {
@@ -93,6 +93,19 @@ export const updateUniversity = async (data: SetUniversityRequestBody) => {
         .post('/member/univ', data)
         .then(response => {
             return response
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+// 페이지정보들?
+export const getMyPosts = async () => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get('/post/list/my')
+        .then(response => {
+            return response.data
         })
         .catch(err => {
             throw err

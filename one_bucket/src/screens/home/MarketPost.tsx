@@ -28,6 +28,7 @@ import Loading from '@/components/Loading'
 import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
 import { CachedImage } from '@/components/CachedImage'
+import { joinTrade } from '@/apis/tradeService'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -93,10 +94,17 @@ const MarketPost: React.FC = (): JSX.Element => {
         }
     }
 
+    const onJoinButtonPress = async () => {
+        await joinTrade(data!.trade_id).then(() => {
+            navigation.goBack()
+        })
+    }
+
     const { data, isLoading, error } = queryMarketPost(
         params.postId,
         onSuccessCallback,
     )
+
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 300], // 스크롤 범위
         outputRange: [0, 1], // opacity 값 변화
@@ -258,7 +266,9 @@ const MarketPost: React.FC = (): JSX.Element => {
                     <Text style={styles.bottomBarCountText}>12 / 30</Text>
                     <Text style={styles.bottomBarCountText}>3 / 5</Text>
                 </View>
-                <TouchableOpacity style={styles.joinButton}>
+                <TouchableOpacity
+                    style={styles.joinButton}
+                    onPress={onJoinButtonPress}>
                     <Text style={styles.bottomBarButtonText}>참여하기</Text>
                 </TouchableOpacity>
             </View>

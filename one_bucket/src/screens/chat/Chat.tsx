@@ -26,6 +26,10 @@ import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
+import {
+    getChatLogAfterTimestamp,
+    getTradeInfoOfChatRoom,
+} from '@/apis/chatService'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -71,33 +75,30 @@ const Chat: React.FC = (): React.JSX.Element => {
     )
 
     const isLoadingMore = useRef<Boolean>(false)
-    const [hasMoreMessages, setHasMoreMessages] = useState(true)
+    const [hasMoreMessages, setHasMoreMessagesToRender] = useState(true)
     const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
     const [messageRenderOffset, setMessageRenderOffset] =
         useState(RENDER_AMOUNT)
 
     const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    // TODO: bottomSheetButton 동적 관리 - userId 필요
+    // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
 
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const {
-        dropTable,
-        getCachesByWhereClause,
-        getCachesByKeys,
-        addCache,
-        removeCache,
-    } = useCache<ChatCacheColumns>({
-        tableName: 'chat',
-        columns: {
-            type: 'string',
-            roomId: 'string',
-            sender: 'string',
-            message: 'string',
-            time: 'string',
-        },
-        // debug: true,
-    })
+    const { getCachesByWhereClause, addCache, removeCache } =
+        useCache<ChatCacheColumns>({
+            tableName: 'chat',
+            columns: {
+                type: 'string',
+                roomId: 'string',
+                sender: 'string',
+                message: 'string',
+                time: 'string',
+            },
+            // debug: true,
+        })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -159,8 +160,25 @@ const Chat: React.FC = (): React.JSX.Element => {
             stompClientRef.current = stompClient
         }
 
+        const fetchFreshChats = async () => {
+            var timestamp = lastTimestamp ?? new Date().toISOString()
+            getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
+                const freshMessages = res.map(chatLog => {
+                    return {
+                        type: 'TALK',
+                        roomId: chatLog.roomId,
+                        sender: chatLog.sender,
+                        message: chatLog.message,
+                        time: chatLog.timestamp,
+                    }
+                })
+                addMessagesToCache(freshMessages)
+                return
+            })
+        }
+
         const initChatMessages = async (): Promise<void> => {
-            const messages = await retrieveMessages(
+            const messages = await retrieveMessagesFromCache(
                 messageRenderLimit,
                 0,
                 lastTimestamp ?? new Date().toISOString(),
@@ -170,8 +188,11 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const executeSynchoronously = async () => {
             setLastTimestamp(await getLastTimestampOfChatRoom(params.roomId))
+            await getTradeInfoOfChatRoom(params.roomId)
+            await fetchFreshChats()
             await initChatMessages()
             initStompClient()
+            setIsLoading(false)
         }
         console.log(params.roomId)
         executeSynchoronously()
@@ -181,12 +202,14 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    const retrieveMessages = async (
+    const retrieveMessagesFromCache = async (
         limit: number,
         offset: number,
         lastTimestamp: string,
     ) => {
-        console.log(`<retrieveMessages>, limit: ${limit}, offset: ${offset}`)
+        console.log(
+            `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
+        )
         const messages = await getCachesByWhereClause(
             `WHERE roomId = '${params.roomId}' AND time <= '${
                 lastTimestamp ?? new Date().toISOString()
@@ -207,16 +230,25 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const message = messageBody as ChatCacheColumns
         setChatMessages(prev => [message, ...prev!])
-        addCache({
-            type: messageBody.type,
-            roomId: messageBody.roomId,
-            sender: messageBody.sender,
-            message: messageBody.message,
-            time: messageBody.time,
-        }).then(() => {
+        addMessagesToCache([message]).then(() => {
             setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
-            setChatMessages
         })
+    }
+
+    const addMessagesToCache = async (
+        messages: ChatCacheColumns[],
+    ): Promise<void> => {
+        await Promise.all(
+            messages.map(async message => {
+                await addCache({
+                    type: message.type,
+                    roomId: message.roomId,
+                    sender: message.sender,
+                    message: message.message,
+                    time: message.time,
+                })
+            }),
+        )
     }
 
     const sendMessage = (message: string) => {
@@ -239,13 +271,13 @@ const Chat: React.FC = (): React.JSX.Element => {
         if (isLoadingMore.current || !hasMoreMessages) return
         isLoadingMore.current = true
 
-        const moreMessages = await retrieveMessages(
+        const moreMessages = await retrieveMessagesFromCache(
             messageRenderLimit,
             messageRenderOffset,
             lastTimestamp ?? new Date().toISOString(),
         )
         if (moreMessages == null || moreMessages.length == 0) {
-            setHasMoreMessages(false)
+            setHasMoreMessagesToRender(false)
             isLoadingMore.current = false
             return
         }
@@ -255,7 +287,7 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         if (moreMessages.length < messageRenderLimit) {
             // 더 이상 가져올 메시지가 없음
-            setHasMoreMessages(false)
+            setHasMoreMessagesToRender(false)
         } else {
             // 다음 로드를 위해 limit를 늘림
             setMessageRenderLimit(messageRenderLimit * 2)
@@ -266,12 +298,13 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ BOTTOM SHEET PROPS ############
 
-    const onLeaveButtonPress = () => {
+    const onLeaveButtonPress = async () => {
+        const token = await getAccessToken()
         const messageForm: WsChatMessageBody = {
             type: 'LEAVE',
             roomId: params.roomId,
             sender: useBoundStore.getState().memberInfo?.nickname!,
-            message: '',
+            message: `Bearer ${token}`,
             time: new Date().toISOString(),
         }
         stompClientRef.current?.publish({
@@ -283,7 +316,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }
 
-    // TODO: 버튼들의 기능 구현
     const bottomSheetButtons = [
         {
             text: '신고하기',
@@ -296,24 +328,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             onPress: onLeaveButtonPress,
         },
     ]
-
     // ############ RENDERING PARTS ############
-
-    useEffect(() => {
-        if (chatMessages != null) {
-            // console.log(chatMessages)
-            setIsLoading(false)
-        }
-    }, [chatMessages])
-
-    useEffect(() => {
-        console.log('isloading', isLoading)
-        if (!isLoading) {
-            InteractionManager.runAfterInteractions(() => {
-                // scrollToBottom()
-            })
-        }
-    }, [isLoading])
 
     const scrollToBottom = () => {
         flatListRef.current?.scrollToOffset({ animated: false, offset: 0 })
