@@ -23,6 +23,23 @@ export const getProfile = async () => {
 /**
  * @returns:
  */
+export const delProfile = async () => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete('/member')
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            // 401 unauthorized
+            console.log(error.response)
+            throw error
+        })
+}
+
+/**
+ * @returns:
+ */
 export const getMemberInfo = async () => {
     const authAxios = await createAuthAxios()
     return authAxios
@@ -54,6 +71,9 @@ export const getProfileImage = async () => {
         })
 }
 
+/**
+ * @returns:
+ */
 export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
     console.log('AddProfileRequestBody:', data)

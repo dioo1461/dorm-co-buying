@@ -76,7 +76,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     const [age, setAge] = useState(0)
     const birth = String(year + '-' + String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
     const [bio, setBio] = useState(String(profile!.description))
-    const [isDormitory, setIsDormitory] = useState(false)
 
     const handleNameChange = (text: string) => {
         const cleaned = StringFilter.sqlFilter(text)
@@ -118,7 +117,10 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         </Text>
                     </View>
                 <ScrollView>
-                    <Text style={styles.label}>이름</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.label}>이름</Text>
+                        <Text style={styles.accent}>*</Text>
+                    </View>
                     <TextInput
                             style={styles.input}
                             value={name}
@@ -167,6 +169,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                                 style={styles.birthInput}
                                 value={year}
                                 onChangeText={setYear}
+                                placeholder='YYYY'
                                 keyboardType='number-pad'
                                 textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
@@ -176,6 +179,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                                 style={styles.birthInput}
                                 value={month}
                                 onChangeText={setMonth}
+                                placeholder='MM'
                                 keyboardType='number-pad'
                                 textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
@@ -185,6 +189,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                                 style={styles.birthInput}
                                 value={day}
                                 onChangeText={setDay}
+                                placeholder='DD'
                                 keyboardType='number-pad'
                                 textAlign='center'
                                 placeholderTextColor={themeColor.TEXT_SECONDARY}
@@ -202,23 +207,12 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                         numberOfLines={3}
                     />
                     <TouchableOpacity
-                        onPress={() => setIsDormitory(!isDormitory)}
-                        style={styles.dormContainer}>
-                        <CheckBox
-                            disabled={false}
-                            value={isDormitory}
-                            onValueChange={newVal => setIsDormitory(newVal)}
-                            tintColors={{
-                                true: baseColors.SCHOOL_BG,
-                                false: baseColors.GRAY_1,
-                            }}
-                        />
-                        <Text style={styles.dormText}>
-                            기숙사에 거주 중이신가요?
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.button}
+                        style={{...styles.button,
+                            backgroundColor: !name
+                                ? baseColors.GRAY_2
+                                : baseColors.SCHOOL_BG, 
+                        }}
+                        disabled={!name}
                         onPress={handleSubmit}>
                         <Text style={styles.buttonText}>수정하기</Text>
                     </TouchableOpacity>
@@ -243,6 +237,13 @@ const createStyles = (theme: Icolor) =>
         },
         label: {
             color: theme.TEXT,
+            fontSize: 18,
+            fontFamily: 'NanumGothic-Bold',
+            marginTop: 15,
+            marginBottom: 10,
+        },
+        accent: {
+            color: theme.ACCENT_TEXT,
             fontSize: 18,
             fontFamily: 'NanumGothic-Bold',
             marginTop: 15,

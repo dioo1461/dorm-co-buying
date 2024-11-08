@@ -285,6 +285,11 @@ const BoardPost: React.FC = (): JSX.Element => {
         }
     }
 
+    const likeButtonFill = (liked: boolean) => {
+        if(liked) return 'red'
+        else return 'none'
+    }
+
     if (error) return <Text>Error...</Text>
 
     if (isLoading)
@@ -382,7 +387,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <TouchableOpacity
                         style={styles.commentActionButton}
                         onPress={handleLikeButtonPress}>
-                        <IcThumbUp />
+                        <IcThumbUp fill={likeButtonFill(userLiked.current)}/>
                         <Text
                             style={[
                                 styles.commentActionText,
