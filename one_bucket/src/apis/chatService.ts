@@ -1,15 +1,21 @@
-import { GetChatLogAfterTimestampRequestBody } from '@/data/request/chat/GetChatLogAfterTimestampRequestBody'
+import { GetChatLogAfterTimestampResponse } from '@/data/response/success/chat/GetChatLogAfterTimestampResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 const CHAT_BASE_URL = '/chat'
 
 export const getChatLogAfterTimestamp = async (
-    data: GetChatLogAfterTimestampRequestBody,
-): Promise<any> => {
+    roomId: string,
+    timestamp: string
+): Promise<GetChatLogAfterTimestampResponse> => {
     const authAxios = await createAuthAxios()
 
     return authAxios
-        .get(CHAT_BASE_URL + `/chat/logs`)
+        .get(CHAT_BASE_URL + `/chat/logs`, {
+            params: {
+                roomId: roomId,
+                timestamp: timestamp
+            }
+        })
         .then(res => {
             return res.data
         })
