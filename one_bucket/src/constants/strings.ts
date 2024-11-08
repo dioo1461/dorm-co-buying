@@ -6,7 +6,8 @@ const strings = {
     marketPostScreenName: 'MarketPost',
     tradeScreenName: 'Trade',
     boardScreenName: 'Board',
-    boardCreatePostScreenName: 'BoardCreatePost',
+    boardCreatePostScreenName: 'CreateBoardPost',
+    updateBoardPostScreenName: 'UpdateBoardPost',
     boardPostScreenName: 'BoardPost',
 
     chatListScreenName: 'ChatList',
@@ -58,6 +59,7 @@ const strings = {
     tradeScreenTitle: '중고거래',
     boardScreenTitle: '게시판',
     boardCreatePostScreenTitle: '게시글 작성',
+    updateBoardPostScreenTitle: '게시글 수정',
     boardPostScreenTitle: '게시글',
 
     chatListScreenTitle: '채팅',
@@ -99,5 +101,5 @@ export const signUpErrorMessage = {
 
     duplicatedEmailOrNickname: '중복된 이메일 또는 닉네임이 존재해요.',
 
-    wrongPassword: '비밀번호가 틀렸습니다.'
+    wrongPassword: '비밀번호가 틀렸습니다.',
 }

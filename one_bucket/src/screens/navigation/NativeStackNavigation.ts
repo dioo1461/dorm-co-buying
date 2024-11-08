@@ -36,10 +36,18 @@ export type RootStackParamList = {
     BoardPost: {
         boardId: number
         postId: number
+        performRefresh: boolean
     }
-    BoardCreatePost: {
+    CreateBoardPost: {
         boardName: string
         boardId: number
+    }
+    UpdateBoardPost: {
+        boardId: number
+        postId: number
+        title: string
+        content: string
+        imageUrlList: string[]
     }
 
     Search: undefined

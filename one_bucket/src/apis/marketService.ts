@@ -4,14 +4,14 @@ import { GetMarketPostListResponse } from '@/data/response/success/market/GetMar
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const MARKET_ENDPOINT_PREFIX = 'market-post'
+const MARKET_ENDPOINT_PREFIX = '/market-post'
 
 export const createMarketPost = async (
     data: CreateMarketPostRequestBody,
 ): Promise<CreateMarketPostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`/${MARKET_ENDPOINT_PREFIX}/create`, data)
+        .post(`${MARKET_ENDPOINT_PREFIX}/create`, data)
         .then(res => {
             return res.data
         })
@@ -28,7 +28,7 @@ export const getMarketPostList = async (
 ): Promise<GetMarketPostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`/${MARKET_ENDPOINT_PREFIX}/list/${boardId}`, {
+        .get(`${MARKET_ENDPOINT_PREFIX}/list/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -52,11 +52,23 @@ export const getMarketPost = async (
 ): Promise<GetMarketPostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`/${MARKET_ENDPOINT_PREFIX}/${postId}`)
+        .get(`${MARKET_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })
         .catch(err => {
             console.log('getMarketPost - ' + err)
+        })
+}
+
+export const deleteMarketPost = async (postId: number): Promise<any> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(`${MARKET_ENDPOINT_PREFIX}/delete/${postId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('deleteMarketPost - ' + err)
         })
 }

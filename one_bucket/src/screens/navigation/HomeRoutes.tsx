@@ -1,7 +1,7 @@
 import strings from '@/constants/strings'
-import Board from '@/screens/home/Board'
+import Board from '@/screens/home/board/Board'
 import Home from '@/screens/home/Home'
-import Market from '@/screens/home/Market'
+import Market from '@/screens/home/market/Market'
 
 export const homeRoutes = [
     {

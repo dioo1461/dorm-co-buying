@@ -15,6 +15,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     debug = false,
 }: UseCacheOptions<T>) => {
     const dbRef = useRef<SQLiteDatabase | null>(null)
+    const dbLock = useRef<boolean>(true)
 
     useEffect(() => {
         const initializeDatabase = () => {
@@ -25,8 +26,11 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 },
                 DB => {
                     debug && console.log('[useCache] Database opened')
-                    // setDb(DB)
                     dbRef.current = DB
+                    dbLock.current = true
+                    createTableIfNotExists().then(() => {
+                        dbLock.current = false
+                    })
                 },
                 error => {
                     debug &&
@@ -37,12 +41,6 @@ const useCache = <T extends Record<string, ColumnTypes>>({
 
         initializeDatabase()
     }, [])
-
-    useEffect(() => {
-        if (dbRef.current) {
-            createTableIfNotExists()
-        }
-    }, [dbRef.current])
 
     const mapType = (type: ColumnTypes): string => {
         switch (typeof type) {
@@ -58,12 +56,6 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const createTableIfNotExists = useCallback(async () => {
-        const database = await waitForDb()
-        if (!database) {
-            debug && console.log('[createTableIfNotExists] db is not set yet')
-            return
-        }
-
         const columnDefinitions = ['id INTEGER PRIMARY KEY AUTOINCREMENT']
             .concat(
                 Object.keys(columns).map(
@@ -72,7 +64,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
             )
             .join(', ')
 
-        database.transaction(tx => {
+        await dbRef.current!.transaction(tx => {
             tx.executeSql(
                 `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions})`,
                 [],
@@ -91,7 +83,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }, [tableName, columns, debug])
 
     const getAllCaches = async (): Promise<T[]> => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[getAllCaches] db is not set yet')
             return []
@@ -122,7 +114,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const getCachesByKeys = async (params: Partial<T>) => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[getCachesByKeys] db is not set yet')
             return
@@ -161,7 +153,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const getCachesByWhereClause = async (whereClause: string) => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[getCachesByWhereClause] db is not set yet')
             return []
@@ -199,7 +191,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const addCache = async (data: T) => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[addCache] db is not set yet')
             return
@@ -223,7 +215,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const removeCache = async (params: Partial<T>) => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[removeCache] db is not set yet')
             return
@@ -250,7 +242,7 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     const dropTable = async () => {
-        const database = await waitForDb()
+        const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[dropTable] db is not set yet')
             return
@@ -268,9 +260,9 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const waitForDb = async () => {
-        while (!dbRef.current) {
-            debug && console.log('[waitForDb] Waiting for db...')
+    const waitForDbInitialization = async () => {
+        while (dbLock.current) {
+            debug && console.log('[waitForDbInitialization] Waiting for db...')
             await new Promise(resolve => setTimeout(resolve, 100))
         }
         return dbRef.current

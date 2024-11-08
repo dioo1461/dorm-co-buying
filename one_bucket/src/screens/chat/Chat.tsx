@@ -126,7 +126,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
             ),
         })
-    }, [navigation, params.roomName, themeColor])
+    }, [themeColor])
 
     // ########## STATE MANAGEMENT ##########
     useEffect(() => {
@@ -162,7 +162,9 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const fetchFreshChats = async () => {
             var timestamp = lastTimestamp ?? new Date().toISOString()
+            console.log(timestamp)
             getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
+                console.log('$$$$$$$fresh messages fetched ', res)
                 const freshMessages = res.map(chatLog => {
                     return {
                         type: 'TALK',
@@ -188,8 +190,8 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const executeSynchoronously = async () => {
             setLastTimestamp(await getLastTimestampOfChatRoom(params.roomId))
-            await getTradeInfoOfChatRoom(params.roomId)
             await fetchFreshChats()
+            await getTradeInfoOfChatRoom(params.roomId)
             await initChatMessages()
             initStompClient()
             setIsLoading(false)

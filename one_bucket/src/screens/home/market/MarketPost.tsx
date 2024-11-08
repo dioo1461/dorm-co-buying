@@ -19,7 +19,7 @@ import { TouchableOpacity } from 'react-native'
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
+} from '../../navigation/NativeStackNavigation'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import { RouteProp, useRoute } from '@react-navigation/native'

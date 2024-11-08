@@ -27,23 +27,16 @@ import {
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
+} from '../../navigation/NativeStackNavigation'
+import strings from '@/constants/strings'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
-const BoardCreatePost: React.FC = (): JSX.Element => {
-    const {
-        boardList,
-        themeColor,
-        setThemeColor,
-        pendingBoardRefresh,
-        setPendingBoardRefresh,
-    } = useBoundStore(state => ({
+const UpdateBoardPost: React.FC = (): JSX.Element => {
+    const { boardList, themeColor, setThemeColor } = useBoundStore(state => ({
         boardList: state.boardList,
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
-        pendingBoardRefresh: state.pendingBoardRefresh,
-        setPendingBoardRefresh: state.setPendingBoardRefresh,
     }))
 
     // 다크모드 변경 감지
@@ -56,12 +49,30 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    // navigation 헤더 옵션 설정
+    useEffect(() => {
+        navigation.setOptions({
+            headerStyle: { backgroundColor: themeColor.BG },
+            headerTintColor: themeColor.TEXT,
+            headerTitle: () => (
+                <Text
+                    style={{
+                        color: themeColor.TEXT,
+                        fontSize: 16,
+                        fontFamily: 'NanumGothic-Bold',
+                    }}>
+                    {strings.updateBoardPostScreenTitle}
+                </Text>
+            ),
+        })
+    }, [themeColor])
+
     const styles = createStyles(themeColor)
-    type BoardCreatePostRouteProp = RouteProp<
+    type UpdateBoardPostRouteProp = RouteProp<
         RootStackParamList,
-        'BoardCreatePost'
+        'UpdateBoardPost'
     >
-    const { params } = useRoute<BoardCreatePostRouteProp>()
+    const { params } = useRoute<UpdateBoardPostRouteProp>()
 
     const navigation = stackNavigation()
 
@@ -70,27 +81,18 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [inputHeight, setInputHeight] = useState(200)
     const [preventMultPost, setPreventMultPost] = useState(true)
 
-    const [imageUriList, setImageUriList] = useState<string[]>([])
-
-    const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState<number>(-1)
+    const [imageUriList, setImageUriList] = useState<string[][]>([])
 
     // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
 
-    const [dropdownItems, setDropdownItems] = useState<
-        { label: string; value: number }[]
-    >([])
-
     useEffect(() => {
-        setDropdownItems(
-            boardList.map(board => {
-                return {
-                    label: board.name,
-                    value: board.id,
-                }
-            }),
-        )
-        setDropdownValue(params.boardId)
+        setTitle(params.title)
+        setContent(params.content)
+        const formattedImageUrlList = params.imageUrlList.map((url: string) => [
+            url,
+            'server',
+        ])
+        setImageUriList(formattedImageUrlList)
     }, [])
 
     const addImage = () => {
@@ -100,10 +102,10 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
-            const newImageUriList: string[] = []
+            const newImageUriList: string[][] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    newImageUriList.push(asset.uri)
+                    newImageUriList.push([asset.uri, 'local'])
                 }
             })
             setImageUriList([...imageUriList, ...newImageUriList])
@@ -125,7 +127,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
 
     const onSubmit = async () => {
         let submitForm: CreateBoardPostRequestBody = {
-            boardId: dropdownValue,
+            boardId: params.boardId,
             title: title,
             text: content,
         }
@@ -140,7 +142,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                     const formData = new FormData()
                     imageUriList.forEach((value, index) => {
                         // 파일 정보 추출
-                        const filename = value.split('/').pop() // 파일 이름 추출
+                        const filename = value[0].split('/').pop() // 파일 이름 추출
                         const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
                         // FormData에 파일 추가
                         formData.append('file', {
@@ -166,23 +168,6 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            <View style={{ margin: 10, marginTop: 20 }}>
-                <DropDownPicker
-                    open={dropdownOpen}
-                    value={dropdownValue}
-                    items={dropdownItems}
-                    setOpen={setDropdownOpen}
-                    setValue={setDropdownValue}
-                    setItems={setDropdownItems}
-                    placeholder='게시판을 선택해 주세요'
-                    // placeholderStyle={styles.dropdownPlaceholder}
-                    labelStyle={styles.dropdownLabel}
-                    style={styles.dropdownContainer}
-                    // textStyle={styles.dropdownLabel}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    theme={themeColor === lightColors ? 'LIGHT' : 'DARK'}
-                />
-            </View>
             <View style={styles.bodyContainer}>
                 <TextInput
                     style={styles.titleTextInput}
@@ -214,7 +199,7 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                         <View key={index} style={styles.imageContainer}>
                             <TouchableOpacity>
                                 <Image
-                                    source={{ uri: uri }}
+                                    source={{ uri: uri[0] }}
                                     style={styles.image}
                                 />
                             </TouchableOpacity>
@@ -239,17 +224,19 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                 </ScrollView>
             </View>
             <View style={styles.postButtonContainer}>
-                <TouchableNativeFeedback 
+                <TouchableNativeFeedback
                     disabled={!!(!title || !content || !preventMultPost)}
-                    onPress={()=>{
+                    onPress={() => {
                         onSubmit()
                         setPreventMultPost(false)
                     }}>
-                    <View style={{...styles.postButton, 
-                        backgroundColor:
-                            !title || !content
-                                ? baseColors.GRAY_2
-                                : baseColors.SCHOOL_BG,
+                    <View
+                        style={{
+                            ...styles.postButton,
+                            backgroundColor:
+                                !title || !content
+                                    ? baseColors.GRAY_2
+                                    : baseColors.SCHOOL_BG,
                         }}>
                         <Text style={styles.postButtonText}>게시</Text>
                     </View>
@@ -265,22 +252,6 @@ const createStyles = (theme: Icolor) =>
         bodyContainer: {
             marginHorizontal: 20,
         },
-        dropdownContainer: {
-            backgroundColor:
-                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_0,
-            borderWidth: theme === lightColors ? 1 : 0,
-            borderColor: baseColors.GRAY_1,
-        },
-        dropdownPlaceholder: {
-            color: theme.TEXT_SECONDARY,
-            fontFamily: 'NanumGothic',
-            fontSize: 14,
-        },
-        dropdownLabel: {
-            color: theme.TEXT,
-            fontFamily: 'NanumGothic',
-            fontSize: 14,
-        },
         titleTextInput: {
             color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
@@ -288,6 +259,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             width: '100%',
             borderBottomWidth: 1,
+            marginTop: 16,
             marginVertical: 0,
             marginBottom: 10,
             backgroundColor: 'transparent',
@@ -362,4 +334,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default BoardCreatePost
+export default UpdateBoardPost
