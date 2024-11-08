@@ -82,23 +82,18 @@ const Chat: React.FC = (): React.JSX.Element => {
     const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const {
-        dropTable,
-        getCachesByWhereClause,
-        getCachesByKeys,
-        addCache,
-        removeCache,
-    } = useCache<ChatCacheColumns>({
-        tableName: 'chat',
-        columns: {
-            type: 'string',
-            roomId: 'string',
-            sender: 'string',
-            message: 'string',
-            time: 'string',
-        },
-        // debug: true,
-    })
+    const { getCachesByWhereClause, addCache, removeCache } =
+        useCache<ChatCacheColumns>({
+            tableName: 'chat',
+            columns: {
+                type: 'string',
+                roomId: 'string',
+                sender: 'string',
+                message: 'string',
+                time: 'string',
+            },
+            // debug: true,
+        })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -162,8 +157,7 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const fetchFreshChats = async () => {
             var timestamp = lastTimestamp ?? new Date().toISOString()
-            getChatLogAfterTimestamp(params.roomId, timestamp)
-            .then(res => {
+            getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
                 const freshMessages = res.map(chatLog => {
                     return {
                         type: 'TALK',
@@ -176,7 +170,6 @@ const Chat: React.FC = (): React.JSX.Element => {
                 addMessagesToCache(freshMessages)
                 return
             })
-
         }
 
         const initChatMessages = async (): Promise<void> => {
@@ -207,7 +200,9 @@ const Chat: React.FC = (): React.JSX.Element => {
         offset: number,
         lastTimestamp: string,
     ) => {
-        console.log(`<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`)
+        console.log(
+            `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
+        )
         const messages = await getCachesByWhereClause(
             `WHERE roomId = '${params.roomId}' AND time <= '${
                 lastTimestamp ?? new Date().toISOString()
@@ -233,7 +228,9 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const addMessagesToCache = async (messages: ChatCacheColumns[]) : Promise<void>=> {
+    const addMessagesToCache = async (
+        messages: ChatCacheColumns[],
+    ): Promise<void> => {
         await Promise.all(
             messages.map(async message => {
                 await addCache({
@@ -294,12 +291,13 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ BOTTOM SHEET PROPS ############
 
-    const onLeaveButtonPress = () => {
+    const onLeaveButtonPress = async () => {
+        const token = await getAccessToken()
         const messageForm: WsChatMessageBody = {
             type: 'LEAVE',
             roomId: params.roomId,
             sender: useBoundStore.getState().memberInfo?.nickname!,
-            message: '',
+            message: `Bearer ${token}`,
             time: new Date().toISOString(),
         }
         stompClientRef.current?.publish({

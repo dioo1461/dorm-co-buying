@@ -1,12 +1,14 @@
-import { JoinTradeResponse } from "@/data/response/success/market/JoinTradeResponse"
-import { createAuthAxios } from "@/utils/axiosFactory"
+import { JoinTradeResponse } from '@/data/response/success/market/JoinTradeResponse'
+import { createAuthAxios } from '@/utils/axiosFactory'
 
 const TRADE_ENDPOINT_PREFIX = 'trade'
 
-export const joinTrade = async (postId: number): Promise<JoinTradeResponse> => {
-    const  authAxios = await createAuthAxios()
+export const joinTrade = async (
+    tradeId: number,
+): Promise<JoinTradeResponse> => {
+    const authAxios = await createAuthAxios()
     return authAxios
-        .post(`/${TRADE_ENDPOINT_PREFIX}/join/${postId}`)
+        .post(`/${TRADE_ENDPOINT_PREFIX}/join/${tradeId}`)
         .then(res => {
             return res.data
         })

@@ -1,11 +1,12 @@
 import { GetChatLogAfterTimestampResponse } from '@/data/response/success/chat/GetChatLogAfterTimestampResponse'
+import { GetChatRoomTradeInfoResponse } from '@/data/response/success/chat/GetChatRoomTradeInfoResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 const CHAT_BASE_URL = '/chat'
 
 export const getChatLogAfterTimestamp = async (
     roomId: string,
-    timestamp: string
+    timestamp: string,
 ): Promise<GetChatLogAfterTimestampResponse> => {
     const authAxios = await createAuthAxios()
 
@@ -13,8 +14,8 @@ export const getChatLogAfterTimestamp = async (
         .get(CHAT_BASE_URL + `/chat/logs`, {
             params: {
                 roomId: roomId,
-                timestamp: timestamp
-            }
+                timestamp: timestamp,
+            },
         })
         .then(res => {
             return res.data
@@ -48,6 +49,32 @@ export const quitChatRoom = async (chatRoomId: string): Promise<any> => {
                 roomId: chatRoomId,
             },
         })
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const destroyChatRoom = async (chatRoomId: string): Promise<any> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(CHAT_BASE_URL + `/chat/bomb/${chatRoomId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const getChatRoomTradeInfo = async (
+    chatRoomId: string,
+): Promise<GetChatRoomTradeInfoResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(CHAT_BASE_URL + `/chat/trade/${chatRoomId}`)
         .then(res => {
             return res.data
         })
