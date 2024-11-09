@@ -13,14 +13,14 @@ import * as RNFS from 'react-native-fs'
 interface Props {
     imageStyle: StyleProp<ImageStyle>
     imageUrl: string
-    externalUrl?: boolean
+    isExternalUrl?: boolean
     onLoad?: (res: Promise<void>) => void
 }
 
 export const CachedImage = ({
     imageStyle,
     imageUrl,
-    externalUrl,
+    isExternalUrl = false,
     onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
@@ -47,9 +47,9 @@ export const CachedImage = ({
             })
             .then(() => {
                 // 파일 다운로드
-                const downloadUrl = externalUrl
+                const downloadUrl = isExternalUrl
                     ? imageUrl
-                    : STORAGE_BASE_URL + imageUrl
+                    : STORAGE_BASE_URL + '/' + imageUrl
                 return RNFS.downloadFile({
                     fromUrl: downloadUrl,
                     toFile: path,
