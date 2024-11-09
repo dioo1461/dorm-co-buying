@@ -116,7 +116,6 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                         <Text style={styles.label}>이름</Text>
                         <Text style={styles.accent}>*</Text>
                     </View>
-                    
                     <TextInput
                             style={styles.input}
                             value={name}
@@ -124,7 +123,10 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                             placeholder='이름'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
                         />
-                    <Text style={styles.label}>성별</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.label}>성별</Text>
+                        <Text style={styles.accent}>*</Text>
+                    </View>
                     <View style={{flexDirection: "row"}}>
                         <TouchableOpacity
                             onPress={() => setMale(true)}
@@ -159,7 +161,10 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.label}>생년월일</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.label}>생년월일</Text>
+                        <Text style={styles.accent}>*</Text>
+                    </View>
                     <View style={{flexDirection:"row", alignItems: 'center'}}>
                         <TextInput
                                 style={styles.birthInput}
@@ -208,7 +213,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                                 ? baseColors.GRAY_2
                                 : baseColors.SCHOOL_BG, 
                         }}
-                        disabled={!name}
+                        disabled={ !name || !year || !month || !day }
                         onPress={handleSubmit}>
                         <Text style={styles.buttonText}>완료</Text>
                     </TouchableOpacity>

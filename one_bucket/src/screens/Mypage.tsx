@@ -84,7 +84,7 @@ const Mypage = (): React.JSX.Element => {
 
     const delAccount = async () => {
         if(data?.nickname=='test1') {
-            Alert.alert('관리자 계정입니다.')
+            Alert.alert('관리자 계정은 삭제할 수 없습니다.')
             return
         } // 공용계정 삭제 방지
         delProfile()
@@ -139,10 +139,12 @@ const Mypage = (): React.JSX.Element => {
                 </View>
                 <TouchableOpacity 
                     style={styles.profileButton}
+                    /*
                     onPress={()=>{
                         if(data?.university == 'null') {openGoAuth()}
                         else {handleProfileDetailNavigation()}
-                    }}>
+                    }}> */
+                     onPress={handleProfileDetailNavigation}>
                     <Text style={styles.profileLink}>프로필 보기</Text>
                 </TouchableOpacity>
                 <Modal
@@ -180,102 +182,6 @@ const Mypage = (): React.JSX.Element => {
                     {/* <Icon name='description' size={24} color='black' /> */}
                     <Text style={styles.activityText}>내가 쓴 글</Text>
                 </TouchableOpacity>
-            </View>
-            <View style={styles.container_account}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={{...styles.authContainer,
-                        backgroundColor: (data?.university == 'null') ? 
-                        "rgba(255, 0, 0, 0.2)" : themeColor.BG
-                    }}>
-                        <TouchableOpacity 
-                            style={{...styles.contextContainer, flexDirection: "row"}}
-                            onPress={() => navigation.navigate('SchoolAuth1')}
-                        >
-                            <Text style={styles.contextLabel}>학교 인증</Text>
-                            {authCompletedText(data?.university)}
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity 
-                        style={styles.contextContainer}
-                        onPress={() => navigation.navigate('ChangePw')}    
-                        >
-                        <Text style={styles.contextLabel}>비밀번호 변경</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.contextContainer}
-                        onPress={openLogout}>
-                        <Text style={styles.contextLabel}>로그아웃</Text>
-                    </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={logoutVisible}
-                        onRequestClose={closeLogout}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text>{`정말 로그아웃 하시겠습니까?\n`}</Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text>예</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                    <TouchableOpacity 
-                        style={styles.contextContainer}
-                        onPress={openDelID}>
-                        <Text
-                            style={[
-                                styles.contextLabel,
-                                { color: baseColors.RED },
-                            ]}>
-                            회원탈퇴
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={delIDVisible}
-                        onRequestClose={closeDelID}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={{
-                                    color: baseColors.RED,
-                                    textAlign: 'center',
-                                    }}>
-                                    {`정말 회원탈퇴 하시겠습니까?\n삭제된 회원정보는 되돌릴 수 없습니다.\n`}
-                                </Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity 
-                                        style={styles.confirmButton} 
-                                        onPress={()=>{
-                                            setCountDelID(countDelID => countDelID - 1)
-                                            if(countDelID == 1) {
-                                                // 회원탈퇴
-                                                delAccount()
-                                                closeDelID()
-                                                setCountDelID(3)
-                                            }
-                                        }}>
-                                        <Text style={{fontWeight: 'bold'}}>{`예(${countDelID}회 터치)`}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
-                                        style={styles.cancelButton} 
-                                        onPress={()=>{
-                                            closeDelID()
-                                            setCountDelID(3)
-                                        }}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                </ScrollView>
             </View>
         </View>
     )

@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from 'react'
 import {
     ActivityIndicator,
+    Alert,
     Appearance,
     Modal,
     ScrollView,
@@ -19,8 +20,10 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
+import { delProfile } from '@/apis/profileService'
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
@@ -88,6 +91,21 @@ const Setting: React.FC = (): React.JSX.Element => {
         )
     }
 
+    const delAccount = async () => {
+        if(data?.nickname=='test1') {
+            Alert.alert('관리자 계정은 삭제할 수 없습니다.')
+            return
+        } // 공용계정 삭제 방지
+        delProfile()
+            .then(res=>{
+                onLogOut(false)
+                Toast.show({ text1: '계정이 삭제되었습니다.' })
+            })
+            .catch(err=>{
+                console.log('delAccount: ',err)
+            })
+    }
+
     useEffect(() => {
         const setAlertParameters = async () => {
             setIsAlertSoundEnabled(
@@ -126,7 +144,6 @@ const Setting: React.FC = (): React.JSX.Element => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View>
-                    {/*
                     <Text style={styles.subjectLabel}>계정</Text>
                     <View style={{...styles.authContainer,
                         backgroundColor: (data?.university == 'null') ? 
@@ -200,7 +217,8 @@ const Setting: React.FC = (): React.JSX.Element => {
                                         onPress={()=>{
                                             setCountDelID(countDelID => countDelID - 1)
                                             if(countDelID == 1) {
-                                                closeDelID() // 회원탈퇴
+                                                delAccount() // 회원탈퇴
+                                                closeDelID()
                                                 setCountDelID(3)
                                             }
                                         }}>
@@ -218,7 +236,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                             </View>
                         </View>
                     </Modal>
-                    <View style={styles.line} /> */}
+                    <View style={styles.line} />
                     <Text style={styles.subjectLabel}>알림 설정</Text>
                     <TouchableOpacity 
                         style={styles.contextContainer}

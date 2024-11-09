@@ -11,6 +11,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    ToastAndroid,
     View,
 } from 'react-native'
 import BouncyCheckbox, {
@@ -110,6 +111,10 @@ const Login: React.FC = (): React.JSX.Element => {
                         if (easterEgg == 1) {
                             setEEVisible(true)
                             setEE(10)
+                            ToastAndroid.show(
+                                'LSH SSM LJY HSH',
+                                ToastAndroid.SHORT,
+                            )
                         }
                     }}
                     activeOpacity={1}>

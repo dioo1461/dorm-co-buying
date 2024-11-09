@@ -93,7 +93,9 @@ function App(): React.JSX.Element {
                     setMemberInfo(memberInfo) // memberInfo 저장
                     setAuthed(0)
                 }
-
+                if (memberInfo.university == 'null') {
+                    setAuthed(1)
+                }
                 // Step 2: getBoardList 요청 (memberInfo가 성공한 경우에 실행)
                 const boardList = await getBoardList()
                 setBoardList(boardList)
@@ -429,6 +431,7 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.boardPostScreenName}
                             component={BoardPost}
+                            options={{title: strings.boardPostScreenTitle}}
                         />
                         <Stack.Screen
                             name={strings.imageEnlargementScreenName}

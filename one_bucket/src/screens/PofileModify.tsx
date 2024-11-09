@@ -128,7 +128,10 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                             placeholder='이름'
                             placeholderTextColor={themeColor.TEXT_SECONDARY}
                         />
-                    <Text style={styles.label}>성별</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.label}>성별</Text>
+                        <Text style={styles.accent}>*</Text>
+                    </View>
                     <View style={{flexDirection: "row"}}>
                         <TouchableOpacity
                             onPress={() => setMale(true)}
@@ -163,7 +166,10 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.label}>생년월일</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.label}>생년월일</Text>
+                        <Text style={styles.accent}>*</Text>
+                    </View>
                     <View style={{flexDirection:"row", alignItems: 'center'}}>
                         <TextInput
                                 style={styles.birthInput}
@@ -212,7 +218,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                                 ? baseColors.GRAY_2
                                 : baseColors.SCHOOL_BG, 
                         }}
-                        disabled={!name}
+                        disabled={ !name || !year || !month || !day }
                         onPress={handleSubmit}>
                         <Text style={styles.buttonText}>수정하기</Text>
                     </TouchableOpacity>

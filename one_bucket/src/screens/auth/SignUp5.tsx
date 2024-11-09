@@ -185,7 +185,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
     }
 
     return (
-        <View style={signUpStyles.container}>
+        <ScrollView style={signUpStyles.container}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'position'}>
                 <View>
@@ -403,7 +403,7 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
             </KeyboardAvoidingView>
-        </View>
+        </ScrollView>
     )
 }
 
