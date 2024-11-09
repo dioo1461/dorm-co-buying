@@ -135,6 +135,20 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const onSuccessCallback = (data: GetBoardPostResponse) => {
         userLiked.current = data.userAlreadyLikes
+        console.log('onSuccessCallback', data)
+
+        const onModifyPostButtonPress = () => {
+            navigation.navigate('UpdateBoardPost', {
+                postId: params.postId,
+                boardId: params.boardId,
+                title: data!.title,
+                content: data!.text,
+                imageUrlList: data!.imageUrls,
+            })
+        }
+        const onDeletePostButtonPress = () => {}
+        const onReportPostButtonPress = () => {}
+
         setLikeAdded(0)
         if (data.authorNickname == memberInfo!.nickname) {
             setBottomSheetButtonProps([
@@ -159,18 +173,6 @@ const BoardPost: React.FC = (): JSX.Element => {
             ])
         }
     }
-
-    const onModifyPostButtonPress = () => {
-        navigation.navigate('UpdateBoardPost', {
-            postId: params.postId,
-            boardId: params.boardId,
-            title: data!.title,
-            content: data!.text,
-            imageUrlList: data!.imageUrls,
-        })
-    }
-    const onDeletePostButtonPress = () => {}
-    const onReportPostButtonPress = () => {}
 
     const { data, isLoading, error, refetch } = queryBoardPost(
         params.postId,
