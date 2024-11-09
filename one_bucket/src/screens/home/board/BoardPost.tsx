@@ -1,4 +1,9 @@
-import { addComment, addLike, deleteLike } from '@/apis/boardService'
+import {
+    addComment,
+    addLike,
+    deleteLike,
+    deletePost,
+} from '@/apis/boardService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
@@ -146,7 +151,11 @@ const BoardPost: React.FC = (): JSX.Element => {
                 imageUrlList: data!.imageUrls,
             })
         }
-        const onDeletePostButtonPress = () => {}
+        const onDeletePostButtonPress = () => {
+            deletePost(params.postId).then(() => {
+                navigation.navigate('Board', { pendingRefresh: true })
+            })
+        }
         const onReportPostButtonPress = () => {}
 
         setLikeAdded(0)
