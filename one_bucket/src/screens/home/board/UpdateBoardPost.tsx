@@ -18,7 +18,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker'
 import { TextInput } from 'react-native-gesture-handler'
 import {
     ImageLibraryOptions,
@@ -29,6 +28,7 @@ import {
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
 import strings from '@/constants/strings'
+import { CachedImage } from '@/components/CachedImage'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
@@ -81,18 +81,21 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
     const [inputHeight, setInputHeight] = useState(200)
     const [preventMultPost, setPreventMultPost] = useState(true)
 
-    const [imageUriList, setImageUriList] = useState<string[][]>([])
+    interface UpdateImageProps {
+        uri: string
+        from: 'server' | 'local'
+    }
 
-    // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
+    const [imageUriList, setImageUriList] = useState<UpdateImageProps[]>(
+        params.imageUrlList.map((url: string) => ({
+            uri: url,
+            from: 'server',
+        })),
+    )
 
     useEffect(() => {
         setTitle(params.title)
         setContent(params.content)
-        const formattedImageUrlList = params.imageUrlList.map((url: string) => [
-            url,
-            'server',
-        ])
-        setImageUriList(formattedImageUrlList)
     }, [])
 
     const addImage = () => {
@@ -102,10 +105,10 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
         }
 
         launchImageLibrary(options, response => {
-            const newImageUriList: string[][] = []
+            const newImageUriList: UpdateImageProps[] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    newImageUriList.push([asset.uri, 'local'])
+                    newImageUriList.push({ uri: asset.uri, from: 'local' })
                 }
             })
             setImageUriList([...imageUriList, ...newImageUriList])
@@ -142,7 +145,7 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                     const formData = new FormData()
                     imageUriList.forEach((value, index) => {
                         // 파일 정보 추출
-                        const filename = value[0].split('/').pop() // 파일 이름 추출
+                        const filename = value.split('/').pop() // 파일 이름 추출
                         const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
                         // FormData에 파일 추가
                         formData.append('file', {
@@ -151,7 +154,6 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                             type: `image/${fileExtension}`, // MIME 타입 설정
                         })
                     })
-                    console.log(res.id, formData)
                     saveImage(res.id, formData)
                 }
                 setTimeout(() => {
@@ -195,13 +197,20 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ flexGrow: 1 }}
                     style={styles.imageScrollViewContainer}>
-                    {imageUriList.map((uri, index) => (
+                    {imageUriList.map((updateImageProp, index) => (
                         <View key={index} style={styles.imageContainer}>
                             <TouchableOpacity>
-                                <Image
-                                    source={{ uri: uri[0] }}
-                                    style={styles.image}
-                                />
+                                {updateImageProp.from === 'server' ? (
+                                    <CachedImage
+                                        imageUrl={updateImageProp.uri}
+                                        imageStyle={styles.image}
+                                    />
+                                ) : (
+                                    <Image
+                                        source={{ uri: updateImageProp.uri }}
+                                        style={styles.image}
+                                    />
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.closeButton}

@@ -2,6 +2,7 @@ import { AddCommentRequestBody } from '@/data/request/board/AddCommentRequestBod
 import { AddReplyCommentRequestBody } from '@/data/request/board/AddReplyCommentRequestBody'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { SaveImageRequestBody } from '@/data/request/board/SaveImageRequestBody'
+import { UpdateBoardPostRequestBody } from '@/data/request/board/UpdateBoardPostRequestBody'
 import { CreateBoardPostResponse } from '@/data/response/success/board/CreateBoardResponse'
 import { GetBoardListResponse } from '@/data/response/success/board/GetBoardListResponse'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
@@ -13,6 +14,7 @@ import { createAuthAxios } from '@/utils/axiosFactory'
  * @returns: 요청 성공시 true, 요청 실패시 false 반환
  */
 
+// ########## GET ##########
 export const getBoardList = async (): Promise<GetBoardListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
@@ -23,44 +25,6 @@ export const getBoardList = async (): Promise<GetBoardListResponse> => {
         .catch(error => {
             console.log('getBoardList - ' + error)
             throw error
-        })
-}
-
-export const createBoardPost = async (
-    data: CreateBoardPostRequestBody,
-): Promise<CreateBoardPostResponse> => {
-    const authAxios = await createAuthAxios()
-    return authAxios
-        .post('/post/create', data)
-        .then(response => {
-            return response.data
-        })
-        .catch(error => {
-            console.log('createBoardPost - ' + error)
-            // 401 unauthorized
-            if (error.response.status === 401 || 403) {
-                // onLogOut(false)
-            }
-            throw error
-        })
-}
-
-export const saveImage = async (postId: number, data: any) => {
-    const token = await getAccessToken()
-    const authAxios = await createAuthAxios({
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-        },
-    })
-    return authAxios
-        .post(`/post/save/image/${postId}`, data)
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            console.log(`saveImage Error - ${err}`)
-            throw err
         })
 }
 
@@ -107,6 +71,119 @@ export const getBoardPostList = async (
         })
 }
 
+// ########## POST ##########
+
+export const createBoardPost = async (
+    data: CreateBoardPostRequestBody,
+): Promise<CreateBoardPostResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/post/create', data)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('createBoardPost - ' + error)
+            // 401 unauthorized
+            if (error.response.status === 401 || 403) {
+                // onLogOut(false)
+            }
+            throw error
+        })
+}
+
+export const updatePost = async (
+    data: UpdateBoardPostRequestBody,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(`/post/update`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('updatePost - ' + err)
+            throw err
+        })
+}
+
+export const saveImage = async (postId: number, data: FormData) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`/post/save/image/${postId}`, data)
+        .then(res => {
+            console.log('saveImage Success', res.data)
+            return res.data
+        })
+        .catch(err => {
+            console.log(`saveImage Error - ${err}`)
+            throw err
+        })
+}
+
+export const updatePostImageReset = async (postId: number, data: any) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`/post/update/image/update/${postId}`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`updateImage : update Error - ${err}`)
+            throw err
+        })
+}
+
+export const updatePostImageAdd = async (postId: number, data: any) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`/post/update/image/add/${postId}`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`updateImage : add Error - ${err}`)
+            throw err
+        })
+}
+
+export const updatePostImageDelete = async (postId: number, data: any) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`/post/update/image/delete/${postId}`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`updateImage : delete Error - ${err}`)
+            throw err
+        })
+}
+
 export const addComment = async (
     data: AddCommentRequestBody,
 ): Promise<{ message: string }> => {
@@ -150,20 +227,7 @@ export const addLike = async (postId: number): Promise<{ message: string }> => {
         })
 }
 
-export const deleteLike = async (
-    postId: number,
-): Promise<{ message: string }> => {
-    const authAxios = await createAuthAxios()
-    return authAxios
-        .delete(`/post/${postId}/like`)
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            console.log('deleteLike - ' + err)
-            throw err
-        })
-}
+// ########## DELETE ##########
 
 export const deletePost = async (
     postId: number,
@@ -176,6 +240,21 @@ export const deletePost = async (
         })
         .catch(err => {
             console.log('deletePost - ' + err)
+            throw err
+        })
+}
+
+export const deleteLike = async (
+    postId: number,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(`/post/${postId}/like`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('deleteLike - ' + err)
             throw err
         })
 }

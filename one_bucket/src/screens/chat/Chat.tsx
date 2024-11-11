@@ -68,7 +68,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     const [isLoading, setIsLoading] = useState(true)
-    const [lastTimestamp, setLastTimestamp] = useState<string | null>(null)
+    const lastTimestamp = useRef<string | null>(null)
     const [message, setMessage] = useState('')
     const [chatMessages, setChatMessages] = useState<ChatCacheColumns[] | null>(
         null,
@@ -161,8 +161,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         const fetchFreshChats = async () => {
-            var timestamp = lastTimestamp ?? new Date().toISOString()
-            console.log(timestamp)
+            var timestamp = lastTimestamp.current ?? new Date().toISOString()
             getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
                 console.log('$$$$$$$fresh messages fetched ', res)
                 const freshMessages = res.map(chatLog => {
@@ -183,17 +182,21 @@ const Chat: React.FC = (): React.JSX.Element => {
             const messages = await retrieveMessagesFromCache(
                 messageRenderLimit,
                 0,
-                lastTimestamp ?? new Date().toISOString(),
+                lastTimestamp.current ?? new Date().toISOString(),
             )
             if (messages) setChatMessages(messages)
         }
 
         const executeSynchoronously = async () => {
-            setLastTimestamp(await getLastTimestampOfChatRoom(params.roomId))
-            await fetchFreshChats()
-            await getTradeInfoOfChatRoom(params.roomId)
+            lastTimestamp.current = await getLastTimestampOfChatRoom(
+                params.roomId,
+            )
+            await Promise.all([
+                fetchFreshChats(),
+                getTradeInfoOfChatRoom(params.roomId),
+            ])
             await initChatMessages()
-            initStompClient()
+            await initStompClient()
             setIsLoading(false)
         }
         console.log(params.roomId)
@@ -276,7 +279,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         const moreMessages = await retrieveMessagesFromCache(
             messageRenderLimit,
             messageRenderOffset,
-            lastTimestamp ?? new Date().toISOString(),
+            lastTimestamp.current ?? new Date().toISOString(),
         )
         if (moreMessages == null || moreMessages.length == 0) {
             setHasMoreMessagesToRender(false)
