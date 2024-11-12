@@ -83,12 +83,10 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
 
     useEffect(() => {
         setDropdownItems(
-            boardList.map(board => {
-                return {
-                    label: board.name,
-                    value: board.id,
-                }
-            }),
+            boardList.filter(board => board.type !== 'marketPost')
+            .map(board => (
+                { label: board.name, value: board.id }
+            ))
         )
         setDropdownValue(params.boardId)
     }, [])
@@ -133,9 +131,6 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
         createBoardPost(submitForm)
             .then(res => {
                 console.log('board post created')
-                // setPendingBoardRefresh(true)
-                // useBoundStore.setState({ pendingBoardRefresh: true })
-                // params.setPendingRefresh(true)
                 if (imageUriList.length > 0) {
                     const formData = new FormData()
                     imageUriList.forEach((value, index) => {
