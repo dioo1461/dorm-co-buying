@@ -84,6 +84,7 @@ const Board: React.FC = (): JSX.Element => {
                     background={touchableNativeFeedbackBg()}
                     onPress={() =>
                         navigation.navigate('BoardPost', {
+                            boardName: boardList[currentBoardIndex].name,
                             boardId: data.boardId,
                             postId: data.postId,
                             performRefresh: false,

@@ -152,6 +152,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
                         pendingRefresh: true,
                     })
                     navigation.navigate('BoardPost', {
+                        boardName: params.boardName,
                         boardId: dropdownValue,
                         postId: res.id,
                         performRefresh: true,

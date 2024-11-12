@@ -34,6 +34,7 @@ export type RootStackParamList = {
         pendingRefresh: boolean
     }
     BoardPost: {
+        boardName: string
         boardId: number
         postId: number
         performRefresh: boolean

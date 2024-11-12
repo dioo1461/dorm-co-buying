@@ -73,6 +73,7 @@ const BoardPost: React.FC = (): JSX.Element => {
     const navigation = stackNavigation()
     useLayoutEffect(() => {
         navigation.setOptions({
+            title: params.boardName,
             headerLeft: () => (
                 <TouchableOpacity
                     style={{ marginLeft: 16 }}
@@ -87,6 +88,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
+            
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
