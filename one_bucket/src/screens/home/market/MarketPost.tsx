@@ -130,7 +130,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled>
-                    {data?.imageUrls?.map((url, index) => (
+                    {data!.imageUrls?.map((url, index) => (
                         <View key={index} style={styles.imageContainer}>
                             <CachedImage
                                 imageStyle={{
