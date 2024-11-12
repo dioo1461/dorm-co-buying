@@ -81,6 +81,26 @@ export const updateMarketPost = async (
         })
 }
 
+export const saveMarketPostImage = async (postId: number, data: FormData) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`${MARKET_ENDPOINT_PREFIX}/save/image/${postId}`, data)
+        .then(res => {
+            console.log('saveImage Success', res.data)
+            return res.data
+        })
+        .catch(err => {
+            console.log(`saveImage Error - ${err}`)
+            throw err
+        })
+}
+
 export const updateMarketPostImageReset = async (postId: number, data: any) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({

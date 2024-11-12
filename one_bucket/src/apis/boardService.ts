@@ -107,7 +107,7 @@ export const updateBoardPost = async (
         })
 }
 
-export const saveImage = async (postId: number, data: FormData) => {
+export const saveBoardPostImage = async (postId: number, data: FormData) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({
         headers: {

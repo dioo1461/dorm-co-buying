@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from 'react'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { createMarketPost } from '@/apis/marketService'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 interface Props {
     enabled: boolean
@@ -35,11 +36,13 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
         setChatName(submitForm.tradeCreateDto.item)
     }, [submitForm])
 
+    const navigation = stackNavigation()
+
     const onSubmit = () => {
         submitForm.chatRoomName = chatName
         createMarketPost(submitForm)
             .then(res => {
-                onSubmitComplete(res.id)
+                onSubmitComplete(res.postId)
             })
             .catch(err => {})
     }
@@ -56,7 +59,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                     <TextInput
                         value={chatName}
                         style={styles.chatNameInputText}
-                        onChangeText={text => console.log(text)}
+                        onChangeText={text => setChatName}
                     />
                     <TouchableOpacity
                         style={styles.submitButton}

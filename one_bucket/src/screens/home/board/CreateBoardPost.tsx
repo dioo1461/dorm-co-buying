@@ -1,4 +1,4 @@
-import { createBoardPost, saveImage } from '@/apis/boardService'
+import { createBoardPost, saveBoardPostImage } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
@@ -83,10 +83,9 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
 
     useEffect(() => {
         setDropdownItems(
-            boardList.filter(board => board.type !== 'marketPost')
-            .map(board => (
-                { label: board.name, value: board.id }
-            ))
+            boardList
+                .filter(board => board.type !== 'marketPost')
+                .map(board => ({ label: board.name, value: board.id })),
         )
         setDropdownValue(params.boardId)
     }, [])
@@ -145,7 +144,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
                         })
                     })
                     console.log(res.id, formData)
-                    saveImage(res.id, formData)
+                    saveBoardPostImage(res.id, formData)
                 }
                 setTimeout(() => {
                     navigation.navigate('Board', {

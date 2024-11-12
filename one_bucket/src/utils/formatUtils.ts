@@ -5,8 +5,6 @@ export const formatTimeAgo = (createdISODate: string): string => {
         (now.getTime() - createdDate.getTime()) / 1000,
     ) // 차이를 초로 계산
 
-    console.log('createdISODate: ', createdISODate, ' now: ', now)
-
     const minutes = 60
     const hours = minutes * 60
     const days = hours * 24

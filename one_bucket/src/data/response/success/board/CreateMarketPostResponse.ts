@@ -1,4 +1,4 @@
 export interface CreateMarketPostResponse {
-    message: string
-    id: number
+    postId: number
+    chatRoomId: string
 }

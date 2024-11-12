@@ -1,6 +1,4 @@
 import {
-    createBoardPost,
-    saveImage,
     updateBoardPost,
     updatePostImageAdd,
     updatePostImageDelete,
