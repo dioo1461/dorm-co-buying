@@ -1,4 +1,11 @@
-import { createBoardPost, saveImage, updateBoardPost, updatePostImageAdd, updatePostImageReset } from '@/apis/boardService'
+import {
+    createBoardPost,
+    saveImage,
+    updateBoardPost,
+    updatePostImageAdd,
+    updatePostImageDelete,
+    updatePostImageReset,
+} from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
@@ -136,8 +143,13 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
         if (height > 200) setInputHeight(height)
     }
 
-    const initializeCachedImageSavedPath = (originUrl: string, path: string) => {
-        const element: UpdateImageProps = imageUriList.current.find(image => image.uri === originUrl)!
+    const initializeCachedImageSavedPath = (
+        originUrl: string,
+        path: string,
+    ) => {
+        const element: UpdateImageProps = imageUriList.current.find(
+            image => image.uri === originUrl,
+        )!
         element.uri = path
         console.log('initializeCachedImageSavedPath', imageUriList.current)
     }
@@ -155,21 +167,33 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                 if (imageUriList.current.length > 0) {
                     const formData = new FormData()
                     imageUriList.current.forEach((value, index) => {
-                        // 파일 정보 추출
-                        const filename = value.uri.split('/').pop() // 파일 이름 추출
-                        const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
+                        const originalFilename = value.uri.split('/').pop()!
+                        const [nameWithoutExt, fileExtension] =
+                            originalFilename.split('.')
+
+                        // 인덱스를 파일 이름 뒤에 추가하고 확장자 붙이기
+                        const filename = `${nameWithoutExt}-${index}.${fileExtension}`
+
                         // FormData에 파일 추가
+                        console.log('filename', filename)
+                        console.log('fileExtension', fileExtension)
+                        console.log('uri', value.uri)
+
                         formData.append('file', {
                             uri: value.uri,
-                            name: filename, // 파일 이름
+                            name: filename, // 수정된 파일 이름
                             type: `image/${fileExtension}`, // MIME 타입 설정
                         })
                     })
-                    // if (hasImageUriDeleted.current) {
+
+                    // if (imageUriList.current.length == 0) {
+                    //     updatePostImageDelete(params.postId)
+                    // } else if (hasImageUriDeleted.current) {
                     //     updatePostImageReset(params.postId, imageUriList)
                     // } else if (hasImageUriAdded.current) {
                     //     updatePostImageAdd(params.postId, formData)
                     // }
+
                     updatePostImageReset(params.postId, formData)
                 }
                 setTimeout(() => {
@@ -184,10 +208,7 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
             })
     }
 
-    const handleUpdatePostImageAdd = async (postId: number) => {
-    }
-
-    
+    const handleUpdatePostImageAdd = async (postId: number) => {}
 
     return (
         <View style={styles.container}>
@@ -225,7 +246,9 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                                     <CachedImage
                                         imageUrl={updateImageProp.uri}
                                         imageStyle={styles.image}
-                                        getSavedPath={initializeCachedImageSavedPath}
+                                        getSavedPath={
+                                            initializeCachedImageSavedPath
+                                        }
                                     />
                                 ) : (
                                     <Image

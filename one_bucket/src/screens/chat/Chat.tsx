@@ -203,7 +203,8 @@ const Chat: React.FC = (): React.JSX.Element => {
         executeSynchoronously()
 
         return () => {
-            stompClientRef.current?.deactivate()
+            console.log('close stomp connection')
+            stompClientRef.current!.deactivate()
         }
     }, [])
 

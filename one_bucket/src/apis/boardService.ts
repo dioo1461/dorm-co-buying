@@ -165,7 +165,7 @@ export const updatePostImageAdd = async (postId: number, data: any) => {
         })
 }
 
-export const updatePostImageDelete = async (postId: number, data: any) => {
+export const updatePostImageDelete = async (postId: number) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({
         headers: {
@@ -174,7 +174,7 @@ export const updatePostImageDelete = async (postId: number, data: any) => {
         },
     })
     return authAxios
-        .post(`/post/update/image/delete/${postId}`, data)
+        .post(`/post/update/image/delete/${postId}`)
         .then(res => {
             return res.data
         })

@@ -12,9 +12,15 @@ import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Comment from '@/components/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
-import { SelectableBottomSheet, SelectableBottomSheetButtonProps } from '@/components/bottomSheet/SelectableBottomSheet'
+import {
+    SelectableBottomSheet,
+    SelectableBottomSheetButtonProps,
+} from '@/components/bottomSheet/SelectableBottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { GetBoardPostResponse, IComment } from '@/data/response/success/board/GetBoardPostResponse'
+import {
+    GetBoardPostResponse,
+    IComment,
+} from '@/data/response/success/board/GetBoardPostResponse'
 import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { sleep } from '@/utils/asyncUtils'
@@ -24,9 +30,11 @@ import {
     ActivityIndicator,
     Appearance,
     Keyboard,
+    KeyboardAvoidingView,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -88,7 +96,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
-            
+
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
@@ -124,9 +132,10 @@ const BoardPost: React.FC = (): JSX.Element => {
         [],
     )
 
-    const [commentBottomSheetEnabled, setCommentBottomSheetEnabled] = useState(false)
-    const [commentBottomSheetButtonProps, setCommentBottomSheetButtonProps] = useState<SelectableBottomSheetButtonProps[]>([])
-
+    const [commentBottomSheetEnabled, setCommentBottomSheetEnabled] =
+        useState(false)
+    const [commentBottomSheetButtonProps, setCommentBottomSheetButtonProps] =
+        useState<SelectableBottomSheetButtonProps[]>([])
 
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener(
@@ -331,7 +340,9 @@ const BoardPost: React.FC = (): JSX.Element => {
         )
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
@@ -451,7 +462,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     onReplyButtonPress={() => {
                                         commentInputRef.current?.focus()
                                     }}
-                                    onOptionButtonPress={(data) => onCommentOptionButtonPress}
+                                    onOptionButtonPress={data =>
+                                        onCommentOptionButtonPress
+                                    }
                                 />
                                 {comment.replies.map((val, idx) => (
                                     <Comment
@@ -464,7 +477,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                             setParentCommentId(id)
                                         }
                                         highlight={false}
-                                        onOptionButtonPress={(data) => onCommentOptionButtonPress}
+                                        onOptionButtonPress={data =>
+                                            onCommentOptionButtonPress
+                                        }
                                     />
                                 ))}
                             </View>
@@ -563,11 +578,13 @@ const BoardPost: React.FC = (): JSX.Element => {
             />
             <SelectableBottomSheet
                 theme={themeColor}
-                onClose={() => setCommentBottomSheetEnabled(!commentBottomSheetEnabled)}
+                onClose={() =>
+                    setCommentBottomSheetEnabled(!commentBottomSheetEnabled)
+                }
                 enabled={commentBottomSheetEnabled}
                 buttons={commentBottomSheetButtonProps}
             />
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

@@ -180,7 +180,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                                                     width: 112,
                                                     height: 112,
                                                 }}
-                                                externalUrl={true}
+                                                isExternalUrl={true}
                                             />
                                         </View>
                                     )}
