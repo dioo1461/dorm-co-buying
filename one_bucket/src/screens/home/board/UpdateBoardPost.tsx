@@ -84,6 +84,7 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
 
     const hasImageUriDeleted = useRef(false)
     const hasImageUriAdded = useRef(false)
+    const [, forceUpdate] = useState({})
 
     interface UpdateImageProps {
         uri: string
@@ -117,12 +118,14 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                 }
             })
             imageUriList.current = [...imageUriList.current, ...newImageUriList]
+            forceUpdate({})
             console.log(imageUriList)
         })
     }
 
     const deleteImage = (index: number) => {
         imageUriList.current.splice(index, 1)
+        forceUpdate({})
         hasImageUriDeleted.current = true
     }
 
@@ -167,7 +170,6 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                     // } else if (hasImageUriAdded.current) {
                     //     updatePostImageAdd(params.postId, formData)
                     // }
-                    console.log('formData', formData.getParts())
                     updatePostImageReset(params.postId, formData)
                 }
                 setTimeout(() => {
