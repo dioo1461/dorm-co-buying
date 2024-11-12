@@ -92,7 +92,7 @@ export const createBoardPost = async (
         })
 }
 
-export const updatePost = async (
+export const updateBoardPost = async (
     data: UpdateBoardPostRequestBody,
 ): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()

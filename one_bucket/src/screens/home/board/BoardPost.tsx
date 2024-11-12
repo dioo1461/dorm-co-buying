@@ -45,8 +45,6 @@ const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
 const LOCK_SLEEP_TIME = 2000
 
-// TODO: 게시글 수정 기능 구현
-// TODO: 게시글 삭제 기능 구현
 // TODO: 댓글 수정 기능 구현
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현

@@ -9,11 +9,13 @@ import {
     View,
 } from 'react-native'
 import * as RNFS from 'react-native-fs'
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 
 interface Props {
     imageStyle: StyleProp<ImageStyle>
     imageUrl: string
     isExternalUrl?: boolean
+    getSavedPath?: (originUrl: string, path: string) => void
     onLoad?: (res: Promise<void>) => void
 }
 
@@ -21,6 +23,7 @@ export const CachedImage = ({
     imageStyle,
     imageUrl,
     isExternalUrl = false,
+    getSavedPath,
     onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
@@ -56,6 +59,7 @@ export const CachedImage = ({
                 }).promise
             })
             .then(res => {
+                getSavedPath && getSavedPath(imageUrl, path)
                 loadFile(path) // 파일 로드
             })
             .catch(error => {
@@ -65,6 +69,7 @@ export const CachedImage = ({
 
     useEffect(() => {
         const promise = RNFS.exists(path).then(exists => {
+            getSavedPath && getSavedPath(imageUrl, path)
             if (exists) {
                 loadFile(path)
             } else {
@@ -73,7 +78,6 @@ export const CachedImage = ({
         })
 
         if (onLoad) {
-            console.log('onLoad')
             onLoad(promise)
         }
     }, [])
