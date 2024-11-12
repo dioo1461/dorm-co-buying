@@ -18,8 +18,8 @@ export interface BoardPostReduced {
     text: string
     postId: number
     authorNickname: string
-    createdDate: Date
-    modifiedDate: Date
+    createdDate: string // ISO8601
+    modifiedDate: string // ISO8601
     views: number
     likes: number
     commentsCount: number
