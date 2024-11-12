@@ -170,15 +170,8 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                         const originalFilename = value.uri.split('/').pop()!
                         const [nameWithoutExt, fileExtension] =
                             originalFilename.split('.')
-
-                        // 인덱스를 파일 이름 뒤에 추가하고 확장자 붙이기
                         const filename = `${nameWithoutExt}-${index}.${fileExtension}`
-
                         // FormData에 파일 추가
-                        console.log('filename', filename)
-                        console.log('fileExtension', fileExtension)
-                        console.log('uri', value.uri)
-
                         formData.append('file', {
                             uri: value.uri,
                             name: filename, // 수정된 파일 이름
@@ -186,15 +179,13 @@ const UpdateBoardPost: React.FC = (): JSX.Element => {
                         })
                     })
 
-                    // if (imageUriList.current.length == 0) {
-                    //     updatePostImageDelete(params.postId)
-                    // } else if (hasImageUriDeleted.current) {
-                    //     updatePostImageReset(params.postId, imageUriList)
-                    // } else if (hasImageUriAdded.current) {
-                    //     updatePostImageAdd(params.postId, formData)
-                    // }
-
-                    updatePostImageReset(params.postId, formData)
+                    if (imageUriList.current.length == 0) {
+                        updatePostImageDelete(params.postId)
+                    } else if (hasImageUriDeleted.current) {
+                        updatePostImageReset(params.postId, imageUriList)
+                    } else if (hasImageUriAdded.current) {
+                        updatePostImageAdd(params.postId, formData)
+                    }
                 }
                 setTimeout(() => {
                     navigation.navigate('Board', {
