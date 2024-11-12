@@ -9,15 +9,17 @@ import {
 import BottomSheet from '@/components/bottomSheet/BottomSheet'
 import Line from '@/components/Line'
 
+export type SelectableBottomSheetButtonProps = {
+    text: string
+    style: 'default' | 'destructive'
+    onPress: () => void
+}
+
 type SelectableBottomSheetProps = {
     enabled: boolean
     onClose: () => void
     theme: Icolor
-    buttons: {
-        text: string
-        style: 'default' | 'destructive'
-        onPress: () => void
-    }[]
+    buttons: SelectableBottomSheetButtonProps[]
 }
 
 /**

@@ -12,9 +12,9 @@ import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Comment from '@/components/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
-import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
+import { SelectableBottomSheet, SelectableBottomSheetButtonProps } from '@/components/bottomSheet/SelectableBottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
+import { GetBoardPostResponse, IComment } from '@/data/response/success/board/GetBoardPostResponse'
 import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { sleep } from '@/utils/asyncUtils'
@@ -124,6 +124,10 @@ const BoardPost: React.FC = (): JSX.Element => {
         [],
     )
 
+    const [commentBottomSheetEnabled, setCommentBottomSheetEnabled] = useState(false)
+    const [commentBottomSheetButtonProps, setCommentBottomSheetButtonProps] = useState<SelectableBottomSheetButtonProps[]>([])
+
+
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
@@ -215,6 +219,12 @@ const BoardPost: React.FC = (): JSX.Element => {
                 console.log(err)
             })
     }
+
+    const onCommentOptionButtonPress = (data: IComment) => {
+        // if (memberInfo?.nickname
+    }
+
+    // ########## RENDERING PARTS ##########
 
     const handleRefresh = async () => {
         setIsRefreshing(true)
@@ -441,6 +451,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     onReplyButtonPress={() => {
                                         commentInputRef.current?.focus()
                                     }}
+                                    onOptionButtonPress={(data) => onCommentOptionButtonPress}
                                 />
                                 {comment.replies.map((val, idx) => (
                                     <Comment
@@ -453,6 +464,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                                             setParentCommentId(id)
                                         }
                                         highlight={false}
+                                        onOptionButtonPress={(data) => onCommentOptionButtonPress}
                                     />
                                 ))}
                             </View>
@@ -548,6 +560,12 @@ const BoardPost: React.FC = (): JSX.Element => {
                 onClose={() => setBottomSheetEnabled(!bottomSheetEnabled)}
                 enabled={bottomSheetEnabled}
                 buttons={bottomSheetButtonProps}
+            />
+            <SelectableBottomSheet
+                theme={themeColor}
+                onClose={() => setCommentBottomSheetEnabled(!commentBottomSheetEnabled)}
+                enabled={commentBottomSheetEnabled}
+                buttons={commentBottomSheetButtonProps}
             />
         </View>
     )
