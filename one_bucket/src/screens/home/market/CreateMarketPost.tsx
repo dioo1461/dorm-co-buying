@@ -125,7 +125,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
 
     const checkFormAvailable = () => {
         return (
-            // TODO: 장소도 추가
             imageUriList.length > 0 &&
             itemName.length > 0 &&
             price.length > 0 &&
