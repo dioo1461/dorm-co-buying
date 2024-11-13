@@ -128,7 +128,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
         }
 
         createBoardPost(submitForm)
-            .then(res => {
+            .then(createBoardPostRes => {
                 console.log('board post created')
                 if (imageUriList.length > 0) {
                     const formData = new FormData()
@@ -143,20 +143,25 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
                             type: `image/${fileExtension}`, // MIME 타입 설정
                         })
                     })
-                    console.log(res.id, formData)
-                    saveBoardPostImage(res.id, formData)
+                    console.log(createBoardPostRes.id, formData)
+                    saveBoardPostImage(createBoardPostRes.id, formData)
+                        .then(saveImageRes => {
+                            console.log('board post image saved')
+                            navigation.navigate('Board', {
+                                pendingRefresh: true,
+                            })
+                            navigation.navigate('BoardPost', {
+                                boardName: params.boardName,
+                                boardId: dropdownValue,
+                                postId: createBoardPostRes.id,
+                                performRefresh: true,
+                            })
+                        })
+                        .catch(err => {
+                            console.log('board post image save failed')
+                            console.log(err)
+                        })
                 }
-                setTimeout(() => {
-                    navigation.navigate('Board', {
-                        pendingRefresh: true,
-                    })
-                    navigation.navigate('BoardPost', {
-                        boardName: params.boardName,
-                        boardId: dropdownValue,
-                        postId: res.id,
-                        performRefresh: true,
-                    })
-                }, 100)
             })
             .catch(err => {
                 console.log('board post create failed')
