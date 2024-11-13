@@ -1,4 +1,4 @@
-import { createMarketPost } from '@/apis/marketService'
+import { saveMarketPostImage } from '@/apis/marketService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
@@ -114,7 +114,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     const findMarketBoardId = () => {
         const marketBoard = boardList.find(board => board.type === 'marketPost')
         if (marketBoard) {
-            console.log(marketBoard.id)
             return marketBoard.id
         }
         throw new Error('CreateMarketPost - Market board not found')
@@ -127,7 +126,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     const checkFormAvailable = () => {
         return (
             // TODO: 장소도 추가
-            // imageUriList.length > 0 &&
+            imageUriList.length > 0 &&
             itemName.length > 0 &&
             price.length > 0 &&
             totalAmount.length > 0 &&
@@ -161,8 +160,23 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     }
 
     const onSubmitComplete = (postId: number) => {
-        navigation.goBack()
-        navigation.navigate('MarketPost', { postId: postId })
+        const formData = new FormData()
+        imageUriList.forEach((value, index) => {
+            // 파일 정보 추출
+            const filename = value.split('/').pop() // 파일 이름 추출
+            const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
+            // FormData에 파일 추가
+            formData.append('file', {
+                uri: value,
+                name: filename, // 파일 이름
+                type: `image/${fileExtension}`, // MIME 타입 설정
+            })
+        })
+        console.log(postId)
+        saveMarketPostImage(postId, formData).then(() => {
+            navigation.goBack()
+            navigation.navigate('MarketPost', { postId: postId })
+        })
     }
 
     return (

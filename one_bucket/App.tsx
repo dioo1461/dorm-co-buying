@@ -23,10 +23,10 @@ import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
 import UnauthHome from '@/screens/UnauthHome'
 import Chat from '@/screens/chat/Chat'
-import BoardCreatePost from '@/screens/home/BoardCreatePost'
-import BoardPost from '@/screens/home/BoardPost'
-import CreateMarketPost from '@/screens/home/CreateMarketPost'
-import MarketPost from '@/screens/home/MarketPost'
+import CreateBoardPost from '@/screens/home/board/CreateBoardPost'
+import BoardPost from '@/screens/home/board/BoardPost'
+import CreateMarketPost from '@/screens/home/market/CreateMarketPost'
+import MarketPost from '@/screens/home/market/MarketPost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Notification from '@/screens/Notification'
@@ -50,6 +50,7 @@ import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 import axios, { AxiosError } from 'axios'
+import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -403,7 +404,7 @@ function App(): React.JSX.Element {
                         />
                         <Stack.Screen
                             name={strings.boardCreatePostScreenName}
-                            component={BoardCreatePost}
+                            component={CreateBoardPost}
                             options={{
                                 title: strings.boardCreatePostScreenTitle,
                                 headerLeft: () => {
@@ -427,6 +428,10 @@ function App(): React.JSX.Element {
                                     fontSize: 18,
                                 },
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.updateBoardPostScreenName}
+                            component={UpdateBoardPost}
                         />
                         <Stack.Screen
                             name={strings.boardPostScreenName}

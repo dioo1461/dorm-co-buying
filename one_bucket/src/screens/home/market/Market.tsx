@@ -27,6 +27,7 @@ import { queryMarketPostList } from '@/hooks/useQuery/marketQuery'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'
 import Loading from '@/components/Loading'
+import { CachedImage } from '@/components/CachedImage'
 
 const FETCH_SIZE = 10
 
@@ -193,12 +194,14 @@ const Market: React.FC = (): JSX.Element => {
                         })
                     }>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <View
-                            style={[
-                                styles.postImage,
-                                { backgroundColor: 'white' },
-                            ]}
-                        />
+                        {data.imageUrls.length > 0 ? (
+                            <CachedImage
+                                imageStyle={styles.postImage}
+                                imageUrl={data.imageUrls[0]}
+                            />
+                        ) : (
+                            <View style={styles.postImage} />
+                        )}
                         <View style={styles.postContentContainer}>
                             <View>
                                 <View

@@ -1,11 +1,16 @@
-import { createBoardPost, saveImage } from '@/apis/boardService'
+import {
+    updateBoardPost,
+    updatePostImageAdd,
+    updatePostImageDelete,
+    updatePostImageReset,
+} from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Image,
@@ -18,7 +23,6 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker'
 import { TextInput } from 'react-native-gesture-handler'
 import {
     ImageLibraryOptions,
@@ -27,23 +31,18 @@ import {
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
+} from '../../navigation/NativeStackNavigation'
+import strings from '@/constants/strings'
+import { CachedImage } from '@/components/CachedImage'
+import { UpdateBoardPostRequestBody } from '@/data/request/board/UpdateBoardPostRequestBody'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
-const BoardCreatePost: React.FC = (): JSX.Element => {
-    const {
-        boardList,
-        themeColor,
-        setThemeColor,
-        pendingBoardRefresh,
-        setPendingBoardRefresh,
-    } = useBoundStore(state => ({
+const UpdateBoardPost: React.FC = (): JSX.Element => {
+    const { boardList, themeColor, setThemeColor } = useBoundStore(state => ({
         boardList: state.boardList,
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
-        pendingBoardRefresh: state.pendingBoardRefresh,
-        setPendingBoardRefresh: state.setPendingBoardRefresh,
     }))
 
     // 다크모드 변경 감지
@@ -56,12 +55,30 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    // navigation 헤더 옵션 설정
+    useEffect(() => {
+        navigation.setOptions({
+            headerStyle: { backgroundColor: themeColor.BG },
+            headerTintColor: themeColor.TEXT,
+            headerTitle: () => (
+                <Text
+                    style={{
+                        color: themeColor.TEXT,
+                        fontSize: 16,
+                        fontFamily: 'NanumGothic-Bold',
+                    }}>
+                    {strings.updateBoardPostScreenTitle}
+                </Text>
+            ),
+        })
+    }, [themeColor])
+
     const styles = createStyles(themeColor)
-    type BoardCreatePostRouteProp = RouteProp<
+    type UpdateBoardPostRouteProp = RouteProp<
         RootStackParamList,
-        'BoardCreatePost'
+        'UpdateBoardPost'
     >
-    const { params } = useRoute<BoardCreatePostRouteProp>()
+    const { params } = useRoute<UpdateBoardPostRouteProp>()
 
     const navigation = stackNavigation()
 
@@ -70,50 +87,51 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
     const [inputHeight, setInputHeight] = useState(200)
     const [preventMultPost, setPreventMultPost] = useState(true)
 
-    const [imageUriList, setImageUriList] = useState<string[]>([])
+    const hasImageUriDeleted = useRef(false)
+    const hasImageUriAdded = useRef(false)
+    const [, forceUpdate] = useState({})
 
-    const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [dropdownValue, setDropdownValue] = useState<number>(-1)
+    interface UpdateImageProps {
+        uri: string
+        from: 'server' | 'local'
+    }
 
-    // const tempBoardList = ['자유게시판', '비밀게시판', '운동 및 헬스']
-
-    const [dropdownItems, setDropdownItems] = useState<
-        { label: string; value: number }[]
-    >([])
+    const imageUriList = useRef<UpdateImageProps[]>(
+        params.imageUrlList.map((url: string) => ({
+            uri: url,
+            from: 'server',
+        })),
+    )
 
     useEffect(() => {
-        setDropdownItems(
-            boardList.map(board => {
-                return {
-                    label: board.name,
-                    value: board.id,
-                }
-            }),
-        )
-        setDropdownValue(params.boardId)
+        setTitle(params.title)
+        setContent(params.content)
     }, [])
 
     const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
-            selectionLimit: 10 - imageUriList.length,
+            selectionLimit: 10 - imageUriList.current.length,
         }
 
         launchImageLibrary(options, response => {
-            const newImageUriList: string[] = []
+            const newImageUriList: UpdateImageProps[] = []
             response.assets?.forEach(asset => {
                 if (asset.uri) {
-                    newImageUriList.push(asset.uri)
+                    hasImageUriAdded.current = true
+                    newImageUriList.push({ uri: asset.uri, from: 'local' })
                 }
             })
-            setImageUriList([...imageUriList, ...newImageUriList])
+            imageUriList.current = [...imageUriList.current, ...newImageUriList]
+            forceUpdate({})
+            console.log(imageUriList)
         })
     }
 
     const deleteImage = (index: number) => {
-        const newImageUriList = [...imageUriList]
-        newImageUriList.splice(index, 1)
-        setImageUriList(newImageUriList)
+        imageUriList.current.splice(index, 1)
+        forceUpdate({})
+        hasImageUriDeleted.current = true
     }
 
     const handleInputTextHeightChange = (
@@ -123,34 +141,49 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
         if (height > 200) setInputHeight(height)
     }
 
+    const initializeCachedImageSavedPath = (
+        originUrl: string,
+        path: string,
+    ) => {
+        const element: UpdateImageProps = imageUriList.current.find(
+            image => image.uri === originUrl,
+        )!
+        element.uri = path
+        console.log('initializeCachedImageSavedPath', imageUriList.current)
+    }
+
     const onSubmit = async () => {
-        let submitForm: CreateBoardPostRequestBody = {
-            boardId: dropdownValue,
+        let submitForm: UpdateBoardPostRequestBody = {
+            postId: params.postId,
             title: title,
             text: content,
         }
 
-        createBoardPost(submitForm)
+        updateBoardPost(submitForm)
             .then(res => {
-                console.log('board post created')
-                // setPendingBoardRefresh(true)
-                // useBoundStore.setState({ pendingBoardRefresh: true })
-                // params.setPendingRefresh(true)
-                if (imageUriList.length > 0) {
+                console.log('board post updated')
+                if (imageUriList.current.length > 0) {
                     const formData = new FormData()
-                    imageUriList.forEach((value, index) => {
-                        // 파일 정보 추출
-                        const filename = value.split('/').pop() // 파일 이름 추출
-                        const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
+                    imageUriList.current.forEach((value, index) => {
+                        const originalFilename = value.uri.split('/').pop()!
+                        const [nameWithoutExt, fileExtension] =
+                            originalFilename.split('.')
+                        const filename = `${nameWithoutExt}-${index}.${fileExtension}`
                         // FormData에 파일 추가
                         formData.append('file', {
-                            uri: value,
-                            name: filename, // 파일 이름
+                            uri: value.uri,
+                            name: filename, // 수정된 파일 이름
                             type: `image/${fileExtension}`, // MIME 타입 설정
                         })
                     })
-                    console.log(res.id, formData)
-                    saveImage(res.id, formData)
+
+                    if (imageUriList.current.length == 0) {
+                        updatePostImageDelete(params.postId)
+                    } else if (hasImageUriDeleted.current) {
+                        updatePostImageReset(params.postId, imageUriList)
+                    } else if (hasImageUriAdded.current) {
+                        updatePostImageAdd(params.postId, formData)
+                    }
                 }
                 setTimeout(() => {
                     navigation.navigate('Board', {
@@ -164,25 +197,10 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
             })
     }
 
+    const handleUpdatePostImageAdd = async (postId: number) => {}
+
     return (
         <View style={styles.container}>
-            <View style={{ margin: 10, marginTop: 20 }}>
-                <DropDownPicker
-                    open={dropdownOpen}
-                    value={dropdownValue}
-                    items={dropdownItems}
-                    setOpen={setDropdownOpen}
-                    setValue={setDropdownValue}
-                    setItems={setDropdownItems}
-                    placeholder='게시판을 선택해 주세요'
-                    // placeholderStyle={styles.dropdownPlaceholder}
-                    labelStyle={styles.dropdownLabel}
-                    style={styles.dropdownContainer}
-                    // textStyle={styles.dropdownLabel}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    theme={themeColor === lightColors ? 'LIGHT' : 'DARK'}
-                />
-            </View>
             <View style={styles.bodyContainer}>
                 <TextInput
                     style={styles.titleTextInput}
@@ -210,13 +228,23 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ flexGrow: 1 }}
                     style={styles.imageScrollViewContainer}>
-                    {imageUriList.map((uri, index) => (
+                    {imageUriList.current.map((updateImageProp, index) => (
                         <View key={index} style={styles.imageContainer}>
                             <TouchableOpacity>
-                                <Image
-                                    source={{ uri: uri }}
-                                    style={styles.image}
-                                />
+                                {updateImageProp.from === 'server' ? (
+                                    <CachedImage
+                                        imageUrl={updateImageProp.uri}
+                                        imageStyle={styles.image}
+                                        getSavedPath={
+                                            initializeCachedImageSavedPath
+                                        }
+                                    />
+                                ) : (
+                                    <Image
+                                        source={{ uri: updateImageProp.uri }}
+                                        style={styles.image}
+                                    />
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.closeButton}
@@ -233,23 +261,25 @@ const BoardCreatePost: React.FC = (): JSX.Element => {
                             <Text
                                 style={
                                     styles.imageCountText
-                                }>{`${imageUriList.length}/10`}</Text>
+                                }>{`${imageUriList.current.length}/10`}</Text>
                         </View>
                     </TouchableOpacity>
                 </ScrollView>
             </View>
             <View style={styles.postButtonContainer}>
-                <TouchableNativeFeedback 
+                <TouchableNativeFeedback
                     disabled={!!(!title || !content || !preventMultPost)}
-                    onPress={()=>{
+                    onPress={() => {
                         onSubmit()
                         setPreventMultPost(false)
                     }}>
-                    <View style={{...styles.postButton, 
-                        backgroundColor:
-                            !title || !content
-                                ? baseColors.GRAY_2
-                                : baseColors.SCHOOL_BG,
+                    <View
+                        style={{
+                            ...styles.postButton,
+                            backgroundColor:
+                                !title || !content
+                                    ? baseColors.GRAY_2
+                                    : baseColors.SCHOOL_BG,
                         }}>
                         <Text style={styles.postButtonText}>게시</Text>
                     </View>
@@ -265,22 +295,6 @@ const createStyles = (theme: Icolor) =>
         bodyContainer: {
             marginHorizontal: 20,
         },
-        dropdownContainer: {
-            backgroundColor:
-                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_0,
-            borderWidth: theme === lightColors ? 1 : 0,
-            borderColor: baseColors.GRAY_1,
-        },
-        dropdownPlaceholder: {
-            color: theme.TEXT_SECONDARY,
-            fontFamily: 'NanumGothic',
-            fontSize: 14,
-        },
-        dropdownLabel: {
-            color: theme.TEXT,
-            fontFamily: 'NanumGothic',
-            fontSize: 14,
-        },
         titleTextInput: {
             color: theme.TEXT,
             borderBottomColor: baseColors.GRAY_1,
@@ -288,6 +302,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             width: '100%',
             borderBottomWidth: 1,
+            marginTop: 16,
             marginVertical: 0,
             marginBottom: 10,
             backgroundColor: 'transparent',
@@ -362,4 +377,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default BoardCreatePost
+export default UpdateBoardPost

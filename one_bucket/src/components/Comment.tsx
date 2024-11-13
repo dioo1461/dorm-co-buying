@@ -19,8 +19,8 @@ const Comment: React.FC<{
     parentCommentId: number
     setParentCommentId: (id: number) => void
     highlight: boolean
-    onReplyButtonPress?: () => void
-    onOptionButtonPress?: () => void
+    onReplyButtonPress?: (data: IComment) => void
+    onOptionButtonPress?: (data: IComment) => void
 }> = ({
     theme,
     data,
@@ -40,7 +40,7 @@ const Comment: React.FC<{
     const replyAnimatedStyle = {
         opacity: animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 0.3],
+            outputRange: [0, 1],
         }),
     }
 
@@ -84,7 +84,7 @@ const Comment: React.FC<{
                         <TouchableOpacity
                             style={{ position: 'relative', top: -8 }}
                             onPress={() =>
-                                onOptionButtonPress && onOptionButtonPress()
+                                onOptionButtonPress && onOptionButtonPress(data)
                             }>
                             <IcOthers fill='gray' />
                         </TouchableOpacity>
@@ -103,7 +103,7 @@ const Comment: React.FC<{
                                 <TouchableOpacity
                                     style={styles.commentActionButton}
                                     onPress={() => {
-                                        onReplyButtonPress && onReplyButtonPress()
+                                        onReplyButtonPress && onReplyButtonPress(data)
 
                                         if (parentCommentId === data.commentId) {
                                             setParentCommentId(-1)
@@ -146,12 +146,12 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 2,
         },
         commentHighlight: {
+            backgroundColor: baseColors.SCHOOL_BG,
             width: '100%',
             height: '100%',
             position: 'absolute',
             left: 0,
             top: 0,
-            backgroundColor: baseColors.SCHOOL_BG,
             borderRadius: 8,
         },
         commentHeader: {

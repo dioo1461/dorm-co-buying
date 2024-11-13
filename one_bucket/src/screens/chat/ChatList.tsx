@@ -40,7 +40,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    type esEventType = 'initial-room-list'
+    type esEventType = 'initial-room-list' | 'room-update'
 
     const esRef = useRef<EventSource<esEventType> | null>(null)
     const [chatRoomList, setChatRoomData] =
@@ -59,6 +59,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                     },
                     eventHandlers: {
                         'initial-room-list': initialRoomListHandler,
+                        'room-update': roomUpdateHandler,
                     },
                     debug: true,
                 })
@@ -75,11 +76,21 @@ const ChatList: React.FC = (): React.JSX.Element => {
                 setChatRoomData(sortedData)
             }
 
+            const roomUpdateHandler = (event: SSEMessage) => {
+                const data = JSON.parse(event.data) as ChatRoom
+                const updatedList = chatRoomList!.map(room =>
+                    room.roomId === data.roomId ? data : room,
+                )
+                setChatRoomData(updatedList)
+                console.log('room-update received')
+            }
+
             initializeSSEConnection()
 
             return () => {
                 if (esRef.current) {
                     esRef.current.remove(initialRoomListHandler)
+                    esRef.current.remove(roomUpdateHandler)
                     esRef.current.close()
                     esRef.current = null
                 }

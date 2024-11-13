@@ -1,7 +1,9 @@
-export const formatTimeAgo = (createdDate: Date): string => {
-    const date = new Date(createdDate)
+export const formatTimeAgo = (createdISODate: string): string => {
+    const createdDate = new Date(createdISODate + 'Z')
     const now = new Date()
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000) // 차이를 초로 계산
+    const diffInSeconds = Math.floor(
+        (now.getTime() - createdDate.getTime()) / 1000,
+    ) // 차이를 초로 계산
 
     const minutes = 60
     const hours = minutes * 60

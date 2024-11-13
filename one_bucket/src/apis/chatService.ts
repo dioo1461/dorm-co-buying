@@ -18,9 +18,11 @@ export const getChatLogAfterTimestamp = async (
             },
         })
         .then(res => {
+            console.log('getChatLogAfterTimestamp', roomId, timestamp)
             return res.data
         })
         .catch(err => {
+            console.log('getChatLogAfterTimestamp error', err)
             throw err
         })
 }

@@ -34,12 +34,21 @@ export type RootStackParamList = {
         pendingRefresh: boolean
     }
     BoardPost: {
-        boardId: number
-        postId: number
-    }
-    BoardCreatePost: {
         boardName: string
         boardId: number
+        postId: number
+        performRefresh: boolean
+    }
+    CreateBoardPost: {
+        boardName: string
+        boardId: number
+    }
+    UpdateBoardPost: {
+        boardId: number
+        postId: number
+        title: string
+        content: string
+        imageUrlList: string[]
     }
 
     Search: undefined

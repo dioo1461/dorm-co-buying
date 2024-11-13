@@ -1,12 +1,21 @@
-import { addComment, addLike, deleteLike } from '@/apis/boardService'
+import {
+    addComment,
+    addLike,
+    deleteLike,
+    deletePost,
+} from '@/apis/boardService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
+import Comment from '@/components/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
-import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
+import {
+    SelectableBottomSheet,
+    SelectableBottomSheetButtonProps,
+} from '@/components/bottomSheet/SelectableBottomSheet'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import {
     GetBoardPostResponse,
@@ -16,22 +25,16 @@ import { queryBoardPost } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { sleep } from '@/utils/asyncUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import React, {
-    useCallback,
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
-    Animated,
     Appearance,
-    BackHandler,
     Keyboard,
+    KeyboardAvoidingView,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -44,15 +47,12 @@ import {
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
-import Comment from '@/components/Comment'
+} from '../../navigation/NativeStackNavigation'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
-const LOCK_SLEEP_TIME = 3000
+const LOCK_SLEEP_TIME = 2000
 
-// TODO: 게시글 수정 기능 구현
-// TODO: 게시글 삭제 기능 구현
 // TODO: 댓글 수정 기능 구현
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
@@ -81,6 +81,7 @@ const BoardPost: React.FC = (): JSX.Element => {
     const navigation = stackNavigation()
     useLayoutEffect(() => {
         navigation.setOptions({
+            title: params.boardName,
             headerLeft: () => (
                 <TouchableOpacity
                     style={{ marginLeft: 16 }}
@@ -95,6 +96,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
+
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
@@ -130,6 +132,11 @@ const BoardPost: React.FC = (): JSX.Element => {
         [],
     )
 
+    const [commentBottomSheetEnabled, setCommentBottomSheetEnabled] =
+        useState(false)
+    const [commentBottomSheetButtonProps, setCommentBottomSheetButtonProps] =
+        useState<SelectableBottomSheetButtonProps[]>([])
+
     useEffect(() => {
         const keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
@@ -146,6 +153,24 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const onSuccessCallback = (data: GetBoardPostResponse) => {
         userLiked.current = data.userAlreadyLikes
+        console.log('onSuccessCallback', data)
+
+        const onModifyPostButtonPress = () => {
+            navigation.navigate('UpdateBoardPost', {
+                postId: params.postId,
+                boardId: params.boardId,
+                title: data!.title,
+                content: data!.text,
+                imageUrlList: data!.imageUrls,
+            })
+        }
+        const onDeletePostButtonPress = () => {
+            deletePost(params.postId).then(() => {
+                navigation.navigate('Board', { pendingRefresh: true })
+            })
+        }
+        const onReportPostButtonPress = () => {}
+
         setLikeAdded(0)
         if (data.authorNickname == memberInfo!.nickname) {
             setBottomSheetButtonProps([
@@ -156,7 +181,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 },
                 {
                     text: '삭제하기',
-                    style: 'default',
+                    style: 'destructive',
                     onPress: onDeletePostButtonPress,
                 },
             ])
@@ -164,16 +189,12 @@ const BoardPost: React.FC = (): JSX.Element => {
             setBottomSheetButtonProps([
                 {
                     text: '신고하기',
-                    style: 'destructive',
+                    style: 'default',
                     onPress: onReportPostButtonPress,
                 },
             ])
         }
     }
-
-    const onModifyPostButtonPress = () => {}
-    const onDeletePostButtonPress = () => {}
-    const onReportPostButtonPress = () => {}
 
     const { data, isLoading, error, refetch } = queryBoardPost(
         params.postId,
@@ -207,6 +228,12 @@ const BoardPost: React.FC = (): JSX.Element => {
                 console.log(err)
             })
     }
+
+    const onCommentOptionButtonPress = (data: IComment) => {
+        // if (memberInfo?.nickname
+    }
+
+    // ########## RENDERING PARTS ##########
 
     const handleRefresh = async () => {
         setIsRefreshing(true)
@@ -252,11 +279,11 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const handleLikeButtonPress = async () => {
+    const onLikeButtonPress = async () => {
         if (data!.authorNickname)
             if (likeLock.current) {
                 ToastAndroid.show(
-                    '좋아요는 3초에 한 번 이상 누를 수 없습니다.',
+                    '좋아요는 2초에 한 번 이상 누를 수 없습니다.',
                     ToastAndroid.SHORT,
                 )
                 return
@@ -286,7 +313,7 @@ const BoardPost: React.FC = (): JSX.Element => {
     }
 
     const likeButtonFill = (liked: boolean) => {
-        if(liked) return 'red'
+        if (liked) return baseColors.LIGHT_RED
         else return 'none'
     }
 
@@ -313,7 +340,9 @@ const BoardPost: React.FC = (): JSX.Element => {
         )
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
@@ -384,32 +413,34 @@ const BoardPost: React.FC = (): JSX.Element => {
                 )}
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
                     {/* ### 좋아요 버튼 ### */}
-                    <TouchableOpacity
-                        style={styles.commentActionButton}
-                        onPress={handleLikeButtonPress}>
-                        <IcThumbUp fill={likeButtonFill(userLiked.current)}/>
+                    <View style={styles.likesAndCommentContainer}>
+                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
                         <Text
                             style={[
-                                styles.commentActionText,
+                                styles.likesAndCommentCountText,
                                 { color: baseColors.LIGHT_RED },
                             ]}>
                             {data!.likes + likeAdded}
                         </Text>
-                    </TouchableOpacity>
+                    </View>
                     {/* ### 댓글 수 ### */}
-                    <TouchableOpacity
-                        style={styles.commentActionButton}
-                        onPress={() => {
-                            console.log(parentCommentId)
-                        }}>
+                    <View style={styles.likesAndCommentContainer}>
                         <IcComment />
                         <Text
                             style={[
-                                styles.commentActionText,
+                                styles.likesAndCommentCountText,
                                 { color: baseColors.LIGHT_BLUE },
                             ]}>
                             {data?.comments.length}
                         </Text>
+                    </View>
+                </View>
+                <View>
+                    <TouchableOpacity
+                        style={styles.likeButton}
+                        onPress={() => onLikeButtonPress()}>
+                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
+                        <Text style={styles.likeButtonText}>좋아요</Text>
                     </TouchableOpacity>
                 </View>
                 {/* <View onLayout={handleCommentLayout} style={styles.line} /> */}
@@ -431,6 +462,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     onReplyButtonPress={() => {
                                         commentInputRef.current?.focus()
                                     }}
+                                    onOptionButtonPress={data =>
+                                        onCommentOptionButtonPress
+                                    }
                                 />
                                 {comment.replies.map((val, idx) => (
                                     <Comment
@@ -443,6 +477,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                             setParentCommentId(id)
                                         }
                                         highlight={false}
+                                        onOptionButtonPress={data =>
+                                            onCommentOptionButtonPress
+                                        }
                                     />
                                 ))}
                             </View>
@@ -472,14 +509,14 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <TouchableOpacity
                         style={{ marginEnd: 10 }}
                         onPress={() => {
-                            if(!commentValue) {
+                            if (!commentValue) {
                                 ToastAndroid.showWithGravity(
                                     '내용을 입력해 주세요.',
                                     ToastAndroid.SHORT,
                                     ToastAndroid.CENTER,
-                                  );
-                            }
-                            else handleCommentSubmit()}}>
+                                )
+                            } else handleCommentSubmit()
+                        }}>
                         <IcSend
                             fill={
                                 themeColor === lightColors
@@ -539,7 +576,15 @@ const BoardPost: React.FC = (): JSX.Element => {
                 enabled={bottomSheetEnabled}
                 buttons={bottomSheetButtonProps}
             />
-        </View>
+            <SelectableBottomSheet
+                theme={themeColor}
+                onClose={() =>
+                    setCommentBottomSheetEnabled(!commentBottomSheetEnabled)
+                }
+                enabled={commentBottomSheetEnabled}
+                buttons={commentBottomSheetButtonProps}
+            />
+        </KeyboardAvoidingView>
     )
 }
 
@@ -627,10 +672,7 @@ const createStyles = (theme: Icolor) =>
         commentActions: {
             flexDirection: 'row',
         },
-        commentActionButton: {
-            // borderColor:
-            //     theme === lightColors ? baseColors.GRAY_2 : baseColors.GRAY_2,
-            // borderWidth: 1,
+        likesAndCommentContainer: {
             flexDirection: 'row',
             alignItems: 'center',
             paddingHorizontal: 4,
@@ -638,10 +680,27 @@ const createStyles = (theme: Icolor) =>
             marginStart: 6,
             borderRadius: 8,
         },
-        commentActionText: {
+        likesAndCommentCountText: {
             marginStart: 4,
             fontSize: 12,
             fontFamily: 'NanumGothic',
+        },
+        likeButton: {
+            backgroundColor: theme.BG_SECONDARY,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 8,
+            marginVertical: 10,
+            marginStart: 10,
+            borderRadius: 8,
+            width: 92,
+        },
+        likeButtonText: {
+            color: theme.TEXT,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+            marginStart: 4,
         },
         line: {
             borderBottomWidth: 1,

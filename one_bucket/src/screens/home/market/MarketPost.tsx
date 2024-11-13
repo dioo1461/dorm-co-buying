@@ -19,7 +19,7 @@ import { TouchableOpacity } from 'react-native'
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
+} from '../../navigation/NativeStackNavigation'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import { RouteProp, useRoute } from '@react-navigation/native'
@@ -130,7 +130,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled>
-                    {data?.imageUrls?.map((url, index) => (
+                    {data!.imageUrls?.map((url, index) => (
                         <View key={index} style={styles.imageContainer}>
                             <CachedImage
                                 imageStyle={{
@@ -180,7 +180,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                                                     width: 112,
                                                     height: 112,
                                                 }}
-                                                externalUrl={true}
+                                                isExternalUrl={true}
                                             />
                                         </View>
                                     )}

@@ -27,7 +27,7 @@ import {
 import {
     RootStackParamList,
     stackNavigation,
-} from '../navigation/NativeStackNavigation'
+} from '../../navigation/NativeStackNavigation'
 
 const FETCH_SIZE = 10
 
@@ -84,8 +84,10 @@ const Board: React.FC = (): JSX.Element => {
                     background={touchableNativeFeedbackBg()}
                     onPress={() =>
                         navigation.navigate('BoardPost', {
+                            boardName: boardList[currentBoardIndex].name,
                             boardId: data.boardId,
                             postId: data.postId,
+                            performRefresh: false,
                         })
                     }>
                     <View
@@ -160,7 +162,7 @@ const Board: React.FC = (): JSX.Element => {
                                 }}>
                                 <Text style={styles.postMetaDataText}>
                                     {`${formatTimeAgo(
-                                        new Date(data.createdDate),
+                                        data.createdDate,
                                     )}ㆍ조회 ${data.views}`}
                                 </Text>
                             </View>
@@ -376,7 +378,7 @@ const Board: React.FC = (): JSX.Element => {
                 style={styles.fab}
                 onPress={() =>
                     // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
-                    navigation.navigate('BoardCreatePost', {
+                    navigation.navigate('CreateBoardPost', {
                         boardName: boardList![currentBoardIndex].name,
                         boardId: boardList![currentBoardIndex].id,
                         // refetch: refetchCallback,
