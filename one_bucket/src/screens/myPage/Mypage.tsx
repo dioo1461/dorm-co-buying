@@ -1,28 +1,21 @@
-import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
-import IcArrowCircle from '@/assets/drawable/ic-arrow-circle.svg'
-import IcPlus from '@/assets/drawable/ic-plus.svg'
+import { delProfile } from '@/apis/profileService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import {
-    queryGetMemberInfo,
-    queryGetProfile,
-} from '@/hooks/useQuery/profileQuery'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import React, { useEffect, useState } from 'react'
 import {
-    Alert,
     ActivityIndicator,
+    Alert,
     Appearance,
     Dimensions,
     Modal,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native'
 import Toast from 'react-native-toast-message'
-import { stackNavigation } from './navigation/NativeStackNavigation'
-import { delProfile } from '@/apis/profileService'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -50,50 +43,68 @@ const Mypage = (): React.JSX.Element => {
     const { data, isLoading, error } = queryGetMemberInfo()
     // const [memberInfo, profileImage] = data ? data : [null, null]
     const [goAuthVisible, setGoAuthVisible] = useState(false)
-    const openGoAuth = () => { setGoAuthVisible(true); }
-    const closeGoAuth = () => { setGoAuthVisible(false); }
+    const openGoAuth = () => {
+        setGoAuthVisible(true)
+    }
+    const closeGoAuth = () => {
+        setGoAuthVisible(false)
+    }
 
     const [logoutVisible, setLogoutVisible] = useState(false)
-    const openLogout = () => { setLogoutVisible(true); }
-    const closeLogout = () => { setLogoutVisible(false); }
+    const openLogout = () => {
+        setLogoutVisible(true)
+    }
+    const closeLogout = () => {
+        setLogoutVisible(false)
+    }
     const [delIDVisible, setDelIDVisible] = useState(false)
-    const openDelID = () => { setDelIDVisible(true); }
-    const closeDelID = () => { setDelIDVisible(false); }
-    const [countDelID, setCountDelID] = useState(3);
+    const openDelID = () => {
+        setDelIDVisible(true)
+    }
+    const closeDelID = () => {
+        setDelIDVisible(false)
+    }
+    const [countDelID, setCountDelID] = useState(3)
 
     const authCompletedText = (school: any) => {
-        if(school == 'null') return (
-            <View>
-                <Text style={{
-                    ...styles.contextLabel,
-                    paddingHorizontal: 5,
-                    color: 'red',
-                }}>미완료</Text>
-            </View>
-        )
-        else return (
-            <View style={{flexDirection: "row"}}>
-                <Text style={{
-                    ...styles.contextLabel,
-                    paddingHorizontal: 5,
-                    color: 'dodgerblue',
-                }}>{`완료 (${school})`}</Text>
-            </View>
-        )
+        if (school == 'null')
+            return (
+                <View>
+                    <Text
+                        style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 5,
+                            color: 'red',
+                        }}>
+                        미완료
+                    </Text>
+                </View>
+            )
+        else
+            return (
+                <View style={{ flexDirection: 'row' }}>
+                    <Text
+                        style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 5,
+                            color: 'dodgerblue',
+                        }}>{`완료 (${school})`}</Text>
+                </View>
+            )
     }
 
     const delAccount = async () => {
-        if(data?.nickname=='test1') {
+        if (data?.nickname == 'test1') {
             Alert.alert('관리자 계정은 삭제할 수 없습니다.')
             return
         } // 공용계정 삭제 방지
         delProfile()
-            .then(res=>{
+            .then(res => {
                 onLogOut(false)
                 Toast.show({ text1: '계정이 삭제되었습니다.' })
             })
-            .catch(err=>{
-                console.log('delAccount: ',err)
+            .catch(err => {
+                console.log('delAccount: ', err)
             })
     }
 
@@ -137,39 +148,45 @@ const Mypage = (): React.JSX.Element => {
                     <Text style={styles.username}>{data?.nickname}</Text>
                     <Text style={styles.userInfo}>거래 6건</Text>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.profileButton}
                     /*
                     onPress={()=>{
                         if(data?.university == 'null') {openGoAuth()}
                         else {handleProfileDetailNavigation()}
                     }}> */
-                     onPress={handleProfileDetailNavigation}>
+                    onPress={handleProfileDetailNavigation}>
                     <Text style={styles.profileLink}>프로필 보기</Text>
                 </TouchableOpacity>
                 <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={goAuthVisible}
-                        onRequestClose={closeGoAuth}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text>{`프로필 조회를 위해 먼저 학교 인증을 실시해 주세요.\n`}</Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity 
-                                        style={{...styles.confirmButton, backgroundColor: "rgba(0, 120, 255, 0.2)"}} 
-                                        onPress={()=>{
-                                            closeGoAuth()
-                                            navigation.navigate('SchoolAuth1')
-                                        }}>
-                                        <Text>바로가기</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeGoAuth}>
-                                        <Text>닫기</Text>
-                                    </TouchableOpacity>
-                                </View>
+                    animationType='slide'
+                    transparent={true}
+                    visible={goAuthVisible}
+                    onRequestClose={closeGoAuth}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text>{`프로필 조회를 위해 먼저 학교 인증을 실시해 주세요.\n`}</Text>
+                            <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity
+                                    style={{
+                                        ...styles.confirmButton,
+                                        backgroundColor:
+                                            'rgba(0, 120, 255, 0.2)',
+                                    }}
+                                    onPress={() => {
+                                        closeGoAuth()
+                                        navigation.navigate('SchoolAuth1')
+                                    }}>
+                                    <Text>바로가기</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.cancelButton}
+                                    onPress={closeGoAuth}>
+                                    <Text>닫기</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
+                    </View>
                 </Modal>
             </View>
             <View style={styles.activityContainer}>
@@ -357,19 +374,18 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 8,
             width: '80%',
             borderWidth: 0.5,
-            borderColor: theme.TEXT
+            borderColor: theme.TEXT,
         },
         confirmButton: {
             marginTop: 10,
-            backgroundColor : "rgba(255, 0, 0, 0.2)",
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
             justifyContent: 'center',
             alignItems: 'center',
             height: 30,
             width: '50%',
             borderRadius: 8,
-            
         },
-        cancelButton:{
+        cancelButton: {
             marginTop: 10,
             backgroundColor: theme.BG,
             justifyContent: 'center',

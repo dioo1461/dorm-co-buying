@@ -436,7 +436,7 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.boardPostScreenName}
                             component={BoardPost}
-                            options={{title: strings.boardPostScreenTitle}}
+                            options={{ title: strings.boardPostScreenTitle }}
                         />
                         <Stack.Screen
                             name={strings.imageEnlargementScreenName}
