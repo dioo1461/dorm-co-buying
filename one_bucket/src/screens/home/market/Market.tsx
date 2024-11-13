@@ -11,6 +11,7 @@ import {
 } from '@/screens/navigation/NativeStackNavigation'
 import React, { useEffect, useRef, useState } from 'react'
 import {
+    ActivityIndicator,
     Animated,
     Appearance,
     ListRenderItem,
@@ -213,11 +214,7 @@ const Market: React.FC = (): JSX.Element => {
                     if (!isFetchingNextPage && hasNextPage) fetchNextPage()
                 }}
                 onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
-                // ListFooterComponent={
-                //     isFetchingNextPage ? (
-                //         <ActivityIndicator size='small' color='#0000ff' />
-                //     ) : null
-                // }
+                ListFooterComponent={<View style={{ height: 40 }} />} // 마지막 Post가 잘려 보이는 문제 임시 조치
                 onScroll={onScroll}
             />
         )
@@ -453,6 +450,7 @@ const createStyles = (theme: Icolor) =>
         },
         flatList: {
             paddingTop: 40,
+            paddingBottom: 40,
             flex: 11,
         },
         postContainer: {
