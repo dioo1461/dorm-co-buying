@@ -5,7 +5,10 @@ import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import {
+    queryBoardPostList,
+    queryMyBoardPostList,
+} from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
@@ -245,14 +248,12 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
             isLoading, // 첫 번째 페이지 로딩 여부
             error,
             refetch,
-        } = queryBoardPostList(
-            boardId!,
+        } = queryMyBoardPostList(
             {
                 sortType: 'createdDate',
                 sort: 'desc',
             },
             FETCH_SIZE,
-            { enabled: !!boardId },
         )
         refetchCallback = refetch
 
@@ -282,52 +283,12 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
         )
     }
 
-    const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
-
-    const toggleDropdown = () => {
-        setExpanded(!expanded)
-        Animated.timing(animation, {
-            toValue: expanded ? 0 : 1,
-            duration: 300,
-            useNativeDriver: false,
-        }).start()
-    }
-
-    const dropdownAnimatedStyle = {
-        height: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 200],
-        }),
-        opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-        }),
-    }
-
-    const buttonAnimatedStyle = {
-        opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 0],
-        }),
-    }
 
     return (
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
             <PostFlatList />
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={() =>
-                    // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
-                    navigation.navigate('CreateBoardPost', {
-                        boardName: boardList![currentBoardIndex].name,
-                        boardId: boardList![currentBoardIndex].id,
-                        // refetch: refetchCallback,
-                    })
-                }>
-                <Text style={styles.fabIcon}>+</Text>
-            </TouchableOpacity>
         </View>
     )
 }
