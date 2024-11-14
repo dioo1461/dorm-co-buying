@@ -80,7 +80,7 @@ const strings = {
     // profileDetailsScreenTitle: 'ProfileDetails',
     // profileModifyScreenTitle: 'ProfileModify',
     myBoardPostsScreenTitle: '내가 쓴 게시글',
-    myMarketPostsScreenTitle: '내가 쓴 공동구매 rmf',
+    myMarketPostsScreenTitle: '내가 쓴 공동구매 글',
 
     // alertSettingScreenTitle: 'AlertSetting',
     // announcementScreenTitle: 'Ann/ouncement',
