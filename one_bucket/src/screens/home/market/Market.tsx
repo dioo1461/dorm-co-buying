@@ -204,6 +204,7 @@ const Market: React.FC = (): JSX.Element => {
                 renderItem={renderItem}
                 refreshControl={
                     <RefreshControl
+                        progressViewOffset={40}
                         refreshing={isRefreshing}
                         onRefresh={handleRefresh}
                     />
@@ -450,8 +451,7 @@ const createStyles = (theme: Icolor) =>
         },
         flatList: {
             paddingTop: 40,
-            paddingBottom: 40,
-            flex: 11,
+            // flex: 11,
         },
         postContainer: {
             flex: 1,
