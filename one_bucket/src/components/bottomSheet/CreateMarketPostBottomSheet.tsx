@@ -7,12 +7,14 @@ import {
     TouchableOpacity,
     View,
     Text,
+    Keyboard,
 } from 'react-native'
 
 import { useEffect, useState } from 'react'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { createMarketPost } from '@/apis/marketService'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import Accordion from '../Accordion'
 
 interface Props {
     enabled: boolean
@@ -31,12 +33,33 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
 }): JSX.Element => {
     const styles = createStyles(theme)
     const [chatName, setChatName] = useState('')
+    const [keyboardVisible, setKeyboardVisible] = useState(false)
+    const [accordionExpanded, setAccordionExpanded] = useState(true)
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true)
+            },
+        )
+
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false)
+            },
+        )
+
+        return () => {
+            keyboardDidHideListener.remove()
+            keyboardDidShowListener.remove()
+        }
+    })
 
     useEffect(() => {
         setChatName(submitForm.tradeCreateDto.item)
     }, [submitForm])
-
-    const navigation = stackNavigation()
 
     const onSubmit = () => {
         submitForm.chatRoomName = chatName
@@ -59,7 +82,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                     <TextInput
                         value={chatName}
                         style={styles.chatNameInputText}
-                        onChangeText={text => setChatName}
+                        onChangeText={text => setChatName(text)}
                     />
                     <TouchableOpacity
                         style={styles.submitButton}
@@ -68,63 +91,70 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                             거래글 생성하기
                         </Text>
                     </TouchableOpacity>
-                    <Text style={styles.tradeInfoLabel}>거래 정보</Text>
-                    <ScrollView style={styles.scrollView}>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>상품명</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.item}
-                            </Text>
-                        </View>
-                        <View style={styles.secondaryItemContainer}>
-                            <Text style={styles.secondaryItemLabel}>
-                                카테고리
-                            </Text>
-                            <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.tag}
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>총 가격</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.price} 원
-                            </Text>
-                        </View>
-                        <View style={styles.secondaryItemContainer}>
-                            <Text style={styles.secondaryItemLabel}>
-                                개당 가격
-                            </Text>
-                            <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.price /
-                                    submitForm.tradeCreateDto.count}{' '}
-                                원
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>총 수량</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.count} 개
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>모집 인원 </Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.wanted} 명
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>마감 기한</Text>
-                            <Text style={styles.itemText}>
-                                D - {submitForm.tradeCreateDto.dueDays}
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>거래 위치</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.location}
-                            </Text>
-                        </View>
-                    </ScrollView>
+                    <TouchableOpacity
+                        onPress={() =>
+                            setAccordionExpanded(!accordionExpanded)
+                        }>
+                        <Text style={styles.tradeInfoLabel}>거래 정보</Text>
+                    </TouchableOpacity>
+                    <Accordion isExpanded={accordionExpanded}>
+                        <ScrollView style={styles.scrollView}>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>상품명</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.item}
+                                </Text>
+                            </View>
+                            <View style={styles.secondaryItemContainer}>
+                                <Text style={styles.secondaryItemLabel}>
+                                    카테고리
+                                </Text>
+                                <Text style={styles.secondaryItemText}>
+                                    {submitForm.tradeCreateDto.tag}
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>총 가격</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.price} 원
+                                </Text>
+                            </View>
+                            <View style={styles.secondaryItemContainer}>
+                                <Text style={styles.secondaryItemLabel}>
+                                    개당 가격
+                                </Text>
+                                <Text style={styles.secondaryItemText}>
+                                    {submitForm.tradeCreateDto.price /
+                                        submitForm.tradeCreateDto.count}{' '}
+                                    원
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>총 수량</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.count} 개
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>모집 인원 </Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.wanted} 명
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>마감 기한</Text>
+                                <Text style={styles.itemText}>
+                                    D - {submitForm.tradeCreateDto.dueDays}
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>거래 위치</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.location}
+                                </Text>
+                            </View>
+                        </ScrollView>
+                    </Accordion>
                 </View>
             )}
             onClose={onClose}
