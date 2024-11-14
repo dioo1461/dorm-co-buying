@@ -80,7 +80,7 @@ export type RootStackParamList = {
     ProfileDetails: undefined
     MyBoardPosts: undefined
     MyMarketPosts: undefined
-    JoinedGroupPurchases: undefined
+    JoinedMarketPosts: undefined
 
     ImageEnlargement: {
         imageUriList: string[]
