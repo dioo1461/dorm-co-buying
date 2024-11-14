@@ -51,6 +51,32 @@ export const getMarketPost = async (
         })
 }
 
+export const getMyMarketPostList = async (
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetMarketPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`${MARKET_ENDPOINT_PREFIX}/list/my`, {
+            params: {
+                page: page,
+                size: size,
+                sort: sortParams[0],
+                // sort: sortParams[1],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getBoardPost - ' + error)
+            // console.log(error.response)
+
+            throw error
+        })
+}
+
 // ########## POST ##########
 
 export const createMarketPost = async (

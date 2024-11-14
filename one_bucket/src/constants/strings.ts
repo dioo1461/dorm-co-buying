@@ -37,6 +37,7 @@ const strings = {
     profileModifyScreenName: 'ProfileModify',
     myBoardPostsScreenName: 'MyBoardPosts',
     myMarketPostsScreenName: 'MyMarketPosts',
+    joinedMarketPostsScreenName: 'JoinedMarketPosts',
 
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
@@ -80,7 +81,8 @@ const strings = {
     // profileDetailsScreenTitle: 'ProfileDetails',
     // profileModifyScreenTitle: 'ProfileModify',
     myBoardPostsScreenTitle: '내가 쓴 게시글',
-    myMarketPostsScreenTitle: '내가 쓴 공동구매 글',
+    myMarketPostsScreenTitle: '내가 생성한 공동구매',
+    joinedMarketPostsScreenTitle: '내가 참여한 공동구매',
 
     // alertSettingScreenTitle: 'AlertSetting',
     // announcementScreenTitle: 'Ann/ouncement',
