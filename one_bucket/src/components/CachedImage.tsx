@@ -1,3 +1,4 @@
+import { baseColors, lightColors } from '@/constants/colors'
 import { STORAGE_BASE_URL } from '@env'
 import { useEffect, useState } from 'react'
 import {
@@ -9,7 +10,8 @@ import {
     View,
 } from 'react-native'
 import * as RNFS from 'react-native-fs'
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import Skeleton from './Skeleton'
 
 interface Props {
     imageStyle: StyleProp<ImageStyle>
@@ -82,11 +84,9 @@ export const CachedImage = ({
         }
     }, [])
 
-    if (!source) return <></>
-
     return (
-        <View>
+        <Skeleton enabled={!source} theme={lightColors}>
             <Image style={imageStyle} source={source} />
-        </View>
+        </Skeleton>
     )
 }
