@@ -1,29 +1,34 @@
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
+import { ImageStyle, StyleProp, ViewStyle } from 'react-native'
+import SkeletonContent from 'react-native-skeleton-content-nonexpo'
 
 interface SkeletonPlaceholderProps {
-    enabled: boolean
+    isLoading: boolean
+    containerStyle?: StyleProp<ViewStyle>
     theme: Icolor
     children: JSX.Element
 }
 
 const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
-    enabled,
+    isLoading,
     theme,
+    containerStyle,
     children,
 }): React.JSX.Element => {
     return theme === lightColors ? (
-        <SkeletonPlaceholder
-            enabled={enabled}
-            backgroundColor={baseColors.GRAY_2}
+        <SkeletonContent
+            isLoading={isLoading}
+            containerStyle={containerStyle}
             highlightColor={baseColors.GRAY_3}
+            boneColor={baseColors.GRAY_2}
             children={children}
         />
     ) : (
-        <SkeletonPlaceholder
-            enabled={enabled}
-            backgroundColor={baseColors.GRAY_2}
+        <SkeletonContent
+            isLoading={isLoading}
+            containerStyle={containerStyle}
             highlightColor={baseColors.GRAY_3}
+            boneColor={baseColors.GRAY_2}
             children={children}
         />
     )

@@ -10,7 +10,6 @@ import {
     View,
 } from 'react-native'
 import * as RNFS from 'react-native-fs'
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import Skeleton from './Skeleton'
 
 interface Props {
@@ -85,7 +84,7 @@ export const CachedImage = ({
     }, [])
 
     return (
-        <Skeleton enabled={!source} theme={lightColors}>
+        <Skeleton containerStyle={{}} isLoading={!source} theme={lightColors}>
             <Image style={imageStyle} source={source} />
         </Skeleton>
     )
