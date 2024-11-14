@@ -195,9 +195,17 @@ const Mypage = (): React.JSX.Element => {
                     {/* <Icon name='favorite' size={24} color='black' /> */}
                     <Text style={styles.activityText}>좋아요 누른 글</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.activityItem}>
+                <TouchableOpacity
+                    style={styles.activityItem}
+                    onPress={() => navigation.navigate('MyBoardPosts')}>
                     {/* <Icon name='description' size={24} color='black' /> */}
                     <Text style={styles.activityText}>내가 쓴 글</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.activityItem}
+                    onPress={() => navigation.navigate('MyMarketPosts')}>
+                    {/* <Icon name='description' size={24} color='black' /> */}
+                    <Text style={styles.activityText}>내가 쓴 거래글</Text>
                 </TouchableOpacity>
             </View>
         </View>

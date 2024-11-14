@@ -35,6 +35,8 @@ const strings = {
 
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
+    myBoardPostsScreenName: 'MyBoardPosts',
+    myMarketPostsScreenName: 'MyMarketPosts',
 
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
@@ -77,6 +79,9 @@ const strings = {
     createMarketPostScreenTitle: '공동구매 글 작성',
     // profileDetailsScreenTitle: 'ProfileDetails',
     // profileModifyScreenTitle: 'ProfileModify',
+    myBoardPostsScreenTitle: '내가 쓴 게시글',
+    myMarketPostsScreenTitle: '내가 쓴 공동구매 rmf',
+
     // alertSettingScreenTitle: 'AlertSetting',
     // announcementScreenTitle: 'Ann/ouncement',
     // supportScreenTitle: 'Support',

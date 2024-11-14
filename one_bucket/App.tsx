@@ -51,6 +51,8 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 import axios, { AxiosError } from 'axios'
 import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
+import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
+import MyMarketPosts from '@/screens/myPage/MyMarketPosts'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -482,6 +484,14 @@ function App(): React.JSX.Element {
                                     fontSize: 18,
                                 },
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.myBoardPostsScreenName}
+                            component={MyBoardPosts}
+                        />
+                        <Stack.Screen
+                            name={strings.myMarketPostsScreenName}
+                            component={MyMarketPosts}
                         />
                     </Stack.Navigator>
                 </NavigationContainer>
