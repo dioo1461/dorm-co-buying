@@ -1,33 +1,31 @@
 import IcComment from '@/assets/drawable/ic-comment.svg'
-import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
-import Backdrop from '@/components/Backdrop'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import strings from '@/constants/strings'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
 import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '@/screens/navigation/NativeStackNavigation'
 import { formatTimeAgo } from '@/utils/formatUtils'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
     FlatList,
     ListRenderItem,
-    RefreshControl,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
 } from 'react-native'
-import {
-    RootStackParamList,
-    stackNavigation,
-} from '@/screens/navigation/NativeStackNavigation'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 
 const FETCH_SIZE = 10
 
@@ -59,6 +57,27 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
 
     const flatlistRef = useRef(null)
     var refetchCallback: () => void
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: strings.myBoardPostsScreenTitle,
+            headerStyle: {
+                backgroundColor: themeColor.HEADER_BG,
+            },
+            headerTitleStyle: {
+                color: themeColor.HEADER_TEXT,
+                fontFamily: 'NanumGothic',
+                fontSize: 18,
+            },
+            headerLeft: () => (
+                <TouchableOpacity
+                    style={{ marginLeft: 16 }}
+                    onPress={() => navigation.goBack()}>
+                    <IcAngleLeft fill={themeColor.HEADER_TEXT} />
+                </TouchableOpacity>
+            ),
+        })
+    }, [])
 
     useFocusEffect(() => {
         if (!!refetchCallback && params?.pendingRefresh) {

@@ -96,7 +96,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
-
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
