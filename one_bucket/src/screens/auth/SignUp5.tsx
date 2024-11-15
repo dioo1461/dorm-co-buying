@@ -64,12 +64,18 @@ const SignUp5: React.FC = (): React.JSX.Element => {
 
     const [hidePw, setHidePw] = useState(true)
     const viewPwIcon = (hidePw: boolean) => {
-        if(hidePw == true) return (
-            <View><IcHide /></View>
-        )
-        else return (
-            <View><IcShow /></View>
-        )
+        if (hidePw == true)
+            return (
+                <View>
+                    <IcHide />
+                </View>
+            )
+        else
+            return (
+                <View>
+                    <IcShow />
+                </View>
+            )
     }
 
     const handleEmailChange = (text: string) => {
@@ -145,7 +151,6 @@ const SignUp5: React.FC = (): React.JSX.Element => {
 
                 requestLogin(loginForm)
                     .then(res => {
-                        setAccessToken(res.accessToken)
                         navigation.navigate('SignUp6')
                     })
                     .catch(err => {
@@ -239,57 +244,58 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                             pagingEnabled
                             showsHorizontalScrollIndicator={false}
                             scrollEnabled={false}> */}
-                            <View style={{ width: ScreenWidth - 40 }}>
-                                <Text style={styles.label}>비밀번호 입력</Text>
-                                <View style={{
-                                    flexDirection: "row",
-                                    alignItems: "center"
+                        <View style={{ width: ScreenWidth - 40 }}>
+                            <Text style={styles.label}>비밀번호 입력</Text>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}>
+                                <TextInput
+                                    ref={passwordRef}
+                                    style={styles.input}
+                                    onChangeText={handlePasswordChange}
+                                    onBlur={onPasswordInputBlur}
+                                    value={password}
+                                    placeholder='숫자, 대소문자, 특수문자 모두 포함하여 8~20자'
+                                    placeholderTextColor={
+                                        themeColor.TEXT_SECONDARY
+                                    }
+                                    keyboardType='default'
+                                    secureTextEntry={hidePw}
+                                    scrollEnabled={false}
+                                />
+                                <TouchableOpacity
+                                    style={styles.viewPw}
+                                    onPress={() => {
+                                        setHidePw(!hidePw)
                                     }}>
-                                    <TextInput
-                                        ref={passwordRef}
-                                        style={styles.input}
-                                        onChangeText={handlePasswordChange}
-                                        onBlur={onPasswordInputBlur}
-                                        value={password}
-                                        placeholder='숫자, 대소문자, 특수문자 모두 포함하여 8~20자'
-                                        placeholderTextColor={
-                                            themeColor.TEXT_SECONDARY
-                                        }
-                                        keyboardType='default'
-                                        secureTextEntry={hidePw}
-                                        scrollEnabled={false}
-                                    />
-                                    <TouchableOpacity
-                                        style={styles.viewPw}
-                                        onPress={()=>{setHidePw(!hidePw)}}>
-                                        {viewPwIcon(hidePw)}
-                                    </TouchableOpacity>
-                                </View>
-                                <View
-                                    style={[
-                                        { opacity: passwordError ? 1 : 0 },
-                                        styles.errorLabelContainer,
-                                    ]}>
-                                    <Exclamation
-                                        fill={themeColor.ACCENT_TEXT}
-                                        style={styles.exclamation}
-                                    />
-                                    <Text style={styles.errorLabel}>
-                                        {passwordError}
-                                    </Text>
-                                </View>
+                                    {viewPwIcon(hidePw)}
+                                </TouchableOpacity>
                             </View>
-                            <View style={{ width: ScreenWidth - 41 }}>
-                                <View
-                                    style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text style={styles.label}>
-                                        비밀번호 확인
-                                    </Text>
-                                    {/*
+                            <View
+                                style={[
+                                    { opacity: passwordError ? 1 : 0 },
+                                    styles.errorLabelContainer,
+                                ]}>
+                                <Exclamation
+                                    fill={themeColor.ACCENT_TEXT}
+                                    style={styles.exclamation}
+                                />
+                                <Text style={styles.errorLabel}>
+                                    {passwordError}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={{ width: ScreenWidth - 41 }}>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}>
+                                <Text style={styles.label}>비밀번호 확인</Text>
+                                {/*
                                     <TouchableOpacity
                                         style={styles.pwReEnterButton}
                                         onPress={onPasswordReEnterButtonPress}>
@@ -298,48 +304,49 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                                             재입력
                                         </Text>
                                     </TouchableOpacity> */}
-                                </View>
-                                <View style={{
-                                    flexDirection: "row",
-                                    alignItems: "center"
-                                    }}>
-                                    <TextInput
-                                        ref={passwordConfirmRef}
-                                        style={styles.input}
-                                        onChangeText={handlePasswordConfirmChange}
-                                        value={passwordConfirm}
-                                        placeholder='비밀번호를 다시 한 번 입력해 주세요.'
-                                        placeholderTextColor={
-                                            themeColor.TEXT_SECONDARY
-                                        }
-                                        keyboardType='default'
-                                        secureTextEntry={hidePw}
-                                        scrollEnabled={false}
-                                    />
-                                    <TouchableOpacity
-                                        style={styles.viewPw}
-                                        onPress={()=>{setHidePw(!hidePw)}}>
-                                        {viewPwIcon(hidePw)}
-                                    </TouchableOpacity>
-                                </View>
-                                <View
-                                    style={[
-                                        {
-                                            opacity: passwordConfirmError
-                                                ? 1
-                                                : 0,
-                                        },
-                                        styles.errorLabelContainer,
-                                    ]}>
-                                    <Exclamation
-                                        fill={themeColor.ACCENT_TEXT}
-                                        style={styles.exclamation}
-                                    />
-                                    <Text style={styles.errorLabel}>
-                                        {passwordConfirmError}
-                                    </Text>
-                                </View>
                             </View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                }}>
+                                <TextInput
+                                    ref={passwordConfirmRef}
+                                    style={styles.input}
+                                    onChangeText={handlePasswordConfirmChange}
+                                    value={passwordConfirm}
+                                    placeholder='비밀번호를 다시 한 번 입력해 주세요.'
+                                    placeholderTextColor={
+                                        themeColor.TEXT_SECONDARY
+                                    }
+                                    keyboardType='default'
+                                    secureTextEntry={hidePw}
+                                    scrollEnabled={false}
+                                />
+                                <TouchableOpacity
+                                    style={styles.viewPw}
+                                    onPress={() => {
+                                        setHidePw(!hidePw)
+                                    }}>
+                                    {viewPwIcon(hidePw)}
+                                </TouchableOpacity>
+                            </View>
+                            <View
+                                style={[
+                                    {
+                                        opacity: passwordConfirmError ? 1 : 0,
+                                    },
+                                    styles.errorLabelContainer,
+                                ]}>
+                                <Exclamation
+                                    fill={themeColor.ACCENT_TEXT}
+                                    style={styles.exclamation}
+                                />
+                                <Text style={styles.errorLabel}>
+                                    {passwordConfirmError}
+                                </Text>
+                            </View>
+                        </View>
                         {/* </ScrollView> */}
 
                         {/* ### 닉네임 입력 ### */}
@@ -426,11 +433,11 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             marginBottom: 10,
         },
-        viewPw:{
+        viewPw: {
             height: 36,
             width: 36,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         errorLabelContainer: {
             flexDirection: 'row',

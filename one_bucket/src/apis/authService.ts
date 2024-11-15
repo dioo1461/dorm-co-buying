@@ -1,15 +1,18 @@
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
-import { 
-    PhoneRequestBody, 
-    SchoolAuthRequestBody, 
-    CodeValRequestBody, 
-    NewPwRequestBody,
+import {
     ChangePwRequestBody,
-    SignUpRequestBody } from '@/data/request/SignUpRequestBody'
+    NewPwRequestBody,
+    PhoneRequestBody,
+    SchoolAuthRequestBody,
+    SignUpRequestBody,
+} from '@/data/request/SignUpRequestBody'
 import { LoginResponse } from '@/data/response/success/LoginResponse'
 import { SetUniversityResponse } from '@/data/response/success/SetUniversityResponse'
+import { setAccessToken, setRefreshToken } from '@/utils/accessTokenUtils'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
+
+// ########## POST ##########
 
 export const postPhoneForm = async (data: PhoneRequestBody): Promise<any> => {
     return await createAxios()
@@ -27,7 +30,7 @@ export const postSchoolForm = async (
     data: SchoolAuthRequestBody,
 ): Promise<any> => {
     const authAxios = await createAuthAxios()
-    console.log("SchoolAuthRequestBody:",data)
+    console.log('SchoolAuthRequestBody:', data)
     return authAxios
         .post('/guest/univ/send-code', data)
         .then(res => {
@@ -41,7 +44,7 @@ export const postSchoolForm = async (
 
 export const postCodeForm = async (data: any): Promise<any> => {
     const authAxios = await createAuthAxios()
-    console.log("CodeValRequestBody:",data)
+    console.log('CodeValRequestBody:', data)
     return authAxios
         .post('/guest/univ/verify-code', data)
         .then(res => {
@@ -55,7 +58,7 @@ export const postCodeForm = async (data: any): Promise<any> => {
 
 export const postNewPwForm = async (data: NewPwRequestBody): Promise<any> => {
     const authAxios = await createAuthAxios()
-    console.log("NewPwRequestBody:",data)
+    console.log('NewPwRequestBody:', data)
     return authAxios
         .post('/member/password/reset', data)
         .then(res => {
@@ -67,9 +70,11 @@ export const postNewPwForm = async (data: NewPwRequestBody): Promise<any> => {
         })
 }
 
-export const postChangePwForm = async (data: ChangePwRequestBody): Promise<any> => {
+export const postChangePwForm = async (
+    data: ChangePwRequestBody,
+): Promise<any> => {
     const authAxios = await createAuthAxios()
-    console.log("ChangePwRequestBody:",data)
+    console.log('ChangePwRequestBody:', data)
     return authAxios
         .post('/member/password/set', data)
         .then(res => {
@@ -104,11 +109,12 @@ export const requestLogin = async (
     return authAxios
         .post('/sign-in', data)
         .then(response => {
+            setAccessToken(response.data.accessToken)
+            setRefreshToken(response.data.refreshToken)
             return response.data
         })
         .catch(error => {
             console.log(error)
-
             // 401 unauthorized
             if (error.response.status === 401 || 403) {
                 // onLogOut(false)
@@ -128,6 +134,18 @@ export const setUniversity = async (
         })
         .catch(error => {
             console.log(error)
+            throw error
+        })
+}
+
+export const requestAccessToken = async (): Promise<any> => {
+    const axios = createAxios()
+    return axios
+        .get('/refresh')
+        .then(res => {
+            return res
+        })
+        .catch(error => {
             throw error
         })
 }

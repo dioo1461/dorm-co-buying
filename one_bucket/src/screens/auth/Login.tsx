@@ -2,7 +2,7 @@ import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { setAccessToken } from '@/utils/accessTokenUtils'
+import { setAccessToken, setRefreshToken } from '@/utils/accessTokenUtils'
 import React, { useEffect, useRef } from 'react'
 import {
     Appearance,
@@ -58,7 +58,6 @@ const Login: React.FC = (): React.JSX.Element => {
         }
         requestLogin(loginForm)
             .then(res => {
-                setAccessToken(res.accessToken)
                 onLogInSuccess()
             })
             .catch(err => {
