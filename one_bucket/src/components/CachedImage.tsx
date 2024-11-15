@@ -28,6 +28,23 @@ export const CachedImage = ({
     onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
+    if (!imageUrl)
+        return (
+            <View
+                style={[
+                    imageStyle, // 주어진 스타일 적용
+                    {
+                        backgroundColor: baseColors.GRAY_1, // 기본 배경색
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    },
+                ]}>
+                <Text style={{ color: baseColors.WHITE, fontSize: 12 }}>
+                    No Image
+                </Text>
+            </View>
+        )
+
     const extension = Platform.OS === 'android' ? 'file://' : ''
 
     const path = `${extension}${RNFS.DocumentDirectoryPath}${imageUrl.substring(

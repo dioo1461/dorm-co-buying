@@ -65,7 +65,22 @@ const MarketPost: React.FC = (): JSX.Element => {
     const scrollY = useRef(new Animated.Value(0)).current
 
     // 상태 관리 변수
-    const [metaData, setMetaData] = useState<any>(null)
+    const metaData = useRef<any>(null)
+    const [isValidLink, setIsValidLink] = useState(true)
+    const [_, forceRefresh] = useState({})
+
+    // 5초 후에도 metaData를 받아오지 못하면 유효하지 않은 링크로 설정
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            // 3초 후에도 metaData가 없으면 유효하지 않은 링크로 설정
+            if (!metaData.current) {
+                setIsValidLink(false)
+                console.log('invalid link')
+            } else [setIsValidLink(true), console.log('valid link')]
+        }, 5000)
+
+        return () => clearTimeout(timeout)
+    }, [])
 
     const onSuccessCallback = (data: GetMarketPostResponse) => {
         const parseMetaData = async (url: string) => {
@@ -82,11 +97,11 @@ const MarketPost: React.FC = (): JSX.Element => {
                         'image:width': data[0]['image:width'],
                         'image:height': data[0]['image:height'],
                     }
-                    setMetaData(meta)
-                    console.log(meta)
+                    metaData.current = meta
+                    forceRefresh({})
                 })
                 .catch(error => {
-                    setMetaData(null)
+                    metaData.current = null
                     console.log('error occurred while parsing url -' + error)
                 })
         }
@@ -161,7 +176,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                         }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
                     <Text style={styles.contentText}>{data?.text}</Text>
                     {/* ### 사이트 링크 프리뷰 ### */}
-                    {metaData ? (
+                    {metaData.current ? (
                         <TouchableNativeFeedback
                             background={TouchableNativeFeedback.Ripple(
                                 baseColors.GRAY_2,
@@ -175,7 +190,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                                         height: 112,
                                     }}>
                                     <CachedImage
-                                        imageUrl={metaData?.image}
+                                        imageUrl={metaData.current.image}
                                         imageStyle={{
                                             width: 112,
                                             height: 112,
@@ -190,15 +205,15 @@ const MarketPost: React.FC = (): JSX.Element => {
                                         justifyContent: 'space-between',
                                     }}>
                                     <Text style={styles.linkPreviewTitleText}>
-                                        {metaData?.title}
+                                        {metaData.current?.title}
                                     </Text>
                                     <Text style={styles.linkPreviewUrlText}>
-                                        {metaData?.url}
+                                        {metaData.current?.url}
                                     </Text>
                                 </View>
                             </View>
                         </TouchableNativeFeedback>
-                    ) : (
+                    ) : isValidLink ? (
                         <View style={styles.linkPreviewContainer}>
                             <Skeleton
                                 containerStyle={{}}
@@ -220,29 +235,10 @@ const MarketPost: React.FC = (): JSX.Element => {
                                 ]}
                             />
                         </View>
-
-                        // <Skeleton
-                        //     containerStyle={styles.linkPreviewContainer}
-                        //     theme={themeColor}
-                        //     isLoading={true}>
-                        //     <View
-                        //         style={{
-                        //             width: 112,
-                        //             height: 112,
-                        //         }}
-                        //     />
-                        //     <View>
-                        //         <Text
-                        //             style={{
-                        //                 marginHorizontal: '4%',
-                        //                 marginVertical: '10%',
-                        //                 width: '60%',
-                        //                 height: '30%',
-                        //             }}
-                        //         />
-                        //         <Text style={{}} />
-                        //     </View>
-                        // </Skeleton>
+                    ) : (
+                        <Text style={styles.invalidLinkText}>
+                            {data?.trade_linkUrl}
+                        </Text>
                     )}
                     {/* ### 거래 희망 장소 ### */}
                     <View>
@@ -438,6 +434,12 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BUTTON_BG,
             padding: 10,
             borderRadius: 8,
+        },
+        invalidLinkText: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 10,
+            fontFamily: 'NanumGothic',
+            marginVertical: 10,
         },
     })
 
