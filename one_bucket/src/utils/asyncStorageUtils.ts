@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export const setLoginFlag = async (value: boolean) => {
+export const setLoginInitFlag = async (value: boolean) => {
     return AsyncStorage.setItem('loginFlag', value.toString())
 }
 
-export const getLoginFlag = async () => {
+export const getLoginInitFlag = async () => {
     return AsyncStorage.getItem('loginFlag')
 }
 

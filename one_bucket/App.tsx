@@ -64,8 +64,8 @@ import {
 } from '@/utils/accessTokenUtils'
 import {
     getAutoLoginEnabled,
-    getLoginFlag,
-    setLoginFlag,
+    getLoginInitFlag,
+    setLoginInitFlag,
 } from '@/utils/asyncStorageUtils'
 
 const Stack = createStackNavigator()
@@ -127,7 +127,7 @@ function App(): React.JSX.Element {
         }
 
         const checkLoginStatus = async () => {
-            const loginFlag = await getLoginFlag()
+            const loginFlag = await getLoginInitFlag()
             if (loginFlag === null || loginFlag === 'false') {
                 SplashScreen.hide()
                 return
@@ -184,7 +184,7 @@ function App(): React.JSX.Element {
         return function cleanup() {
             ac.abort()
         }
-    }, [])
+    }, [loginState])
 
     const home = (authed: number) => {
         if (authed == 0) return strings.homeScreenName
