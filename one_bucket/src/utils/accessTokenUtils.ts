@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { Platform } from 'react-native'
 import EncryptedStorage from 'react-native-encrypted-storage'
 
@@ -48,12 +48,36 @@ export const getRefreshToken = async () => {
     return EncryptedStorage.getItem(REFRESH_TOKEN_NAME)
 }
 
-export const decodeAccessToken = async () => {
+const decodeAccessToken = async () => {
     const token = await EncryptedStorage.getItem(ACCESS_TOKEN_NAME)
 
     if (token) {
-        return jwtDecode.jwtDecode(token)
+        return jwtDecode(token)
     } else {
         return null
     }
+}
+
+const decodeRefreshToken = async () => {
+    const token = await EncryptedStorage.getItem(REFRESH_TOKEN_NAME)
+
+    if (token) {
+        return jwtDecode(token)
+    } else {
+        return null
+    }
+}
+
+export const checkAccessTokenExp = async () => {
+    const currentTime = Math.floor(Date.now() / 1000)
+    const decodedToken = await decodeAccessToken()
+    console.log('currentTime:', currentTime)
+    console.log('decodedToken:', decodedToken)
+    return decodedToken?.exp && decodedToken.exp > currentTime
+}
+
+export const checkRefreshTokenExp = async () => {
+    const currentTime = Math.floor(Date.now() / 1000)
+    const decodedToken = await decodeRefreshToken()
+    return decodedToken?.exp && decodedToken.exp > currentTime
 }

@@ -10,6 +10,8 @@ import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import theme from 'styles/theme'
 import * as encoding from 'text-encoding'
+import { decode } from 'base-64'
+global.atob = decode
 
 const ProvidedNavigator = () => {
     return (
