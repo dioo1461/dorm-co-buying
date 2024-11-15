@@ -107,14 +107,17 @@ function App(): React.JSX.Element {
             if (autoLoginEnabled === null || autoLoginEnabled === 'false')
                 return
 
+            console.log('app - renewAccessToken')
             const [accessTokenAvailable, refreshTokenAvailable] =
                 await Promise.all([
                     validateAccessToken(),
                     validateRefreshToken(),
                 ])
 
+            console.log('accessToken', await getAccessToken())
+            console.log('refreshToken', await getRefreshToken())
             console.log('accessTokenAvailable:', accessTokenAvailable)
-            console.log('refreshTokenAvailable:', refreshTokenAvailable)
+            console.log('refreshToke nAvailable:', refreshTokenAvailable)
             if (accessTokenAvailable) return
             if (!refreshTokenAvailable) return
             // refresh token으로 access token 갱신
@@ -136,7 +139,13 @@ function App(): React.JSX.Element {
             console.log('app - checkLoginStatus')
             try {
                 // Step 1: getMemberInfo 요청
-                const memberInfo = await getMemberInfo()
+
+                const [memberInfo, boardList, profile] = await Promise.all([
+                    getMemberInfo(),
+                    getBoardList(),
+                    getProfile(),
+                ])
+
                 if (memberInfo) {
                     setMemberInfo(memberInfo) // memberInfo 저장
                     setAuthed(0)
@@ -144,12 +153,7 @@ function App(): React.JSX.Element {
                 if (memberInfo.university == 'null') {
                     setAuthed(1)
                 }
-                // Step 2: getBoardList 요청 (memberInfo가 성공한 경우에 실행)
-                const boardList = await getBoardList()
                 setBoardList(boardList)
-
-                // Step 3: getProfile 요청 (getBoardList가 성공한 경우에 실행)
-                const profile = await getProfile()
                 setProfile(profile)
                 setLoginState(true)
             } catch (error) {
