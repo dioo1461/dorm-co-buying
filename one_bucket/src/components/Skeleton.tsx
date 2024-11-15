@@ -6,7 +6,8 @@ interface SkeletonPlaceholderProps {
     isLoading: boolean
     containerStyle?: StyleProp<ViewStyle>
     theme: Icolor
-    children: JSX.Element
+    children?: React.ReactNode
+    layout?: Array<any>
 }
 
 const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
@@ -14,6 +15,7 @@ const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
     theme,
     containerStyle,
     children,
+    layout,
 }): React.JSX.Element => {
     return theme === lightColors ? (
         <SkeletonContent
@@ -22,6 +24,7 @@ const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
             highlightColor={baseColors.GRAY_3}
             boneColor={baseColors.GRAY_2}
             children={children}
+            layout={layout}
         />
     ) : (
         <SkeletonContent
@@ -30,6 +33,7 @@ const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
             highlightColor={baseColors.GRAY_3}
             boneColor={baseColors.GRAY_2}
             children={children}
+            layout={layout}
         />
     )
 }

@@ -29,6 +29,8 @@ import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
 import { CachedImage } from '@/components/CachedImage'
 import { joinTrade } from '@/apis/tradeService'
+import Skeleton from '@/components/Skeleton'
+import SkeletonContent from 'react-native-skeleton-content-nonexpo'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -159,50 +161,89 @@ const MarketPost: React.FC = (): JSX.Element => {
                         }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
                     <Text style={styles.contentText}>{data?.text}</Text>
                     {/* ### 사이트 링크 프리뷰 ### */}
-                    {data?.trade_linkUrl &&
-                        (metaData ? (
-                            <TouchableNativeFeedback
-                                background={TouchableNativeFeedback.Ripple(
-                                    baseColors.GRAY_2,
-                                    false,
-                                )}>
-                                <View style={styles.linkPreviewContainer}>
-                                    {/* ### 프리뷰 이미지 ### */}
-                                    {metaData!.image && (
-                                        <View
-                                            style={{
-                                                width: 112,
-                                                height: 112,
-                                            }}>
-                                            <CachedImage
-                                                imageUrl={metaData!.image}
-                                                imageStyle={{
-                                                    width: 112,
-                                                    height: 112,
-                                                }}
-                                                isExternalUrl={true}
-                                            />
-                                        </View>
-                                    )}
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            padding: 10,
-                                            justifyContent: 'space-between',
-                                        }}>
-                                        <Text
-                                            style={styles.linkPreviewTitleText}>
-                                            {metaData?.title}
-                                        </Text>
-                                        <Text style={styles.linkPreviewUrlText}>
-                                            {metaData?.url}
-                                        </Text>
-                                    </View>
+                    {metaData ? (
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple(
+                                baseColors.GRAY_2,
+                                false,
+                            )}>
+                            <View style={styles.linkPreviewContainer}>
+                                {/* ### 프리뷰 이미지 ### */}
+                                <View
+                                    style={{
+                                        width: 112,
+                                        height: 112,
+                                    }}>
+                                    <CachedImage
+                                        imageUrl={metaData?.image}
+                                        imageStyle={{
+                                            width: 112,
+                                            height: 112,
+                                        }}
+                                        isExternalUrl={true}
+                                    />
                                 </View>
-                            </TouchableNativeFeedback>
-                        ) : (
-                            <Text>{data?.trade_linkUrl}</Text>
-                        ))}
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        padding: 10,
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <Text style={styles.linkPreviewTitleText}>
+                                        {metaData?.title}
+                                    </Text>
+                                    <Text style={styles.linkPreviewUrlText}>
+                                        {metaData?.url}
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableNativeFeedback>
+                    ) : (
+                        <View style={styles.linkPreviewContainer}>
+                            <Skeleton
+                                containerStyle={{}}
+                                theme={themeColor}
+                                isLoading={true}
+                                layout={[{ width: 112, height: 112 }]}
+                            />
+                            <Skeleton
+                                containerStyle={{
+                                    flex: 1,
+                                    padding: 10,
+                                    justifyContent: 'space-between',
+                                }}
+                                theme={themeColor}
+                                isLoading={true}
+                                layout={[
+                                    { width: '100%', height: 60 },
+                                    { width: '80%', height: 20 },
+                                ]}
+                            />
+                        </View>
+
+                        // <Skeleton
+                        //     containerStyle={styles.linkPreviewContainer}
+                        //     theme={themeColor}
+                        //     isLoading={true}>
+                        //     <View
+                        //         style={{
+                        //             width: 112,
+                        //             height: 112,
+                        //         }}
+                        //     />
+                        //     <View>
+                        //         <Text
+                        //             style={{
+                        //                 marginHorizontal: '4%',
+                        //                 marginVertical: '10%',
+                        //                 width: '60%',
+                        //                 height: '30%',
+                        //             }}
+                        //         />
+                        //         <Text style={{}} />
+                        //     </View>
+                        // </Skeleton>
+                    )}
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
