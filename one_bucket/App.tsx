@@ -53,6 +53,20 @@ import axios, { AxiosError } from 'axios'
 import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
 import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
 import MyMarketPosts from '@/screens/myPage/MyMarketPosts'
+import { requestAccessTokenRenew } from '@/apis/authService'
+import {
+    getAccessToken,
+    getRefreshToken,
+    setAccessToken,
+    setRefreshToken,
+    validateAccessToken,
+    validateRefreshToken,
+} from '@/utils/accessTokenUtils'
+import {
+    getAutoLoginEnabled,
+    getLoginFlag,
+    setLoginFlag,
+} from '@/utils/asyncStorageUtils'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -84,11 +98,42 @@ function App(): React.JSX.Element {
 
     const [authed, setAuthed] = useState(0)
 
+    // ###### check login status ######
     useEffect(() => {
         const ac = new AbortController()
-        const checkLoginStatus = async () => {
-            console.log('app - checkLoginStatus')
 
+        const renewAccessToken = async () => {
+            const autoLoginEnabled = await getAutoLoginEnabled()
+            if (autoLoginEnabled === null || autoLoginEnabled === 'false')
+                return
+
+            const [accessTokenAvailable, refreshTokenAvailable] =
+                await Promise.all([
+                    validateAccessToken(),
+                    validateRefreshToken(),
+                ])
+
+            console.log('accessTokenAvailable:', accessTokenAvailable)
+            console.log('refreshTokenAvailable:', refreshTokenAvailable)
+            if (accessTokenAvailable) return
+            if (!refreshTokenAvailable) return
+            // refresh token으로 access token 갱신
+            // + 현재 서버 로직상 requestAccessTokenRenew 요청을 보내면 refresh token을 함께 반환함.
+            const response = await requestAccessTokenRenew().catch()
+            await Promise.all([
+                setAccessToken(response.accessToken),
+                setRefreshToken(response.refreshToken),
+            ])
+        }
+
+        const checkLoginStatus = async () => {
+            const loginFlag = await getLoginFlag()
+            if (loginFlag === null || loginFlag === 'false') {
+                SplashScreen.hide()
+                return
+            }
+
+            console.log('app - checkLoginStatus')
             try {
                 // Step 1: getMemberInfo 요청
                 const memberInfo = await getMemberInfo()
@@ -129,12 +174,17 @@ function App(): React.JSX.Element {
             }
         }
 
-        checkLoginStatus()
+        const executeSynchronously = async () => {
+            await renewAccessToken()
+            checkLoginStatus()
+        }
+
+        executeSynchronously()
 
         return function cleanup() {
             ac.abort()
         }
-    }, [loginState])
+    }, [])
 
     const home = (authed: number) => {
         if (authed == 0) return strings.homeScreenName

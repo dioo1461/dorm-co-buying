@@ -68,16 +68,16 @@ const decodeRefreshToken = async () => {
     }
 }
 
-export const checkAccessTokenExp = async () => {
+export const validateAccessToken = async () => {
     const currentTime = Math.floor(Date.now() / 1000)
     const decodedToken = await decodeAccessToken()
-    console.log('currentTime:', currentTime)
-    console.log('decodedToken:', decodedToken)
-    return decodedToken?.exp && decodedToken.exp > currentTime
+    if (!decodedToken) return false
+    return decodedToken.exp! > currentTime
 }
 
-export const checkRefreshTokenExp = async () => {
+export const validateRefreshToken = async (): Promise<boolean> => {
     const currentTime = Math.floor(Date.now() / 1000)
     const decodedToken = await decodeRefreshToken()
-    return decodedToken?.exp && decodedToken.exp > currentTime
+    if (!decodedToken) return false
+    return decodedToken.exp! > currentTime
 }

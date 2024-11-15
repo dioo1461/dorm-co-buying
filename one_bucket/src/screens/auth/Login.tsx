@@ -2,7 +2,6 @@ import { requestLogin } from '@/apis/authService'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { setAccessToken, setRefreshToken } from '@/utils/accessTokenUtils'
 import React, { useEffect, useRef } from 'react'
 import {
     Appearance,
@@ -18,9 +17,9 @@ import BouncyCheckbox, {
     BouncyCheckboxHandle,
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-// import IcHide from '@/assets/drawable/bxs_hide.svg'
 import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
 import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
+import { setAutoLoginEnabled } from '@/utils/asyncStorageUtils'
 
 const Login: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
@@ -46,7 +45,7 @@ const Login: React.FC = (): React.JSX.Element => {
 
     const [id, setId] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const [autoLoginEnabled, setAutoLoginEnabled] = React.useState(false)
+    const autoLogin = useRef(false)
     const navigation = stackNavigation()
 
     let bouncyCheckboxRef = useRef<BouncyCheckboxHandle>(null)
@@ -56,6 +55,7 @@ const Login: React.FC = (): React.JSX.Element => {
             username: id,
             password: password,
         }
+        setAutoLoginEnabled(autoLogin.current)
         requestLogin(loginForm)
             .then(res => {
                 onLogInSuccess()
@@ -65,10 +65,6 @@ const Login: React.FC = (): React.JSX.Element => {
                 onLoginFailure()
             })
     }
-
-    const handleForgotPassword = () => {}
-
-    const handleGoogleLogin = () => {}
 
     const [easterEgg, setEE] = React.useState(10)
     const [eeVisible, setEEVisible] = React.useState(false)
@@ -175,7 +171,7 @@ const Login: React.FC = (): React.JSX.Element => {
                             ref={bouncyCheckboxRef}
                             size={25}
                             fillColor={themeColor.BUTTON_BG}
-                            onPress={value => setAutoLoginEnabled(!value)}
+                            onPress={value => (autoLogin.current = value)}
                         />
                     </View>
                     <View>

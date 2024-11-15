@@ -9,7 +9,11 @@ import {
 } from '@/data/request/SignUpRequestBody'
 import { LoginResponse } from '@/data/response/success/LoginResponse'
 import { SetUniversityResponse } from '@/data/response/success/SetUniversityResponse'
-import { setAccessToken, setRefreshToken } from '@/utils/accessTokenUtils'
+import {
+    getRefreshToken,
+    setAccessToken,
+    setRefreshToken,
+} from '@/utils/accessTokenUtils'
 import { createAuthAxios, createAxios } from 'utils/axiosFactory'
 
 // ########## POST ##########
@@ -133,19 +137,27 @@ export const setUniversity = async (
             return response.data
         })
         .catch(error => {
-            console.log(error)
+            console.log('setUniversity -', error)
             throw error
         })
 }
 
-export const requestAccessToken = async (): Promise<any> => {
-    const axios = createAxios()
-    return axios
-        .get('/refresh')
-        .then(res => {
-            return res
+export const requestAccessTokenRenew = async (): Promise<LoginResponse> => {
+    const [authAxios, refreshToken] = await Promise.all([
+        createAuthAxios(),
+        getRefreshToken(),
+    ])
+    console.log(refreshToken)
+
+    return authAxios
+        .post('/refresh-token', {
+            refreshToken: refreshToken,
+        })
+        .then(response => {
+            return response.data
         })
         .catch(error => {
+            console.log('requestAccessTokenRenew error -', error)
             throw error
         })
 }
