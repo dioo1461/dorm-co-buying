@@ -1,4 +1,4 @@
-import { getBoardPost, getBoardPostList } from '@/apis/boardService'
+import { getBoardPost, getBoardPostList, getAnnouncPostList } from '@/apis/boardService'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import {

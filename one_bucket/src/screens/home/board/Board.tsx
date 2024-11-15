@@ -49,7 +49,7 @@ const Board: React.FC = (): JSX.Element => {
         )
         return () => themeSubscription.remove()
     }, [])
-
+    
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>

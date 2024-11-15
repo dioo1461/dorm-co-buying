@@ -47,7 +47,7 @@ import {
 import {
     RootStackParamList,
     stackNavigation,
-} from '../../navigation/NativeStackNavigation'
+} from '../navigation/NativeStackNavigation'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
@@ -56,7 +56,7 @@ const LOCK_SLEEP_TIME = 2000
 // TODO: 댓글 수정 기능 구현
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
-const BoardPost: React.FC = (): JSX.Element => {
+const AnnouncementPost: React.FC = (): JSX.Element => {
     const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
@@ -75,38 +75,10 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const styles = createStyles(themeColor)
 
-    type BoardPostProp = RouteProp<RootStackParamList, 'BoardPost'>
-    const { params } = useRoute<BoardPostProp>()
+    type AnnouncementPostProp = RouteProp<RootStackParamList, 'AnnouncementPost'>
+    const { params } = useRoute<AnnouncementPostProp>()
 
     const navigation = stackNavigation()
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: params.boardName,
-            headerLeft: () => (
-                <TouchableOpacity
-                    style={{ marginLeft: 16 }}
-                    onPress={() => navigation.goBack()}>
-                    <IcAngleLeft fill={themeColor.HEADER_TEXT} />
-                </TouchableOpacity>
-            ),
-            headerRight: () => (
-                <TouchableOpacity
-                    style={{ marginRight: 16 }}
-                    onPress={() => setBottomSheetEnabled(true)}>
-                    <IcOthers fill={themeColor.HEADER_TEXT} />
-                </TouchableOpacity>
-            ),
-
-            headerStyle: {
-                backgroundColor: themeColor.HEADER_BG,
-            },
-            headerTitleStyle: {
-                color: themeColor.HEADER_TEXT,
-                fontFamily: 'NanumGothic',
-                fontSize: 18,
-            },
-        })
-    }, [navigation])
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
@@ -151,95 +123,8 @@ const BoardPost: React.FC = (): JSX.Element => {
         }
     }, [])
 
-    const onSuccessCallback = (data: GetBoardPostResponse) => {
-        userLiked.current = data.userAlreadyLikes
-        console.log('onSuccessCallback', data)
-
-        const onModifyPostButtonPress = () => {
-            navigation.navigate('UpdateBoardPost', {
-                postId: params.postId,
-                boardId: params.boardId,
-                title: data!.title,
-                content: data!.text,
-                imageUrlList: data!.imageUrls,
-            })
-        }
-        const onDeletePostButtonPress = () => {
-            deletePost(params.postId).then(() => {
-                navigation.navigate('Board', { pendingRefresh: true })
-            })
-        }
-        const onReportPostButtonPress = () => {}
-
-        setLikeAdded(0)
-        if (data.authorNickname == memberInfo!.nickname) {
-            setBottomSheetButtonProps([
-                {
-                    text: '수정하기',
-                    style: 'default',
-                    onPress: onModifyPostButtonPress,
-                },
-                {
-                    text: '삭제하기',
-                    style: 'destructive',
-                    onPress: onDeletePostButtonPress,
-                },
-            ])
-        } else {
-            setBottomSheetButtonProps([
-                {
-                    text: '신고하기',
-                    style: 'default',
-                    onPress: onReportPostButtonPress,
-                },
-            ])
-        }
-    }
-
-    const { data, isLoading, error, refetch } = queryBoardPost(
-        params.postId,
-        onSuccessCallback,
-    )
-
-    // TODO: 댓글 내용 validate
-    const handleCommentSubmit = async () => {
-        setLoadingBackdropEnabled(true)
-        var requestBody
-        if (parentCommentId !== -1) {
-            requestBody = {
-                postId: params.postId,
-                text: commentValue,
-                parentCommentId: parentCommentId,
-            }
-        } else {
-            requestBody = {
-                postId: params.postId,
-                text: commentValue,
-            }
-        }
-
-        addComment(requestBody)
-            .then(res => {
-                setCommentValue('')
-                refetch()
-                setLoadingBackdropEnabled(false)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    const onCommentOptionButtonPress = (data: IComment) => {
-        // if (memberInfo?.nickname
-    }
 
     // ########## RENDERING PARTS ##########
-
-    const handleRefresh = async () => {
-        setIsRefreshing(true)
-        await refetch()
-        setIsRefreshing(false)
-    }
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const threshold = 0
@@ -279,66 +164,6 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const onLikeButtonPress = async () => {
-        if (data!.authorNickname)
-            if (likeLock.current) {
-                ToastAndroid.show(
-                    '좋아요는 2초에 한 번 이상 누를 수 없습니다.',
-                    ToastAndroid.SHORT,
-                )
-                return
-            }
-
-        if (userLiked.current) {
-            ToastAndroid.show('좋아요를 취소했습니다.', ToastAndroid.SHORT)
-            likeLock.current = true
-            userLiked.current = false
-            setLikeAdded(likeAdded - 1)
-            await deleteLike(params.postId)
-            await sleep(LOCK_SLEEP_TIME)
-            likeLock.current = false
-            return
-        }
-
-        if (!userLiked.current) {
-            // TODO: 좋아요 완료 toast 출력
-            likeLock.current = true
-            userLiked.current = true
-            setLikeAdded(likeAdded + 1)
-            await addLike(params.postId)
-            await sleep(LOCK_SLEEP_TIME)
-            likeLock.current = false
-            return
-        }
-    }
-
-    const likeButtonFill = (liked: boolean) => {
-        if (liked) return baseColors.LIGHT_RED
-        else return 'none'
-    }
-
-    if (error) return <Text>Error...</Text>
-
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
-
     return (
         <View style={styles.container}>
         {/*
@@ -350,7 +175,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 refreshControl={
                     <RefreshControl
                         refreshing={isRefreshing}
-                        onRefresh={handleRefresh}
                     />
                 }
                 style={{
@@ -368,16 +192,16 @@ const BoardPost: React.FC = (): JSX.Element => {
                         styles.titleText,
                         { marginHorizontal: 10, marginBottom: 10 },
                     ]}>
-                    {data?.title}
+                    {params?.title}
                 </Text>
                 <Text
                     style={[
                         styles.contentText,
                         { marginHorizontal: 6, marginBottom: 10 },
                     ]}>
-                    {data?.text}
+                    {params?.content}
                 </Text>
-                {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
+                {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동
                 {!isImageInView && data!.imageUrls.length > 0 && (
                     <ScrollView
                         ref={scrollViewRef}
@@ -412,124 +236,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                 )}
                 {isImageInView && data!.imageUrls.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
-                )}
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                    {/* ### 좋아요 버튼 ### */}
-                    <View style={styles.likesAndCommentContainer}>
-                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
-                        <Text
-                            style={[
-                                styles.likesAndCommentCountText,
-                                { color: baseColors.LIGHT_RED },
-                            ]}>
-                            {data!.likes + likeAdded}
-                        </Text>
-                    </View>
-                    {/* ### 댓글 수 ### */}
-                    <View style={styles.likesAndCommentContainer}>
-                        <IcComment />
-                        <Text
-                            style={[
-                                styles.likesAndCommentCountText,
-                                { color: baseColors.LIGHT_BLUE },
-                            ]}>
-                            {data?.comments.length}
-                        </Text>
-                    </View>
-                </View>
-                <View>
-                    <TouchableOpacity
-                        style={styles.likeButton}
-                        onPress={() => onLikeButtonPress()}>
-                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
-                        <Text style={styles.likeButtonText}>좋아요</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* <View onLayout={handleCommentLayout} style={styles.line} /> */}
-                {/* ### 댓글 리스트 ### */}
-                <View>
-                    {data?.comments.map((comment, index) => {
-                        var highlight = comment.commentId === parentCommentId
-                        return (
-                            <View key={index}>
-                                <Comment
-                                    theme={themeColor}
-                                    data={comment}
-                                    isReply={false}
-                                    parentCommentId={parentCommentId}
-                                    setParentCommentId={id =>
-                                        setParentCommentId(id)
-                                    }
-                                    highlight={highlight}
-                                    onReplyButtonPress={() => {
-                                        commentInputRef.current?.focus()
-                                    }}
-                                    onOptionButtonPress={data =>
-                                        onCommentOptionButtonPress
-                                    }
-                                />
-                                {comment.replies.map((val, idx) => (
-                                    <Comment
-                                        key={idx}
-                                        theme={themeColor}
-                                        data={val}
-                                        isReply={true}
-                                        parentCommentId={parentCommentId}
-                                        setParentCommentId={id =>
-                                            setParentCommentId(id)
-                                        }
-                                        highlight={false}
-                                        onOptionButtonPress={data =>
-                                            onCommentOptionButtonPress
-                                        }
-                                    />
-                                ))}
-                            </View>
-                        )
-                    })}
-                </View>
+                )} */}
             </ScrollView>
-            {/* ### 댓글 입력 container ### */}
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    alignItems: 'center',
-                    width: '100%',
-                    height: 52,
-                    position: 'absolute',
-                    bottom: 0,
-                }}>
-                <View style={styles.commentInputContainer}>
-                    <TextInput
-                        ref={commentInputRef}
-                        style={styles.commentTextInput}
-                        placeholder='댓글을 입력하세요.'
-                        placeholderTextColor={themeColor.TEXT_SECONDARY}
-                        value={commentValue}
-                        onChangeText={text => setCommentValue(text)}
-                    />
-                    <TouchableOpacity
-                        style={{ marginEnd: 10 }}
-                        onPress={() => {
-                            if (!commentValue) {
-                                ToastAndroid.showWithGravity(
-                                    '내용을 입력해 주세요.',
-                                    ToastAndroid.SHORT,
-                                    ToastAndroid.CENTER,
-                                )
-                            } else handleCommentSubmit()
-                        }}>
-                        <IcSend
-                            fill={
-                                themeColor === lightColors
-                                    ? baseColors.SCHOOL_BG
-                                    : baseColors.GRAY_2
-                            }
-                        />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ### */}
+            {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ###
             {isImageInView && data!.imageUrls.length > 0 && (
                 <ScrollView
                     ref={scrollViewRef}
@@ -567,7 +276,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-            )}
+            )} */}
             <LoadingBackdrop
                 enabled={loadingBackdropEnabled}
                 theme={themeColor}
@@ -590,7 +299,7 @@ const BoardPost: React.FC = (): JSX.Element => {
     )
 }
 
-export default BoardPost
+export default AnnouncementPost
 
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({

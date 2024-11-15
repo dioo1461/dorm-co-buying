@@ -209,7 +209,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     />
                     <TouchableOpacity
                         style={{...styles.button,
-                            backgroundColor: !name
+                            backgroundColor: !name || !year || !month || !day
                                 ? baseColors.GRAY_2
                                 : baseColors.SCHOOL_BG, 
                         }}

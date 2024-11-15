@@ -46,7 +46,8 @@ const strings = {
     changePwScreenName: 'ChangePw',
     changePw2ScreenName: 'ChangePw2',
     alertSettingScreenName: 'AlertSetting',
-    announcementScreenName: 'Announcement',
+    announcementListScreenName: 'AnnouncementList',
+    announcementPostScreenName: 'AnnouncementPost',
     supportScreenName: 'Support',
     versionCheckScreenName: 'VersionCheck',
 
@@ -70,7 +71,8 @@ const strings = {
     // searchScreenTitle: '검색',
     notificationScreenTitle: '알림',
     alertSettingScreenTitle: '알림 수신 설정',
-    announcementScreenTitle: '공지사항',
+    announcementListScreenTitle: '공지사항',
+    announcementPostScreenTitle: '공지사항',
     supportScreenTitle: '개발자 문의',
     versionCheckScreenTitle: '버전 정보',
 
