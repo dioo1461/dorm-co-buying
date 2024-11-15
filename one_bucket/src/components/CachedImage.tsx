@@ -34,7 +34,7 @@ export const CachedImage = ({
                 style={[
                     imageStyle, // 주어진 스타일 적용
                     {
-                        backgroundColor: baseColors.GRAY_1, // 기본 배경색
+                        backgroundColor: baseColors.GRAY_2, // 기본 배경색
                         justifyContent: 'center',
                         alignItems: 'center',
                     },

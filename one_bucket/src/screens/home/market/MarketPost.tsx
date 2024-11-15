@@ -1,36 +1,34 @@
+import { joinTrade } from '@/apis/tradeService'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
+import IcHeart from '@/assets/drawable/ic-heart.svg'
+import IcLocation from '@/assets/drawable/ic-location.svg'
+import IcOthers from '@/assets/drawable/ic-others.svg'
+import IcShare from '@/assets/drawable/ic-share.svg'
+import { CachedImage } from '@/components/CachedImage'
+import Loading from '@/components/Loading'
+import Skeleton from '@/components/Skeleton'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
+import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { useEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
     Dimensions,
-    Image,
     ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
+    TouchableOpacity,
     View,
 } from 'react-native'
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import IcShare from '@/assets/drawable/ic-share.svg'
-import IcOthers from '@/assets/drawable/ic-others.svg'
-import { TouchableOpacity } from 'react-native'
 import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
-import IcLocation from '@/assets/drawable/ic-location.svg'
-import IcHeart from '@/assets/drawable/ic-heart.svg'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
-import Loading from '@/components/Loading'
-import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
-import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
-import { CachedImage } from '@/components/CachedImage'
-import { joinTrade } from '@/apis/tradeService'
-import Skeleton from '@/components/Skeleton'
-import SkeletonContent from 'react-native-skeleton-content-nonexpo'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 

@@ -21,8 +21,8 @@ const Skeleton: React.FC<SkeletonPlaceholderProps> = ({
         <SkeletonContent
             isLoading={isLoading}
             containerStyle={containerStyle}
-            highlightColor={baseColors.GRAY_3}
-            boneColor={baseColors.GRAY_2}
+            highlightColor={baseColors.GRAY_4}
+            boneColor={baseColors.GRAY_3}
             children={children}
             layout={layout}
         />
