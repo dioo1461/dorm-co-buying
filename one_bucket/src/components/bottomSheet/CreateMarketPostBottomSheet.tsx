@@ -15,6 +15,7 @@ import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketP
 import { createMarketPost } from '@/apis/marketService'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Accordion from '../Accordion'
+import IcAngleDown from '@/assets/drawable/ic-angle-down.svg'
 
 interface Props {
     enabled: boolean
@@ -33,7 +34,6 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
 }): JSX.Element => {
     const styles = createStyles(theme)
     const [chatName, setChatName] = useState('')
-    const [keyboardVisible, setKeyboardVisible] = useState(false)
     const [accordionExpanded, setAccordionExpanded] = useState(true)
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
             'keyboardDidShow',
             () => {
                 console.log('keyboard show')
-                setKeyboardVisible(true)
+                setAccordionExpanded(false)
             },
         )
 
@@ -49,7 +49,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
             'keyboardDidHide',
             () => {
                 console.log('keyboard hide')
-                setKeyboardVisible(false)
+                setAccordionExpanded(true)
             },
         )
 
@@ -93,13 +93,22 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                             거래글 생성하기
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
+                        style={styles.tradeInfoContainer}
                         onPress={() =>
                             setAccordionExpanded(!accordionExpanded)
                         }>
                         <Text style={styles.tradeInfoLabel}>거래 정보</Text>
-                    </TouchableOpacity>
-                    <Accordion expanded={accordionExpanded}>
+                        <IcAngleDown />
+                    </TouchableOpacity> */}
+                    <Accordion
+                        expanded={accordionExpanded}
+                        onToggle={() =>
+                            setAccordionExpanded(!accordionExpanded)
+                        }
+                        containerStyle={styles.tradeInfoContainer}
+                        headerTitle='거래 정보'
+                        theme={theme}>
                         <ScrollView style={styles.scrollView}>
                             <View style={styles.itemContainer}>
                                 <Text style={styles.itemLabel}>상품명</Text>
@@ -200,16 +209,17 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             fontFamily: 'NanumGothic',
         },
-        tradeInfoLabel: {
-            color: theme.TEXT,
-            width: '100%',
-            marginStart: 24,
-            fontSize: 16,
-            fontFamily: 'NanumGothic-Bold',
+        tradeInfoContainer: {
+            width: '75%',
             marginTop: 20,
         },
+        tradeInfoLabel: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
+            marginEnd: 10,
+        },
         scrollView: {
-            width: '75%',
             height: 200,
             marginTop: 10,
         },
