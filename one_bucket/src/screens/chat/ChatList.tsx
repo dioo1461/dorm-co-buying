@@ -100,6 +100,12 @@ const ChatList: React.FC = (): React.JSX.Element => {
                 }
                 return room
             })
+            // Sort the updated list
+            updatedList.sort((a: ChatRoom, b: ChatRoom) => {
+                const dateA = new Date(a.recentMessageTime).getTime()
+                const dateB = new Date(b.recentMessageTime).getTime()
+                return dateB - dateA
+            })
             return updatedList
         })
     }
