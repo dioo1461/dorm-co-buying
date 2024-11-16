@@ -7,14 +7,14 @@ import Animated, {
 } from 'react-native-reanimated'
 
 interface AccordionProps {
-    isExpanded: boolean
+    expanded: boolean
     children: React.ReactNode
     viewKey?: string
     duration?: number
 }
 
 const Accordion: React.FC<AccordionProps> = ({
-    isExpanded,
+    expanded,
     children,
     viewKey,
     duration = 500,
@@ -24,12 +24,13 @@ const Accordion: React.FC<AccordionProps> = ({
 
     // isExpanded가 true일 때만 height를 적용
     const derivedHeight = useDerivedValue(() =>
-        withTiming(isExpanded ? height.value : 0, { duration }),
+        withTiming(expanded ? height.value : 0, { duration }),
     )
 
     // 애니메이션 스타일 적용
     const bodyStyle = useAnimatedStyle(() => ({
         height: derivedHeight.value,
+        width: '100%',
     }))
 
     // 콘텐츠의 높이를 설정
@@ -41,15 +42,16 @@ const Accordion: React.FC<AccordionProps> = ({
     }
 
     return (
-        <Animated.View
-            key={`accordionItem_${viewKey}`}
-            style={[styles.animatedView, bodyStyle]}>
-            <View
-                onLayout={onLayout} // 콘텐츠 높이 설정
-                style={styles.wrapper}>
+        <View>
+            <View style={styles.hiddenContent} onLayout={onLayout}>
                 {children}
             </View>
-        </Animated.View>
+            <Animated.View
+                key={`accordionItem_${viewKey}`}
+                style={[styles.animatedView, bodyStyle]}>
+                <View style={styles.wrapper}>{children}</View>
+            </Animated.View>
+        </View>
     )
 }
 
@@ -61,5 +63,10 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         width: '100%',
+    },
+    hiddenContent: {
+        position: 'absolute',
+        opacity: 0,
+        zIndex: -1,
     },
 })

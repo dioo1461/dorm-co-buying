@@ -124,6 +124,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     }
 
     const checkFormAvailable = () => {
+        return true
         return (
             imageUriList.length > 0 &&
             itemName.length > 0 &&
@@ -521,7 +522,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                         onSubmitButtonPress()
                         setPreventMultPost(false)
                     }}
-                    disabled={!!(!checkFormAvailable() || !preventMultPost)}>
+                    disabled={!checkFormAvailable()}>
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>

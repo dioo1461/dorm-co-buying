@@ -40,6 +40,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             () => {
+                console.log('keyboard show')
                 setKeyboardVisible(true)
             },
         )
@@ -47,6 +48,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
         const keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
             () => {
+                console.log('keyboard hide')
                 setKeyboardVisible(false)
             },
         )
@@ -97,7 +99,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                         }>
                         <Text style={styles.tradeInfoLabel}>거래 정보</Text>
                     </TouchableOpacity>
-                    <Accordion isExpanded={accordionExpanded}>
+                    <Accordion expanded={accordionExpanded}>
                         <ScrollView style={styles.scrollView}>
                             <View style={styles.itemContainer}>
                                 <Text style={styles.itemLabel}>상품명</Text>
