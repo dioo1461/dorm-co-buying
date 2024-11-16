@@ -48,7 +48,7 @@ export const getRefreshToken = async () => {
     return EncryptedStorage.getItem(REFRESH_TOKEN_NAME)
 }
 
-const decodeAccessToken = async () => {
+export const decodeAccessToken = async () => {
     const token = await EncryptedStorage.getItem(ACCESS_TOKEN_NAME)
 
     if (token) {
@@ -58,7 +58,7 @@ const decodeAccessToken = async () => {
     }
 }
 
-const decodeRefreshToken = async () => {
+export const decodeRefreshToken = async () => {
     const token = await EncryptedStorage.getItem(REFRESH_TOKEN_NAME)
 
     if (token) {

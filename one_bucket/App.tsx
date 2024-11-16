@@ -48,6 +48,10 @@ import Support from '@/screens/setting/Support'
 import VersionCheck from '@/screens/setting/VersionCheck'
 import UnauthHome from '@/screens/UnauthHome'
 import {
+    decodeAccessToken,
+    decodeRefreshToken,
+    getAccessToken,
+    getRefreshToken,
     setAccessToken,
     setRefreshToken,
     validateAccessToken,
@@ -56,6 +60,7 @@ import {
 import {
     getAutoLoginEnabled,
     getLoginInitFlag,
+    setAutoLoginEnabled,
 } from '@/utils/asyncStorageUtils'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import axios from 'axios'
@@ -104,25 +109,30 @@ function App(): React.JSX.Element {
             if (autoLoginEnabled === null || autoLoginEnabled === 'false')
                 return
 
-            console.log('app - renewAccessToken')
+            console.log('app - renewAccessToken: autoLoginEnabled is true')
             const [accessTokenAvailable, refreshTokenAvailable] =
                 await Promise.all([
                     validateAccessToken(),
                     validateRefreshToken(),
                 ])
 
-            // console.log('accessToken', await getAccessToken())
-            // console.log('refreshToken', await getRefreshToken())
-            // console.log('accessTokenAvailable:', accessTokenAvailable)
-            // console.log('refreshToke nAvailable:', refreshTokenAvailable)
-            // console.log('refreshTokenDecoded', await decodeRefreshToken())
+            console.log('accessTokenAvailable:', accessTokenAvailable)
+            console.log('refreshToke nAvailable:', refreshTokenAvailable)
+            console.log('$$$$$$ accessToken', await getAccessToken())
+            console.log('refreshToken', await getRefreshToken())
+            console.log(
+                '$$$$$$ current time:',
+                Math.floor(new Date().getTime() / 1000),
+            )
+            console.log('accessTokenDecoded', await decodeAccessToken())
+            console.log('refreshTokenDecoded', await decodeRefreshToken())
             if (accessTokenAvailable) return
-            console.log('accessToken is expired or invalid')
+            console.log('$$$$$$ accessToken is expired or invalid')
             if (!refreshTokenAvailable) return
-            console.log('refreshToken is valid')
+            console.log('$$$$$$ refreshToken is valid')
             // refresh token으로 access token 갱신
             // + 현재 서버 로직상 requestAccessTokenRenew 요청을 보내면 refresh token을 함께 반환함.
-            const response = await requestAccessTokenRenew().catch()
+            const response = await requestAccessTokenRenew()
             await Promise.all([
                 setAccessToken(response.accessToken),
                 setRefreshToken(response.refreshToken),
