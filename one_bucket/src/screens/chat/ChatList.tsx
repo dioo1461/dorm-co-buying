@@ -43,70 +43,105 @@ const ChatList: React.FC = (): React.JSX.Element => {
     type esEventType = 'initial-room-list' | 'room-update'
 
     const esRef = useRef<EventSource<esEventType> | null>(null)
-    const [chatRoomList, setChatRoomData] =
+    const [chatRoomList, setChatRoomList] =
         useState<GetChatRoomListResponse | null>(null)
+    const roomUpdateHandlerInitialized = useRef(false)
 
+    // Track initialization state
+    const sseInitialized = useRef(false)
+
+    const initializeSSEConnection = async () => {
+        console.log('initializeSSEConnection')
+        if (esRef.current) return // Prevent duplicate connections
+
+        // Create SSE connection
+        const eventSource = await createSSEConnection({
+            endpoint: '/chat/sse/chatList',
+            options: {
+                headers: {
+                    Authorization: `Bearer ${await getAccessToken()}`,
+                },
+            },
+            eventHandlers: {
+                'initial-room-list': handleInitialRoomList,
+            },
+            debug: true,
+        })
+        esRef.current = eventSource
+        console.log('SSE connection initialized')
+        registerEventHandlers()
+    }
+
+    const handleInitialRoomList = (event: SSEMessage) => {
+        console.log('initial-room-list handled')
+        const data = JSON.parse(event.data) as GetChatRoomListResponse
+        const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
+            const dateA = new Date(a.recentMessageTime).getTime()
+            const dateB = new Date(b.recentMessageTime).getTime()
+            return dateB - dateA
+        })
+        setChatRoomList(sortedData)
+    }
+
+    const handleRoomUpdate = (event: SSEMessage) => {
+        console.log('room-update handled')
+        const data = JSON.parse(event.data) as SseRoomUpdateBody
+        setChatRoomList(prevList => {
+            if (!prevList) return null
+            // Update the specific room
+            const updatedList = prevList.map(room => {
+                if (room.roomId === data.roomId) {
+                    console.log('room found and updated')
+                    return {
+                        ...room,
+                        recentMessage: data.recentMessage,
+                        recentMessageTime: new Date(data.recentMessageTime),
+                    }
+                }
+                return room
+            })
+            return updatedList
+        })
+    }
+
+    const registerEventHandlers = () => {
+        console.log('Registering room-update handler')
+        roomUpdateHandlerInitialized.current = true
+        esRef.current!.addEventListener('room-update', handleRoomUpdate)
+    }
+
+    const cleanupSSE = () => {
+        console.log('$$$$ Cleaning up SSE connection $$$$')
+        if (esRef.current) {
+            esRef.current.flushAllListeners()
+            esRef.current.close()
+            esRef.current = null
+        }
+    }
+
+    // Initialize SSE connection when screen is focused
     useFocusEffect(
         useCallback(() => {
-            const initializeSSEConnection = async () => {
-                if (esRef.current) return // 이미 연결이 있다면 중복 연결 방지
-                const eventSource = await createSSEConnection({
-                    endpoint: '/chat/sse/chatList',
-                    options: {
-                        headers: {
-                            Authorization: `Bearer ${await getAccessToken()}`,
-                        },
-                    },
-                    eventHandlers: {
-                        'initial-room-list': initialRoomListHandler,
-                        'room-update': roomUpdateHandler,
-                    },
-                    debug: true,
-                })
-                esRef.current = eventSource
+            console.log('$$$$$$$ useFocusEffect triggered $$$$$$')
+            console.log('sseInitialized:', sseInitialized.current)
+            console.log(
+                'roomUpdateHandlerInitialized:',
+                roomUpdateHandlerInitialized.current,
+            )
+            if (!sseInitialized.current) {
+                console.log('SSE not initialized, initializing...')
+                initializeSSEConnection()
+                sseInitialized.current = true
             }
-
-            const initialRoomListHandler = (event: SSEMessage) => {
-                const data = JSON.parse(event.data) as GetChatRoomListResponse
-                const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
-                    const dateA = new Date(a.recentMessageTime).getTime()
-                    const dateB = new Date(b.recentMessageTime).getTime()
-                    return dateB - dateA
-                })
-                setChatRoomData(sortedData)
-            }
-
-            const roomUpdateHandler = (event: SSEMessage) => {
-                const data = JSON.parse(event.data) as SseRoomUpdateBody
-                const staleRoom = chatRoomList?.find(
-                    room => room.roomId === data.roomId,
-                )
-                if (!chatRoomList) return
-                if (!staleRoom) {
-                    console.log(
-                        'room-update received but no matching room found, is incorrect behavior',
-                    )
-                    return
-                }
-                staleRoom.recentMessage = data.recentMessage
-                staleRoom.recentMessageTime = new Date(data.recentMessageTime)
-                setChatRoomData([...chatRoomList])
-                console.log('room-update received')
-            }
-
-            initializeSSEConnection()
 
             return () => {
-                if (esRef.current) {
-                    esRef.current.remove(initialRoomListHandler)
-                    esRef.current.remove(roomUpdateHandler)
-                    esRef.current.close()
-                    esRef.current = null
-                }
+                console.log('Cleaning up on screen unfocus')
+                cleanupSSE()
+                sseInitialized.current = false
+                roomUpdateHandlerInitialized.current = false
             }
-        }, [setChatRoomData]),
+        }, []),
     )
-
     const formatRecentMessageTime = (utcTime: Date) => {
         const now = new Date()
         const diff = now.getTime() - utcTime.getTime()
