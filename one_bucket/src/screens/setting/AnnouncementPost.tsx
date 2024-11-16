@@ -29,6 +29,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
     Appearance,
+    Dimensions,
     Keyboard,
     KeyboardAvoidingView,
     LayoutChangeEvent,
@@ -44,12 +45,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { formatTimeAgo } from '@/utils/formatUtils'
 import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
 
-const IMAGE_SIZE = 112
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
+const IMAGE_SIZE = SCREEN_WIDTH * 0.9
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
 const LOCK_SLEEP_TIME = 2000
 
@@ -77,6 +80,10 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
 
     type AnnouncementPostProp = RouteProp<RootStackParamList, 'AnnouncementPost'>
     const { params } = useRoute<AnnouncementPostProp>()
+
+    const title = params?.res?.title
+    const content = params?.res?.content
+    const imageUrl = params?.imageUrl
 
     const navigation = stackNavigation()
 
@@ -192,17 +199,22 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                         styles.titleText,
                         { marginHorizontal: 10, marginBottom: 10 },
                     ]}>
-                    {params?.title}
+                    {title}
                 </Text>
                 <Text
                     style={[
                         styles.contentText,
                         { marginHorizontal: 6, marginBottom: 10 },
                     ]}>
-                    {params?.content}
+                    {content}
                 </Text>
-                {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동
-                {!isImageInView && data!.imageUrls.length > 0 && (
+                <Text style={styles.postMetaDataText}>
+                    {`${formatTimeAgo(
+                        params?.res?.createAt,
+                    )}`}
+                </Text>
+                {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
+                {!isImageInView && imageUrl.length > 0 && (
                     <ScrollView
                         ref={scrollViewRef}
                         horizontal
@@ -211,13 +223,13 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                         contentContainerStyle={{ flexGrow: 1 }}
                         onMomentumScrollEnd={onMomentumScrollEnd}
                         contentOffset={{ x: imageScrollPos, y: 0 }}>
-                        {data!.imageUrls.map((url, index) => (
+                        {[imageUrl].map((url, index) => (
                             <TouchableOpacity
                                 style={styles.imageContainer}
                                 key={index}
                                 onPress={() =>
                                     navigation.navigate('ImageEnlargement', {
-                                        imageUriList: data!.imageUrls,
+                                        imageUriList: [imageUrl],
                                         index: index,
                                         isLocalUri: false,
                                     })
@@ -234,9 +246,9 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                         ))}
                     </ScrollView>
                 )}
-                {isImageInView && data!.imageUrls.length > 0 && (
+                {isImageInView && imageUrl.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
-                )} */}
+                )} 
             </ScrollView>
             {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ###
             {isImageInView && data!.imageUrls.length > 0 && (
@@ -438,5 +450,12 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             flex: 1,
             marginStart: 6,
+        },
+        postMetaDataText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+            paddingTop: 10,
+            paddingBottom: 20,
         },
     })

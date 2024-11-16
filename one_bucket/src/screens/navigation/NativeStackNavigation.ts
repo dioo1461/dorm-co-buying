@@ -67,9 +67,8 @@ export type RootStackParamList = {
     AlertSetting: undefined
     AnnouncementList: any
     AnnouncementPost: {
-        title: string
-        content: string
-        id: number
+        res: any
+        imageUrl: string
     }
     Support: undefined
     VersionCheck: undefined

@@ -1,6 +1,7 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcClose from '@/assets/drawable/ic-close.svg'
 import IcNotification from '@/assets/drawable/ic-angle-left.svg'
+import IcNone from '@/assets/drawable/ic-no-announc.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
@@ -28,6 +29,7 @@ import {
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
 import { getAnnouncPost } from '@/apis/boardService'
+import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Backdrop from '@/components/Backdrop'
 
@@ -52,10 +54,6 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
 
     type AnnouncementListRouteProp = RouteProp<RootStackParamList, 'AnnouncementList'>
     const { params } = useRoute< AnnouncementListRouteProp>()
-
-    useEffect(()=>{
-        console.log(params)
-    })
 
     {/*
         "content": [{
@@ -105,14 +103,14 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
             return content
     }
 
-    const goAnnouncPost = (
-        title: string,
-        content: string,
-        id: number
-    ) => {
+    const goAnnouncPost = ( id: number, imageUrl: string ) => {
         getAnnouncPost(id)
             .then(res=>{
-                navigation.navigate('AnnouncementPost', {title, content, id})
+                navigation.navigate('AnnouncementPost', {
+                    res: res,
+                    imageUrl: imageUrl
+                }
+                )
             })
             .catch(err=>{
                 console.log('getAnnouncPostList: ', err)
@@ -126,19 +124,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                             themeColor.BG_SECONDARY,
                             false,
                     )}
-                    onPress={() =>
-                        goAnnouncPost(
-                            item?.title,
-                            item?.content,
-                            item?.id
-                        )
-                       /*
-                        navigation.navigate('AnnouncementPost', {
-                            title: item?.title,
-                            content: item?.content,
-                            id: params?.id}
-                        )   */
-                        }
+                    onPress={() =>goAnnouncPost(item?.id, item?.imageUrl)}
                     >
                     <View
                         style={{
@@ -179,8 +165,8 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                                     </Text>
                                 </View>
                             </View>
-                            {/* ### 이미지 ### 
-                            {data.imageUrls.length > 0 ? (
+                            {/* ### 이미지 ### */}
+                            {item?.imageUrl.length > 0 ? (
                                 <View style={styles.postImage}>
                                     <CachedImage
                                         imageStyle={{
@@ -188,12 +174,12 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                                             height: 72,
                                             borderRadius: 8,
                                         }}
-                                        imageUrl={data.imageUrls[0]}
+                                        imageUrl={item?.imageUrl}
                                     />
                                 </View>
                             ) : (
                                 <></>
-                            )}  */}
+                            )}  
                         </View>
                         <View
                             style={{
@@ -202,7 +188,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                                 alignItems: 'center',
                                 marginTop: 6,
                             }}>
-                            {/* ### 생성일자, 조회수 ### */}
+                            {/* ### 생성일자 ### */}
                             <View
                                 style={{
                                     flex: 1,
@@ -234,9 +220,12 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
             />
         </View>
         ) : (
-            <View>
-                <Text>공지사항 없음</Text>
-            </View>
+            <View style={styles.container2}>
+            <IcNone />
+            <Text style={{fontSize: 20, textAlign: 'center'}}>
+                {`공지사항이 없습니다.`}
+            </Text>
+        </View>
         )
     )
 }
@@ -388,6 +377,12 @@ const CreateStyles = (theme: Icolor) =>
         fabIcon: {
             fontSize: 40,
             color: theme.BUTTON_TEXT,
+        },
+        container2:{
+            backgroundColor: theme.BG,
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
     })
 
