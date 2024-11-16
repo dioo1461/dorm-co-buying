@@ -100,9 +100,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [isLoading, setIsLoading] = useState(true)
     const lastTimestamp = useRef<string | null>(null)
     const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[] | null>(
-        null,
-    )
+    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[]>([])
 
     const isLoadingMore = useRef<Boolean>(false)
     const [hasMoreMessages, setHasMoreMessagesToRender] = useState(true)
@@ -164,6 +162,7 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const fetchFreshChats = async () => {
             var timestamp = lastTimestamp.current!
+            console.log('fetchFreshChats - lastTimestamp: ', timestamp)
             getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
                 console.log('$$$$$$$fresh messages fetched ', res)
                 const freshMessages = res.map(chatLog => {
@@ -176,6 +175,12 @@ const Chat: React.FC = (): React.JSX.Element => {
                     }
                 })
                 addMessagesToCache(freshMessages)
+                if (freshMessages.length === 0) return
+                setChatMessages(prev => [...prev, ...freshMessages])
+                setLastTimestampOfChatRoom(
+                    params.roomId,
+                    freshMessages[freshMessages.length - 1].time,
+                )
                 return
             })
         }
@@ -185,7 +190,6 @@ const Chat: React.FC = (): React.JSX.Element => {
             const messages = await retrieveMessagesFromCache(
                 messageRenderLimit,
                 0,
-                lastTimestamp.current!,
             )
             if (messages) setChatMessages(messages)
         }
@@ -193,13 +197,13 @@ const Chat: React.FC = (): React.JSX.Element => {
         const executeSynchoronously = async () => {
             lastTimestamp.current =
                 (await getLastTimestampOfChatRoom(params.roomId)) ??
-                new Date(0).toISOString()
+                new Date().toISOString()
             await Promise.all([
-                fetchFreshChats(),
+                initStompClient(),
+                initChatMessages(),
                 getTradeInfoOfChatRoom(params.roomId),
             ])
-            await initChatMessages()
-            await initStompClient()
+            await fetchFreshChats()
             setIsLoading(false)
         }
         console.log(params.roomId)
@@ -211,16 +215,12 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    const retrieveMessagesFromCache = async (
-        limit: number,
-        offset: number,
-        lastTimestamp: string,
-    ) => {
+    const retrieveMessagesFromCache = async (limit: number, offset: number) => {
         console.log(
             `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
         )
         const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time <= '${lastTimestamp}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+            `WHERE roomId = '${params.roomId}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
         )
         console.log(`<retrieved> ${messages.length} messages`)
         return messages
@@ -234,10 +234,11 @@ const Chat: React.FC = (): React.JSX.Element => {
         ) {
             return
         }
-
+        console.log('onMessageReceive - ', messageBody)
         const message = messageBody as ChatCacheColumns
         setChatMessages(prev => [message, ...prev!])
         addMessagesToCache([message]).then(() => {
+            console.log('onMessageReceive - addCache done')
             setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
         })
     }
@@ -245,6 +246,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const addMessagesToCache = async (
         messages: ChatCacheColumns[],
     ): Promise<void> => {
+        console.log('addMessagesToCache - ', messages)
         await Promise.all(
             messages.map(async message => {
                 await addCache({
@@ -282,7 +284,6 @@ const Chat: React.FC = (): React.JSX.Element => {
         const moreMessages = await retrieveMessagesFromCache(
             messageRenderLimit,
             messageRenderOffset,
-            lastTimestamp.current ?? new Date().toISOString(),
         )
         if (moreMessages == null || moreMessages.length == 0) {
             setHasMoreMessagesToRender(false)
@@ -290,7 +291,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             return
         }
 
-        setChatMessages([...chatMessages!, ...moreMessages])
+        setChatMessages([...chatMessages, ...moreMessages])
         setMessageRenderOffset(messageRenderOffset + moreMessages.length)
 
         if (moreMessages.length < messageRenderLimit) {
@@ -373,7 +374,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         const currentMessageTime = new Date(item.time)
 
         // TODO: null check 관련 anomaly 발생 시 수정 필요
-        if (!chatMessages) return null
+        if (chatMessages.length === 0) return null
 
         if (item.type === 'ENTER') {
             return (
@@ -458,7 +459,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 ref={flatListRef}
                 data={chatMessages}
                 renderItem={renderMessageItem}
-                keyExtractor={(_, index) => index.toString()}
+                keyExtractor={item => `${item.sender}-${item.time}`}
                 contentContainerStyle={styles.chatContainer}
                 inverted
                 onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
