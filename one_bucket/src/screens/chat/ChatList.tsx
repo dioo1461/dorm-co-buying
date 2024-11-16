@@ -72,14 +72,16 @@ const ChatList: React.FC = (): React.JSX.Element => {
         registerEventHandlers()
     }
 
+    const compareRoomDate = (a: ChatRoom, b: ChatRoom) => {
+        const dateA = new Date(a.recentMessageTime).getTime()
+        const dateB = new Date(b.recentMessageTime).getTime()
+        return dateB - dateA
+    }
+
     const handleInitialRoomList = (event: SSEMessage) => {
         console.log('initial-room-list handled')
         const data = JSON.parse(event.data) as GetChatRoomListResponse
-        const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
-            const dateA = new Date(a.recentMessageTime).getTime()
-            const dateB = new Date(b.recentMessageTime).getTime()
-            return dateB - dateA
-        })
+        const sortedData = data.sort(compareRoomDate)
         setChatRoomList(sortedData)
     }
 
@@ -95,17 +97,13 @@ const ChatList: React.FC = (): React.JSX.Element => {
                     return {
                         ...room,
                         recentMessage: data.recentMessage,
-                        recentMessageTime: new Date(data.recentMessageTime),
+                        recentMessageTime: data.recentMessageTime,
                     }
                 }
                 return room
             })
             // Sort the updated list
-            updatedList.sort((a: ChatRoom, b: ChatRoom) => {
-                const dateA = new Date(a.recentMessageTime).getTime()
-                const dateB = new Date(b.recentMessageTime).getTime()
-                return dateB - dateA
-            })
+            updatedList.sort(compareRoomDate)
             return updatedList
         })
     }
@@ -182,8 +180,6 @@ const ChatList: React.FC = (): React.JSX.Element => {
     }
 
     const flatlistRef = useRef<FlatList>(null)
-
-    const FlatlistHeader = () => <View></View>
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(

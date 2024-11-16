@@ -63,9 +63,39 @@ const Chat: React.FC = (): React.JSX.Element => {
         return () => themeSubscription.remove()
     }, [])
 
+    // navigation 헤더 옵션 설정
+    useEffect(() => {
+        navigation.setOptions({
+            title: params.roomName,
+            headerStyle: { backgroundColor: themeColor.BG },
+            headerTintColor: themeColor.TEXT,
+            headerTitle: () => (
+                <Text
+                    style={{
+                        color: themeColor.TEXT,
+                        fontSize: 15,
+                        fontFamily: 'NanumGothic-Bold',
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode='tail'>
+                    {params.roomName}
+                </Text>
+            ),
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                    style={{ marginRight: 16 }}>
+                    <IcOthers fill={baseColors.GRAY_2} />
+                </TouchableOpacity>
+            ),
+        })
+    }, [themeColor])
+
     type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>
     const { params } = useRoute<ChatRouteProp>()
     const styles = createStyles(themeColor)
+
+    // ########## 상태 관리 변수 ##########
 
     const [isLoading, setIsLoading] = useState(true)
     const lastTimestamp = useRef<string | null>(null)
@@ -100,34 +130,6 @@ const Chat: React.FC = (): React.JSX.Element => {
             // debug: true,
         })
 
-    // navigation 헤더 옵션 설정
-    useEffect(() => {
-        navigation.setOptions({
-            title: params.roomName,
-            headerStyle: { backgroundColor: themeColor.BG },
-            headerTintColor: themeColor.TEXT,
-            headerTitle: () => (
-                <Text
-                    style={{
-                        color: themeColor.TEXT,
-                        fontSize: 15,
-                        fontFamily: 'NanumGothic-Bold',
-                    }}
-                    numberOfLines={1}
-                    ellipsizeMode='tail'>
-                    {params.roomName}
-                </Text>
-            ),
-            headerRight: () => (
-                <TouchableOpacity
-                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
-                    style={{ marginRight: 16 }}>
-                    <IcOthers fill={baseColors.GRAY_2} />
-                </TouchableOpacity>
-            ),
-        })
-    }, [themeColor])
-
     // ########## STATE MANAGEMENT ##########
     useEffect(() => {
         const initStompClient = async () => {
@@ -161,7 +163,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         const fetchFreshChats = async () => {
-            var timestamp = lastTimestamp.current ?? new Date().toISOString()
+            var timestamp = lastTimestamp.current!
             getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
                 console.log('$$$$$$$fresh messages fetched ', res)
                 const freshMessages = res.map(chatLog => {
@@ -179,18 +181,19 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         const initChatMessages = async (): Promise<void> => {
+            console.log('lastTimeStamp: ', lastTimestamp.current)
             const messages = await retrieveMessagesFromCache(
                 messageRenderLimit,
                 0,
-                lastTimestamp.current ?? new Date().toISOString(),
+                lastTimestamp.current!,
             )
             if (messages) setChatMessages(messages)
         }
 
         const executeSynchoronously = async () => {
-            lastTimestamp.current = await getLastTimestampOfChatRoom(
-                params.roomId,
-            )
+            lastTimestamp.current =
+                (await getLastTimestampOfChatRoom(params.roomId)) ??
+                new Date(0).toISOString()
             await Promise.all([
                 fetchFreshChats(),
                 getTradeInfoOfChatRoom(params.roomId),
@@ -217,9 +220,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
         )
         const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time <= '${
-                lastTimestamp ?? new Date().toISOString()
-            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+            `WHERE roomId = '${params.roomId}' AND time <= '${lastTimestamp}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
         )
         console.log(`<retrieved> ${messages.length} messages`)
         return messages
@@ -271,6 +272,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             body: JSON.stringify(messageForm),
         })
         setMessage('')
+        setLastTimestampOfChatRoom(params.roomId, messageForm.time)
     }
 
     const loadMoreMessages = async () => {

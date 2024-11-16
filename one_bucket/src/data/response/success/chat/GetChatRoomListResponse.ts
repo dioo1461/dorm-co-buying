@@ -6,6 +6,6 @@ export interface ChatRoom {
     memberCount: number
     stackMessage: number
     recentMessage: string
-    recentMessageTime: Date
+    recentMessageTime: string
     ownerId: number
 }
