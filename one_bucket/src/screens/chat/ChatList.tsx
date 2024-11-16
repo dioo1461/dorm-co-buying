@@ -20,6 +20,7 @@ import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { useFocusEffect } from '@react-navigation/native'
 import { convertToKoreanTime } from '@/utils/dateUtils'
+import { SseRoomUpdateBody } from '@/data/response/success/chat/SseRoomUpdateBody'
 
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -77,11 +78,20 @@ const ChatList: React.FC = (): React.JSX.Element => {
             }
 
             const roomUpdateHandler = (event: SSEMessage) => {
-                const data = JSON.parse(event.data) as ChatRoom
-                const updatedList = chatRoomList!.map(room =>
-                    room.roomId === data.roomId ? data : room,
+                const data = JSON.parse(event.data) as SseRoomUpdateBody
+                const staleRoom = chatRoomList?.find(
+                    room => room.roomId === data.roomId,
                 )
-                setChatRoomData(updatedList)
+                if (!chatRoomList) return
+                if (!staleRoom) {
+                    console.log(
+                        'room-update received but no matching room found, is incorrect behavior',
+                    )
+                    return
+                }
+                staleRoom.recentMessage = data.recentMessage
+                staleRoom.recentMessageTime = new Date(data.recentMessageTime)
+                setChatRoomData([...chatRoomList])
                 console.log('room-update received')
             }
 

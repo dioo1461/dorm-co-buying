@@ -7,4 +7,5 @@ export interface ChatRoom {
     stackMessage: number
     recentMessage: string
     recentMessageTime: Date
+    ownerId: number
 }
