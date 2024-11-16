@@ -176,11 +176,8 @@ const Chat: React.FC = (): React.JSX.Element => {
                 })
                 addMessagesToCache(freshMessages)
                 if (freshMessages.length === 0) return
-                setChatMessages(prev => [...prev, ...freshMessages])
-                setLastTimestampOfChatRoom(
-                    params.roomId,
-                    freshMessages[freshMessages.length - 1].time,
-                )
+                setChatMessages(prev => [...freshMessages.reverse(), ...prev])
+                setLastTimestampOfChatRoom(params.roomId, freshMessages[0].time)
                 return
             })
         }
@@ -459,7 +456,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 ref={flatListRef}
                 data={chatMessages}
                 renderItem={renderMessageItem}
-                keyExtractor={item => `${item.sender}-${item.time}`}
+                keyExtractor={(_, idx) => idx.toString()}
                 contentContainerStyle={styles.chatContainer}
                 inverted
                 onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
