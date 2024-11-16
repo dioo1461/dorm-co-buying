@@ -339,9 +339,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         )
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAvoidingView style={styles.container}>
             {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
