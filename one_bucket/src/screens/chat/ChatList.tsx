@@ -19,7 +19,6 @@ import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { useFocusEffect } from '@react-navigation/native'
-import { convertToKoreanTime } from '@/utils/dateUtils'
 import { SseRoomUpdateBody } from '@/data/response/success/chat/SseRoomUpdateBody'
 
 const ChatList: React.FC = (): React.JSX.Element => {
@@ -109,8 +108,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
     )
 
     const formatRecentMessageTime = (utcTime: Date) => {
-        const now = convertToKoreanTime(new Date())
-
+        const now = new Date()
         const diff = now.getTime() - utcTime.getTime()
 
         const diffMinutes = Math.floor(diff / 1000 / 60)
@@ -176,7 +174,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                                   chatRoom.recentMessageTime,
                                               ),
                                           )
-                                        : '방금'}
+                                        : ''}
                                 </Text>
                             </View>
                         </View>
