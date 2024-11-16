@@ -30,7 +30,7 @@ export const getMarketPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getBoardPost - ' + error)
+            console.log('getMarketPostList - ' + error)
             // console.log(error.response)
 
             throw error
@@ -48,6 +48,58 @@ export const getMarketPost = async (
         })
         .catch(err => {
             console.log('getMarketPost - ' + err)
+        })
+}
+
+export const getMyMarketPostList = async (
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetMarketPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`${MARKET_ENDPOINT_PREFIX}/list/my`, {
+            params: {
+                page: page,
+                size: size,
+                sort: sortParams[0],
+                // sort: sortParams[1],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getMyMarketPostList - ' + error)
+            // console.log(error.response)
+
+            throw error
+        })
+}
+
+export const getJoinedMarketPostList = async (
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetMarketPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`${MARKET_ENDPOINT_PREFIX}/list/joins`, {
+            params: {
+                page: page,
+                size: size,
+                sort: sortParams[0],
+                // sort: sortParams[1],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getJoinedMarketPostList - ' + error)
+            // console.log(error.response)
+
+            throw error
         })
 }
 

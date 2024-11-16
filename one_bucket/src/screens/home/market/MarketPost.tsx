@@ -1,34 +1,34 @@
+import { joinTrade } from '@/apis/tradeService'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
+import IcHeart from '@/assets/drawable/ic-heart.svg'
+import IcLocation from '@/assets/drawable/ic-location.svg'
+import IcOthers from '@/assets/drawable/ic-others.svg'
+import IcShare from '@/assets/drawable/ic-share.svg'
+import { CachedImage } from '@/components/CachedImage'
+import Loading from '@/components/Loading'
+import Skeleton from '@/components/Skeleton'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
+import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { useEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
     Dimensions,
-    Image,
     ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
+    TouchableOpacity,
     View,
 } from 'react-native'
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import IcShare from '@/assets/drawable/ic-share.svg'
-import IcOthers from '@/assets/drawable/ic-others.svg'
-import { TouchableOpacity } from 'react-native'
 import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
-import IcLocation from '@/assets/drawable/ic-location.svg'
-import IcHeart from '@/assets/drawable/ic-heart.svg'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
-import Loading from '@/components/Loading'
-import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
-import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
-import { CachedImage } from '@/components/CachedImage'
-import { joinTrade } from '@/apis/tradeService'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -63,7 +63,22 @@ const MarketPost: React.FC = (): JSX.Element => {
     const scrollY = useRef(new Animated.Value(0)).current
 
     // 상태 관리 변수
-    const [metaData, setMetaData] = useState<any>(null)
+    const metaData = useRef<any>(null)
+    const [isValidLink, setIsValidLink] = useState(true)
+    const [_, forceRefresh] = useState({})
+
+    // 5초 후에도 metaData를 받아오지 못하면 유효하지 않은 링크로 설정
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            // 3초 후에도 metaData가 없으면 유효하지 않은 링크로 설정
+            if (!metaData.current) {
+                setIsValidLink(false)
+                console.log('invalid link')
+            } else [setIsValidLink(true), console.log('valid link')]
+        }, 5000)
+
+        return () => clearTimeout(timeout)
+    }, [])
 
     const onSuccessCallback = (data: GetMarketPostResponse) => {
         const parseMetaData = async (url: string) => {
@@ -80,11 +95,11 @@ const MarketPost: React.FC = (): JSX.Element => {
                         'image:width': data[0]['image:width'],
                         'image:height': data[0]['image:height'],
                     }
-                    setMetaData(meta)
-                    console.log(meta)
+                    metaData.current = meta
+                    forceRefresh({})
                 })
                 .catch(error => {
-                    setMetaData(null)
+                    metaData.current = null
                     console.log('error occurred while parsing url -' + error)
                 })
         }
@@ -159,50 +174,70 @@ const MarketPost: React.FC = (): JSX.Element => {
                         }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
                     <Text style={styles.contentText}>{data?.text}</Text>
                     {/* ### 사이트 링크 프리뷰 ### */}
-                    {data?.trade_linkUrl &&
-                        (metaData ? (
-                            <TouchableNativeFeedback
-                                background={TouchableNativeFeedback.Ripple(
-                                    baseColors.GRAY_2,
-                                    false,
-                                )}>
-                                <View style={styles.linkPreviewContainer}>
-                                    {/* ### 프리뷰 이미지 ### */}
-                                    {metaData!.image && (
-                                        <View
-                                            style={{
-                                                width: 112,
-                                                height: 112,
-                                            }}>
-                                            <CachedImage
-                                                imageUrl={metaData!.image}
-                                                imageStyle={{
-                                                    width: 112,
-                                                    height: 112,
-                                                }}
-                                                isExternalUrl={true}
-                                            />
-                                        </View>
-                                    )}
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            padding: 10,
-                                            justifyContent: 'space-between',
-                                        }}>
-                                        <Text
-                                            style={styles.linkPreviewTitleText}>
-                                            {metaData?.title}
-                                        </Text>
-                                        <Text style={styles.linkPreviewUrlText}>
-                                            {metaData?.url}
-                                        </Text>
-                                    </View>
+                    {metaData.current ? (
+                        <TouchableNativeFeedback
+                            background={TouchableNativeFeedback.Ripple(
+                                baseColors.GRAY_2,
+                                false,
+                            )}>
+                            <View style={styles.linkPreviewContainer}>
+                                {/* ### 프리뷰 이미지 ### */}
+                                <View
+                                    style={{
+                                        width: 112,
+                                        height: 112,
+                                    }}>
+                                    <CachedImage
+                                        imageUrl={metaData.current.image}
+                                        imageStyle={{
+                                            width: 112,
+                                            height: 112,
+                                        }}
+                                        isExternalUrl={true}
+                                    />
                                 </View>
-                            </TouchableNativeFeedback>
-                        ) : (
-                            <Text>{data?.trade_linkUrl}</Text>
-                        ))}
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        padding: 10,
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <Text style={styles.linkPreviewTitleText}>
+                                        {metaData.current?.title}
+                                    </Text>
+                                    <Text style={styles.linkPreviewUrlText}>
+                                        {metaData.current?.url}
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableNativeFeedback>
+                    ) : isValidLink ? (
+                        <View style={styles.linkPreviewContainer}>
+                            <Skeleton
+                                containerStyle={{}}
+                                theme={themeColor}
+                                isLoading={true}
+                                layout={[{ width: 112, height: 112 }]}
+                            />
+                            <Skeleton
+                                containerStyle={{
+                                    flex: 1,
+                                    padding: 10,
+                                    justifyContent: 'space-between',
+                                }}
+                                theme={themeColor}
+                                isLoading={true}
+                                layout={[
+                                    { width: '100%', height: 60 },
+                                    { width: '80%', height: 20 },
+                                ]}
+                            />
+                        </View>
+                    ) : (
+                        <Text style={styles.invalidLinkText}>
+                            {data?.trade_linkUrl}
+                        </Text>
+                    )}
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
@@ -397,6 +432,12 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BUTTON_BG,
             padding: 10,
             borderRadius: 8,
+        },
+        invalidLinkText: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 10,
+            fontFamily: 'NanumGothic',
+            marginVertical: 10,
         },
     })
 

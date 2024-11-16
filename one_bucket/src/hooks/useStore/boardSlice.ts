@@ -10,6 +10,7 @@ export interface BoardSlice {
     pendingBoardRefresh: boolean
     setPendingBoardRefresh: (pendingBoardRefresh: boolean) => void
     showTitleMissingToast: () => void
+    getBoardNameById: (boardId: number) => string | undefined
 }
 
 export const createBoardSlice: StateCreator<BoardSlice, [], []> = (
@@ -31,5 +32,8 @@ export const createBoardSlice: StateCreator<BoardSlice, [], []> = (
             text2: '잠시 후 다시 시도해 주세요.',
             visibilityTime: 2500,
         })
+    },
+    getBoardNameById: (boardId: number) => {
+        return get().boardList.find(board => board.id === boardId)?.name
     },
 })

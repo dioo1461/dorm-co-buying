@@ -28,6 +28,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
+import { create } from 'react-test-renderer'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
@@ -128,7 +129,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
         }
 
         createBoardPost(submitForm)
-            .then(createBoardPostRes => {
+            .then(async createBoardPostRes => {
                 console.log('board post created')
                 if (imageUriList.length > 0) {
                     const formData = new FormData()
@@ -144,24 +145,17 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
                         })
                     })
                     console.log(createBoardPostRes.id, formData)
-                    saveBoardPostImage(createBoardPostRes.id, formData)
-                        .then(saveImageRes => {
-                            console.log('board post image saved')
-                            navigation.navigate('Board', {
-                                pendingRefresh: true,
-                            })
-                            navigation.navigate('BoardPost', {
-                                boardName: params.boardName,
-                                boardId: dropdownValue,
-                                postId: createBoardPostRes.id,
-                                performRefresh: true,
-                            })
-                        })
-                        .catch(err => {
-                            console.log('board post image save failed')
-                            console.log(err)
-                        })
+                    await saveBoardPostImage(createBoardPostRes.id, formData)
                 }
+                navigation.navigate('Board', {
+                    pendingRefresh: true,
+                })
+                navigation.navigate('BoardPost', {
+                    boardName: params.boardName,
+                    boardId: dropdownValue,
+                    postId: createBoardPostRes.id,
+                    performRefresh: true,
+                })
             })
             .catch(err => {
                 console.log('board post create failed')

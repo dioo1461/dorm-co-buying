@@ -59,7 +59,7 @@ const Board: React.FC = (): JSX.Element => {
     var refetchCallback: () => void
 
     useFocusEffect(() => {
-        if (!!refetchCallback && params?.pendingRefresh) {
+        if (refetchCallback && params?.pendingRefresh) {
             refetchCallback()
             navigation.setParams({ pendingRefresh: false })
         }
@@ -75,9 +75,6 @@ const Board: React.FC = (): JSX.Element => {
     }
 
     const Post = (data: BoardPostReduced) => {
-        // const truncateText = (event: LayoutChangeEvent) => {
-        //     const { height } = event.nativeEvent.layout
-        // }
         return (
             <View>
                 <TouchableNativeFeedback
@@ -272,11 +269,6 @@ const Board: React.FC = (): JSX.Element => {
                         if (!isFetchingNextPage && hasNextPage) fetchNextPage()
                     }}
                     onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
-                    // ListFooterComponent={
-                    //     isFetchingNextPage ? (
-                    //         <ActivityIndicator size='small' color='#0000ff' />
-                    //     ) : null
-                    // }
                 />
             </View>
         )
