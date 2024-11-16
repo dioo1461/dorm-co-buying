@@ -3,14 +3,13 @@
  * https://webruden.tistory.com/186
  */
 
+import IcNotification from '@/assets/drawable/ic-notification-2.svg'
+import IcSearch from '@/assets/drawable/ic-search.svg'
 import IcSetting from '@/assets/drawable/ic-setting.svg'
 import IcTabChatActive from '@/assets/drawable/tab/ic-tab-chat-active.svg'
 import IcTabChatInactive from '@/assets/drawable/tab/ic-tab-chat-inactive.svg'
 import IcTabHomeActive from '@/assets/drawable/tab/ic-tab-home-active.svg'
 import IcTabHomeInactive from '@/assets/drawable/tab/ic-tab-home-inactive.svg'
-import IcOthers from '@/assets/drawable/ic-others.svg'
-import IcNotification from '@/assets/drawable/ic-notification-2.svg'
-import IcSearch from '@/assets/drawable/ic-search.svg'
 import IcTabProfileActive from '@/assets/drawable/tab/ic-tab-profile-active.svg'
 import IcTabProfileInactive from '@/assets/drawable/tab/ic-tab-profile-inactive.svg'
 import { baseColors } from '@/constants/colors'
@@ -19,10 +18,10 @@ import { useNavigation } from '@react-navigation/native'
 import { View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import ChatList from 'screens/chat/ChatList'
-import Mypage from 'screens/Mypage'
+import Mypage from '@/screens/myPage/Mypage'
 import HomeTab from 'screens/navigation/HomeTab'
-import UnauthHome from 'screens/UnauthHome'
 import { notifsNum } from 'screens/Notification'
+import UnauthHome from 'screens/UnauthHome'
 import { stackNavigation } from './NativeStackNavigation'
 
 export const mainRoutes = [

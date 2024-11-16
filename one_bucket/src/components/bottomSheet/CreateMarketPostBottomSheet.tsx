@@ -7,12 +7,15 @@ import {
     TouchableOpacity,
     View,
     Text,
+    Keyboard,
 } from 'react-native'
 
 import { useEffect, useState } from 'react'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { createMarketPost } from '@/apis/marketService'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import Accordion from '../Accordion'
+import IcAngleDown from '@/assets/drawable/ic-angle-down.svg'
 
 interface Props {
     enabled: boolean
@@ -31,12 +34,34 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
 }): JSX.Element => {
     const styles = createStyles(theme)
     const [chatName, setChatName] = useState('')
+    const [accordionExpanded, setAccordionExpanded] = useState(true)
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                console.log('keyboard show')
+                setAccordionExpanded(false)
+            },
+        )
+
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                console.log('keyboard hide')
+                setAccordionExpanded(true)
+            },
+        )
+
+        return () => {
+            keyboardDidHideListener.remove()
+            keyboardDidShowListener.remove()
+        }
+    })
 
     useEffect(() => {
         setChatName(submitForm.tradeCreateDto.item)
     }, [submitForm])
-
-    const navigation = stackNavigation()
 
     const onSubmit = () => {
         submitForm.chatRoomName = chatName
@@ -59,7 +84,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                     <TextInput
                         value={chatName}
                         style={styles.chatNameInputText}
-                        onChangeText={text => setChatName}
+                        onChangeText={text => setChatName(text)}
                     />
                     <TouchableOpacity
                         style={styles.submitButton}
@@ -68,63 +93,79 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                             거래글 생성하기
                         </Text>
                     </TouchableOpacity>
-                    <Text style={styles.tradeInfoLabel}>거래 정보</Text>
-                    <ScrollView style={styles.scrollView}>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>상품명</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.item}
-                            </Text>
-                        </View>
-                        <View style={styles.secondaryItemContainer}>
-                            <Text style={styles.secondaryItemLabel}>
-                                카테고리
-                            </Text>
-                            <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.tag}
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>총 가격</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.price} 원
-                            </Text>
-                        </View>
-                        <View style={styles.secondaryItemContainer}>
-                            <Text style={styles.secondaryItemLabel}>
-                                개당 가격
-                            </Text>
-                            <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.price /
-                                    submitForm.tradeCreateDto.count}{' '}
-                                원
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>총 수량</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.count} 개
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>모집 인원 </Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.wanted} 명
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>마감 기한</Text>
-                            <Text style={styles.itemText}>
-                                D - {submitForm.tradeCreateDto.dueDays}
-                            </Text>
-                        </View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.itemLabel}>거래 위치</Text>
-                            <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.location}
-                            </Text>
-                        </View>
-                    </ScrollView>
+                    {/* <TouchableOpacity
+                        style={styles.tradeInfoContainer}
+                        onPress={() =>
+                            setAccordionExpanded(!accordionExpanded)
+                        }>
+                        <Text style={styles.tradeInfoLabel}>거래 정보</Text>
+                        <IcAngleDown />
+                    </TouchableOpacity> */}
+                    <Accordion
+                        expanded={accordionExpanded}
+                        onToggle={() =>
+                            setAccordionExpanded(!accordionExpanded)
+                        }
+                        containerStyle={styles.tradeInfoContainer}
+                        headerTitle='거래 정보'
+                        theme={theme}>
+                        <ScrollView style={styles.scrollView}>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>상품명</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.item}
+                                </Text>
+                            </View>
+                            <View style={styles.secondaryItemContainer}>
+                                <Text style={styles.secondaryItemLabel}>
+                                    카테고리
+                                </Text>
+                                <Text style={styles.secondaryItemText}>
+                                    {submitForm.tradeCreateDto.tag}
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>총 가격</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.price} 원
+                                </Text>
+                            </View>
+                            <View style={styles.secondaryItemContainer}>
+                                <Text style={styles.secondaryItemLabel}>
+                                    개당 가격
+                                </Text>
+                                <Text style={styles.secondaryItemText}>
+                                    {submitForm.tradeCreateDto.price /
+                                        submitForm.tradeCreateDto.count}{' '}
+                                    원
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>총 수량</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.count} 개
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>모집 인원 </Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.wanted} 명
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>마감 기한</Text>
+                                <Text style={styles.itemText}>
+                                    D - {submitForm.tradeCreateDto.dueDays}
+                                </Text>
+                            </View>
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemLabel}>거래 위치</Text>
+                                <Text style={styles.itemText}>
+                                    {submitForm.tradeCreateDto.location}
+                                </Text>
+                            </View>
+                        </ScrollView>
+                    </Accordion>
                 </View>
             )}
             onClose={onClose}
@@ -168,16 +209,17 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             fontFamily: 'NanumGothic',
         },
-        tradeInfoLabel: {
-            color: theme.TEXT,
-            width: '100%',
-            marginStart: 24,
-            fontSize: 16,
-            fontFamily: 'NanumGothic-Bold',
+        tradeInfoContainer: {
+            width: '75%',
             marginTop: 20,
         },
+        tradeInfoLabel: {
+            color: theme.TEXT,
+            fontSize: 16,
+            fontFamily: 'NanumGothic-Bold',
+            marginEnd: 10,
+        },
         scrollView: {
-            width: '75%',
             height: 200,
             marginTop: 10,
         },

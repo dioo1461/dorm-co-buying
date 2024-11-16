@@ -101,6 +101,31 @@ export const getAnnouncPost = async (id: number): Promise<any> => {
         })
 }
 
+export const getMyBoardPostList = async (
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetBoardPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`/post/list/my`, {
+            params: {
+                page: page,
+                size: size,
+                sort: sortParams[0],
+                // sort: sortParams[1],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getMyBoardPost - ' + error)
+            // console.log(error.response)
+            throw error
+        })
+}
+
 // ########## POST ##########
 
 export const createBoardPost = async (

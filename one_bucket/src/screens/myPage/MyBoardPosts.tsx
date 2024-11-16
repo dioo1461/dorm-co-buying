@@ -1,44 +1,47 @@
 import IcComment from '@/assets/drawable/ic-comment.svg'
-import IcPinList from '@/assets/drawable/ic-pin-list.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
-import Backdrop from '@/components/Backdrop'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import strings from '@/constants/strings'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import {
+    queryBoardPostList,
+    queryMyBoardPostList,
+} from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '@/screens/navigation/NativeStackNavigation'
 import { formatTimeAgo } from '@/utils/formatUtils'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     Animated,
     Appearance,
     FlatList,
     ListRenderItem,
-    RefreshControl,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
 } from 'react-native'
-import {
-    RootStackParamList,
-    stackNavigation,
-} from '../../navigation/NativeStackNavigation'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 
 const FETCH_SIZE = 10
 
 // TODO: 사진 올리기
 // TODO: type-Post 인 게시판만 보여주도록 수정
-const Board: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
-        themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
-        boardList: state.boardList,
-    }))
+const MyBoardPosts: React.FC = (): JSX.Element => {
+    const { themeColor, setThemeColor, boardList, getBoardNameById } =
+        useBoundStore(state => ({
+            themeColor: state.themeColor,
+            setThemeColor: state.setThemeColor,
+            boardList: state.boardList,
+            getBoardNameById: state.getBoardNameById,
+        }))
 
     // 다크모드 변경 감지
     useEffect(() => {
@@ -49,7 +52,7 @@ const Board: React.FC = (): JSX.Element => {
         )
         return () => themeSubscription.remove()
     }, [])
-    
+
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>
@@ -58,8 +61,29 @@ const Board: React.FC = (): JSX.Element => {
     const flatlistRef = useRef(null)
     var refetchCallback: () => void
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: strings.myBoardPostsScreenTitle,
+            headerStyle: {
+                backgroundColor: themeColor.HEADER_BG,
+            },
+            headerTitleStyle: {
+                color: themeColor.HEADER_TEXT,
+                fontFamily: 'NanumGothic',
+                fontSize: 18,
+            },
+            headerLeft: () => (
+                <TouchableOpacity
+                    style={{ marginLeft: 16 }}
+                    onPress={() => navigation.goBack()}>
+                    <IcAngleLeft fill={themeColor.HEADER_TEXT} />
+                </TouchableOpacity>
+            ),
+        })
+    }, [])
+
     useFocusEffect(() => {
-        if (refetchCallback && params?.pendingRefresh) {
+        if (!!refetchCallback && params?.pendingRefresh) {
             refetchCallback()
             navigation.setParams({ pendingRefresh: false })
         }
@@ -95,6 +119,10 @@ const Board: React.FC = (): JSX.Element => {
                         }}>
                         <View style={{ flexDirection: 'row', margin: 4 }}>
                             <View style={{ flex: 1, marginEnd: 10 }}>
+                                {/* ### 게시판 종류 ### */}
+                                <Text style={styles.postBoardName}>
+                                    {getBoardNameById(data.boardId)}
+                                </Text>
                                 {/* ### 제목 ### */}
                                 <View
                                     style={{
@@ -205,20 +233,6 @@ const Board: React.FC = (): JSX.Element => {
             setIsRefreshing(false)
         }
 
-        // ### 게시판 타입 헤더 ###
-        const FlatlistHeader = () => {
-            return (
-                <View>
-                    <View style={styles.boardTypeContainer}>
-                        <Text style={styles.boardTypeLabel}>
-                            {boardList[currentBoardIndex]?.name}
-                        </Text>
-                    </View>
-                    <View style={styles.line} />
-                </View>
-            )
-        }
-
         // ### 게시글 목록 flatlist ###
         const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
             <Post {...item} />
@@ -234,14 +248,12 @@ const Board: React.FC = (): JSX.Element => {
             isLoading, // 첫 번째 페이지 로딩 여부
             error,
             refetch,
-        } = queryBoardPostList(
-            boardId!,
+        } = queryMyBoardPostList(
             {
                 sortType: 'createdDate',
                 sort: 'desc',
             },
             FETCH_SIZE,
-            { enabled: !!boardId },
         )
         refetchCallback = refetch
 
@@ -251,133 +263,32 @@ const Board: React.FC = (): JSX.Element => {
 
         const posts = data?.pages?.flatMap(page => page.content)
         return (
-            <View style={styles.flatList}>
-                <FlatList
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefreshing}
-                            onRefresh={handleRefresh}
-                        />
-                    }
-                    ListHeaderComponent={FlatlistHeader}
-                    showsVerticalScrollIndicator={true}
-                    ref={flatlistRef}
-                    data={posts}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.postId.toString()}
-                    onEndReached={() => {
-                        if (!isFetchingNextPage && hasNextPage) fetchNextPage()
-                    }}
-                    onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
-                />
-            </View>
+            <FlatList
+                style={styles.flatList}
+                showsVerticalScrollIndicator={true}
+                ref={flatlistRef}
+                data={posts}
+                renderItem={renderItem}
+                keyExtractor={item => item.postId.toString()}
+                onEndReached={() => {
+                    if (!isFetchingNextPage && hasNextPage) fetchNextPage()
+                }}
+                onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
+                // ListFooterComponent={
+                //     isFetchingNextPage ? (
+                //         <ActivityIndicator size='small' color='#0000ff' />
+                //     ) : null
+                // }
+            />
         )
     }
 
-    const [expanded, setExpanded] = useState(false)
     const animation = useRef(new Animated.Value(0)).current
-
-    const toggleDropdown = () => {
-        setExpanded(!expanded)
-        Animated.timing(animation, {
-            toValue: expanded ? 0 : 1,
-            duration: 300,
-            useNativeDriver: false,
-        }).start()
-    }
-
-    const dropdownAnimatedStyle = {
-        height: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 200],
-        }),
-        opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-        }),
-    }
-
-    const buttonAnimatedStyle = {
-        opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 0],
-        }),
-    }
 
     return (
         <View style={styles.container}>
             {/* ### 게시글 목록 flatlist ### */}
             <PostFlatList />
-            <Backdrop enabled={expanded} onPress={toggleDropdown} />
-            {/* ### 게시판 선택 버튼 ### */}
-            <View
-                style={[
-                    styles.boardTypeToggleButton,
-                    { backgroundColor: baseColors.SCHOOL_BG, elevation: 6 },
-                ]}>
-                <TouchableOpacity onPress={toggleDropdown}>
-                    <IcPinList fill={baseColors.WHITE} />
-                </TouchableOpacity>
-            </View>
-            <Animated.View
-                style={[styles.boardTypeToggleButton, buttonAnimatedStyle]}>
-                <TouchableOpacity onPress={toggleDropdown}>
-                    <IcPinList
-                        fill={
-                            themeColor === lightColors
-                                ? baseColors.GRAY_2
-                                : baseColors.GRAY_0
-                        }
-                    />
-                </TouchableOpacity>
-            </Animated.View>
-            {/* ### 게시판 선택 dropdown ### */}
-            <Animated.View
-                style={[
-                    styles.boardTypeSelectionWrapper,
-                    dropdownAnimatedStyle,
-                ]}>
-                <ScrollView
-                    style={styles.boardTypeSelectionContainer}
-                    contentContainerStyle={styles.boardTypeSelectionContent}
-                    showsVerticalScrollIndicator={false}>
-                    {boardList!.map(
-                        (board, index) =>
-                            board.type === 'post' && (
-                                <TouchableNativeFeedback
-                                    key={index}
-                                    background={touchableNativeFeedbackBg()}
-                                    onPress={() => {
-                                        toggleDropdown()
-                                        setCurrentBoardIndex(index)
-                                    }}>
-                                    <View style={styles.boardTypeItem}>
-                                        <Text
-                                            style={[
-                                                styles.boardTypeText,
-                                                currentBoardIndex === index &&
-                                                    styles.boardTypeTextActive,
-                                            ]}>
-                                            {board.name}
-                                        </Text>
-                                    </View>
-                                </TouchableNativeFeedback>
-                            ),
-                    )}
-                </ScrollView>
-            </Animated.View>
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={() =>
-                    // TODO: 게시판 선택에 따라 파라미터 다르게 넘겨주는 로직 구현
-                    navigation.navigate('CreateBoardPost', {
-                        boardName: boardList![currentBoardIndex].name,
-                        boardId: boardList![currentBoardIndex].id,
-                        // refetch: refetchCallback,
-                    })
-                }>
-                <Text style={styles.fabIcon}>+</Text>
-            </TouchableOpacity>
         </View>
     )
 }
@@ -386,6 +297,7 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
         flatList: {
+            paddingTop: 10,
             flex: 11,
         },
         boardTypeContainer: {
@@ -463,6 +375,12 @@ const createStyles = (theme: Icolor) =>
                 theme === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
             marginHorizontal: 10,
         },
+        postBoardName: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+            marginBottom: 10,
+        },
         postTitle: {
             color: theme.TEXT,
             fontSize: 14,
@@ -507,4 +425,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default Board
+export default MyBoardPosts

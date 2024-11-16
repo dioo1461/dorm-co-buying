@@ -1,3 +1,4 @@
+import { baseColors, lightColors } from '@/constants/colors'
 import { STORAGE_BASE_URL } from '@env'
 import { useEffect, useState } from 'react'
 import {
@@ -9,7 +10,7 @@ import {
     View,
 } from 'react-native'
 import * as RNFS from 'react-native-fs'
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
+import Skeleton from './Skeleton'
 
 interface Props {
     imageStyle: StyleProp<ImageStyle>
@@ -27,6 +28,23 @@ export const CachedImage = ({
     onLoad,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
+    if (!imageUrl)
+        return (
+            <View
+                style={[
+                    imageStyle, // 주어진 스타일 적용
+                    {
+                        backgroundColor: baseColors.GRAY_2, // 기본 배경색
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    },
+                ]}>
+                <Text style={{ color: baseColors.WHITE, fontSize: 12 }}>
+                    No Image
+                </Text>
+            </View>
+        )
+
     const extension = Platform.OS === 'android' ? 'file://' : ''
 
     const path = `${extension}${RNFS.DocumentDirectoryPath}${imageUrl.substring(
@@ -82,11 +100,9 @@ export const CachedImage = ({
         }
     }, [])
 
-    if (!source) return <></>
-
     return (
-        <View>
+        <Skeleton containerStyle={{}} isLoading={!source} theme={lightColors}>
             <Image style={imageStyle} source={source} />
-        </View>
+        </Skeleton>
     )
 }

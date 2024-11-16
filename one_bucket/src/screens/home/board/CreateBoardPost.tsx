@@ -28,6 +28,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
+import { create } from 'react-test-renderer'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
@@ -128,7 +129,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
         }
 
         createBoardPost(submitForm)
-            .then(res => {
+            .then(async createBoardPostRes => {
                 console.log('board post created')
                 if (imageUriList.length > 0) {
                     const formData = new FormData()
@@ -143,20 +144,18 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
                             type: `image/${fileExtension}`, // MIME 타입 설정
                         })
                     })
-                    console.log(res.id, formData)
-                    saveBoardPostImage(res.id, formData)
+                    console.log(createBoardPostRes.id, formData)
+                    await saveBoardPostImage(createBoardPostRes.id, formData)
                 }
-                setTimeout(() => {
-                    navigation.navigate('Board', {
-                        pendingRefresh: true,
-                    })
-                    navigation.navigate('BoardPost', {
-                        boardName: params.boardName,
-                        boardId: dropdownValue,
-                        postId: res.id,
-                        performRefresh: true,
-                    })
-                }, 100)
+                navigation.navigate('Board', {
+                    pendingRefresh: true,
+                })
+                navigation.navigate('BoardPost', {
+                    boardName: params.boardName,
+                    boardId: dropdownValue,
+                    postId: createBoardPostRes.id,
+                    performRefresh: true,
+                })
             })
             .catch(err => {
                 console.log('board post create failed')

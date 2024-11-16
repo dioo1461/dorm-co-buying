@@ -1,5 +1,4 @@
 import { baseColors, darkColors, lightColors } from '@/constants/colors'
-import strings from '@/constants/strings'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { useEffect } from 'react'

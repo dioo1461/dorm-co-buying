@@ -11,6 +11,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 
+import { requestAccessTokenRenew } from '@/apis/authService'
 import { getBoardList } from '@/apis/boardService'
 import { getMemberInfo, getProfile } from '@/apis/profileService'
 import strings from '@/constants/strings'
@@ -21,13 +22,15 @@ import NewPw2 from '@/screens/auth/NewPw2'
 import SignUp5 from '@/screens/auth/SignUp5'
 import SignUp6 from '@/screens/auth/SignUp6'
 import SignUp7 from '@/screens/auth/SignUp7'
-import UnauthHome from '@/screens/UnauthHome'
 import Chat from '@/screens/chat/Chat'
-import CreateBoardPost from '@/screens/home/board/CreateBoardPost'
 import BoardPost from '@/screens/home/board/BoardPost'
+import CreateBoardPost from '@/screens/home/board/CreateBoardPost'
+import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
 import CreateMarketPost from '@/screens/home/market/CreateMarketPost'
 import MarketPost from '@/screens/home/market/MarketPost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
+import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
+import MyMarketPosts from '@/screens/myPage/MyMarketPosts'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Notification from '@/screens/Notification'
 import ProfileModify from '@/screens/PofileModify'
@@ -44,14 +47,29 @@ import SchoolAuth3 from '@/screens/setting/SchoolAuth3'
 import Setting from '@/screens/setting/Setting'
 import Support from '@/screens/setting/Support'
 import VersionCheck from '@/screens/setting/VersionCheck'
+import UnauthHome from '@/screens/UnauthHome'
+import {
+    decodeAccessToken,
+    decodeRefreshToken,
+    getAccessToken,
+    getRefreshToken,
+    setAccessToken,
+    setRefreshToken,
+    validateAccessToken,
+    validateRefreshToken,
+} from '@/utils/accessTokenUtils'
+import {
+    getAutoLoginEnabled,
+    getLoginInitFlag,
+    setAutoLoginEnabled,
+} from '@/utils/asyncStorageUtils'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
+import axios from 'axios'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
-import axios, { AxiosError } from 'axios'
-import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -83,14 +101,60 @@ function App(): React.JSX.Element {
 
     const [authed, setAuthed] = useState(0)
 
+    // ###### check login status ######
     useEffect(() => {
         const ac = new AbortController()
-        const checkLoginStatus = async () => {
-            console.log('app - checkLoginStatus')
 
+        const renewAccessToken = async () => {
+            const autoLoginEnabled = await getAutoLoginEnabled()
+            if (autoLoginEnabled === null || autoLoginEnabled === 'false')
+                return
+
+            console.log('app - renewAccessToken: autoLoginEnabled is true')
+            const [accessTokenAvailable, refreshTokenAvailable] =
+                await Promise.all([
+                    validateAccessToken(),
+                    validateRefreshToken(),
+                ])
+
+            console.log('accessTokenAvailable:', accessTokenAvailable)
+            console.log('refreshToke nAvailable:', refreshTokenAvailable)
+            console.log('$$$$$$ accessToken', await getAccessToken())
+            console.log('refreshToken', await getRefreshToken())
+            console.log(
+                '$$$$$$ current time:',
+                Math.floor(new Date().getTime() / 1000),
+            )
+            console.log('accessTokenDecoded', await decodeAccessToken())
+            console.log('refreshTokenDecoded', await decodeRefreshToken())
+            if (accessTokenAvailable) return
+            console.log('$$$$$$ accessToken is expired or invalid')
+            if (!refreshTokenAvailable) return
+            console.log('$$$$$$ refreshToken is valid')
+            // refresh token으로 access token 갱신
+            // + 현재 서버 로직상 requestAccessTokenRenew 요청을 보내면 refresh token을 함께 반환함.
+            const response = await requestAccessTokenRenew()
+            await Promise.all([
+                setAccessToken(response.accessToken),
+                setRefreshToken(response.refreshToken),
+            ])
+        }
+
+        const checkLoginStatus = async () => {
+            const loginFlag = await getLoginInitFlag()
+            if (loginFlag === null || loginFlag === 'false') {
+                SplashScreen.hide()
+                return
+            }
+
+            console.log('app - checkLoginStatus')
             try {
-                // Step 1: getMemberInfo 요청
-                const memberInfo = await getMemberInfo()
+                const [memberInfo, boardList, profile] = await Promise.all([
+                    getMemberInfo(),
+                    getBoardList(),
+                    getProfile(),
+                ])
+
                 if (memberInfo) {
                     setMemberInfo(memberInfo) // memberInfo 저장
                     setAuthed(0)
@@ -98,12 +162,7 @@ function App(): React.JSX.Element {
                 if (memberInfo.university == 'null') {
                     setAuthed(1)
                 }
-                // Step 2: getBoardList 요청 (memberInfo가 성공한 경우에 실행)
-                const boardList = await getBoardList()
                 setBoardList(boardList)
-
-                // Step 3: getProfile 요청 (getBoardList가 성공한 경우에 실행)
-                const profile = await getProfile()
                 setProfile(profile)
                 setLoginState(true)
             } catch (error) {
@@ -117,7 +176,6 @@ function App(): React.JSX.Element {
                         error.response.status === 403)
                 ) {
                     console.log(`App - checkLoginStatus error: ${error}`)
-                    // TODO: refreshToken으로 accessToken 갱신
                 }
                 if (error.message) {
                     console.log(`Error: ${error.message}`)
@@ -127,7 +185,12 @@ function App(): React.JSX.Element {
             }
         }
 
-        checkLoginStatus()
+        const executeSynchronously = async () => {
+            await renewAccessToken()
+            checkLoginStatus()
+        }
+
+        executeSynchronously()
 
         return function cleanup() {
             ac.abort()
@@ -441,7 +504,7 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.boardPostScreenName}
                             component={BoardPost}
-                            options={{title: strings.boardPostScreenTitle}}
+                            options={{ title: strings.boardPostScreenTitle }}
                         />
                         <Stack.Screen
                             name={strings.imageEnlargementScreenName}
@@ -487,6 +550,14 @@ function App(): React.JSX.Element {
                                     fontSize: 18,
                                 },
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.myBoardPostsScreenName}
+                            component={MyBoardPosts}
+                        />
+                        <Stack.Screen
+                            name={strings.myMarketPostsScreenName}
+                            component={MyMarketPosts}
                         />
                     </Stack.Navigator>
                 </NavigationContainer>

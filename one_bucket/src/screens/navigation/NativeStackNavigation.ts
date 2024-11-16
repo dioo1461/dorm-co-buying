@@ -77,6 +77,9 @@ export type RootStackParamList = {
     Chat: ChatRoom
 
     ProfileDetails: undefined
+    MyBoardPosts: undefined
+    MyMarketPosts: undefined
+    JoinedMarketPosts: undefined
 
     ImageEnlargement: {
         imageUriList: string[]
