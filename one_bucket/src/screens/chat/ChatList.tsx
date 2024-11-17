@@ -202,24 +202,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
             const [tradeInfo, setTradeInfo] =
                 useState<TradeInfoOfChatRoom | null>(null)
             useEffect(() => {
-                getTradeInfo(chatRoom.roomId.toString()).then(async res => {
-                    if (res.length > 0) {
-                        console.log('tradeInfo:', res[0])
-                        setTradeInfo(res[0])
-                    } else {
-                        const tradeInfo = await getTradeInfoOfChatRoom(
-                            chatRoom.roomId,
-                        )
-                        await addTradeInfo({
-                            ...tradeInfo,
-                            chatRoomId: chatRoom.roomId,
-                        } as TradeInfoOfChatRoom)
-                        getTradeInfo(chatRoom.roomId.toString()).then(res => {
-                            console.log('tradeInfo:', res[0])
-                            setTradeInfo(res[0])
-                        })
-                    }
-                })
+                getTradeInfo(chatRoom.roomId.toString()).then(setTradeInfo)
             }, [])
 
             return (

@@ -312,6 +312,38 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
+    const upsertDataByKeys = async (data: Partial<T>, keys: Partial<T>) => {
+        const database = await waitForDbInitialization()
+
+        const fields = Object.keys(data).join(', ')
+        const placeholders = Object.keys(data)
+            .map(() => '?')
+            .join(', ')
+        const updates = Object.keys(data)
+            .map(key => `${key} = excluded.${key}`)
+            .join(', ')
+
+        const whereClause = Object.keys(keys)
+            .map(key => `${key} = ?`)
+            .join(' AND ')
+        const values = Object.values(keys)
+
+        database!.transaction(tx => {
+            tx.executeSql(
+                `INSERT INTO ${tableName} (${fields}) 
+                VALUES (${placeholders})
+                ON CONFLICT(${Object.keys(data)[0]}) DO UPDATE SET ${updates} 
+                WHERE ${whereClause}`,
+                Object.values(data).concat(values) as ColumnTypes[],
+                () =>
+                    debug &&
+                    console.log('[upsertDataByKeys] Upsert successful:', data),
+                error =>
+                    debug && console.log('[upsertDataByKeys] Error:', error),
+            )
+        })
+    }
+
     const upsertDataByWhereClause = async (
         data: Partial<T>,
         whereClause: string,

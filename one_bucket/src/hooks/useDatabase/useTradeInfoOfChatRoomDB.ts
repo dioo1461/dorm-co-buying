@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import useDatabase, { ColumnTypes } from './useDatabase'
 import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
+import { getTradeInfoOfChatRoom } from '@/apis/chatService'
 
 const useTradeInfoOfChatRoomDB = () => {
     const { getDataByKeys, addData, updateDataByKey } =
@@ -31,7 +32,18 @@ const useTradeInfoOfChatRoomDB = () => {
     }
 
     const getTradeInfo = async (chatRoomId: string) => {
-        return await getDataByKeys({ chatRoomId })
+        const tradeInfo = await getDataByKeys({ chatRoomId })
+        if (tradeInfo.length === 1) {
+            return tradeInfo[0]
+        }
+
+        const fetchedTradeInfo: TradeInfoOfChatRoom = {
+            ...(await getTradeInfoOfChatRoom(chatRoomId)),
+            chatRoomId: chatRoomId,
+        }
+
+        await addTradeInfo(fetchedTradeInfo)
+        return fetchedTradeInfo
     }
 
     const updateTradeInfo = async (
