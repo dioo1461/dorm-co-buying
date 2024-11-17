@@ -9,7 +9,7 @@ type Serializable =
     | Serializable[]
     | { [key: string]: Serializable }
 
-export type ColumnTypes = number | string | boolean | Serializable
+export type ColumnTypes = Serializable
 
 type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'serializable'
 
@@ -70,7 +70,15 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         }
     }
 
-    const createTableIfNotExists = useCallback(async () => {
+    const waitForDbInitialization = useCallback(async () => {
+        while (dbLock.current) {
+            debug && console.log('[waitForDbInitialization] Waiting for db...')
+            await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        return dbRef.current
+    }, [debug])
+
+    const createTableIfNotExists = async () => {
         const columnDefinitions = ['tupleId INTEGER PRIMARY KEY AUTOINCREMENT']
             .concat(
                 Object.keys(columns).map(
@@ -95,17 +103,13 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                 },
             )
         })
-    }, [tableName, columns, debug])
+    }
 
     const getAllData = async (): Promise<T[]> => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[getAllData] db is not set yet')
-            return []
-        }
 
         return new Promise<T[]>((resolve, reject) => {
-            database.transaction(tx => {
+            database!.transaction(tx => {
                 tx.executeSql(
                     `SELECT * FROM ${tableName}`,
                     [],
@@ -130,10 +134,6 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
 
     const getDataByKeys = async (keys: Partial<T>) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[getDataByKeys] db is not set yet')
-            return
-        }
 
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
@@ -141,7 +141,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const values = Object.values(keys)
 
         return new Promise<T[]>((resolve, reject) => {
-            database.transaction(tx => {
+            database!.transaction(tx => {
                 tx.executeSql(
                     `SELECT * FROM ${tableName} WHERE ${whereClause}`,
                     values,
@@ -166,13 +166,9 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
 
     const getDataByWhereClause = async (whereClause: string) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[getDataByWhereClause] db is not set yet')
-            return []
-        }
 
         return new Promise<T[]>((resolve, reject) => {
-            database.transaction(tx => {
+            database!.transaction(tx => {
                 tx.executeSql(
                     `SELECT * FROM ${tableName} ${whereClause}`,
                     [],
@@ -201,17 +197,13 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
 
     const addData = async (data: T) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[addData] db is not set yet')
-            return
-        }
 
         const fields = Object.keys(data).join(', ')
         const values = Object.values(data)
             .map(() => '?')
             .join(', ')
 
-        database.transaction(tx =>
+        database!.transaction(tx =>
             tx.executeSql(
                 `INSERT INTO ${tableName} (${fields}) VALUES (${values})`,
                 Object.values(data) as ColumnTypes[],
@@ -225,17 +217,13 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
 
     const removeData = async (keys: Partial<T>) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[removeData] db is not set yet')
-            return
-        }
 
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
         const values = Object.values(keys)
 
-        database.transaction(tx => {
+        database!.transaction(tx => {
             tx.executeSql(
                 `DELETE FROM ${tableName} WHERE ${whereClause}`,
                 values,
@@ -252,12 +240,8 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
 
     const dropTable = async () => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[dropTable] db is not set yet')
-            return
-        }
 
-        database.transaction(tx => {
+        database!.transaction(tx => {
             tx.executeSql(
                 `DROP TABLE ${tableName}`,
                 [],
@@ -269,44 +253,38 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const waitForDbInitialization = async () => {
-        while (dbLock.current) {
-            debug && console.log('[waitForDbInitialization] Waiting for db...')
-            await new Promise(resolve => setTimeout(resolve, 100))
-        }
-        return dbRef.current
-    }
-
-    const updateDataByKey = async (data: Partial<T>, keys: Partial<T>) => {
+    const updateDataByKey = async (
+        keys: Partial<T>,
+        updatedData: Partial<T>,
+    ) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[updateData] db is not set yet')
-            return
-        }
 
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
         const values = Object.values(keys)
 
-        const fields = Object.keys(data)
+        const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
 
-        database.transaction(tx => {
+        database!.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
-                Object.values(data).concat(values) as ColumnTypes[],
+                Object.values(updatedData).concat(values) as ColumnTypes[],
                 () =>
                     debug &&
-                    console.log('[updateData] Data updated in database:', data),
+                    console.log(
+                        '[updateData] Data updated in database:',
+                        updatedData,
+                    ),
                 error => debug && console.log('[updateData] Error:', error),
             )
         })
     }
 
     const updateDataByWhereClause = async (
-        data: Partial<T>,
+        updatedData: Partial<T>,
         whereClause: string,
     ) => {
         const database = await waitForDbInitialization()
@@ -315,18 +293,57 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
             return
         }
 
-        const fields = Object.keys(data)
+        const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
 
         database.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
+                Object.values(updatedData) as ColumnTypes[],
+                () =>
+                    debug &&
+                    console.log(
+                        '[updateData] Data updated in database:',
+                        updatedData,
+                    ),
+                error => debug && console.log('[updateData] Error:', error),
+            )
+        })
+    }
+
+    const upsertDataByWhereClause = async (
+        data: Partial<T>,
+        whereClause: string,
+    ) => {
+        const database = await waitForDbInitialization()
+
+        const fields = Object.keys(data).join(', ')
+        const placeholders = Object.keys(data)
+            .map(() => '?')
+            .join(', ')
+        const updates = Object.keys(data)
+            .map(key => `${key} = excluded.${key}`)
+            .join(', ')
+
+        database!.transaction(tx => {
+            tx.executeSql(
+                `
+                INSERT INTO ${tableName} (${fields}) 
+                VALUES (${placeholders})
+                ON CONFLICT(${Object.keys(data)[0]}) DO UPDATE SET ${updates} 
+                WHERE ${whereClause}
+                `,
                 Object.values(data) as ColumnTypes[],
                 () =>
                     debug &&
-                    console.log('[updateData] Data updated in database:', data),
-                error => debug && console.log('[updateData] Error:', error),
+                    console.log(
+                        '[upsertDataByWhereClause] Upsert successful:',
+                        data,
+                    ),
+                error =>
+                    debug &&
+                    console.log('[upsertDataByWhereClause] Error:', error),
             )
         })
     }

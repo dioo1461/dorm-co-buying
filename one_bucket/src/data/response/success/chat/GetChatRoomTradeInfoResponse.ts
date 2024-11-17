@@ -8,9 +8,9 @@ export interface GetChatRoomTradeInfoResponse {
     tag: string
     id: number
     userId: number
-    dueDate: Date
+    dueDate: string
     joins: null | any
     nickNames: string[]
-    startTradeAt: Date
+    startTradeAt: string
     fin: boolean
 }

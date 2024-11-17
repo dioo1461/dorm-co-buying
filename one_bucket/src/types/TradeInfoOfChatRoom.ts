@@ -1,7 +1,4 @@
-import { ColumnTypes } from '@/hooks/useDatabase/useDatabase'
-
-export interface TradeInfoOfChatRoom {
-    [key: string]: ColumnTypes
+export type TradeInfoOfChatRoom = {
     chatRoomId: string
     item: string
     wanted: number
@@ -12,9 +9,9 @@ export interface TradeInfoOfChatRoom {
     tag: string
     id: number
     userId: number
-    dueDate: string
+    dueDate: string // ISO 8601
     joins: number
-    nickNames: Object
-    startTradeAt: string
+    nickNames: string[]
+    startTradeAt: string // ISO 8601
     fin: boolean
 }
