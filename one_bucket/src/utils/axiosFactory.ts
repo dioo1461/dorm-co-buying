@@ -48,6 +48,9 @@ export const createAuthAxios = async (options: AxiosRequestConfig = {}) => {
                 // Token expired, perform logout
                 useBoundStore.setState({ loginState: false })
             }
+            if (error.response === undefined) {
+                console.log('error.response is undefined')
+            }
             return Promise.reject(error)
         },
     )

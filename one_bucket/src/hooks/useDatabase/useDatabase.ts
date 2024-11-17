@@ -1,11 +1,19 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { SQLiteDatabase, openDatabase } from 'react-native-sqlite-storage'
 
-export type ColumnTypes = number | string | boolean | object
+type Serializable =
+    | string
+    | number
+    | boolean
+    | null
+    | Serializable[]
+    | { [key: string]: Serializable }
 
-type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'object'
+export type ColumnTypes = number | string | boolean | Serializable
 
-interface UseDatabaseOptions<T> {
+type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'serializable'
+
+type UseDatabaseOptions<T> = {
     tableName: string
     columns: { [key in keyof T]: ColumnMapTypes }
     debug?: boolean
@@ -47,7 +55,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         initializeDatabase()
     }, [])
 
-    const mapType = (type: ColumnTypes): string => {
+    const mapType = (type: ColumnMapTypes): string => {
         switch (type) {
             case 'string':
                 return 'TEXT'
@@ -55,7 +63,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                 return 'INTEGER'
             case 'boolean':
                 return 'BOOLEAN'
-            case 'object':
+            case 'serializable':
                 return 'BLOB'
             default:
                 throw new Error(`Unsupported type: ${type}`)
@@ -120,17 +128,17 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getDataByKeys = async (params: Partial<T>) => {
+    const getDataByKeys = async (keys: Partial<T>) => {
         const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[getDataByKeys] db is not set yet')
             return
         }
 
-        const whereClause = Object.keys(params)
+        const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(params)
+        const values = Object.values(keys)
 
         return new Promise<T[]>((resolve, reject) => {
             database.transaction(tx => {
@@ -215,17 +223,17 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         )
     }
 
-    const removeData = async (params: Partial<T>) => {
+    const removeData = async (keys: Partial<T>) => {
         const database = await waitForDbInitialization()
         if (!database) {
             debug && console.log('[removeData] db is not set yet')
             return
         }
 
-        const whereClause = Object.keys(params)
+        const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(params)
+        const values = Object.values(keys)
 
         database.transaction(tx => {
             tx.executeSql(
@@ -234,8 +242,8 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                 () =>
                     debug &&
                     console.log(
-                        '[removeData] Data removed from database with params:',
-                        params,
+                        '[removeData] Data removed from database with keys:',
+                        keys,
                     ),
                 error => debug && console.log('[removeData] Error:', error),
             )
@@ -269,11 +277,67 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         return dbRef.current
     }
 
+    const updateDataByKey = async (data: Partial<T>, keys: Partial<T>) => {
+        const database = await waitForDbInitialization()
+        if (!database) {
+            debug && console.log('[updateData] db is not set yet')
+            return
+        }
+
+        const whereClause = Object.keys(keys)
+            .map(key => `${key} = ?`)
+            .join(' AND ')
+        const values = Object.values(keys)
+
+        const fields = Object.keys(data)
+            .map(key => `${key} = ?`)
+            .join(', ')
+
+        database.transaction(tx => {
+            tx.executeSql(
+                `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
+                Object.values(data).concat(values) as ColumnTypes[],
+                () =>
+                    debug &&
+                    console.log('[updateData] Data updated in database:', data),
+                error => debug && console.log('[updateData] Error:', error),
+            )
+        })
+    }
+
+    const updateDataByWhereClause = async (
+        data: Partial<T>,
+        whereClause: string,
+    ) => {
+        const database = await waitForDbInitialization()
+        if (!database) {
+            debug && console.log('[updateData] db is not set yet')
+            return
+        }
+
+        const fields = Object.keys(data)
+            .map(key => `${key} = ?`)
+            .join(', ')
+
+        database.transaction(tx => {
+            tx.executeSql(
+                `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
+                Object.values(data) as ColumnTypes[],
+                () =>
+                    debug &&
+                    console.log('[updateData] Data updated in database:', data),
+                error => debug && console.log('[updateData] Error:', error),
+            )
+        })
+    }
+
     return {
         getAllData,
         getDataByKeys,
         getDataByWhereClause,
         addData,
+        updateDataByKey,
+        updateDataByWhereClause,
         removeData,
         dropTable,
     }

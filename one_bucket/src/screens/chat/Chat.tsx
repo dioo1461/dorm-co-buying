@@ -35,8 +35,7 @@ Object.assign(global, {
     TextDecoder: encoding.TextDecoder,
 })
 
-interface ChatDataColumns {
-    [key: string]: ColumnTypes
+type ChatDataColumns = {
     type: string
     roomId: string
     sender: string
