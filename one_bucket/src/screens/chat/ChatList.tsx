@@ -23,6 +23,7 @@ import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getTradeInfoOfChatRoom } from '@/apis/chatService'
 import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
+import IcPerson from '@/assets/drawable/ic-person.svg'
 
 // TODO: 채팅방 대표 이미지 설정
 // TODO: 채팅방 인원수 등 정보 표시
@@ -226,6 +227,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                     background={touchableNativeFeedbackBg()}
                     onPress={() => navigation.navigate('Chat', chatRoom)}>
                     <View style={styles.chatContainer}>
+                        <Text>{}</Text>
                         {/* ### 채팅 이미지 ### */}
                         <View style={styles.imageContainer}></View>
                         <View style={{ flex: 1 }}>
@@ -233,6 +235,10 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                 <View style={styles.headerFirstContainer}>
                                     <Text style={styles.titleText}>
                                         {chatRoom?.roomName}
+                                    </Text>
+                                    <IcPerson />
+                                    <Text style={styles.participantCountText}>
+                                        {(tradeInfo?.nickNames.length ?? 0) + 1}
                                     </Text>
                                     <Text style={styles.lastChatTimeText}>
                                         {chatRoom.recentMessageTime
@@ -350,6 +356,11 @@ const createChatitemStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic-Bold',
             flex: 1, // 남은 공간을 차지하도록 설정
             paddingRight: 8,
+        },
+        participantCountText: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
         },
         lastChatTimeText: {
             color: theme.TEXT_TERTIARY,
