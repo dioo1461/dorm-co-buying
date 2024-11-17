@@ -24,7 +24,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { TMarketCategory } from '@/data/TMarketCategory'
+import { TMarketCategory } from '@/types/TMarketCategory'
 import { queryMarketPostList } from '@/hooks/useQuery/marketQuery'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'

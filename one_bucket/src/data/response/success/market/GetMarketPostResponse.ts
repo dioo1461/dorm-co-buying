@@ -1,4 +1,4 @@
-import { TMarketCategory } from '@/data/TMarketCategory'
+import { TMarketCategory } from '@/types/TMarketCategory'
 import { GetBoardPostResponse } from '../board/GetBoardPostResponse'
 
 export interface GetMarketPostResponse extends GetBoardPostResponse {

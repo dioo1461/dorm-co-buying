@@ -1,19 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { SQLiteDatabase, openDatabase } from 'react-native-sqlite-storage'
 
-export type ColumnTypes = number | string | boolean
+export type ColumnTypes = number | string | boolean | object
 
-interface UseCacheOptions<T> {
+type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'object'
+
+interface UseDatabaseOptions<T> {
     tableName: string
-    columns: { [key in keyof T]: ColumnTypes }
+    columns: { [key in keyof T]: ColumnMapTypes }
     debug?: boolean
 }
 
-const useCache = <T extends Record<string, ColumnTypes>>({
+const useDatabase = <T extends Record<string, ColumnTypes>>({
     tableName,
     columns,
     debug = false,
-}: UseCacheOptions<T>) => {
+}: UseDatabaseOptions<T>) => {
     const dbRef = useRef<SQLiteDatabase | null>(null)
     const dbLock = useRef<boolean>(true)
 
@@ -21,11 +23,11 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         const initializeDatabase = () => {
             openDatabase(
                 {
-                    name: 'cache.db',
+                    name: 'database.db',
                     location: 'default',
                 },
                 DB => {
-                    debug && console.log('[useCache] Database opened')
+                    debug && console.log('[useDatabase] Database opened')
                     dbRef.current = DB
                     dbLock.current = true
                     createTableIfNotExists().then(() => {
@@ -34,7 +36,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 },
                 error => {
                     debug &&
-                        console.log('[useCache] Error opening database:', error)
+                        console.log(
+                            '[useDatabase] Error opening database:',
+                            error,
+                        )
                 },
             )
         }
@@ -43,20 +48,22 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }, [])
 
     const mapType = (type: ColumnTypes): string => {
-        switch (typeof type) {
+        switch (type) {
             case 'string':
                 return 'TEXT'
             case 'number':
                 return 'INTEGER'
             case 'boolean':
                 return 'BOOLEAN'
+            case 'object':
+                return 'BLOB'
             default:
                 throw new Error(`Unsupported type: ${type}`)
         }
     }
 
     const createTableIfNotExists = useCallback(async () => {
-        const columnDefinitions = ['id INTEGER PRIMARY KEY AUTOINCREMENT']
+        const columnDefinitions = ['tupleId INTEGER PRIMARY KEY AUTOINCREMENT']
             .concat(
                 Object.keys(columns).map(
                     key => `${key} ${mapType(columns[key as keyof T])}`,
@@ -82,10 +89,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }, [tableName, columns, debug])
 
-    const getAllCaches = async (): Promise<T[]> => {
+    const getAllData = async (): Promise<T[]> => {
         const database = await waitForDbInitialization()
         if (!database) {
-            debug && console.log('[getAllCaches] db is not set yet')
+            debug && console.log('[getAllData] db is not set yet')
             return []
         }
 
@@ -101,11 +108,11 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                             data.push(rows.item(i) as T)
                         }
                         debug &&
-                            console.log('[getAllCaches] Retrieved data:', data)
+                            console.log('[getAllData] Retrieved data:', data)
                         resolve(data)
                     },
                     error => {
-                        debug && console.log('[getAllCaches] Error:', error)
+                        debug && console.log('[getAllData] Error:', error)
                         reject(error)
                     },
                 )
@@ -113,10 +120,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getCachesByKeys = async (params: Partial<T>) => {
+    const getDataByKeys = async (params: Partial<T>) => {
         const database = await waitForDbInitialization()
         if (!database) {
-            debug && console.log('[getCachesByKeys] db is not set yet')
+            debug && console.log('[getDataByKeys] db is not set yet')
             return
         }
 
@@ -137,14 +144,11 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                             data.push(rows.item(i) as T)
                         }
                         debug &&
-                            console.log(
-                                '[getCachesByKeys] Retrieved data:',
-                                data,
-                            )
+                            console.log('[getDataByKeys] Retrieved data:', data)
                         resolve(data)
                     },
                     error => {
-                        debug && console.log('[getCachesByKeys] Error:', error)
+                        debug && console.log('[getDataByKeys] Error:', error)
                         reject(error)
                     },
                 )
@@ -152,10 +156,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getCachesByWhereClause = async (whereClause: string) => {
+    const getDataByWhereClause = async (whereClause: string) => {
         const database = await waitForDbInitialization()
         if (!database) {
-            debug && console.log('[getCachesByWhereClause] db is not set yet')
+            debug && console.log('[getDataByWhereClause] db is not set yet')
             return []
         }
 
@@ -172,17 +176,14 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                         }
                         debug &&
                             console.log(
-                                '[getCachesByWhereClause] Retrieved data:',
+                                '[getDataByWhereClause] Retrieved data:',
                                 data,
                             )
                         resolve(data)
                     },
                     error => {
                         debug &&
-                            console.log(
-                                '[getCachesByWhereClause] Error:',
-                                error,
-                            )
+                            console.log('[getDataByWhereClause] Error:', error)
                         reject(error)
                     },
                 )
@@ -190,10 +191,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const addCache = async (data: T) => {
+    const addData = async (data: T) => {
         const database = await waitForDbInitialization()
         if (!database) {
-            debug && console.log('[addCache] db is not set yet')
+            debug && console.log('[addData] db is not set yet')
             return
         }
 
@@ -208,16 +209,16 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 Object.values(data) as ColumnTypes[],
                 () =>
                     debug &&
-                    console.log('[addCache] Data added to cache:', data),
-                error => debug && console.log('[addCache] Error:', error),
+                    console.log('[addData] Data added to database:', data),
+                error => debug && console.log('[addData] Error:', error),
             ),
         )
     }
 
-    const removeCache = async (params: Partial<T>) => {
+    const removeData = async (params: Partial<T>) => {
         const database = await waitForDbInitialization()
         if (!database) {
-            debug && console.log('[removeCache] db is not set yet')
+            debug && console.log('[removeData] db is not set yet')
             return
         }
 
@@ -233,10 +234,10 @@ const useCache = <T extends Record<string, ColumnTypes>>({
                 () =>
                     debug &&
                     console.log(
-                        '[removeCache] Data removed from cache with params:',
+                        '[removeData] Data removed from database with params:',
                         params,
                     ),
-                error => debug && console.log('[removeCache] Error:', error),
+                error => debug && console.log('[removeData] Error:', error),
             )
         })
     }
@@ -269,13 +270,13 @@ const useCache = <T extends Record<string, ColumnTypes>>({
     }
 
     return {
-        getAllCaches,
-        getCachesByKeys,
-        getCachesByWhereClause,
-        addCache,
-        removeCache,
+        getAllData,
+        getDataByKeys,
+        getDataByWhereClause,
+        addData,
+        removeData,
         dropTable,
     }
 }
 
-export default useCache
+export default useDatabase

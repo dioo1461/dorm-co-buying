@@ -20,7 +20,11 @@ import { stackNavigation } from '../navigation/NativeStackNavigation'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { useFocusEffect } from '@react-navigation/native'
 import { SseRoomUpdateBody } from '@/data/response/success/chat/SseRoomUpdateBody'
+import useDatabase from '@/hooks/useDatabase/useDatabase'
+import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 
+// TODO: 채팅방 대표 이미지 설정
+// TODO: 채팅방 인원수 등 정보 표시
 const ChatList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
@@ -39,6 +43,28 @@ const ChatList: React.FC = (): React.JSX.Element => {
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
+
+    const { getDataByKeys } = useDatabase<TradeInfoOfChatRoom>({
+        tableName: 'tradeInfoOfChatRoom',
+        columns: {
+            chatRoomId: 'string',
+            item: 'string',
+            wanted: 'number',
+            price: 'number',
+            count: 'number',
+            location: 'string',
+            linkUrl: 'string',
+            tag: 'string',
+            id: 'number',
+            userId: 'number',
+            dueDate: 'string',
+            joins: 'string',
+            nickNames: 'object',
+            startTradeAt: 'string',
+            fin: 'boolean',
+        },
+        debug: true,
+    })
 
     type esEventType = 'initial-room-list' | 'room-update'
 

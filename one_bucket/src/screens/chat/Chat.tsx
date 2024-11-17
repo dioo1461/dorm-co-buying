@@ -1,7 +1,13 @@
+import {
+    getChatLogAfterTimestamp,
+    getTradeInfoOfChatRoom,
+} from '@/apis/chatService'
+import IcOthers from '@/assets/drawable/ic-others.svg'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
-import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
+import useDatabase, { ColumnTypes } from '@/hooks/useDatabase/useDatabase'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import {
@@ -15,28 +21,21 @@ import { useEffect, useRef, useState } from 'react'
 import {
     Appearance,
     FlatList,
-    InteractionManager,
     StyleSheet,
     TextInput,
     TouchableOpacity,
     View,
 } from 'react-native'
-import { Button, Text } from 'react-native-elements'
+import { Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import IcOthers from '@/assets/drawable/ic-others.svg'
-import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
-import {
-    getChatLogAfterTimestamp,
-    getTradeInfoOfChatRoom,
-} from '@/apis/chatService'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
     TextDecoder: encoding.TextDecoder,
 })
 
-interface ChatCacheColumns {
+interface ChatDataColumns {
     [key: string]: ColumnTypes
     type: string
     roomId: string
@@ -47,6 +46,7 @@ interface ChatCacheColumns {
 
 const RENDER_AMOUNT = 20
 
+// TODO: 이미지 전송 가능하도록 구현
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -100,7 +100,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [isLoading, setIsLoading] = useState(true)
     const lastTimestamp = useRef<string | null>(null)
     const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[]>([])
+    const [chatMessages, setChatMessages] = useState<ChatDataColumns[]>([])
 
     const isLoadingMore = useRef<Boolean>(false)
     const [hasMoreMessages, setHasMoreMessagesToRender] = useState(true)
@@ -112,11 +112,11 @@ const Chat: React.FC = (): React.JSX.Element => {
     // TODO: bottomSheetButton 동적 관리 - userId 필요
     // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
 
-    const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
+    const flatListRef = useRef<FlatList<ChatDataColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const { getCachesByWhereClause, addCache, removeCache } =
-        useCache<ChatCacheColumns>({
+    const { getDataByWhereClause, addData, removeData } =
+        useDatabase<ChatDataColumns>({
             tableName: 'chat',
             columns: {
                 type: 'string',
@@ -174,7 +174,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                         time: chatLog.timestamp,
                     }
                 })
-                addMessagesToCache(freshMessages)
+                addMessagesToData(freshMessages)
                 if (freshMessages.length === 0) return
                 setChatMessages(prev => [...freshMessages.reverse(), ...prev])
                 setLastTimestampOfChatRoom(params.roomId, freshMessages[0].time)
@@ -184,7 +184,7 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const initChatMessages = async (): Promise<void> => {
             console.log('lastTimeStamp: ', lastTimestamp.current)
-            const messages = await retrieveMessagesFromCache(
+            const messages = await retrieveMessagesFromData(
                 messageRenderLimit,
                 0,
             )
@@ -212,11 +212,11 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    const retrieveMessagesFromCache = async (limit: number, offset: number) => {
+    const retrieveMessagesFromData = async (limit: number, offset: number) => {
         console.log(
-            `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
+            `<retrieveMessagesFromData>, limit: ${limit}, offset: ${offset}`,
         )
-        const messages = await getCachesByWhereClause(
+        const messages = await getDataByWhereClause(
             `WHERE roomId = '${params.roomId}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
         )
         console.log(`<retrieved> ${messages.length} messages`)
@@ -232,21 +232,21 @@ const Chat: React.FC = (): React.JSX.Element => {
             return
         }
         console.log('onMessageReceive - ', messageBody)
-        const message = messageBody as ChatCacheColumns
+        const message = messageBody as ChatDataColumns
         setChatMessages(prev => [message, ...prev!])
-        addMessagesToCache([message]).then(() => {
-            console.log('onMessageReceive - addCache done')
+        addMessagesToData([message]).then(() => {
+            console.log('onMessageReceive - addData done')
             setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
         })
     }
 
-    const addMessagesToCache = async (
-        messages: ChatCacheColumns[],
+    const addMessagesToData = async (
+        messages: ChatDataColumns[],
     ): Promise<void> => {
-        console.log('addMessagesToCache - ', messages)
+        console.log('addMessagesToData - ', messages)
         await Promise.all(
             messages.map(async message => {
-                await addCache({
+                await addData({
                     type: message.type,
                     roomId: message.roomId,
                     sender: message.sender,
@@ -278,7 +278,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         if (isLoadingMore.current || !hasMoreMessages) return
         isLoadingMore.current = true
 
-        const moreMessages = await retrieveMessagesFromCache(
+        const moreMessages = await retrieveMessagesFromData(
             messageRenderLimit,
             messageRenderOffset,
         )
@@ -317,7 +317,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             destination: '/pub/message',
             body: JSON.stringify(messageForm),
         })
-        removeCache({ roomId: params.roomId }).then(() => {
+        removeData({ roomId: params.roomId }).then(() => {
             navigation.goBack()
         })
     }
@@ -363,7 +363,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         item,
         index,
     }: {
-        item: ChatCacheColumns
+        item: ChatDataColumns
         index: number
     }) => {
         const isMyMessage =

@@ -24,7 +24,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { TMarketCategory } from '@/data/TMarketCategory'
+import { TMarketCategory } from '@/types/TMarketCategory'
 import {
     queryMarketPostList,
     queryMyMarketPostList,
