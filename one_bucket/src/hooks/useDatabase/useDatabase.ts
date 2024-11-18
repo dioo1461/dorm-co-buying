@@ -9,8 +9,6 @@ type Serializable =
     | Serializable[]
     | { [key: string]: Serializable }
 
-export type ColumnTypes = Serializable
-
 type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'serializable'
 
 type UseDatabaseOptions<T> = {
@@ -19,7 +17,15 @@ type UseDatabaseOptions<T> = {
     debug?: boolean
 }
 
-const useDatabase = <T extends Record<string, ColumnTypes>>({
+const serialize = (value: Serializable): string => {
+    return JSON.stringify(value)
+}
+
+const deserialize = <Serializable>(data: string): Serializable => {
+    return JSON.parse(data)
+}
+
+const useDatabase = <T extends Record<string, Serializable>>({
     tableName,
     columns,
     debug = false,
@@ -105,6 +111,21 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
+    const dropTable = async () => {
+        const database = await waitForDbInitialization()
+
+        database!.transaction(tx => {
+            tx.executeSql(
+                `DROP TABLE ${tableName}`,
+                [],
+                () =>
+                    debug &&
+                    console.log('[dropTable] Table deleted:', tableName),
+                error => debug && console.log('[dropTable] Error:', error),
+            )
+        })
+    }
+
     const getAllData = async (): Promise<T[]> => {
         const database = await waitForDbInitialization()
 
@@ -117,7 +138,22 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                         const rows = results.rows
                         const data: T[] = []
                         for (let i = 0; i < rows.length; i++) {
-                            data.push(rows.item(i) as T)
+                            const item = rows.item(i) as T
+                            // 역직렬화
+                            const deserializedItem = Object.fromEntries(
+                                Object.entries(item).map(([key, value]) => [
+                                    key,
+                                    columns[key as keyof T] === 'serializable'
+                                        ? () => {
+                                              console.log('value: ', value)
+                                              return deserialize(
+                                                  value as string,
+                                              )
+                                          }
+                                        : value,
+                                ]),
+                            ) as T
+                            data.push(deserializedItem)
                         }
                         debug &&
                             console.log('[getAllData] Retrieved data:', data)
@@ -138,7 +174,9 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(keys)
+        const values: Serializable[] = Object.values(keys).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
         return new Promise<T[]>((resolve, reject) => {
             database!.transaction(tx => {
@@ -149,7 +187,17 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                         const rows = results.rows
                         const data: T[] = []
                         for (let i = 0; i < rows.length; i++) {
-                            data.push(rows.item(i) as T)
+                            const item = rows.item(i) as T
+                            // 역직렬화
+                            const deserializedItem = Object.fromEntries(
+                                Object.entries(item).map(([key, value]) => [
+                                    key,
+                                    columns[key as keyof T] === 'serializable'
+                                        ? deserialize(value as string)
+                                        : value,
+                                ]),
+                            ) as T
+                            data.push(deserializedItem)
                         }
                         debug &&
                             console.log('[getDataByKeys] Retrieved data:', data)
@@ -176,7 +224,22 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                         const rows = results.rows
                         const data: T[] = []
                         for (let i = 0; i < rows.length; i++) {
-                            data.push(rows.item(i) as T)
+                            const item = rows.item(i) as T
+                            // 역직렬화
+                            const deserializedItem = Object.fromEntries(
+                                Object.entries(item).map(([key, value]) => [
+                                    key,
+                                    columns[key as keyof T] === 'serializable'
+                                        ? () => {
+                                              console.log('value: ', value)
+                                              return deserialize(
+                                                  value as string,
+                                              )
+                                          }
+                                        : value,
+                                ]),
+                            ) as T
+                            data.push(deserializedItem)
                         }
                         debug &&
                             console.log(
@@ -199,14 +262,16 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const database = await waitForDbInitialization()
 
         const fields = Object.keys(data).join(', ')
-        const values = Object.values(data)
+        const placeholders = Object.keys(data)
             .map(() => '?')
             .join(', ')
-
+        const values: Serializable = Object.values(data).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
         database!.transaction(tx =>
             tx.executeSql(
-                `INSERT INTO ${tableName} (${fields}) VALUES (${values})`,
-                Object.values(data) as ColumnTypes[],
+                `INSERT INTO ${tableName} (${fields}) VALUES (${placeholders})`,
+                values,
                 () =>
                     debug &&
                     console.log('[addData] Data added to database:', data),
@@ -215,13 +280,15 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         )
     }
 
-    const removeData = async (keys: Partial<T>) => {
+    const deleteDataByKeys = async (keys: Partial<T>) => {
         const database = await waitForDbInitialization()
 
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(keys)
+        const values: Serializable[] = Object.values(keys).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
         database!.transaction(tx => {
             tx.executeSql(
@@ -238,21 +305,6 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const dropTable = async () => {
-        const database = await waitForDbInitialization()
-
-        database!.transaction(tx => {
-            tx.executeSql(
-                `DROP TABLE ${tableName}`,
-                [],
-                () =>
-                    debug &&
-                    console.log('[dropTable] Table deleted:', tableName),
-                error => debug && console.log('[dropTable] Error:', error),
-            )
-        })
-    }
-
     const updateDataByKey = async (
         keys: Partial<T>,
         updatedData: Partial<T>,
@@ -262,16 +314,17 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(keys)
-
         const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
+        const values: Serializable[] = Object.values(keys).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
         database!.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
-                Object.values(updatedData).concat(values) as ColumnTypes[],
+                values,
                 () =>
                     debug &&
                     console.log(
@@ -288,19 +341,18 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         whereClause: string,
     ) => {
         const database = await waitForDbInitialization()
-        if (!database) {
-            debug && console.log('[updateData] db is not set yet')
-            return
-        }
 
         const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
+        const values: Serializable[] = Object.values(updatedData).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
-        database.transaction(tx => {
+        database!.transaction(tx => {
             tx.executeSql(
                 `UPDATE ${tableName} SET ${fields} WHERE ${whereClause}`,
-                Object.values(updatedData) as ColumnTypes[],
+                values,
                 () =>
                     debug &&
                     console.log(
@@ -322,11 +374,12 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const updates = Object.keys(data)
             .map(key => `${key} = excluded.${key}`)
             .join(', ')
-
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values = Object.values(keys)
+        const values: Serializable = Object.values(keys).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
         database!.transaction(tx => {
             tx.executeSql(
@@ -334,7 +387,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                 VALUES (${placeholders})
                 ON CONFLICT(${Object.keys(data)[0]}) DO UPDATE SET ${updates} 
                 WHERE ${whereClause}`,
-                Object.values(data).concat(values) as ColumnTypes[],
+                values,
                 () =>
                     debug &&
                     console.log('[upsertDataByKeys] Upsert successful:', data),
@@ -357,6 +410,9 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         const updates = Object.keys(data)
             .map(key => `${key} = excluded.${key}`)
             .join(', ')
+        const values: Serializable = Object.values(data).map(
+            value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
+        )
 
         database!.transaction(tx => {
             tx.executeSql(
@@ -366,7 +422,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                 ON CONFLICT(${Object.keys(data)[0]}) DO UPDATE SET ${updates} 
                 WHERE ${whereClause}
                 `,
-                Object.values(data) as ColumnTypes[],
+                values,
                 () =>
                     debug &&
                     console.log(
@@ -387,7 +443,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         addData,
         updateDataByKey,
         updateDataByWhereClause,
-        removeData,
+        deleteDataByKeys,
         dropTable,
     }
 }

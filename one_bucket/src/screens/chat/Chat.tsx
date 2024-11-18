@@ -7,7 +7,7 @@ import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottom
 import Loading from '@/components/Loading'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
-import useDatabase, { ColumnTypes } from '@/hooks/useDatabase/useDatabase'
+import useDatabase from '@/hooks/useDatabase/useDatabase'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import {
@@ -30,6 +30,7 @@ import {
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import BottomSheet from '@/components/bottomSheet/BottomSheet'
+import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -49,9 +50,10 @@ const RENDER_AMOUNT = 20
 // TODO: 이미지 전송 가능하도록 구현
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
         setThemeColor: state.setThemeColor,
+        memberInfo: state.memberInfo,
     }))
     // 다크모드 변경 감지
     useEffect(() => {
@@ -122,7 +124,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     const flatListRef = useRef<FlatList<ChatDataColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const { getDataByWhereClause, addData, removeData } =
+    const { getDataByWhereClause, addData, deleteDataByKeys } =
         useDatabase<ChatDataColumns>({
             tableName: 'chat',
             columns: {
@@ -132,8 +134,10 @@ const Chat: React.FC = (): React.JSX.Element => {
                 message: 'string',
                 time: 'string',
             },
-            // debug: true,
+            debug: true,
         })
+
+    const { getTradeInfo, deleteTradeInfo } = useTradeInfoOfChatRoomDB()
 
     // ########## STATE MANAGEMENT ##########
     useEffect(() => {
@@ -316,7 +320,9 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const onReportButtonPress = () => {
-        console.log('신고하기')
+        getTradeInfo(params.roomId).then(res => {
+            console.log('tradeInfo: ', res)
+        })
     }
 
     const onLeaveButtonPress = async () => {
@@ -332,7 +338,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             destination: '/pub/message',
             body: JSON.stringify(messageForm),
         })
-        removeData({ roomId: params.roomId }).then(() => {
+        deleteDataByKeys({ roomId: params.roomId }).then(() => {
             navigation.goBack()
         })
     }
@@ -518,7 +524,10 @@ const Chat: React.FC = (): React.JSX.Element => {
                 enabled={membersBottomSheetEnabled}
                 onClose={() => setMembersBottomSheetEnabled(false)}
                 theme={themeColor}>
-                <Text>ㅎㅇㅋㅋ</Text>
+                <Text>{memberInfo?.nickname}</Text>
+                {/* {getTradeInfo(params.roomId).then(res => {
+
+                })} */}
             </BottomSheet>
         </View>
     )

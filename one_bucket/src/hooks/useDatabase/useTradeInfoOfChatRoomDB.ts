@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import useDatabase, { ColumnTypes } from './useDatabase'
+import useDatabase from './useDatabase'
 import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getTradeInfoOfChatRoom } from '@/apis/chatService'
 
 const useTradeInfoOfChatRoomDB = () => {
-    const { getDataByKeys, addData, updateDataByKey } =
+    const { getDataByKeys, addData, updateDataByKey, deleteDataByKeys } =
         useDatabase<TradeInfoOfChatRoom>({
             tableName: 'tradeInfoOfChatRoom',
             columns: {
@@ -33,10 +33,14 @@ const useTradeInfoOfChatRoomDB = () => {
 
     const getTradeInfo = async (chatRoomId: string) => {
         const tradeInfo = await getDataByKeys({ chatRoomId })
+        // deleteTradeInfo(chatRoomId)
+        console.log('localdb: ', tradeInfo)
         if (tradeInfo.length === 1) {
+            console.log('trade info found in local db')
             return tradeInfo[0]
         }
 
+        console.log('fetching trade info from server')
         const fetchedTradeInfo: TradeInfoOfChatRoom = {
             ...(await getTradeInfoOfChatRoom(chatRoomId)),
             chatRoomId: chatRoomId,
@@ -53,7 +57,11 @@ const useTradeInfoOfChatRoomDB = () => {
         return await updateDataByKey({ chatRoomId: chatRoomId }, data)
     }
 
-    return { getTradeInfo, updateTradeInfo, addTradeInfo }
+    const deleteTradeInfo = async (chatRoomId: string) => {
+        return await deleteDataByKeys({ chatRoomId })
+    }
+
+    return { getTradeInfo, updateTradeInfo, addTradeInfo, deleteTradeInfo }
 }
 
 export default useTradeInfoOfChatRoomDB
