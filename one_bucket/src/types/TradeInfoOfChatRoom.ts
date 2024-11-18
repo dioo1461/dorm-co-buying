@@ -1,4 +1,5 @@
-export interface GetChatRoomTradeInfoResponse {
+export type TradeInfoOfChatRoom = {
+    chatRoomId: string
     item: string
     wanted: number
     price: number
@@ -8,9 +9,9 @@ export interface GetChatRoomTradeInfoResponse {
     tag: string
     id: number
     userId: number
-    dueDate: string
-    joins: null | any
+    dueDate: string // ISO 8601
+    joins: number
     nickNames: string[]
-    startTradeAt: string
+    startTradeAt: string // ISO 8601
     fin: boolean
 }

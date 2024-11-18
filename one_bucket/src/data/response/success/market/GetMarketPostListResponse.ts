@@ -1,4 +1,4 @@
-import { TMarketCategory } from '@/data/TMarketCategory'
+import { TMarketCategory } from '@/types/TMarketCategory'
 import {
     BoardPostReduced,
     GetBoardPostListResponse,

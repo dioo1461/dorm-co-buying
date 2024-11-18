@@ -124,7 +124,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     }
 
     const checkFormAvailable = () => {
-        return true
         return (
             imageUriList.length > 0 &&
             itemName.length > 0 &&
