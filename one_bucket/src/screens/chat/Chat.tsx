@@ -120,6 +120,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         useState(false)
     // TODO: bottomSheetButton 동적 관리 - userId 필요
     // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
+    const [memberList, setMemberList] = useState<string[]>([])
 
     const flatListRef = useRef<FlatList<ChatDataColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
@@ -314,6 +315,15 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     // ############ BOTTOM SHEET PROPS ############
+
+    useEffect(() => {
+        const initialize = async () => {
+            const [tradeInfo] = await Promise.all([getTradeInfo(params.roomId)])
+            setMemberList(tradeInfo.nickNames)
+        }
+
+        initialize()
+    }, [])
 
     const onMembersButtonPress = () => {
         setMembersBottomSheetEnabled(true)
@@ -525,9 +535,9 @@ const Chat: React.FC = (): React.JSX.Element => {
                 onClose={() => setMembersBottomSheetEnabled(false)}
                 theme={themeColor}>
                 <Text>{memberInfo?.nickname}</Text>
-                {/* {getTradeInfo(params.roomId).then(res => {
-
-                })} */}
+                {memberList.map((member, index) => {
+                    return <Text key={index}>{member}</Text>
+                })}
             </BottomSheet>
         </View>
     )
