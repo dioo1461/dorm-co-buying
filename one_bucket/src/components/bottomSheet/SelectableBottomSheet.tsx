@@ -162,18 +162,18 @@ const createStyles = (theme: Icolor) =>
             paddingVertical: 2,
         },
         button: {
-            paddingVertical: 18,
+            paddingVertical: 16,
             justifyContent: 'center',
             alignItems: 'center',
         },
         buttonText: {
             fontFamily: 'NanumGothic',
-            fontSize: 14,
+            fontSize: 13,
             color: theme.TEXT,
         },
         destructiveButtonText: {
             fontFamily: 'NanumGothic',
-            fontSize: 14,
+            fontSize: 13,
             color: baseColors.RED,
         },
         backdrop: {
