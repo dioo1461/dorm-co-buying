@@ -68,7 +68,6 @@ export type RootStackParamList = {
     AnnouncementList: any
     AnnouncementPost: {
         res: any
-        imageUrl: string
     }
     Support: undefined
     VersionCheck: undefined

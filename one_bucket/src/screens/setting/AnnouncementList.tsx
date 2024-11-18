@@ -54,6 +54,8 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
 
     type AnnouncementListRouteProp = RouteProp<RootStackParamList, 'AnnouncementList'>
     const { params } = useRoute< AnnouncementListRouteProp>()
+    
+    useEffect(()=>{ console.log("AnnouncementList params:",params) })
 
     {/*
         "content": [{
@@ -103,13 +105,10 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
             return content
     }
 
-    const goAnnouncPost = ( id: number, imageUrl: string ) => {
+    const goAnnouncPost = ( id: number ) => {
         getAnnouncPost(id)
             .then(res=>{
-                navigation.navigate('AnnouncementPost', {
-                    res: res,
-                    imageUrl: imageUrl
-                }
+                navigation.navigate('AnnouncementPost', {res}
                 )
             })
             .catch(err=>{
@@ -124,7 +123,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                             themeColor.BG_SECONDARY,
                             false,
                     )}
-                    onPress={() =>goAnnouncPost(item?.id, item?.imageUrl)}
+                    onPress={() =>goAnnouncPost(item?.id)}
                     >
                     <View
                         style={{
@@ -217,6 +216,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                 data={announcs}
                 renderItem={announcFrame}
                 keyExtractor={(item, index) => index.toString()}
+                inverted
             />
         </View>
         ) : (

@@ -9,8 +9,10 @@ import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
+import IcAttach from '@/assets/drawable/ic-attach-16.svg'
 import { CachedImage } from '@/components/CachedImage'
-import Comment from '@/components/Comment'
+import RNFS from 'react-native-fs'
+import { BASE_URL, STORAGE_BASE_URL } from '@env'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {
     SelectableBottomSheet,
@@ -30,6 +32,7 @@ import {
     ActivityIndicator,
     Appearance,
     Dimensions,
+    FlatList,
     Keyboard,
     KeyboardAvoidingView,
     LayoutChangeEvent,
@@ -81,9 +84,24 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
     type AnnouncementPostProp = RouteProp<RootStackParamList, 'AnnouncementPost'>
     const { params } = useRoute<AnnouncementPostProp>()
 
+    useEffect(()=>{ console.log("AnnouncementPost params:",params) })
+
     const title = params?.res?.title
     const content = params?.res?.content
-    const imageUrl = params?.imageUrl
+    const imageUrls = params?.res?.images
+    const fileList = params?.res?.files
+
+    const files = ({ item }: { item: any }) => (
+        <TouchableOpacity 
+            style={styles.fileContainer}
+            
+            >
+            <IcAttach />
+            <Text style={styles.fileText}>
+                {item.slice(30,)}
+            </Text>
+        </TouchableOpacity>
+    )
 
     const navigation = stackNavigation()
 
@@ -208,13 +226,8 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                     ]}>
                     {content}
                 </Text>
-                <Text style={styles.postMetaDataText}>
-                    {`${formatTimeAgo(
-                        params?.res?.createAt,
-                    )}`}
-                </Text>
                 {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
-                {!isImageInView && imageUrl.length > 0 && (
+                {!isImageInView && imageUrls.length > 0 && (
                     <ScrollView
                         ref={scrollViewRef}
                         horizontal
@@ -223,13 +236,13 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                         contentContainerStyle={{ flexGrow: 1 }}
                         onMomentumScrollEnd={onMomentumScrollEnd}
                         contentOffset={{ x: imageScrollPos, y: 0 }}>
-                        {[imageUrl].map((url, index) => (
+                        {imageUrls.map((url: any, index: any) => (
                             <TouchableOpacity
                                 style={styles.imageContainer}
                                 key={index}
                                 onPress={() =>
                                     navigation.navigate('ImageEnlargement', {
-                                        imageUriList: [imageUrl],
+                                        imageUriList: imageUrls,
                                         index: index,
                                         isLocalUri: false,
                                     })
@@ -240,55 +253,26 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                                         height: IMAGE_SIZE,
                                         borderRadius: 8,
                                     }}
-                                    imageUrl={url}
+                                    imageUrl={url.slice(10,)}
                                 />
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
                 )}
-                {isImageInView && imageUrl.length > 0 && (
+                {isImageInView && imageUrls.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
-                )} 
+                )}
+                <FlatList
+                    data={fileList}
+                    renderItem={files}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                <Text style={styles.postMetaDataText}>
+                    {`${formatTimeAgo(
+                        params?.res?.createAt,
+                    )}`}
+                </Text>
             </ScrollView>
-            {/* ### 이미지 container - 댓글 창이 보이지 않는 동안 하단에 고정 ###
-            {isImageInView && data!.imageUrls.length > 0 && (
-                <ScrollView
-                    ref={scrollViewRef}
-                    horizontal
-                    style={{
-                        position: 'absolute',
-                        bottom: 60, // 댓글 입력창 위에 위치
-                        left: 0,
-                        marginBottom: 20,
-                        marginHorizontal: 20,
-                    }}
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    showsHorizontalScrollIndicator={false}
-                    onMomentumScrollEnd={onMomentumScrollEnd}
-                    contentOffset={{ x: imageScrollPos, y: 0 }}>
-                    {data!.imageUrls.map((url, index) => (
-                        <TouchableOpacity
-                            style={styles.imageContainer}
-                            key={index}
-                            onPress={() =>
-                                navigation.navigate('ImageEnlargement', {
-                                    imageUriList: data!.imageUrls,
-                                    index: index,
-                                    isLocalUri: false,
-                                })
-                            }>
-                            <CachedImage
-                                imageStyle={{
-                                    width: IMAGE_SIZE,
-                                    height: IMAGE_SIZE,
-                                    borderRadius: 8,
-                                }}
-                                imageUrl={url}
-                            />
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            )} */}
             <LoadingBackdrop
                 enabled={loadingBackdropEnabled}
                 theme={themeColor}
@@ -455,7 +439,22 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 12,
             fontFamily: 'NanumGothic',
-            paddingTop: 10,
+            paddingTop: 20,
             paddingBottom: 20,
         },
+        fileContainer: {
+            flexDirection: 'row',
+            backgroundColor: baseColors.GRAY_3,
+            marginTop: 16,
+            paddingTop: 8,
+            paddingLeft: 8,
+            paddingBottom: 8,
+            borderRadius: 3,
+        },
+        fileText: {
+            color: 'black',
+            fontSize: 16,
+            fontFamily: 'NanumGothic',
+            paddingLeft: 8,
+        }
     })
