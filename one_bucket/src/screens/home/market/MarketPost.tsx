@@ -294,12 +294,15 @@ const MarketPost: React.FC = (): JSX.Element => {
                     <IcHeart />
                 </TouchableOpacity>
                 <View style={{ position: 'relative', left: -16 }}>
-                    <Text style={styles.bottomBarLabel}>남은 수량</Text>
+                    {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
                     <Text style={styles.bottomBarLabel}>모집 인원</Text>
                 </View>
                 <View style={{ position: 'relative', left: 0 }}>
-                    <Text style={styles.bottomBarCountText}>12 / 30</Text>
-                    <Text style={styles.bottomBarCountText}>3 / 5</Text>
+                    {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
+                    <Text style={styles.bottomBarCountText}>
+                        {data?.trade_nickNames.length ?? 0 + 1} /{' '}
+                        {data?.trade_wanted}
+                    </Text>
                 </View>
                 <TouchableOpacity
                     style={styles.joinButton}

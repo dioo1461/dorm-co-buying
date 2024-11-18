@@ -1,13 +1,7 @@
-import { baseColors, Icolor } from '@/constants/colors'
-import {
-    StyleSheet,
-    Text,
-    TouchableNativeFeedback,
-    View,
-    Platform,
-} from 'react-native'
 import BottomSheet from '@/components/bottomSheet/BottomSheet'
 import Line from '@/components/Line'
+import { baseColors, Icolor } from '@/constants/colors'
+import { StyleSheet, Text, TouchableNativeFeedback, View } from 'react-native'
 
 export type SelectableBottomSheetButtonProps = {
     text: string
@@ -76,63 +70,63 @@ export const SelectableBottomSheet: React.FC<SelectableBottomSheetProps> = ({
     const styles = createStyles(theme)
 
     return (
-        <BottomSheet
-            enabled={enabled}
-            onClose={onClose}
-            theme={theme}
-            jsxElement={() => (
-                <View>
-                    <View style={styles.buttonsContainer}>
-                        {buttons.map((buttonProp, index) => {
-                            let textStyle
-                            switch (buttonProp.style) {
-                                case 'default':
-                                    textStyle = styles.buttonText
-                                    break
-                                case 'destructive':
-                                    textStyle = styles.destructiveButtonText
-                                    break
-                            }
-                            return (
-                                <View key={index}>
-                                    <View style={styles.touchableWrapper}>
-                                        <TouchableNativeFeedback
-                                            onPress={buttonProp.onPress}
-                                            background={TouchableNativeFeedback.Ripple(
-                                                theme.TEXT_SECONDARY,
-                                                false, // 리플 효과가 경계를 넘지 않도록 설정
-                                            )}>
-                                            <View style={styles.button}>
-                                                <Text style={textStyle}>
-                                                    {buttonProp.text}
-                                                </Text>
-                                            </View>
-                                        </TouchableNativeFeedback>
-                                    </View>
-                                    {index !== buttons.length - 1 && (
-                                        <Line theme={theme} />
-                                    )}
+        <BottomSheet enabled={enabled} onClose={onClose} theme={theme}>
+            <View>
+                <View style={styles.buttonsContainer}>
+                    {buttons.map((buttonProp, index) => {
+                        let textStyle
+                        switch (buttonProp.style) {
+                            case 'default':
+                                textStyle = styles.buttonText
+                                break
+                            case 'destructive':
+                                textStyle = styles.destructiveButtonText
+                                break
+                        }
+                        return (
+                            <View key={index}>
+                                <View style={styles.touchableWrapper}>
+                                    <TouchableNativeFeedback
+                                        onPress={buttonProp.onPress}
+                                        background={TouchableNativeFeedback.Ripple(
+                                            theme.TEXT_SECONDARY,
+                                            false, // 리플 효과가 경계를 넘지 않도록 설정
+                                        )}>
+                                        <View style={styles.button}>
+                                            <Text style={textStyle}>
+                                                {buttonProp.text}
+                                            </Text>
+                                        </View>
+                                    </TouchableNativeFeedback>
                                 </View>
-                            )
-                        })}
-                    </View>
-                    <View style={[styles.buttonsContainer, { marginTop: 10 }]}>
-                        <View style={styles.touchableWrapper}>
-                            <TouchableNativeFeedback
-                                onPress={onClose}
-                                background={TouchableNativeFeedback.Ripple(
-                                    theme.TEXT_SECONDARY,
-                                    false,
-                                )}>
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>닫기</Text>
-                                </View>
-                            </TouchableNativeFeedback>
-                        </View>
+                                {index !== buttons.length - 1 && (
+                                    <Line
+                                        style={{
+                                            marginHorizontal: 10,
+                                        }}
+                                        theme={theme}
+                                    />
+                                )}
+                            </View>
+                        )
+                    })}
+                </View>
+                <View style={[styles.buttonsContainer, { marginTop: 10 }]}>
+                    <View style={styles.touchableWrapper}>
+                        <TouchableNativeFeedback
+                            onPress={onClose}
+                            background={TouchableNativeFeedback.Ripple(
+                                theme.TEXT_SECONDARY,
+                                false,
+                            )}>
+                            <View style={styles.button}>
+                                <Text style={styles.buttonText}>닫기</Text>
+                            </View>
+                        </TouchableNativeFeedback>
                     </View>
                 </View>
-            )}
-        />
+            </View>
+        </BottomSheet>
     )
 }
 
@@ -159,15 +153,16 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             width: '100%',
             borderRadius: 10,
-            paddingVertical: 4,
+            paddingVertical: 0,
             zIndex: 2,
         },
         touchableWrapper: {
             borderRadius: 10, // 리플 효과가 맞춰질 radius
             overflow: 'hidden', // 리플 효과가 반경을 넘지 않도록 설정
+            paddingVertical: 2,
         },
         button: {
-            paddingVertical: 15,
+            paddingVertical: 18,
             justifyContent: 'center',
             alignItems: 'center',
         },

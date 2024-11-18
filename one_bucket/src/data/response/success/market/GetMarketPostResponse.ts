@@ -13,7 +13,7 @@ export interface GetMarketPostResponse extends GetBoardPostResponse {
     trade_userId: number
     trade_dueDate: Date
     trade_joins: any
-    trade_memberIds: number[]
+    trade_nickNames: string[]
     trade_startTradeAt: string
     trade_fin: boolean
 }

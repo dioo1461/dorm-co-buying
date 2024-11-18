@@ -25,10 +25,11 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Text,
 } from 'react-native'
-import { Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import BottomSheet from '@/components/bottomSheet/BottomSheet'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -82,7 +83,11 @@ const Chat: React.FC = (): React.JSX.Element => {
             ),
             headerRight: () => (
                 <TouchableOpacity
-                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                    onPress={() =>
+                        setStandardBottomSheetEnabled(
+                            !standardBottomSheetEnabled,
+                        )
+                    }
                     style={{ marginRight: 16 }}>
                     <IcOthers fill={baseColors.GRAY_2} />
                 </TouchableOpacity>
@@ -107,7 +112,10 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [messageRenderOffset, setMessageRenderOffset] =
         useState(RENDER_AMOUNT)
 
-    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    const [standardBottomSheetEnabled, setStandardBottomSheetEnabled] =
+        useState(false)
+    const [membersBottomSheetEnabled, setMembersBottomSheetEnabled] =
+        useState(false)
     // TODO: bottomSheetButton 동적 관리 - userId 필요
     // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
 
@@ -303,6 +311,14 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ BOTTOM SHEET PROPS ############
 
+    const onMembersButtonPress = () => {
+        setMembersBottomSheetEnabled(true)
+    }
+
+    const onReportButtonPress = () => {
+        console.log('신고하기')
+    }
+
     const onLeaveButtonPress = async () => {
         const token = await getAccessToken()
         const messageForm: WsChatMessageBody = {
@@ -323,9 +339,14 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     const bottomSheetButtons = [
         {
+            text: '거래 참여 멤버 보기',
+            style: 'default' as const,
+            onPress: onMembersButtonPress,
+        },
+        {
             text: '신고하기',
             style: 'default' as const,
-            onPress: () => console.log('신고하기'),
+            onPress: onReportButtonPress,
         },
         {
             text: '채팅방 나가기',
@@ -488,11 +509,17 @@ const Chat: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
             </View>
             <SelectableBottomSheet
-                enabled={bottomSheetEnabled}
+                enabled={standardBottomSheetEnabled}
                 theme={themeColor}
-                onClose={() => setBottomSheetEnabled(false)}
+                onClose={() => setStandardBottomSheetEnabled(false)}
                 buttons={bottomSheetButtons}
             />
+            <BottomSheet
+                enabled={membersBottomSheetEnabled}
+                onClose={() => setMembersBottomSheetEnabled(false)}
+                theme={themeColor}>
+                <Text>ㅎㅇㅋㅋ</Text>
+            </BottomSheet>
         </View>
     )
 }

@@ -1,21 +1,19 @@
 import { baseColors, Icolor } from '@/constants/colors'
-import BottomSheet from './BottomSheet'
 import {
+    Keyboard,
     ScrollView,
     StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
     View,
-    Text,
-    Keyboard,
 } from 'react-native'
+import BottomSheet from './BottomSheet'
 
-import { useEffect, useState } from 'react'
-import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { createMarketPost } from '@/apis/marketService'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
+import { useEffect, useState } from 'react'
 import Accordion from '../Accordion'
-import IcAngleDown from '@/assets/drawable/ic-angle-down.svg'
 
 interface Props {
     enabled: boolean
@@ -73,27 +71,22 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
     }
 
     return (
-        <BottomSheet
-            enabled={enabled}
-            theme={theme}
-            jsxElement={() => (
-                <View style={styles.container}>
-                    <Text style={styles.chatNameRequestLabel}>
-                        생성할 공동구매 채팅방의 이름을 입력해 주세요.
-                    </Text>
-                    <TextInput
-                        value={chatName}
-                        style={styles.chatNameInputText}
-                        onChangeText={text => setChatName(text)}
-                    />
-                    <TouchableOpacity
-                        style={styles.submitButton}
-                        onPress={() => onSubmit()}>
-                        <Text style={styles.submitButtonText}>
-                            거래글 생성하기
-                        </Text>
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity
+        <BottomSheet enabled={enabled} theme={theme} onClose={onClose}>
+            <View style={styles.container}>
+                <Text style={styles.chatNameRequestLabel}>
+                    생성할 공동구매 채팅방의 이름을 입력해 주세요.
+                </Text>
+                <TextInput
+                    value={chatName}
+                    style={styles.chatNameInputText}
+                    onChangeText={text => setChatName(text)}
+                />
+                <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={() => onSubmit()}>
+                    <Text style={styles.submitButtonText}>거래글 생성하기</Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity
                         style={styles.tradeInfoContainer}
                         onPress={() =>
                             setAccordionExpanded(!accordionExpanded)
@@ -101,75 +94,71 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                         <Text style={styles.tradeInfoLabel}>거래 정보</Text>
                         <IcAngleDown />
                     </TouchableOpacity> */}
-                    <Accordion
-                        expanded={accordionExpanded}
-                        onToggle={() =>
-                            setAccordionExpanded(!accordionExpanded)
-                        }
-                        containerStyle={styles.tradeInfoContainer}
-                        headerTitle='거래 정보'
-                        theme={theme}>
-                        <ScrollView style={styles.scrollView}>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>상품명</Text>
-                                <Text style={styles.itemText}>
-                                    {submitForm.tradeCreateDto.item}
-                                </Text>
-                            </View>
-                            <View style={styles.secondaryItemContainer}>
-                                <Text style={styles.secondaryItemLabel}>
-                                    카테고리
-                                </Text>
-                                <Text style={styles.secondaryItemText}>
-                                    {submitForm.tradeCreateDto.tag}
-                                </Text>
-                            </View>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>총 가격</Text>
-                                <Text style={styles.itemText}>
-                                    {submitForm.tradeCreateDto.price} 원
-                                </Text>
-                            </View>
-                            <View style={styles.secondaryItemContainer}>
-                                <Text style={styles.secondaryItemLabel}>
-                                    개당 가격
-                                </Text>
-                                <Text style={styles.secondaryItemText}>
-                                    {submitForm.tradeCreateDto.price /
-                                        submitForm.tradeCreateDto.count}{' '}
-                                    원
-                                </Text>
-                            </View>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>총 수량</Text>
-                                <Text style={styles.itemText}>
-                                    {submitForm.tradeCreateDto.count} 개
-                                </Text>
-                            </View>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>모집 인원 </Text>
-                                <Text style={styles.itemText}>
-                                    {submitForm.tradeCreateDto.wanted} 명
-                                </Text>
-                            </View>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>마감 기한</Text>
-                                <Text style={styles.itemText}>
-                                    D - {submitForm.tradeCreateDto.dueDays}
-                                </Text>
-                            </View>
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemLabel}>거래 위치</Text>
-                                <Text style={styles.itemText}>
-                                    {submitForm.tradeCreateDto.location}
-                                </Text>
-                            </View>
-                        </ScrollView>
-                    </Accordion>
-                </View>
-            )}
-            onClose={onClose}
-        />
+                <Accordion
+                    expanded={accordionExpanded}
+                    onToggle={() => setAccordionExpanded(!accordionExpanded)}
+                    containerStyle={styles.tradeInfoContainer}
+                    headerTitle='거래 정보'
+                    theme={theme}>
+                    <ScrollView style={styles.scrollView}>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>상품명</Text>
+                            <Text style={styles.itemText}>
+                                {submitForm.tradeCreateDto.item}
+                            </Text>
+                        </View>
+                        <View style={styles.secondaryItemContainer}>
+                            <Text style={styles.secondaryItemLabel}>
+                                카테고리
+                            </Text>
+                            <Text style={styles.secondaryItemText}>
+                                {submitForm.tradeCreateDto.tag}
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 가격</Text>
+                            <Text style={styles.itemText}>
+                                {submitForm.tradeCreateDto.price} 원
+                            </Text>
+                        </View>
+                        <View style={styles.secondaryItemContainer}>
+                            <Text style={styles.secondaryItemLabel}>
+                                개당 가격
+                            </Text>
+                            <Text style={styles.secondaryItemText}>
+                                {submitForm.tradeCreateDto.price /
+                                    submitForm.tradeCreateDto.count}{' '}
+                                원
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 수량</Text>
+                            <Text style={styles.itemText}>
+                                {submitForm.tradeCreateDto.count} 개
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>모집 인원 </Text>
+                            <Text style={styles.itemText}>
+                                {submitForm.tradeCreateDto.wanted} 명
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>마감 기한</Text>
+                            <Text style={styles.itemText}>
+                                D - {submitForm.tradeCreateDto.dueDays}
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>거래 위치</Text>
+                            <Text style={styles.itemText}>
+                                {submitForm.tradeCreateDto.location}
+                            </Text>
+                        </View>
+                    </ScrollView>
+                </Accordion>
+            </View>
+        </BottomSheet>
     )
 }
 

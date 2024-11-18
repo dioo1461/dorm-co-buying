@@ -145,7 +145,7 @@ const Market: React.FC = (): JSX.Element => {
     })
 
     const [currentCategory, setCurrentCategory] =
-        useState<TMarketCategory>('기타')
+        useState<TMarketCategory>('전체')
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
@@ -182,6 +182,7 @@ const Market: React.FC = (): JSX.Element => {
             refetch,
         } = queryMarketPostList(
             boardId!,
+            currentCategory,
             {
                 sortType: 'createdDate',
                 sort: 'desc',
