@@ -1,11 +1,10 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcClose from '@/assets/drawable/ic-close.svg'
 import IcHistory from '@/assets/drawable/ic-history.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useState } from 'react'
 import {
-    Appearance,
     FlatList,
     ScrollView,
     StyleSheet,
@@ -25,22 +24,11 @@ type HistoryItemProp = {
 }
 
 const Search: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
 
     var [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null)
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const [searchHistory, setSearchHistory] = useState<HistoryItemProp[]>([])
 

@@ -1,17 +1,10 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { Gender } from '@/data/response/success/GetProfileResponse'
-import {
-    queryGetMemberInfo,
-    queryGetProfile,
-    queryGetProfileImage,
-} from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
-    ActivityIndicator,
-    Appearance,
     Image,
     ScrollView,
     StyleSheet,
@@ -19,27 +12,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { getMemberInfo, getProfile } from '@/apis/profileService'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(
-        state => ({
-            themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
-            memberInfo: state.memberInfo,
-            profile: state.profile,
-        }),
-    )
+    const { themeColor, memberInfo, profile } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        memberInfo: state.memberInfo,
+        profile: state.profile,
+    }))
 
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
     const styles = createStyles(themeColor)
 
     const navigation = useNavigation()

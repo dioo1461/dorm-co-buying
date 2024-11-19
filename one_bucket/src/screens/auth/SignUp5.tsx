@@ -1,20 +1,18 @@
 import { postSignupForm, requestLogin } from '@/apis/authService'
-import Exclamation from '@/assets/drawable/exclamation.svg'
-import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
 import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import Exclamation from '@/assets/drawable/exclamation.svg'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import { baseColors, Icolor } from '@/constants/colors'
 import { signUpErrorMessage } from '@/constants/strings'
 import { LoginRequestBody } from '@/data/request/LoginRequestBody'
 import { SignUpRequestBody } from '@/data/request/SignUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
-import { setAccessToken } from '@/utils/accessTokenUtils'
 import { StringFilter } from '@/utils/StringFilter'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
     Alert,
-    Appearance,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -27,20 +25,9 @@ import {
 import { ScreenWidth } from 'react-native-elements/dist/helpers'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 const SignUp5: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)

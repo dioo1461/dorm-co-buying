@@ -1,14 +1,13 @@
+import { postNewPwForm } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import IcRefresh from '@/assets/drawable/ic-refresh.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
+import { NewPwRequestBody } from '@/data/request/signUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Alert,
-    Appearance,
-    Keyboard,
     ScrollView,
     StyleSheet,
     Text,
@@ -16,26 +15,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import Toast from 'react-native-toast-message'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-import { NewPwRequestBody } from '@/data/request/signUpRequestBody'
-import { postNewPwForm } from '@/apis/authService'
 
 const NewPw: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
@@ -67,12 +52,13 @@ const NewPw: React.FC = (): React.JSX.Element => {
         }
         postNewPwForm(form)
             .then(res => {
-                navigation.navigate('NewPw2',{ email: myEmail})
+                navigation.navigate('NewPw2', { email: myEmail })
             })
             .catch(err => {
                 setButtonText('새 비밀번호 발급 요청')
                 console.log(`FindPw - submitSignUpForm: ${err}`)
-                {/* if (err.response.status === 409) {
+                {
+                    /* if (err.response.status === 409) {
                     if (err.response.data.code == 1000) {
                         setEmailError(
                             signUpErrorMessage.duplicatedEmailOrNickname,
@@ -81,11 +67,11 @@ const NewPw: React.FC = (): React.JSX.Element => {
                             signUpErrorMessage.duplicatedEmailOrNickname,
                         )
                     }
-                } */}
-            }   
-                )
+                } */
+                }
+            })
     }
-    
+
     const validateInfo = (email: string) => {
         return true
     }
@@ -99,13 +85,11 @@ const NewPw: React.FC = (): React.JSX.Element => {
                     <IcArrowLeft />
                 </TouchableOpacity>
                 <View style={styles.verificationContainer}>
-                <Text style={styles.infoText}>
-                    계정의 비밀번호를 새로 발급받을 수 있습니다.
-                </Text>
+                    <Text style={styles.infoText}>
+                        계정의 비밀번호를 새로 발급받을 수 있습니다.
+                    </Text>
                 </View>
-                <Text style={styles.schoolInfoLabel}>
-                    아이디 입력
-                </Text>
+                <Text style={styles.schoolInfoLabel}>아이디 입력</Text>
                 <TextInput
                     style={styles.textInput}
                     onChangeText={handleIdChange}
@@ -127,23 +111,17 @@ const NewPw: React.FC = (): React.JSX.Element => {
                     autoFocus={true}
                 />
                 <TouchableOpacity
-                    disabled={
-                        !!(
-                            !id ||
-                            !myEmail
-                        )
-                    }
+                    disabled={!!(!id || !myEmail)}
                     style={[
                         {
                             backgroundColor:
-                                !id ||
-                                !myEmail
+                                !id || !myEmail
                                     ? baseColors.GRAY_2
                                     : baseColors.SCHOOL_BG,
                         },
-                    styles.button,
+                        styles.button,
                     ]}
-                    onPress={()=>{
+                    onPress={() => {
                         setButtonText('잠시만 기다려 주세요...')
                         handleSubmit()
                     }}>

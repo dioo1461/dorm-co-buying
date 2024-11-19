@@ -6,6 +6,7 @@ import {
 } from '@/apis/marketService'
 import { GetMarketPostListResponse } from '@/data/response/success/market/GetMarketPostListResponse'
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
+import { TMarketCategory } from '@/types/TMarketCategory'
 import {
     useInfiniteQuery,
     UseInfiniteQueryOptions,
@@ -19,12 +20,13 @@ type SortType = {
 
 export const queryMarketPostList = (
     boardId: number,
+    category: TMarketCategory,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetMarketPostListResponse> = {},
 ) => {
     return useInfiniteQuery<GetMarketPostListResponse>(
-        ['marketPostList', boardId, sortType],
+        ['marketPostList', boardId, category, sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
             const sortParam =

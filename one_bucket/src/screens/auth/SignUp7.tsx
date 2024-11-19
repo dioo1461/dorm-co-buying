@@ -1,34 +1,18 @@
-import { darkColors, Icolor, lightColors } from '@/constants/colors'
+import { Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp } from '@react-navigation/native'
-import React, { useEffect } from 'react'
-import {
-    Appearance,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native'
+import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 
 const SignUp7: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
-        useBoundStore(state => ({
+    const { themeColor, onLogInSuccess, onLoginFailure } = useBoundStore(
+        state => ({
             themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
             onLogInSuccess: state.onLogInSuccess,
             onLoginFailure: state.onLoginFailure,
-        }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+        }),
+    )
 
     const styles = createStyles(themeColor)
 

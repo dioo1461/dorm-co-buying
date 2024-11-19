@@ -1,7 +1,15 @@
+import {
+    getChatLogAfterTimestamp,
+    getTradeInfoOfChatRoom,
+} from '@/apis/chatService'
+import IcOthers from '@/assets/drawable/ic-others.svg'
+import BottomSheet from '@/components/bottomSheet/BottomSheet'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 import Loading from '@/components/Loading'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
-import useCache, { ColumnTypes } from '@/hooks/useCache/useCache'
+import useDatabase from '@/hooks/useDatabase/useDatabase'
+import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import {
@@ -13,31 +21,22 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import {
-    Appearance,
     FlatList,
-    InteractionManager,
     StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
     View,
 } from 'react-native'
-import { Button, Text } from 'react-native-elements'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import IcOthers from '@/assets/drawable/ic-others.svg'
-import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
-import {
-    getChatLogAfterTimestamp,
-    getTradeInfoOfChatRoom,
-} from '@/apis/chatService'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
     TextDecoder: encoding.TextDecoder,
 })
 
-interface ChatCacheColumns {
-    [key: string]: ColumnTypes
+type ChatDataColumns = {
     type: string
     roomId: string
     sender: string
@@ -47,58 +46,13 @@ interface ChatCacheColumns {
 
 const RENDER_AMOUNT = 20
 
+// TODO: 이미지 전송 가능하도록 구현
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
+        memberInfo: state.memberInfo,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
-
-    type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>
-    const { params } = useRoute<ChatRouteProp>()
-    const styles = createStyles(themeColor)
-
-    const [isLoading, setIsLoading] = useState(true)
-    const lastTimestamp = useRef<string | null>(null)
-    const [message, setMessage] = useState('')
-    const [chatMessages, setChatMessages] = useState<ChatCacheColumns[] | null>(
-        null,
-    )
-
-    const isLoadingMore = useRef<Boolean>(false)
-    const [hasMoreMessages, setHasMoreMessagesToRender] = useState(true)
-    const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
-    const [messageRenderOffset, setMessageRenderOffset] =
-        useState(RENDER_AMOUNT)
-
-    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
-    // TODO: bottomSheetButton 동적 관리 - userId 필요
-    // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
-
-    const flatListRef = useRef<FlatList<ChatCacheColumns> | null>(null)
-    const stompClientRef = useRef<Client | null>(null)
-
-    const { getCachesByWhereClause, addCache, removeCache } =
-        useCache<ChatCacheColumns>({
-            tableName: 'chat',
-            columns: {
-                type: 'string',
-                roomId: 'string',
-                sender: 'string',
-                message: 'string',
-                time: 'string',
-            },
-            // debug: true,
-        })
 
     // navigation 헤더 옵션 설정
     useEffect(() => {
@@ -120,13 +74,60 @@ const Chat: React.FC = (): React.JSX.Element => {
             ),
             headerRight: () => (
                 <TouchableOpacity
-                    onPress={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                    onPress={() =>
+                        setStandardBottomSheetEnabled(
+                            !standardBottomSheetEnabled,
+                        )
+                    }
                     style={{ marginRight: 16 }}>
                     <IcOthers fill={baseColors.GRAY_2} />
                 </TouchableOpacity>
             ),
         })
     }, [themeColor])
+
+    type ChatRouteProp = RouteProp<RootStackParamList, 'Chat'>
+    const { params } = useRoute<ChatRouteProp>()
+    const styles = createStyles(themeColor)
+
+    // ########## 상태 관리 변수 ##########
+
+    const [isLoading, setIsLoading] = useState(true)
+    const lastTimestamp = useRef<string | null>(null)
+    const [message, setMessage] = useState('')
+    const [chatMessages, setChatMessages] = useState<ChatDataColumns[]>([])
+
+    const isLoadingMore = useRef<Boolean>(false)
+    const [hasMoreMessages, setHasMoreMessagesToRender] = useState(true)
+    const [messageRenderLimit, setMessageRenderLimit] = useState(RENDER_AMOUNT)
+    const [messageRenderOffset, setMessageRenderOffset] =
+        useState(RENDER_AMOUNT)
+
+    const [standardBottomSheetEnabled, setStandardBottomSheetEnabled] =
+        useState(false)
+    const [membersBottomSheetEnabled, setMembersBottomSheetEnabled] =
+        useState(false)
+    // TODO: bottomSheetButton 동적 관리 - userId 필요
+    // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
+    const [memberList, setMemberList] = useState<string[]>([])
+
+    const flatListRef = useRef<FlatList<ChatDataColumns> | null>(null)
+    const stompClientRef = useRef<Client | null>(null)
+
+    const { getDataByWhereClause, addData, deleteDataByKeys } =
+        useDatabase<ChatDataColumns>({
+            tableName: 'chat',
+            columns: {
+                type: 'string',
+                roomId: 'string',
+                sender: 'string',
+                message: 'string',
+                time: 'string',
+            },
+            debug: true,
+        })
+
+    const { getTradeInfo, deleteTradeInfo } = useTradeInfoOfChatRoomDB()
 
     // ########## STATE MANAGEMENT ##########
     useEffect(() => {
@@ -161,7 +162,8 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
 
         const fetchFreshChats = async () => {
-            var timestamp = lastTimestamp.current ?? new Date().toISOString()
+            var timestamp = lastTimestamp.current!
+            console.log('fetchFreshChats - lastTimestamp: ', timestamp)
             getChatLogAfterTimestamp(params.roomId, timestamp).then(res => {
                 console.log('$$$$$$$fresh messages fetched ', res)
                 const freshMessages = res.map(chatLog => {
@@ -173,30 +175,33 @@ const Chat: React.FC = (): React.JSX.Element => {
                         time: chatLog.timestamp,
                     }
                 })
-                addMessagesToCache(freshMessages)
+                addMessagesToData(freshMessages)
+                if (freshMessages.length === 0) return
+                setChatMessages(prev => [...freshMessages.reverse(), ...prev])
+                setLastTimestampOfChatRoom(params.roomId, freshMessages[0].time)
                 return
             })
         }
 
         const initChatMessages = async (): Promise<void> => {
-            const messages = await retrieveMessagesFromCache(
+            console.log('lastTimeStamp: ', lastTimestamp.current)
+            const messages = await retrieveMessagesFromData(
                 messageRenderLimit,
                 0,
-                lastTimestamp.current ?? new Date().toISOString(),
             )
             if (messages) setChatMessages(messages)
         }
 
         const executeSynchoronously = async () => {
-            lastTimestamp.current = await getLastTimestampOfChatRoom(
-                params.roomId,
-            )
+            lastTimestamp.current =
+                (await getLastTimestampOfChatRoom(params.roomId)) ??
+                new Date().toISOString()
             await Promise.all([
-                fetchFreshChats(),
+                initStompClient(),
+                initChatMessages(),
                 getTradeInfoOfChatRoom(params.roomId),
             ])
-            await initChatMessages()
-            await initStompClient()
+            await fetchFreshChats()
             setIsLoading(false)
         }
         console.log(params.roomId)
@@ -208,18 +213,12 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    const retrieveMessagesFromCache = async (
-        limit: number,
-        offset: number,
-        lastTimestamp: string,
-    ) => {
+    const retrieveMessagesFromData = async (limit: number, offset: number) => {
         console.log(
-            `<retrieveMessagesFromCache>, limit: ${limit}, offset: ${offset}`,
+            `<retrieveMessagesFromData>, limit: ${limit}, offset: ${offset}`,
         )
-        const messages = await getCachesByWhereClause(
-            `WHERE roomId = '${params.roomId}' AND time <= '${
-                lastTimestamp ?? new Date().toISOString()
-            }' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
+        const messages = await getDataByWhereClause(
+            `WHERE roomId = '${params.roomId}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
         )
         console.log(`<retrieved> ${messages.length} messages`)
         return messages
@@ -233,20 +232,22 @@ const Chat: React.FC = (): React.JSX.Element => {
         ) {
             return
         }
-
-        const message = messageBody as ChatCacheColumns
+        console.log('onMessageReceive - ', messageBody)
+        const message = messageBody as ChatDataColumns
         setChatMessages(prev => [message, ...prev!])
-        addMessagesToCache([message]).then(() => {
+        addMessagesToData([message]).then(() => {
+            console.log('onMessageReceive - addData done')
             setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
         })
     }
 
-    const addMessagesToCache = async (
-        messages: ChatCacheColumns[],
+    const addMessagesToData = async (
+        messages: ChatDataColumns[],
     ): Promise<void> => {
+        console.log('addMessagesToData - ', messages)
         await Promise.all(
             messages.map(async message => {
-                await addCache({
+                await addData({
                     type: message.type,
                     roomId: message.roomId,
                     sender: message.sender,
@@ -271,16 +272,16 @@ const Chat: React.FC = (): React.JSX.Element => {
             body: JSON.stringify(messageForm),
         })
         setMessage('')
+        setLastTimestampOfChatRoom(params.roomId, messageForm.time)
     }
 
     const loadMoreMessages = async () => {
         if (isLoadingMore.current || !hasMoreMessages) return
         isLoadingMore.current = true
 
-        const moreMessages = await retrieveMessagesFromCache(
+        const moreMessages = await retrieveMessagesFromData(
             messageRenderLimit,
             messageRenderOffset,
-            lastTimestamp.current ?? new Date().toISOString(),
         )
         if (moreMessages == null || moreMessages.length == 0) {
             setHasMoreMessagesToRender(false)
@@ -288,7 +289,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             return
         }
 
-        setChatMessages([...chatMessages!, ...moreMessages])
+        setChatMessages([...chatMessages, ...moreMessages])
         setMessageRenderOffset(messageRenderOffset + moreMessages.length)
 
         if (moreMessages.length < messageRenderLimit) {
@@ -304,6 +305,25 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ BOTTOM SHEET PROPS ############
 
+    useEffect(() => {
+        const initialize = async () => {
+            const [tradeInfo] = await Promise.all([getTradeInfo(params.roomId)])
+            setMemberList(tradeInfo.nickNames)
+        }
+
+        initialize()
+    }, [])
+
+    const onMembersButtonPress = () => {
+        setMembersBottomSheetEnabled(true)
+    }
+
+    const onReportButtonPress = () => {
+        getTradeInfo(params.roomId).then(res => {
+            console.log('tradeInfo: ', res)
+        })
+    }
+
     const onLeaveButtonPress = async () => {
         const token = await getAccessToken()
         const messageForm: WsChatMessageBody = {
@@ -317,16 +337,21 @@ const Chat: React.FC = (): React.JSX.Element => {
             destination: '/pub/message',
             body: JSON.stringify(messageForm),
         })
-        removeCache({ roomId: params.roomId }).then(() => {
+        deleteDataByKeys({ roomId: params.roomId }).then(() => {
             navigation.goBack()
         })
     }
 
     const bottomSheetButtons = [
         {
+            text: '거래 참여 멤버 보기',
+            style: 'default' as const,
+            onPress: onMembersButtonPress,
+        },
+        {
             text: '신고하기',
             style: 'default' as const,
-            onPress: () => console.log('신고하기'),
+            onPress: onReportButtonPress,
         },
         {
             text: '채팅방 나가기',
@@ -363,7 +388,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         item,
         index,
     }: {
-        item: ChatCacheColumns
+        item: ChatDataColumns
         index: number
     }) => {
         const isMyMessage =
@@ -371,7 +396,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         const currentMessageTime = new Date(item.time)
 
         // TODO: null check 관련 anomaly 발생 시 수정 필요
-        if (!chatMessages) return null
+        if (chatMessages.length === 0) return null
 
         if (item.type === 'ENTER') {
             return (
@@ -456,7 +481,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 ref={flatListRef}
                 data={chatMessages}
                 renderItem={renderMessageItem}
-                keyExtractor={(_, index) => index.toString()}
+                keyExtractor={(_, idx) => idx.toString()}
                 contentContainerStyle={styles.chatContainer}
                 inverted
                 onEndReached={loadMoreMessages} // 끝에 도달할 때 loadMoreMessages 호출
@@ -489,11 +514,20 @@ const Chat: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
             </View>
             <SelectableBottomSheet
-                enabled={bottomSheetEnabled}
+                enabled={standardBottomSheetEnabled}
                 theme={themeColor}
-                onClose={() => setBottomSheetEnabled(false)}
+                onClose={() => setStandardBottomSheetEnabled(false)}
                 buttons={bottomSheetButtons}
             />
+            <BottomSheet
+                enabled={membersBottomSheetEnabled}
+                onClose={() => setMembersBottomSheetEnabled(false)}
+                theme={themeColor}>
+                <Text>{memberInfo?.nickname}</Text>
+                {memberList.map((member, index) => {
+                    return <Text key={index}>{member}</Text>
+                })}
+            </BottomSheet>
         </View>
     )
 }

@@ -1,13 +1,18 @@
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import IcPerson from '@/assets/drawable/ic-person.svg'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import {
     ChatRoom,
     GetChatRoomListResponse,
 } from '@/data/response/success/chat/GetChatRoomListResponse'
+import { SseRoomUpdateBody } from '@/data/response/success/chat/SseRoomUpdateBody'
+import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 import { createSSEConnection } from '@/utils/sseFactory'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import {
-    Appearance,
     FlatList,
     ListRenderItem,
     StyleSheet,
@@ -17,25 +22,13 @@ import {
 import { Text } from 'react-native-elements'
 import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-import { getAccessToken } from '@/utils/accessTokenUtils'
-import { useFocusEffect } from '@react-navigation/native'
-import { convertToKoreanTime } from '@/utils/dateUtils'
 
+// TODO: 채팅방 대표 이미지 설정
+// TODO: 채팅방 인원수 등 정보 표시
 const ChatList: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
@@ -43,64 +36,113 @@ const ChatList: React.FC = (): React.JSX.Element => {
     type esEventType = 'initial-room-list' | 'room-update'
 
     const esRef = useRef<EventSource<esEventType> | null>(null)
-    const [chatRoomList, setChatRoomData] =
+    const [chatRoomList, setChatRoomList] =
         useState<GetChatRoomListResponse | null>(null)
+    const roomUpdateHandlerInitialized = useRef(false)
+    const sseInitialized = useRef(false)
 
+    const initializeSSEConnection = async () => {
+        console.log('initializeSSEConnection')
+        if (esRef.current) return // Prevent duplicate connections
+
+        // Create SSE connection
+        const eventSource = await createSSEConnection({
+            endpoint: '/chat/sse/chatList',
+            options: {
+                headers: {
+                    Authorization: `Bearer ${await getAccessToken()}`,
+                },
+            },
+            eventHandlers: {
+                'initial-room-list': handleInitialRoomList,
+            },
+            debug: true,
+        })
+        esRef.current = eventSource
+        console.log('SSE connection initialized')
+        registerEventHandlers()
+    }
+
+    const compareRoomDate = useCallback((a: ChatRoom, b: ChatRoom) => {
+        const dateA = new Date(a.recentMessageTime).getTime()
+        const dateB = new Date(b.recentMessageTime).getTime()
+        return dateB - dateA
+    }, [])
+
+    const handleInitialRoomList = (event: SSEMessage) => {
+        console.log('initial-room-list handled')
+        const data = JSON.parse(event.data) as GetChatRoomListResponse
+        const sortedData = data.sort(compareRoomDate)
+        setChatRoomList(sortedData)
+    }
+
+    const handleRoomUpdate = (event: SSEMessage) => {
+        console.log('room-update handled')
+        const data = JSON.parse(event.data) as SseRoomUpdateBody
+        setChatRoomList(prevList => {
+            if (!prevList) return null
+            // Update the specific room
+            const updatedList = prevList.map(room => {
+                if (room.roomId === data.roomId) {
+                    console.log('room found and updated')
+                    return {
+                        ...room,
+                        recentMessage: data.recentMessage,
+                        recentMessageTime: data.recentMessageTime,
+                    }
+                }
+                return room
+            })
+            // Sort the updated list
+            updatedList.sort(compareRoomDate)
+            return updatedList
+        })
+    }
+
+    const registerEventHandlers = () => {
+        console.log('Registering room-update handler')
+        roomUpdateHandlerInitialized.current = true
+        esRef.current!.addEventListener('room-update', handleRoomUpdate)
+    }
+
+    const cleanupSSE = () => {
+        console.log('$$$$ Cleaning up SSE connection $$$$')
+        if (esRef.current) {
+            esRef.current.flushAllListeners()
+            esRef.current.close()
+            esRef.current = null
+        }
+    }
+
+    // Initialize SSE connection when screen is focused
     useFocusEffect(
         useCallback(() => {
-            const initializeSSEConnection = async () => {
-                if (esRef.current) return // 이미 연결이 있다면 중복 연결 방지
-                const eventSource = await createSSEConnection({
-                    endpoint: '/chat/sse/chatList',
-                    options: {
-                        headers: {
-                            Authorization: `Bearer ${await getAccessToken()}`,
-                        },
-                    },
-                    eventHandlers: {
-                        'initial-room-list': initialRoomListHandler,
-                        'room-update': roomUpdateHandler,
-                    },
-                    debug: true,
-                })
-                esRef.current = eventSource
+            console.log('$$$$$$$ useFocusEffect triggered $$$$$$')
+            console.log('sseInitialized:', sseInitialized.current)
+            console.log(
+                'roomUpdateHandlerInitialized:',
+                roomUpdateHandlerInitialized.current,
+            )
+            if (!sseInitialized.current) {
+                console.log('SSE not initialized, initializing...')
+                initializeSSEConnection()
+                sseInitialized.current = true
             }
-
-            const initialRoomListHandler = (event: SSEMessage) => {
-                const data = JSON.parse(event.data) as GetChatRoomListResponse
-                const sortedData = data.sort((a: ChatRoom, b: ChatRoom) => {
-                    const dateA = new Date(a.recentMessageTime).getTime()
-                    const dateB = new Date(b.recentMessageTime).getTime()
-                    return dateB - dateA
-                })
-                setChatRoomData(sortedData)
-            }
-
-            const roomUpdateHandler = (event: SSEMessage) => {
-                const data = JSON.parse(event.data) as ChatRoom
-                const updatedList = chatRoomList!.map(room =>
-                    room.roomId === data.roomId ? data : room,
-                )
-                setChatRoomData(updatedList)
-                console.log('room-update received')
-            }
-
-            initializeSSEConnection()
 
             return () => {
-                if (esRef.current) {
-                    esRef.current.remove(initialRoomListHandler)
-                    esRef.current.remove(roomUpdateHandler)
-                    esRef.current.close()
-                    esRef.current = null
-                }
+                console.log('Cleaning up on screen unfocus')
+                cleanupSSE()
+                sseInitialized.current = false
+                roomUpdateHandlerInitialized.current = false
             }
-        }, [setChatRoomData]),
+        }, []),
     )
 
-    const formatRecentMessageTime = (utcTime: Date) => {
-        const now = convertToKoreanTime(new Date())
+    const { getTradeInfo, addTradeInfo, updateTradeInfo } =
+        useTradeInfoOfChatRoomDB()
 
+    const formatRecentMessageTime = (utcTime: Date) => {
+        const now = new Date()
         const diff = now.getTime() - utcTime.getTime()
 
         const diffMinutes = Math.floor(diff / 1000 / 60)
@@ -134,8 +176,6 @@ const ChatList: React.FC = (): React.JSX.Element => {
 
     const flatlistRef = useRef<FlatList>(null)
 
-    const FlatlistHeader = () => <View></View>
-
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(
             themeColor === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
@@ -143,54 +183,66 @@ const ChatList: React.FC = (): React.JSX.Element => {
         )
     }
 
-    const ChatItem = (chatRoom: ChatRoom) => {
-        const styles = createChatitemStyles(themeColor)
+    const ChatItem: React.FC<ChatRoom> = memo(
+        (chatRoom: ChatRoom): JSX.Element => {
+            const styles = createChatitemStyles(themeColor)
+            const [tradeInfo, setTradeInfo] =
+                useState<TradeInfoOfChatRoom | null>(null)
+            useEffect(() => {
+                getTradeInfo(chatRoom.roomId.toString()).then(setTradeInfo)
+            }, [])
 
-        return (
-            <TouchableNativeFeedback
-                background={touchableNativeFeedbackBg()}
-                onPress={() => navigation.navigate('Chat', chatRoom)}>
-                <View style={styles.chatContainer}>
-                    {/* ### 채팅 이미지 ### */}
-                    <View style={styles.imageContainer}></View>
-                    <View style={{ flex: 1 }}>
-                        <View style={styles.headerContainer}>
-                            <View style={styles.headerFirstContainer}>
-                                <Text style={styles.titleText}>
-                                    {chatRoom?.roomName}
-                                </Text>
-                                <Text style={styles.lastChatTimeText}>
-                                    {chatRoom.recentMessageTime
-                                        ? formatRecentMessageTime(
-                                              new Date(
-                                                  chatRoom.recentMessageTime,
-                                              ),
-                                          )
-                                        : '방금'}
-                                </Text>
+            return (
+                <TouchableNativeFeedback
+                    background={touchableNativeFeedbackBg()}
+                    onPress={() => navigation.navigate('Chat', chatRoom)}>
+                    <View style={styles.chatContainer}>
+                        <Text>{}</Text>
+                        {/* ### 채팅 이미지 ### */}
+                        <View style={styles.imageContainer}></View>
+                        <View style={{ flex: 1 }}>
+                            <View style={styles.headerContainer}>
+                                <View style={styles.headerFirstContainer}>
+                                    <Text style={styles.titleText}>
+                                        {chatRoom?.roomName}
+                                    </Text>
+                                    <IcPerson />
+                                    <Text style={styles.participantCountText}>
+                                        {(tradeInfo?.nickNames.length ?? 0) + 1}
+                                    </Text>
+                                    <Text style={styles.lastChatTimeText}>
+                                        {chatRoom.recentMessageTime
+                                            ? formatRecentMessageTime(
+                                                  new Date(
+                                                      chatRoom.recentMessageTime,
+                                                  ),
+                                              )
+                                            : ''}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.bodyContainer}>
-                            <View style={styles.recentMessageContainer}>
-                                <Text
-                                    style={
-                                        chatRoom.recentMessage
-                                            ? styles.recentMessageText
-                                            : styles.noMessageText
-                                    }
-                                    numberOfLines={1} // 한 줄만 표시하고 넘치면 말줄임
-                                    ellipsizeMode='tail' // 넘칠 때 ... 처리
-                                >
-                                    {chatRoom.recentMessage ||
-                                        '첫 메시지를 남겨보세요!'}
-                                </Text>
+                            <View style={styles.bodyContainer}>
+                                <View style={styles.recentMessageContainer}>
+                                    <Text
+                                        style={
+                                            chatRoom.recentMessage
+                                                ? styles.recentMessageText
+                                                : styles.noMessageText
+                                        }
+                                        numberOfLines={1} // 한 줄만 표시하고 넘치면 말줄임
+                                        ellipsizeMode='tail' // 넘칠 때 ... 처리
+                                    >
+                                        {chatRoom.recentMessage ||
+                                            '첫 메시지를 남겨보세요!'}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-            </TouchableNativeFeedback>
-        )
-    }
+                </TouchableNativeFeedback>
+            )
+        },
+    )
 
     const renderItem: ListRenderItem<ChatRoom> = ({ item }) => (
         <ChatItem {...item} />
@@ -274,6 +326,11 @@ const createChatitemStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic-Bold',
             flex: 1, // 남은 공간을 차지하도록 설정
             paddingRight: 8,
+        },
+        participantCountText: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
         },
         lastChatTimeText: {
             color: theme.TEXT_TERTIARY,

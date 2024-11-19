@@ -1,43 +1,21 @@
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import IcClose from '@/assets/drawable/ic-close.svg'
-import IcNotification from '@/assets/drawable/ic-angle-left.svg'
 import IcUnauth from '@/assets/drawable/tabler_school-off.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect, useState } from 'react'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import {
-    Appearance,
-    BackHandler,
     Dimensions,
-    FlatList,
-    Image,
-    ScrollView,
     StyleSheet,
     Text,
-    TextInput,
-    TouchableNativeFeedback,
     TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import strings from '@/constants/strings'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const UnauthHome: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
@@ -45,12 +23,14 @@ const UnauthHome: React.FC = (): React.JSX.Element => {
     return (
         <View style={styles.container}>
             <IcUnauth />
-            <Text style={{fontSize: 20, textAlign: 'center'}}>
+            <Text style={{ fontSize: 20, textAlign: 'center' }}>
                 {`학교 인증을 완료하셔야\n모든 서비스를 이용하실 수 있습니다.`}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
                 style={styles.button}
-                onPress = {() => {navigation.navigate('SchoolAuth1')}}>
+                onPress={() => {
+                    navigation.navigate('SchoolAuth1')
+                }}>
                 <Text style={styles.buttonText}>학교 인증 바로가기</Text>
             </TouchableOpacity>
         </View>
@@ -59,13 +39,13 @@ const UnauthHome: React.FC = (): React.JSX.Element => {
 
 const CreateStyles = (theme: Icolor) =>
     StyleSheet.create({
-        container:{
+        container: {
             backgroundColor: theme.BG,
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
         },
-        button:{
+        button: {
             height: 50,
             width: '90%',
             borderRadius: 8,
@@ -75,10 +55,10 @@ const CreateStyles = (theme: Icolor) =>
             alignItems: 'center',
             marginTop: 50,
         },
-        buttonText:{
+        buttonText: {
             color: theme.BUTTON_TEXT,
             fontSize: 16,
-        }
+        },
     })
 
 export default UnauthHome

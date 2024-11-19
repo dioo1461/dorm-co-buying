@@ -1,16 +1,14 @@
 import { postProfile } from '@/apis/profileService'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
-    Appearance,
-    BackHandler,
-    KeyboardAvoidingView,
-    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -18,29 +16,13 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import Toast from 'react-native-toast-message'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, memberInfo, profile } = useBoundStore(
-        state => ({
-            themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
-            memberInfo: state.memberInfo,
-            profile: state.profile,
-        }),
-    )
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+    const { themeColor, profile } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        profile: state.profile,
+    }))
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
@@ -63,18 +45,24 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         return day
     }
     const getGender = (gender: any) => {
-        if(gender == 'man') return true
+        if (gender == 'man') return true
         else return false
     }
 
     const [name, setName] = useState(profile!.name)
     const [male, setMale] = useState(getGender(profile!.gender))
-    const gender = (male == true) ? 'man' : 'woman'
+    const gender = male == true ? 'man' : 'woman'
     const [year, setYear] = useState(getYear(profile!.birth))
     const [month, setMonth] = useState(getMonth(profile!.birth))
     const [day, setDay] = useState(getDay(profile!.birth))
     const [age, setAge] = useState(0)
-    const birth = String(year + '-' + String(month).padStart(2,"0") + '-' + String(day).padStart(2,"0"))
+    const birth = String(
+        year +
+            '-' +
+            String(month).padStart(2, '0') +
+            '-' +
+            String(day).padStart(2, '0'),
+    )
     const [bio, setBio] = useState(String(profile!.description))
 
     const handleNameChange = (text: string) => {
@@ -101,129 +89,126 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     }
 
     return (
-            <View style={signUpStyles.container}>
-                <View>
+        <View style={signUpStyles.container}>
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.goBack()
+                    }}
+                    style={signUpStyles.backButton}>
+                    <IcArrowLeft />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.verificationContainer}>
+                <Text style={styles.infoText}>
+                    입력했던 프로필을 수정할 수 있습니다.
+                </Text>
+            </View>
+            <ScrollView>
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.label}>이름</Text>
+                    <Text style={styles.accent}>*</Text>
+                </View>
+                <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder='이름'
+                    placeholderTextColor={themeColor.TEXT_SECONDARY}
+                />
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.label}>성별</Text>
+                    <Text style={styles.accent}>*</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
-                        onPress={() => {
-                            navigation.goBack()
-                        }}
-                        style={signUpStyles.backButton}>
-                        <IcArrowLeft />
+                        onPress={() => setMale(true)}
+                        style={styles.dormContainer}>
+                        <CheckBox
+                            disabled={false}
+                            value={male}
+                            onValueChange={newVal => setMale(newVal)}
+                            tintColors={{
+                                true: baseColors.SCHOOL_BG,
+                                false: baseColors.GRAY_1,
+                            }}
+                        />
+                        <Text style={styles.dormText}>남성</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setMale(false)}
+                        style={styles.dormContainer}>
+                        <CheckBox
+                            disabled={false}
+                            value={!male}
+                            onValueChange={newVal => setMale(!newVal)}
+                            tintColors={{
+                                true: baseColors.SCHOOL_BG,
+                                false: baseColors.GRAY_1,
+                            }}
+                        />
+                        <Text style={styles.dormText}>여성</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.verificationContainer}>
-                        <Text style={styles.infoText}>
-                            입력했던 프로필을 수정할 수 있습니다.
-                        </Text>
-                    </View>
-                <ScrollView>
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.label}>이름</Text>
-                        <Text style={styles.accent}>*</Text>
-                    </View>
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.label}>생년월일</Text>
+                    <Text style={styles.accent}>*</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
-                            style={styles.input}
-                            value={name}
-                            onChangeText={setName}
-                            placeholder='이름'
-                            placeholderTextColor={themeColor.TEXT_SECONDARY}
-                        />
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.label}>성별</Text>
-                        <Text style={styles.accent}>*</Text>
-                    </View>
-                    <View style={{flexDirection: "row"}}>
-                        <TouchableOpacity
-                            onPress={() => setMale(true)}
-                            style={styles.dormContainer}>
-                            <CheckBox
-                                disabled={false}
-                                value={male}
-                                onValueChange={newVal => setMale(newVal)}
-                                tintColors={{
-                                    true: baseColors.SCHOOL_BG,
-                                    false: baseColors.GRAY_1,
-                                }}
-                            />
-                            <Text style={styles.dormText}>
-                                남성
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setMale(false)}
-                            style={styles.dormContainer}>
-                            <CheckBox
-                                disabled={false}
-                                value={!male}
-                                onValueChange={newVal => setMale(!newVal)}
-                                tintColors={{
-                                    true: baseColors.SCHOOL_BG,
-                                    false: baseColors.GRAY_1,
-                                }}
-                            />
-                            <Text style={styles.dormText}>
-                                여성
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.label}>생년월일</Text>
-                        <Text style={styles.accent}>*</Text>
-                    </View>
-                    <View style={{flexDirection:"row", alignItems: 'center'}}>
-                        <TextInput
-                                style={styles.birthInput}
-                                value={year}
-                                onChangeText={setYear}
-                                placeholder='YYYY'
-                                keyboardType='number-pad'
-                                textAlign='center'
-                                placeholderTextColor={themeColor.TEXT_SECONDARY}
-                            />
-                        <Text style={{fontSize: 16, marginBottom: 16}}> 년  </Text>
-                        <TextInput
-                                style={styles.birthInput}
-                                value={month}
-                                onChangeText={setMonth}
-                                placeholder='MM'
-                                keyboardType='number-pad'
-                                textAlign='center'
-                                placeholderTextColor={themeColor.TEXT_SECONDARY}
-                            />
-                        <Text style={{fontSize: 16, marginBottom: 16}}> 월  </Text>
-                        <TextInput
-                                style={styles.birthInput}
-                                value={day}
-                                onChangeText={setDay}
-                                placeholder='DD'
-                                keyboardType='number-pad'
-                                textAlign='center'
-                                placeholderTextColor={themeColor.TEXT_SECONDARY}
-                            />
-                        <Text style={{fontSize: 16, marginBottom: 16}}> 일 </Text>
-                    </View>
-                    <Text style={styles.label}>자기소개</Text>
-                    <TextInput
-                        style={styles.bioInput}
-                        value={bio}
-                        onChangeText={setBio}
-                        placeholder='간단한 자기소개를 작성해 주세요.'
-                        keyboardType='default'
-                        multiline={true}
-                        numberOfLines={3}
+                        style={styles.birthInput}
+                        value={year}
+                        onChangeText={setYear}
+                        placeholder='YYYY'
+                        keyboardType='number-pad'
+                        textAlign='center'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
                     />
-                    <TouchableOpacity
-                        style={{...styles.button,
-                            backgroundColor: !name || !year || !month || !day
-                                ? baseColors.GRAY_2
-                                : baseColors.SCHOOL_BG, 
-                        }}
-                        disabled={ !name || !year || !month || !day }
-                        onPress={handleSubmit}>
-                        <Text style={styles.buttonText}>수정하기</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-            </View>
+                    <Text style={{ fontSize: 16, marginBottom: 16 }}> 년 </Text>
+                    <TextInput
+                        style={styles.birthInput}
+                        value={month}
+                        onChangeText={setMonth}
+                        placeholder='MM'
+                        keyboardType='number-pad'
+                        textAlign='center'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                    />
+                    <Text style={{ fontSize: 16, marginBottom: 16 }}> 월 </Text>
+                    <TextInput
+                        style={styles.birthInput}
+                        value={day}
+                        onChangeText={setDay}
+                        placeholder='DD'
+                        keyboardType='number-pad'
+                        textAlign='center'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                    />
+                    <Text style={{ fontSize: 16, marginBottom: 16 }}> 일 </Text>
+                </View>
+                <Text style={styles.label}>자기소개</Text>
+                <TextInput
+                    style={styles.bioInput}
+                    value={bio}
+                    onChangeText={setBio}
+                    placeholder='간단한 자기소개를 작성해 주세요.'
+                    keyboardType='default'
+                    multiline={true}
+                    numberOfLines={3}
+                />
+                <TouchableOpacity
+                    style={{
+                        ...styles.button,
+                        backgroundColor: !name
+                            ? baseColors.GRAY_2
+                            : baseColors.SCHOOL_BG,
+                    }}
+                    disabled={!name || !year || !month || !day}
+                    onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>수정하기</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </View>
     )
 }
 
@@ -262,7 +247,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 16,
             marginBottom: 20,
         },
-        birthInput:{
+        birthInput: {
             width: 50,
             height: 36,
             borderWidth: 1,
@@ -306,7 +291,8 @@ const createStyles = (theme: Icolor) =>
 
 export default ProfileDetails
 
-{/*
+{
+    /*
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import {
@@ -508,4 +494,5 @@ const createStyles = (theme: Icolor) =>
     })
 
 export default ProfileDetails
-*/}
+*/
+}

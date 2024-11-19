@@ -1,20 +1,16 @@
 import { saveMarketPostImage } from '@/apis/marketService'
 import CloseButton from '@/assets/drawable/close-button.svg'
-import IcAngleRight from '@/assets/drawable/ic-angle-right.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import BottomSheet from '@/components/bottomSheet/BottomSheet'
 import { CreateMarketPostBottomSheet } from '@/components/bottomSheet/CreateMarketPostBottomSheet'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
-    Appearance,
     Image,
     KeyboardAvoidingView,
-    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -28,21 +24,10 @@ import {
 } from 'react-native-image-picker'
 
 const CreateMarketPost: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
+    const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         boardList: state.boardList,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
@@ -124,7 +109,6 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     }
 
     const checkFormAvailable = () => {
-        return true
         return (
             imageUriList.length > 0 &&
             itemName.length > 0 &&

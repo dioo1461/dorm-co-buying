@@ -7,14 +7,14 @@ type BottomSheetProps = {
     enabled: boolean
     onClose?: () => void
     theme: Icolor
-    jsxElement: () => JSX.Element
+    children: React.ReactNode
 }
 
 const BottomSheet: React.FC<BottomSheetProps> = ({
     enabled,
     onClose,
     theme,
-    jsxElement,
+    children,
 }): JSX.Element => {
     const styles = createStyles(theme)
 
@@ -58,7 +58,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
                     commonAnimatedStyle,
                     popupAnimatedStyle,
                 ]}>
-                {jsxElement()}
+                {children}
             </Animated.View>
         </View>
     )

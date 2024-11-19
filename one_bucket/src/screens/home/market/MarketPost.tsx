@@ -7,7 +7,7 @@ import IcShare from '@/assets/drawable/ic-share.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Skeleton from '@/components/Skeleton'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
 import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -16,7 +16,6 @@ import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { useEffect, useRef, useState } from 'react'
 import {
     Animated,
-    Appearance,
     Dimensions,
     ScrollView,
     StyleSheet,
@@ -38,20 +37,9 @@ const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
 ]
 
 const MarketPost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
@@ -294,12 +282,15 @@ const MarketPost: React.FC = (): JSX.Element => {
                     <IcHeart />
                 </TouchableOpacity>
                 <View style={{ position: 'relative', left: -16 }}>
-                    <Text style={styles.bottomBarLabel}>남은 수량</Text>
+                    {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
                     <Text style={styles.bottomBarLabel}>모집 인원</Text>
                 </View>
                 <View style={{ position: 'relative', left: 0 }}>
-                    <Text style={styles.bottomBarCountText}>12 / 30</Text>
-                    <Text style={styles.bottomBarCountText}>3 / 5</Text>
+                    {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
+                    <Text style={styles.bottomBarCountText}>
+                        {data?.trade_nickNames.length ?? 0 + 1} /{' '}
+                        {data?.trade_wanted}
+                    </Text>
                 </View>
                 <TouchableOpacity
                     style={styles.joinButton}

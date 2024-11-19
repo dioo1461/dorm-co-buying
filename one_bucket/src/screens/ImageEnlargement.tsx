@@ -1,16 +1,15 @@
 import IcClose from '@/assets/drawable/ic-close.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { CachedImage } from '@/components/CachedImage'
+import { baseColors, Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
     stackNavigation,
 } from '@/screens/navigation/NativeStackNavigation'
-import { CachedImage } from '@/components/CachedImage'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
     Animated,
-    Appearance,
     Dimensions,
     Image,
     NativeScrollEvent,
@@ -32,9 +31,8 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const ImageEnlargement: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
 
     type ImageEnlargementProps = RouteProp<
@@ -51,16 +49,6 @@ const ImageEnlargement: React.FC = (): JSX.Element => {
 
     const imagePromiseList = useRef<Promise<void>[]>([])
     const [isImageLoaded, setImageLoaded] = useState(false)
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     useEffect(() => {
         Promise.all(imagePromiseList.current)

@@ -1,5 +1,9 @@
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { delProfile } from '@/apis/profileService'
+import Dialog from '@/components/Dialog'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
+import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import {
     getAlertSoundEnabled,
     getAlertVibrationEnabled,
@@ -10,45 +14,29 @@ import { useEffect, useState } from 'react'
 import {
     ActivityIndicator,
     Alert,
-    Appearance,
-    Modal,
     ScrollView,
     StyleSheet,
     Switch,
     Text,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     View,
 } from 'react-native'
 import Toast from 'react-native-toast-message'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
-import { delProfile } from '@/apis/profileService'
 import { getAnnouncPostList } from '@/apis/boardService'
+
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
 
 interface SettingProps {
-    onValueChange: (value: number) => void;
+    onValueChange: (value: number) => void
 }
 
 const Setting: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
+    const { themeColor, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         onLogOut: state.onLogOut,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const [isScreenReady, setIsScreenReady] = useState(false)
@@ -57,53 +45,67 @@ const Setting: React.FC = (): React.JSX.Element => {
         useState(false)
 
     const navigation = stackNavigation()
-    
-    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100'];
+
+    const colorList = ['#002c62', '#8b0029', '#036B3F', '#e17100']
     const [colorValue, setColorValue] = useState(0)
 
     const [logoutVisible, setLogoutVisible] = useState(false)
-    const openLogout = () => { setLogoutVisible(true); }
-    const closeLogout = () => { setLogoutVisible(false); }
+    const openLogout = () => {
+        setLogoutVisible(true)
+    }
+    const closeLogout = () => {
+        setLogoutVisible(false)
+    }
     const [delIDVisible, setDelIDVisible] = useState(false)
-    const openDelID = () => { setDelIDVisible(true); }
-    const closeDelID = () => { setDelIDVisible(false); }
-    const [countDelID, setCountDelID] = useState(3);
+    const openDelID = () => {
+        setDelIDVisible(true)
+    }
+    const closeDelID = () => {
+        setDelIDVisible(false)
+    }
+    const [countDelID, setCountDelID] = useState(3)
 
     const { data, isLoading, error } = queryGetMemberInfo()
-    
+
     const authCompletedText = (school: any) => {
-        if(school == 'null') return (
-            <View>
-                <Text style={{
-                    ...styles.contextLabel,
-                    paddingHorizontal: 5,
-                    color: 'red',
-                }}>미완료</Text>
-            </View>
-        )
-        else return (
-            <View style={{flexDirection: "row"}}>
-                <Text style={{
-                    ...styles.contextLabel,
-                    paddingHorizontal: 5,
-                    color: 'dodgerblue',
-                }}>{`완료 (${school})`}</Text>
-            </View>
-        )
+        if (school == 'null')
+            return (
+                <View>
+                    <Text
+                        style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 5,
+                            color: 'red',
+                        }}>
+                        미완료
+                    </Text>
+                </View>
+            )
+        else
+            return (
+                <View style={{ flexDirection: 'row' }}>
+                    <Text
+                        style={{
+                            ...styles.contextLabel,
+                            paddingHorizontal: 5,
+                            color: 'dodgerblue',
+                        }}>{`완료 (${school})`}</Text>
+                </View>
+            )
     }
 
     const delAccount = async () => {
-        if(data?.nickname=='test1') {
+        if (data?.nickname == 'test1') {
             Alert.alert('관리자 계정은 삭제할 수 없습니다.')
             return
         } // 공용계정 삭제 방지
         delProfile()
-            .then(res=>{
+            .then(res => {
                 onLogOut(false)
                 Toast.show({ text1: '계정이 삭제되었습니다.' })
             })
-            .catch(err=>{
-                console.log('delAccount: ',err)
+            .catch(err => {
+                console.log('delAccount: ', err)
             })
     }
 
@@ -156,22 +158,27 @@ const Setting: React.FC = (): React.JSX.Element => {
             <ScrollView style={styles.scrollView}>
                 <View>
                     <Text style={styles.subjectLabel}>계정</Text>
-                    <View style={{...styles.authContainer,
-                        backgroundColor: (data?.university == 'null') ? 
-                        "rgba(255, 0, 0, 0.2)" : themeColor.BG
-                    }}>
-                        <TouchableOpacity 
-                            style={{...styles.contextContainer, flexDirection: "row"}}
-                            onPress={() => navigation.navigate('SchoolAuth1')}
-                        >
+                    <View
+                        style={{
+                            ...styles.authContainer,
+                            backgroundColor:
+                                data?.university == 'null'
+                                    ? 'rgba(255, 0, 0, 0.2)'
+                                    : themeColor.BG,
+                        }}>
+                        <TouchableOpacity
+                            style={{
+                                ...styles.contextContainer,
+                                flexDirection: 'row',
+                            }}
+                            onPress={() => navigation.navigate('SchoolAuth1')}>
                             <Text style={styles.contextLabel}>학교 인증</Text>
                             {authCompletedText(data?.university)}
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={() => navigation.navigate('ChangePw')}    
-                        >
+                        onPress={() => navigation.navigate('ChangePw')}>
                         <Text style={styles.contextLabel}>비밀번호 변경</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -179,26 +186,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                         onPress={openLogout}>
                         <Text style={styles.contextLabel}>로그아웃</Text>
                     </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={logoutVisible}
-                        onRequestClose={closeLogout}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text>{`정말 로그아웃 하시겠습니까?\n`}</Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={onLogOut}>
-                                        <Text>예</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={closeLogout}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
                         onPress={openDelID}>
                         <Text
@@ -209,50 +197,11 @@ const Setting: React.FC = (): React.JSX.Element => {
                             회원탈퇴
                         </Text>
                     </TouchableOpacity>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={delIDVisible}
-                        onRequestClose={closeDelID}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={{
-                                    color: baseColors.RED,
-                                    textAlign: 'center',
-                                    }}>
-                                    {`정말 회원탈퇴 하시겠습니까?\n삭제된 회원정보는 되돌릴 수 없습니다.\n`}
-                                </Text>
-                                <View style={{flexDirection: "row"}}>
-                                    <TouchableOpacity 
-                                        style={styles.confirmButton} 
-                                        onPress={()=>{
-                                            setCountDelID(countDelID => countDelID - 1)
-                                            if(countDelID == 1) {
-                                                delAccount() // 회원탈퇴
-                                                closeDelID()
-                                                setCountDelID(3)
-                                            }
-                                        }}>
-                                        <Text style={{fontWeight: 'bold'}}>{`예(${countDelID}회 터치)`}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
-                                        style={styles.cancelButton} 
-                                        onPress={()=>{
-                                            closeDelID()
-                                            setCountDelID(3)
-                                        }}>
-                                        <Text>아니오</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
                     <View style={styles.line} />
                     <Text style={styles.subjectLabel}>알림 설정</Text>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={() => navigation.navigate('AlertSetting')}    
-                        >
+                        onPress={() => navigation.navigate('AlertSetting')}>
                         <Text style={styles.contextLabel}>알림 수신 설정</Text>
                     </TouchableOpacity>
                     <View
@@ -347,27 +296,76 @@ const Setting: React.FC = (): React.JSX.Element => {
                 <View style={styles.line} />
                 <View>
                     <Text style={styles.subjectLabel}>기타</Text>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
                         onPress={goAnnouncList}
                         >
                         <Text style={styles.contextLabel}>공지사항</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={() => navigation.navigate('Support')}    
-                        >
+                        onPress={() => navigation.navigate('Support')}>
                         <Text style={styles.contextLabel}>개발자 문의</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={() => navigation.navigate('VersionCheck')}    
-                        >
+                        onPress={() => navigation.navigate('VersionCheck')}>
                         <Text style={styles.contextLabel}>버전 정보</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            
+            <Dialog
+                enabled={logoutVisible}
+                title='로그아웃'
+                content={`로그아웃 하시겠습니까?`}
+                theme={themeColor}
+                onClose={() => setLogoutVisible(false)}
+                containerStyle={{ width: 280 }}
+                buttonsAlign='horizontal'
+                buttons={[
+                    {
+                        text: '로그아웃',
+                        style: 'primary',
+                        onPress: () => {
+                            setLogoutVisible(false)
+                            onLogOut(false)
+                        },
+                    },
+                    {
+                        text: '취소',
+                        style: 'secondary',
+                        onPress: () => {
+                            setLogoutVisible(false)
+                        },
+                    },
+                ]}
+            />
+            <Dialog
+                enabled={delIDVisible}
+                title='회원탈퇴'
+                content={`정말 회원탈퇴 하시겠습니까?\n모든 회원 정보가 삭제됩니다.`}
+                theme={themeColor}
+                onClose={() => setDelIDVisible(false)}
+                containerStyle={{ width: 280 }}
+                buttonsAlign='vertical'
+                buttons={[
+                    {
+                        text: '회원탈퇴 (3회 터치)',
+                        style: 'destructive',
+                        onPress: () => {
+                            setLogoutVisible(false)
+                            delAccount()
+                        },
+                    },
+                    {
+                        text: '취소',
+                        style: 'secondary',
+                        onPress: () => {
+                            setDelIDVisible(false)
+                        },
+                    },
+                ]}
+            />
         </View>
     )
 }
@@ -377,7 +375,6 @@ const createStyles = (theme: Icolor) =>
         container: {
             flex: 1,
             backgroundColor: theme.BG,
-            paddingHorizontal: 16,
             paddingTop: 8,
         },
         authContainer: {
@@ -388,7 +385,7 @@ const createStyles = (theme: Icolor) =>
             width: 24,
             height: 24,
         },
-        scrollView: { flex: 1, marginTop: 16 },
+        scrollView: { flex: 1, marginTop: 16, paddingHorizontal: 16 },
         subjectLabel: {
             color: theme.TEXT,
             fontSize: 14,
@@ -448,19 +445,18 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 8,
             width: '80%',
             borderWidth: 0.5,
-            borderColor: theme.TEXT
+            borderColor: theme.TEXT,
         },
         confirmButton: {
             marginTop: 10,
-            backgroundColor : "rgba(255, 0, 0, 0.2)",
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
             justifyContent: 'center',
             alignItems: 'center',
             height: 30,
             width: '50%',
             borderRadius: 8,
-            
         },
-        cancelButton:{
+        cancelButton: {
             marginTop: 10,
             backgroundColor: theme.BG,
             justifyContent: 'center',
@@ -468,7 +464,7 @@ const createStyles = (theme: Icolor) =>
             height: 30,
             width: '50%',
             borderRadius: 8,
-        }
+        },
     })
 
 export default Setting

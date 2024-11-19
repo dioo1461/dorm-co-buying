@@ -1,4 +1,4 @@
-import { baseColors, Icolor } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { View, ViewStyle } from 'react-native'
 
 interface LineProps {
@@ -13,7 +13,9 @@ const Line: React.FC<LineProps> = ({ theme, style }) => {
                 {
                     borderBottomWidth: 1,
                     borderBottomColor:
-                        theme === theme ? baseColors.GRAY_3 : baseColors.GRAY_1,
+                        theme === lightColors
+                            ? baseColors.GRAY_3
+                            : baseColors.GRAY_2,
                 },
                 style,
             ]}
