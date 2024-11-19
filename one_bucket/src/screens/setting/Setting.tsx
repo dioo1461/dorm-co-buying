@@ -22,6 +22,7 @@ import {
     View,
 } from 'react-native'
 import Toast from 'react-native-toast-message'
+import { getAnnouncPostList } from '@/apis/boardService'
 
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
@@ -107,6 +108,16 @@ const Setting: React.FC = (): React.JSX.Element => {
             })
     }
 
+    const goAnnouncList = async () => {
+        getAnnouncPostList()
+            .then(res => {
+                navigation.navigate('AnnouncementList', res)
+            })
+            .catch(err => {
+                console.log('getAnnouncPostList: ', err)
+            })
+    }
+
     useEffect(() => {
         const setAlertParameters = async () => {
             setIsAlertSoundEnabled(
@@ -180,7 +191,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                         <Text
                             style={[
                                 styles.contextLabel,
-                                { color: baseColors.RED },
+                                {
+                                    color: baseColors.RED,
+                                    fontFamily: 'NanumGothic-Bold',
+                                },
                             ]}>
                             회원탈퇴
                         </Text>
@@ -282,56 +296,11 @@ const Setting: React.FC = (): React.JSX.Element => {
                     </View>
                 </View>
                 <View style={styles.line} />
-                {/*
-                <View
-                    style={[
-                        styles.contextContainer,
-                        {
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        },
-                    ]}>
-                    <Text style={[styles.contextLabel, { flex: 1 }]}>
-                        테마 색상 변경
-                    </Text>
-                    <View style={styles.colorGroup}>
-                        {colorList.map((item, index) => {
-                            const isActive = colorValue === index
-                            return (
-                                <View key={item}>
-                                    <TouchableWithoutFeedback
-                                        onPress={() => {
-                                            setColorValue(index)
-                                        }}>
-                                        <View
-                                            style={[
-                                                styles.circle,
-                                                isActive && {
-                                                    borderColor: item,
-                                                },
-                                            ]}>
-                                            <View
-                                                style={[
-                                                    styles.circleInside,
-                                                    { backgroundColor: item },
-                                                ]}
-                                            />
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                </View>
-                                
-                            )
-                        })}
-                    </View>
-                </View>
-                <View style={styles.line} />
-                */}
                 <View>
                     <Text style={styles.subjectLabel}>기타</Text>
                     <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={() => navigation.navigate('Announcement')}>
+                        onPress={goAnnouncList}>
                         <Text style={styles.contextLabel}>공지사항</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

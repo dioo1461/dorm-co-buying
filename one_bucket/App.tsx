@@ -43,7 +43,8 @@ import ProfileModify from '@/screens/PofileModify'
 import ProfileDetails from '@/screens/ProfileDetails'
 import Search from '@/screens/Search'
 import AlertSetting from '@/screens/setting/AlertSetting'
-import Announcement from '@/screens/setting/Announcement'
+import AnnouncementList from '@/screens/setting/AnnouncementList'
+import AnnouncementPost from '@/screens/setting/AnnouncementPost'
 import ChangePw from '@/screens/setting/ChangePw'
 import ChangePw2 from '@/screens/setting/ChangePw2'
 import SchoolAuth1 from '@/screens/setting/SchoolAuth1'
@@ -178,7 +179,6 @@ function App(): React.JSX.Element {
                 setLoginState(true)
             } catch (error) {
                 // 요청 실패 시 처리
-                // setLoginState(false)
                 setAuthed(1)
                 if (!axios.isAxiosError(error)) return
 
@@ -397,10 +397,10 @@ function App(): React.JSX.Element {
                             }}
                         />
                         <Stack.Screen
-                            name={strings.announcementScreenName}
-                            component={Announcement}
+                            name={strings.announcementListScreenName}
+                            component={AnnouncementList}
                             options={{
-                                title: strings.announcementScreenTitle,
+                                title: strings.announcementListScreenTitle,
                                 headerLeft: () => {
                                     const navigation = stackNavigation()
                                     return (
@@ -422,6 +422,11 @@ function App(): React.JSX.Element {
                                     fontSize: 18,
                                 },
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.announcementPostScreenName}
+                            component={AnnouncementPost}
+                            options={{title: strings.announcementPostScreenTitle}}
                         />
                         <Stack.Screen
                             name={strings.supportScreenName}

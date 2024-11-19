@@ -43,6 +43,7 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
     const inputRef = useRef<(TextInput | null)[]>([])
     const [verificationCode, setVerificationCode] = useState(Array(6).fill(''))
     const [nextIndex, setNextIndex] = useState(0)
+    const [buttonText, setButtonText] = useState('인증 코드 재발송')
 
     useEffect(() => {
         // 키패드 팝업이 되지 않는 문제를 해결하기 위해, 렌더링이 완료된 후
@@ -70,7 +71,11 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                 .catch(err => {
                     console.log(`SchoolAuth2 - submitSignUpForm: ${err}`)
                 })
-            refreshCodeInput()
+            inputRef.current.map(input => {
+                input?.clear()
+                verificationCode.fill('')
+            })
+            inputRef.current[0]?.focus()
             Keyboard.dismiss()
         }
     }, [nextIndex, verificationCode])
@@ -88,9 +93,11 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
         }
         postSchoolForm(form)
             .then(res => {
+                setButtonText('인증 코드 재발송')
                 Toast.show({ text1: '인증 코드를 재발급했습니다.' })
             })
             .catch(err => {
+                setButtonText('인증 코드 재발송')
                 console.log(`refreshCodeInput - submitSignUpForm: ${err}`)
             })
     }
@@ -152,10 +159,13 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
                 </View>
                 <TouchableOpacity
                     style={styles.resendButton}
-                    onPress={refreshCodeInput}>
+                    onPress={()=>{
+                        setButtonText('잠시만 기다려 주세요...')
+                        refreshCodeInput()
+                    }}>
                     <IcRefresh />
                     <Text style={styles.resendButtonLabel}>
-                        인증 코드 재발송
+                        {buttonText}
                     </Text>
                 </TouchableOpacity>
                 {/*

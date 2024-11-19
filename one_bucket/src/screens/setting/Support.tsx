@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    ToastAndroid,
     TouchableOpacity,
     View,
 } from 'react-native'
@@ -23,8 +24,7 @@ const Support: React.FC = (): React.JSX.Element => {
     return (
         <View style={styles.container}>
             <View style={styles.supportText}>
-                <Text>저희 한바구니 서비스를 이용해 주셔서 감사합니다.</Text>
-                <Text>문의사항을 작성해 주시면 개발자에게 제출됩니다.</Text>
+                <Text>{`저희 한바구니 서비스를 이용해 주셔서 감사합니다.\n문의사항을 작성해 주시면 개발자에게 제출됩니다.`}</Text>
             </View>
             <TextInput
                 style={styles.reportBox}
@@ -32,7 +32,15 @@ const Support: React.FC = (): React.JSX.Element => {
                 placeholderTextColor={themeColor.TEXT_SECONDARY}
                 multiline={true}
             />
-            <TouchableOpacity style={styles.reportButton}>
+            <TouchableOpacity
+                style={styles.reportButton}
+                onPress={() => {
+                    navigation.goBack()
+                    ToastAndroid.show(
+                        `소중한 의견 감사합니다!\n개발자에게 제출되었습니다.`,
+                        ToastAndroid.SHORT,
+                    )
+                }}>
                 <Text style={styles.reportButtonText}>제출하기</Text>
             </TouchableOpacity>
         </View>

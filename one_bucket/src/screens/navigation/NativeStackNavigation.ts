@@ -61,16 +61,14 @@ export type RootStackParamList = {
         schoolEmail: string
     }
     SchoolAuth3: undefined
-    PhoneAuth1: undefined
-    PhoneAuth2: {
-        phoneNumber: string
-    }
-    PhoneAuth3: undefined
     ChangePw: undefined
     ChangePw2: undefined
 
     AlertSetting: undefined
-    Announcement: undefined
+    AnnouncementList: any
+    AnnouncementPost: {
+        res: any
+    }
     Support: undefined
     VersionCheck: undefined
 

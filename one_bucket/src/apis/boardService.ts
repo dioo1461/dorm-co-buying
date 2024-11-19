@@ -64,7 +64,37 @@ export const getBoardPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getBoardPost - ' + error)
+            console.log('getBoardPostList - ' + error)
+            // console.log(error.response)
+
+            throw error
+        })
+}
+
+export const getAnnouncPostList = async (): Promise<any> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`/notice/list`)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getAnnouncPostList - ' + error)
+            // console.log(error.response)
+
+            throw error
+        })
+}
+
+export const getAnnouncPost = async (id: number): Promise<any> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`/notice/${id}`)
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getAnnouncPost - ' + error)
             // console.log(error.response)
 
             throw error
