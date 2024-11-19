@@ -11,8 +11,6 @@ import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import IcAttach from '@/assets/drawable/ic-attach-16.svg'
 import { CachedImage } from '@/components/CachedImage'
-import RNFS from 'react-native-fs'
-import { BASE_URL, STORAGE_BASE_URL } from '@env'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {
     SelectableBottomSheet,
@@ -38,6 +36,7 @@ import {
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    PermissionsAndroid,
     Platform,
     RefreshControl,
     ScrollView,
@@ -53,9 +52,10 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
+import { FileDownload } from '@/components/FileDownload'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
-const IMAGE_SIZE = SCREEN_WIDTH * 0.9
+const IMAGE_SIZE = SCREEN_WIDTH * 0.89
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
 const LOCK_SLEEP_TIME = 2000
 
@@ -91,10 +91,10 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
     const imageUrls = params?.res?.images
     const fileList = params?.res?.files
 
-    const files = ({ item }: { item: any }) => (
+    const files = ({ item }: { item: any }) => ( 
         <TouchableOpacity 
             style={styles.fileContainer}
-            
+            onPress={()=>{FileDownload(item.slice(30,),item.slice(10,))}}
             >
             <IcAttach />
             <Text style={styles.fileText}>
@@ -197,11 +197,6 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
             {/* ### 본문 container ### */}
             <ScrollView
-                refreshControl={
-                    <RefreshControl
-                        refreshing={isRefreshing}
-                    />
-                }
                 style={{
                     flex: 1,
                     marginBottom: 60,
@@ -225,6 +220,11 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                         { marginHorizontal: 6, marginBottom: 10 },
                     ]}>
                     {content}
+                </Text>
+                <Text style={styles.postMetaDataText}>
+                    {`${formatTimeAgo(
+                        params?.res?.createAt,
+                    )}`}
                 </Text>
                 {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
                 {!isImageInView && imageUrls.length > 0 && (
@@ -262,17 +262,17 @@ const AnnouncementPost: React.FC = (): JSX.Element => {
                 {isImageInView && imageUrls.length > 0 && (
                     <View style={{ height: IMAGE_SIZE }} />
                 )}
+            </ScrollView>
+            <View style={{
+                    marginHorizontal: 16,
+                }}>
                 <FlatList
+                    style={{marginBottom: 25, marginTop: -50}}
                     data={fileList}
                     renderItem={files}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                <Text style={styles.postMetaDataText}>
-                    {`${formatTimeAgo(
-                        params?.res?.createAt,
-                    )}`}
-                </Text>
-            </ScrollView>
+            </View>
             <LoadingBackdrop
                 enabled={loadingBackdropEnabled}
                 theme={themeColor}
@@ -441,15 +441,16 @@ const createStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic',
             paddingTop: 20,
             paddingBottom: 20,
+            paddingHorizontal: 10
         },
         fileContainer: {
             flexDirection: 'row',
             backgroundColor: baseColors.GRAY_3,
-            marginTop: 16,
+            marginTop: 8,
             paddingTop: 8,
             paddingLeft: 8,
             paddingBottom: 8,
-            borderRadius: 3,
+            borderRadius: 8,
         },
         fileText: {
             color: 'black',

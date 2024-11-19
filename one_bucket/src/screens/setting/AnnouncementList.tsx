@@ -28,14 +28,12 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import { getAnnouncPost } from '@/apis/boardService'
+import { getAnnouncPostList, getAnnouncPost } from '@/apis/boardService'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Backdrop from '@/components/Backdrop'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
-
-const REDUCE_LEN = 100
 
 const AnnouncementList: React.FC = (): React.JSX.Element => {
     const { themeColor, setThemeColor } = useBoundStore(state => ({
@@ -54,56 +52,54 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
 
     type AnnouncementListRouteProp = RouteProp<RootStackParamList, 'AnnouncementList'>
     const { params } = useRoute< AnnouncementListRouteProp>()
-    
+
     useEffect(()=>{ console.log("AnnouncementList params:",params) })
 
     {/*
-        "content": [{
-            "content": "it is content", 
-            "createAt": "2024-11-15T09:00:23.719474", 
-            "id": 1, 
-            "imageUrl": "", 
-            "title": "hihi", 
-            "updateAt": "2024-11-15T09:00:23.719474"
-        }], 
-        "empty": false, 
-        "first": true, 
-        "last": true, 
-        "number": 0, 
-        "numberOfElements": 1, 
-        "pageable": {
-            "offset": 0, 
-            "pageNumber": 0, 
-            "pageSize": 20, 
-            "paged": true, 
+        AnnouncementList params: 
+        {
+            "content": [
+                {"content": "중상혁입니다.", "createAt": "2024-11-18T08:21:37.80559", "id": 8, "imageUrl": "", "title": "중상혁", "updateAt": "2024-11-18T08:21:37.80559"}, 
+                {"content": "중상혁입니다.", "createAt": "2024-11-18T08:22:37.322689", "id": 9, "imageUrl": "", "title": "중상혁", "updateAt": "2024-11-18T08:22:37.322689"}, 
+                {"content": "중상혁입니다.", "createAt": "2024-11-18T08:23:00.141414", "id": 10, "imageUrl": "", "title": "중상혁", "updateAt": "2024-11-18T08:23:00.141414"}, 
+                {"content": "대대상혁입니다.", "createAt": "2024-11-18T08:43:33.641007", "id": 11, "imageUrl": "one-bucket/announcement/images/KakaoTalk_20240515_172347068.jpg", "title": "대대상혁", "updateAt": "2024-11-18T08:43:33.641007"}, 
+                {"content": "대대상혁입니다.", "createAt": "2024-11-18T08:51:56.975053", "id": 12, "imageUrl": "one-bucket/announcement/images/KakaoTalk_20240515_172347068.jpg", "title": "대대상혁", "updateAt": "2024-11-18T08:51:56.975053"}, 
+                {"content": "대대상혁입니다.", "createAt": "2024-11-18T08:52:18.82503", "id": 13, "imageUrl": "one-bucket/announcement/images/KakaoTalk_20240515_172347068.jpg", "title": "대대상혁", "updateAt": "2024-11-18T08:52:18.82503"}, 
+                {"content": "대대상혁입니다.", "createAt": "2024-11-18T08:53:15.909428", "id": 14, "imageUrl": "one-bucket/announcement/images/KakaoTalk_20240515_172347068.jpg", "title": "대대상혁", "updateAt": "2024-11-18T08:53:15.909428"}, 
+                {"content": "대대상혁입니다.", "createAt": "2024-11-18T09:11:17.014847", "id": 15, "imageUrl": "one-bucket/announcement/images/KakaoTalk_20240515_172347068.jpg", "title": "대대상혁", "updateAt": "2024-11-18T09:11:17.014847"}
+            ], 
+            "empty": false, 
+            "first": true, 
+            "last": true, 
+            "number": 0, 
+            "numberOfElements": 8, 
+            "pageable": {
+                "offset": 0, 
+                "pageNumber": 0, 
+                "pageSize": 20, 
+                "paged": true, 
+                "sort": {
+                    "empty": true, 
+                    "sorted": false, 
+                    "unsorted": true
+                }, 
+                "unpaged": false
+            }, 
+            "size": 20, 
             "sort": {
                 "empty": true, 
                 "sorted": false, 
                 "unsorted": true
             }, 
-            "unpaged": false
-        }, 
-        "size": 20, 
-        "sort": {
-            "empty": true, 
-            "sorted": false, 
-            "unsorted": true
-        }, 
-        "totalElements": 1, 
-        "totalPages": 1
+            "totalElements": 8, 
+            "totalPages": 1
+        }
     */}
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
-    const announcs = params?.content
-
-    const contentReduced = (content: string) => {
-        if(content.length >= REDUCE_LEN)
-            return `${content.slice(0, REDUCE_LEN)}...`
-        else
-            return content
-    }
+    const announcs = params?.content.reverse()
 
     const goAnnouncPost = ( id: number ) => {
         getAnnouncPost(id)
@@ -160,7 +156,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
                                         numberOfLines={2}
                                         ellipsizeMode='tail'
                                         style={styles.postContentText}>
-                                        {contentReduced(item?.content)}
+                                        {item?.content}
                                     </Text>
                                 </View>
                             </View>
@@ -209,21 +205,20 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
     )
 
     return (
-        params?.numberOfElements != 0 ? (
+        !params?.empty ? (
         <View>
             <FlatList
                 style={styles.announcList}
                 data={announcs}
                 renderItem={announcFrame}
                 keyExtractor={(item, index) => index.toString()}
-                inverted
             />
         </View>
         ) : (
             <View style={styles.container2}>
             <IcNone />
             <Text style={{fontSize: 20, textAlign: 'center'}}>
-                {`공지사항이 없습니다.`}
+                공지사항이 없습니다.
             </Text>
         </View>
         )
