@@ -52,7 +52,7 @@ const MyMarketPosts: React.FC = (): JSX.Element => {
                 </TouchableOpacity>
             ),
         })
-    }, [])
+    }, [themeColor])
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()

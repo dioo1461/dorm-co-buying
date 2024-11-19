@@ -66,7 +66,7 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
                 </TouchableOpacity>
             ),
         })
-    }, [])
+    }, [navigation, themeColor])
 
     useFocusEffect(() => {
         if (!!refetchCallback && params?.pendingRefresh) {

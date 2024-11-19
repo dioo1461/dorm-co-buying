@@ -19,20 +19,9 @@ import {
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const NewPw2: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        onPressBackBtn(true)
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const onPressBackBtn = (action: boolean) => {
         const backAction = (): boolean => {

@@ -1,14 +1,13 @@
 import { postNewPwForm } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
 import { NewPwRequestBody } from '@/data/request/signUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Alert,
-    Appearance,
     ScrollView,
     StyleSheet,
     Text,
@@ -19,20 +18,9 @@ import {
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 
 const NewPw: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)

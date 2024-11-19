@@ -91,7 +91,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 fontSize: 18,
             },
         })
-    }, [navigation])
+    }, [navigation, themeColor])
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)

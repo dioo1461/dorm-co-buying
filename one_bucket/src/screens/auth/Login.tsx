@@ -1,10 +1,12 @@
 import { requestLogin } from '@/apis/authService'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
+import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
+import { baseColors, Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import React, { useEffect, useRef } from 'react'
+import { setAutoLoginEnabled } from '@/utils/asyncStorageUtils'
+import React, { useRef } from 'react'
 import {
-    Appearance,
     Image,
     Modal,
     StyleSheet,
@@ -17,28 +19,15 @@ import BouncyCheckbox, {
     BouncyCheckboxHandle,
 } from 'react-native-bouncy-checkbox'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import IcHide from '@/assets/drawable/clarity_eye-hide-line.svg'
-import IcShow from '@/assets/drawable/clarity_eye-show-line.svg'
-import { setAutoLoginEnabled } from '@/utils/asyncStorageUtils'
 
 const Login: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogInSuccess, onLoginFailure } =
-        useBoundStore(state => ({
+    const { themeColor, onLogInSuccess, onLoginFailure } = useBoundStore(
+        state => ({
             themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
             onLogInSuccess: state.onLogInSuccess,
             onLoginFailure: state.onLoginFailure,
-        }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+        }),
+    )
 
     const styles = createStyles(themeColor)
     // const styles = createStyles(themeColor)
