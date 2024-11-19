@@ -17,7 +17,7 @@ import {
     SelectableBottomSheet,
     SelectableBottomSheetButtonProps,
 } from '@/components/bottomSheet/SelectableBottomSheet'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import {
     GetBoardPostResponse,
     IComment,
@@ -28,7 +28,6 @@ import { sleep } from '@/utils/asyncUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
-    Appearance,
     Keyboard,
     LayoutChangeEvent,
     NativeScrollEvent,
@@ -55,21 +54,10 @@ const LOCK_SLEEP_TIME = 2000
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
 const BoardPost: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
+    const { themeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         memberInfo: state.memberInfo,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
 

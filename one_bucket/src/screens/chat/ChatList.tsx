@@ -1,4 +1,5 @@
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import IcPerson from '@/assets/drawable/ic-person.svg'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import {
     ChatRoom,
     GetChatRoomListResponse,
@@ -6,12 +7,12 @@ import {
 import { SseRoomUpdateBody } from '@/data/response/success/chat/SseRoomUpdateBody'
 import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import { createSSEConnection } from '@/utils/sseFactory'
 import { useFocusEffect } from '@react-navigation/native'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import {
-    Appearance,
     FlatList,
     ListRenderItem,
     StyleSheet,
@@ -21,27 +22,13 @@ import {
 import { Text } from 'react-native-elements'
 import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-import { getTradeInfoOfChatRoom } from '@/apis/chatService'
-import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
-import IcPerson from '@/assets/drawable/ic-person.svg'
 
 // TODO: 채팅방 대표 이미지 설정
 // TODO: 채팅방 인원수 등 정보 표시
 const ChatList: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()

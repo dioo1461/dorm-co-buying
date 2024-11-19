@@ -3,11 +3,13 @@ import {
     getTradeInfoOfChatRoom,
 } from '@/apis/chatService'
 import IcOthers from '@/assets/drawable/ic-others.svg'
+import BottomSheet from '@/components/bottomSheet/BottomSheet'
 import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
 import Loading from '@/components/Loading'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
 import { WsChatMessageBody } from '@/data/request/chat/WsChatMessageBody'
 import useDatabase from '@/hooks/useDatabase/useDatabase'
+import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import {
@@ -19,18 +21,15 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import {
-    Appearance,
     FlatList,
     StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
     View,
-    Text,
 } from 'react-native'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
-import BottomSheet from '@/components/bottomSheet/BottomSheet'
-import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoomDB'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -50,20 +49,10 @@ const RENDER_AMOUNT = 20
 // TODO: 이미지 전송 가능하도록 구현
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
+    const { themeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         memberInfo: state.memberInfo,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     // navigation 헤더 옵션 설정
     useEffect(() => {

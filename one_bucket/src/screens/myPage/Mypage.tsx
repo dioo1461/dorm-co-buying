@@ -1,13 +1,12 @@
 import { delProfile } from '@/apis/profileService'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     ActivityIndicator,
     Alert,
-    Appearance,
     Dimensions,
     Modal,
     StyleSheet,
@@ -20,21 +19,10 @@ import Toast from 'react-native-toast-message'
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onLogOut } = useBoundStore(state => ({
+    const { themeColor, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         onLogOut: state.onLogOut,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
 

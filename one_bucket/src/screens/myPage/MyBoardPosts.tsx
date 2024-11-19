@@ -1,14 +1,12 @@
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcComment from '@/assets/drawable/ic-comment.svg'
 import IcLikes from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import {
-    queryBoardPostList,
-    queryMyBoardPostList,
-} from '@/hooks/useQuery/boardQuery'
+import { queryMyBoardPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
@@ -16,10 +14,9 @@ import {
 } from '@/screens/navigation/NativeStackNavigation'
 import { formatTimeAgo } from '@/utils/formatUtils'
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import {
     Animated,
-    Appearance,
     FlatList,
     ListRenderItem,
     StyleSheet,
@@ -28,30 +25,19 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 
 const FETCH_SIZE = 10
 
 // TODO: 사진 올리기
 // TODO: type-Post 인 게시판만 보여주도록 수정
 const MyBoardPosts: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor, boardList, getBoardNameById } =
-        useBoundStore(state => ({
+    const { themeColor, boardList, getBoardNameById } = useBoundStore(
+        state => ({
             themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
             boardList: state.boardList,
             getBoardNameById: state.getBoardNameById,
-        }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+        }),
+    )
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()

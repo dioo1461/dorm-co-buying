@@ -1,13 +1,16 @@
+import { postCodeForm, postSchoolForm } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
 import IcRefresh from '@/assets/drawable/ic-refresh.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
+import {
+    CodeValRequestBody,
+    SchoolAuthRequestBody,
+} from '@/data/request/signUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useRef, useState } from 'react'
 import {
-    Alert,
-    Appearance,
     Keyboard,
     StyleSheet,
     Text,
@@ -20,30 +23,15 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../navigation/NativeStackNavigation'
-import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
-import { postSchoolForm } from '@/apis/authService'
-import { CodeValRequestBody } from '@/data/request/signUpRequestBody'
-import { postCodeForm } from '@/apis/authService'
-import { setAccessToken } from '@/utils/accessTokenUtils'
 
 const SchoolAuth2: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onSchoolEmailVerificationFailure } =
-        useBoundStore(state => ({
+    const { themeColor, onSchoolEmailVerificationFailure } = useBoundStore(
+        state => ({
             themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
             onSchoolEmailVerificationFailure:
                 state.onSchoolEmailVerificationFailure,
-        }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+        }),
+    )
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
@@ -73,7 +61,7 @@ const SchoolAuth2: React.FC = (): React.JSX.Element => {
             const form: CodeValRequestBody = {
                 university: params.schoolName,
                 universityEmail: params.schoolEmail,
-                verifiedCode: verificationCode.join('')
+                verifiedCode: verificationCode.join(''),
             }
             postCodeForm(form)
                 .then(res => {

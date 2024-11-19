@@ -1,22 +1,22 @@
-import IcDisposableItem from '@/assets/drawable/ic-disposable-item.svg'
-import IcFrozenItem from '@/assets/drawable/ic-frozen-item.svg'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
-import IcRefridgeratedItem from '@/assets/drawable/ic-refridgerated-item.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { CachedImage } from '@/components/CachedImage'
+import Loading from '@/components/Loading'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
+import strings from '@/constants/strings'
+import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'
+import { queryMyMarketPostList } from '@/hooks/useQuery/marketQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
     stackNavigation,
 } from '@/screens/navigation/NativeStackNavigation'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
     Animated,
-    Appearance,
     ListRenderItem,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
     RefreshControl,
     StyleSheet,
     Text,
@@ -24,36 +24,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { TMarketCategory } from '@/types/TMarketCategory'
-import {
-    queryMarketPostList,
-    queryMyMarketPostList,
-} from '@/hooks/useQuery/marketQuery'
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
-import { MarketPostReduced } from '@/data/response/success/market/GetMarketPostListResponse'
-import Loading from '@/components/Loading'
-import { CachedImage } from '@/components/CachedImage'
-import strings from '@/constants/strings'
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 
 const FETCH_SIZE = 10
 
 const MyMarketPosts: React.FC = (): JSX.Element => {
-    const { themeColor, setThemeColor, boardList } = useBoundStore(state => ({
+    const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
         boardList: state.boardList,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     useLayoutEffect(() => {
         navigation.setOptions({

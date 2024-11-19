@@ -9,7 +9,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
+import {
+    Appearance,
+    Text,
+    TouchableOpacity,
+    useColorScheme,
+    View,
+} from 'react-native'
 
 import { requestAccessTokenRenew } from '@/apis/authService'
 import { getBoardList } from '@/apis/boardService'
@@ -92,8 +98,14 @@ function App(): React.JSX.Element {
     const setThemeColor = useBoundStore(state => state.setThemeColor)
     const isDarkMode = useColorScheme() === 'dark'
 
+    // 다크모드 변경 감지
     useEffect(() => {
-        setThemeColor(isDarkMode ? darkColors : lightColors)
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
     }, [])
 
     const queryClient = new QueryClient()

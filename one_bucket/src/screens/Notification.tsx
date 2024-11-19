@@ -1,20 +1,12 @@
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import IcClose from '@/assets/drawable/ic-close.svg'
-import IcNotification from '@/assets/drawable/ic-angle-left.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect } from 'react'
 import {
-    Appearance,
     Dimensions,
     FlatList,
     Image,
-    ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableNativeFeedback,
-    TouchableOpacity,
     View,
 } from 'react-native'
 import { stackNavigation } from './navigation/NativeStackNavigation'
@@ -22,38 +14,24 @@ import { stackNavigation } from './navigation/NativeStackNavigation'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const notifs = [
-    ['새로운 댓글',
-    '수수수 수퍼노바'],
-    ['내 공동구매 마감',
-    '물티슈'],
-    ['참여한 공동구매 마감',
-    '두루마리 휴지'],
-    ['공동구매 추천',
-    '일회용 플라스틱 숟가락'],
+    ['새로운 댓글', '수수수 수퍼노바'],
+    ['내 공동구매 마감', '물티슈'],
+    ['참여한 공동구매 마감', '두루마리 휴지'],
+    ['공동구매 추천', '일회용 플라스틱 숟가락'],
 ]
-export const notifsNum = notifs.length; // mainRoutes에 import
+export const notifsNum = notifs.length // mainRoutes에 import
 const getNotifs = () => {
     // append.notifs
 }
 
 const Notification: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
-    const notifsType = [ ]
+    const notifsType = []
 
     const notifFrame = (data: any) => (
         <TouchableNativeFeedback
@@ -74,13 +52,12 @@ const Notification: React.FC = (): React.JSX.Element => {
                         style={styles.notifIcon}
                     />
                     <View style={styles.notifTitle}>
-                            <Text style={{...styles.notifText, fontWeight: 'bold'}}>
-                                {data.item[0]}
-                            </Text>
+                        <Text
+                            style={{ ...styles.notifText, fontWeight: 'bold' }}>
+                            {data.item[0]}
+                        </Text>
                         <View style={styles.notifCont}>
-                            <Text style={styles.notifText}>
-                                {data.item[1]}
-                            </Text>
+                            <Text style={styles.notifText}>{data.item[1]}</Text>
                         </View>
                     </View>
                 </View>
@@ -112,20 +89,18 @@ const CreateStyles = (theme: Icolor) =>
             fontSize: 16,
             fontFamily: 'NanumGothic',
         },
-        notifTitle:{
+        notifTitle: {
             paddingHorizontal: 20,
         },
-        notifCont:{
+        notifCont: {
             justifyContent: 'space-between',
             paddingVertical: 10,
         },
-        notifList:{
-
-        },
-        notifIcon:{
+        notifList: {},
+        notifIcon: {
             height: 25,
             width: 25,
-        }
+        },
     })
 
 export default Notification

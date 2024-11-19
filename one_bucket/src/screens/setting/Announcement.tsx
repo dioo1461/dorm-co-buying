@@ -1,47 +1,28 @@
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import IcClose from '@/assets/drawable/ic-close.svg'
-import IcNotification from '@/assets/drawable/ic-angle-left.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect } from 'react'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import {
-    Appearance,
-    Dimensions,
     FlatList,
     Image,
-    ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableNativeFeedback,
-    TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Announcement: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
     const announcs = [
-        ['한바구니 론-칭 기념 이벤트',
-        '대상혁에게 쿠폰을 받아가세요!\n01053726732...(더보기)'],
+        [
+            '한바구니 론-칭 기념 이벤트',
+            '대상혁에게 쿠폰을 받아가세요!\n01053726732...(더보기)',
+        ],
     ]
 
     const announcFrame = (data: any) => (
@@ -57,9 +38,13 @@ const Announcement: React.FC = (): React.JSX.Element => {
                         style={styles.announcIcon}
                     />
                     <View style={styles.announcTitle}>
-                            <Text style={{...styles.announcText, fontWeight: 'bold'}}>
-                                {data.item[0]}
-                            </Text>
+                        <Text
+                            style={{
+                                ...styles.announcText,
+                                fontWeight: 'bold',
+                            }}>
+                            {data.item[0]}
+                        </Text>
                         <View style={styles.announcCont}>
                             <Text style={styles.announcText}>
                                 {data.item[1]}
@@ -95,20 +80,18 @@ const CreateStyles = (theme: Icolor) =>
             fontSize: 16,
             fontFamily: 'NanumGothic',
         },
-        announcTitle:{
+        announcTitle: {
             paddingHorizontal: 20,
         },
-        announcCont:{
+        announcCont: {
             justifyContent: 'space-between',
             paddingVertical: 10,
         },
-        announcList:{
-
-        },
-        announcIcon:{
+        announcList: {},
+        announcIcon: {
             height: 25,
             width: 25,
-        }
+        },
     })
 
 export default Announcement

@@ -1,13 +1,12 @@
 import { createBoardPost, saveBoardPostImage } from '@/apis/boardService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateBoardPostRequestBody } from '@/data/request/board/CreateBoardPostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
-    Appearance,
     Image,
     NativeSyntheticEvent,
     ScrollView,
@@ -28,34 +27,14 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
-import { create } from 'react-test-renderer'
 
 // TODO : 이미지 보내기 전 크기 축소하기
 
 const CreateBoardPost: React.FC = (): JSX.Element => {
-    const {
-        boardList,
-        themeColor,
-        setThemeColor,
-        pendingBoardRefresh,
-        setPendingBoardRefresh,
-    } = useBoundStore(state => ({
+    const { boardList, themeColor } = useBoundStore(state => ({
         boardList: state.boardList,
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
-        pendingBoardRefresh: state.pendingBoardRefresh,
-        setPendingBoardRefresh: state.setPendingBoardRefresh,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     type BoardCreatePostRouteProp = RouteProp<

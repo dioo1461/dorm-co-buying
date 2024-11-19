@@ -1,17 +1,17 @@
+import { postSchoolForm } from '@/apis/authService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
-import IcRefresh from '@/assets/drawable/ic-refresh.svg'
 import IcSelectArrow from '@/assets/drawable/ic-select-arrow.svg'
 import IcSelectClose from '@/assets/drawable/ic-select-close.svg'
 import IcSelectSearch from '@/assets/drawable/ic-select-search.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, Icolor } from '@/constants/colors'
+import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { schoolNames } from '@/screens/setting/SchoolNames'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Alert,
-    Appearance,
-    Keyboard,
     ScrollView,
     StyleSheet,
     Text,
@@ -20,26 +20,12 @@ import {
     View,
 } from 'react-native'
 import { SelectList } from 'react-native-dropdown-select-list'
-import { schoolNames } from '@/screens/setting/SchoolNames'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
-import { SchoolAuthRequestBody } from '@/data/request/signUpRequestBody'
-import { postSchoolForm } from '@/apis/authService'
 
 const SchoolAuth1: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
+    const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
     }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
@@ -84,16 +70,17 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
             .then(res => {
                 navigation.navigate('SchoolAuth2', {
                     schoolName: schoolName,
-                    schoolEmail: schoolEmail
+                    schoolEmail: schoolEmail,
                 })
             })
             .catch(err => {
                 setButtonText('인증 코드 발송')
                 console.log(`SchoolAuth1 - submitSignUpForm: ${err}`)
-                if(err.response.status === 409){
+                if (err.response.status === 409) {
                     Alert.alert('이미 해당 메일로 인증한 계정이 존재합니다.')
                 }
-                {/*
+                {
+                    /*
                     if (err.response.data.code == 1000) {
                         setEmailError(
                             signUpErrorMessage.duplicatedEmailOrNickname,
@@ -102,14 +89,13 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                             signUpErrorMessage.duplicatedEmailOrNickname,
                         )
                     }
-                } */}
-            }   
-                )
+                } */
+                }
+            })
     }
-    
+
     const validateInfo = (email: string) => {
-        if(email.indexOf('@') == -1)
-            return false
+        if (email.indexOf('@') == -1) return false
         else return true
     }
 
@@ -121,16 +107,14 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                     style={signUpStyles.backButton}>
                     <IcArrowLeft />
                 </TouchableOpacity>
-                <Text style={styles.schoolInfoLabel}>
-                    학교 선택
-                </Text>
+                <Text style={styles.schoolInfoLabel}>학교 선택</Text>
                 <SelectList
                     setSelected={setSchoolName}
                     data={schoolNames}
-                    save="value"
-                    placeholder={"본인의 학교를 선택해 주세요."}
-                    searchPlaceholder={"학교 이름 검색"}
-                    notFoundText={"일치하는 결과 없음"}
+                    save='value'
+                    placeholder={'본인의 학교를 선택해 주세요.'}
+                    searchPlaceholder={'학교 이름 검색'}
+                    notFoundText={'일치하는 결과 없음'}
                     inputStyles={styles.textSelect}
                     arrowicon={<IcSelectArrow />}
                     closeicon={<IcSelectClose />}
@@ -149,23 +133,17 @@ const SchoolAuth1: React.FC = (): React.JSX.Element => {
                     autoFocus={true}
                 />
                 <TouchableOpacity
-                    disabled={
-                        !!(
-                            !schoolName ||
-                            !schoolEmail
-                        )
-                    }
+                    disabled={!!(!schoolName || !schoolEmail)}
                     style={[
                         {
                             backgroundColor:
-                                !schoolName ||
-                                !schoolEmail
+                                !schoolName || !schoolEmail
                                     ? baseColors.GRAY_2
                                     : baseColors.SCHOOL_BG,
                         },
-                    styles.button,
+                        styles.button,
                     ]}
-                    onPress={()=>{
+                    onPress={() => {
                         setButtonText('잠시만 기다려 주세요...')
                         handleSubmit()
                     }}>
