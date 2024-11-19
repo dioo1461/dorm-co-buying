@@ -367,6 +367,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                 theme={themeColor}
                 onClose={() => setLogoutVisible(false)}
                 containerStyle={{ width: 280 }}
+                buttonsAlign='horizontal'
                 buttons={[
                     {
                         text: '로그아웃',
@@ -392,9 +393,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                 theme={themeColor}
                 onClose={() => setDelIDVisible(false)}
                 containerStyle={{ width: 280 }}
+                buttonsAlign='vertical'
                 buttons={[
                     {
-                        text: '회원탈퇴',
+                        text: '회원탈퇴 (3회 터치)',
                         style: 'destructive',
                         onPress: () => {
                             setLogoutVisible(false)
@@ -402,8 +404,8 @@ const Setting: React.FC = (): React.JSX.Element => {
                         },
                     },
                     {
-                        text: '아니오',
-                        style: 'primary',
+                        text: '취소',
+                        style: 'secondary',
                         onPress: () => {
                             setDelIDVisible(false)
                         },

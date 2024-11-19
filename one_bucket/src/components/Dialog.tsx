@@ -25,6 +25,7 @@ type DialogProps = {
     buttons: DialogButtonProps[]
     onClose: () => void
     containerStyle?: ViewStyle
+    buttonsAlign?: 'horizontal' | 'vertical'
 }
 
 const Dialog: React.FC<DialogProps> = ({
@@ -35,6 +36,7 @@ const Dialog: React.FC<DialogProps> = ({
     theme,
     buttons,
     containerStyle,
+    buttonsAlign = 'horizontal',
 }): JSX.Element => {
     const styles = createStyles(theme)
 
@@ -97,17 +99,26 @@ const Dialog: React.FC<DialogProps> = ({
                 {/* Dialog 내용 */}
                 <Text style={styles.titleText}>{title}</Text>
                 <Text style={styles.contentText}>{content}</Text>
-                <View style={styles.buttonsContainer}>
+                <View
+                    style={[
+                        styles.buttonsContainer,
+                        buttonsAlign === 'horizontal'
+                            ? { flexDirection: 'row' }
+                            : { flexDirection: 'column' },
+                    ]}>
                     {buttons.map((button, index) => (
                         <TouchableOpacity
                             key={index}
-                            style={
+                            style={[
+                                buttonsAlign === 'horizontal'
+                                    ? styles.horizontalButtonProp
+                                    : styles.verticalButtonProp,
                                 button.style === 'primary'
-                                    ? styles.primaryButton
+                                    ? styles.primaryButtonProp
                                     : button.style === 'secondary'
-                                    ? styles.secondaryButton
-                                    : styles.destructiveButton
-                            }
+                                    ? styles.secondaryButtonProp
+                                    : styles.destructiveButtonProp,
+                            ]}
                             onPress={button.onPress}>
                             <Text
                                 style={
@@ -161,12 +172,28 @@ const createStyles = (theme: Icolor) =>
             lineHeight: 22,
         },
         buttonsContainer: {
-            flexDirection: 'row',
             justifyContent: 'space-around',
             marginTop: 10,
         },
-        primaryButton: {
+        verticalButtonProp: {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            marginHorizontal: 5,
+            marginVertical: 5,
+            borderRadius: 30,
+        },
+        horizontalButtonProp: {
             flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            marginHorizontal: 5,
+            borderRadius: 30,
+        },
+        primaryButtonProp: {
             backgroundColor: theme.BUTTON_BG,
             alignItems: 'center',
             justifyContent: 'center',
@@ -175,9 +202,8 @@ const createStyles = (theme: Icolor) =>
             marginHorizontal: 5,
             borderRadius: 30,
         },
-        secondaryButton: {
+        secondaryButtonProp: {
             backgroundColor: theme.BUTTON_SECONDARY_BG,
-            flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: 16,
@@ -185,9 +211,8 @@ const createStyles = (theme: Icolor) =>
             marginHorizontal: 5,
             borderRadius: 30,
         },
-        destructiveButton: {
+        destructiveButtonProp: {
             backgroundColor: baseColors.RED,
-            flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: 16,
