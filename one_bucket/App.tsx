@@ -101,6 +101,7 @@ function App(): React.JSX.Element {
 
     // 다크모드 변경 감지
     useEffect(() => {
+        setThemeColor(isDarkMode ? darkColors : lightColors)
         const themeSubscription = Appearance.addChangeListener(
             ({ colorScheme }) => {
                 setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
@@ -426,7 +427,9 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.announcementPostScreenName}
                             component={AnnouncementPost}
-                            options={{title: strings.announcementPostScreenTitle}}
+                            options={{
+                                title: strings.announcementPostScreenTitle,
+                            }}
                         />
                         <Stack.Screen
                             name={strings.supportScreenName}
