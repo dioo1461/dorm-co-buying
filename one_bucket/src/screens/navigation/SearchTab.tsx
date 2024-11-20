@@ -1,11 +1,10 @@
 import { baseColors, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import { homeRoutes } from './HomeRoutes'
-import GroupTradeSearch from '../search/GroupTradeSearch'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
-import Loading from '@/components/Loading'
+import { useQueryClient } from 'react-query'
+import GroupTradeSearch from '../search/GroupTradeSearch'
 
 interface Props {
     keyword: string
@@ -17,12 +16,13 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
         themeColor: state.themeColor,
     }))
 
-    const [isLoading, setIsLoading] = useState(false)
+    const queryClient = useQueryClient()
 
-    const onResolve = () => {
-        console.log('onResolve')
-        setIsLoading(false)
-    }
+    useEffect(() => {
+        return () => {
+            queryClient.removeQueries('searchGroupTradePosts')
+        }
+    }, [])
 
     return (
         <Tab.Navigator

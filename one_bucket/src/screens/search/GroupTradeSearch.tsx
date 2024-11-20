@@ -1,18 +1,16 @@
 import GroupTradePostComponent from '@/components/groupTrade/GroupTradePostComponent'
 import Loading from '@/components/Loading'
-import { Icolor } from '@/constants/colors'
 import { GroupTradePostReduced } from '@/data/response/success/groupTrade/GetGroupTradePostListResponse'
 import { querySearchGroupTradePosts } from '@/hooks/useQuery/groupTradeQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import {
     Animated,
     ListRenderItem,
     RefreshControl,
-    StyleSheet,
-    View,
     Text,
+    View,
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import { useQueryClient } from 'react-query'
@@ -27,13 +25,6 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
 
     const { params } =
         useRoute<RouteProp<RootStackParamList, 'GroupTradeSearch'>>()
-
-    const queryClient = useQueryClient()
-    useFocusEffect(() => {
-        return () => {
-            queryClient.removeQueries('searchGroupTradePosts')
-        }
-    })
 
     const PostFlatList: React.FC = (): JSX.Element => {
         const [isRefreshing, setIsRefreshing] = useState(false)
@@ -75,7 +66,8 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
 
         if (error) return <Text>Error...</Text>
 
-        if (isLoading) return <Loading theme={themeColor} />
+        if (isLoading)
+            return <Loading style={{ marginTop: 260 }} theme={themeColor} />
 
         const posts = data?.pages?.flatMap(page => page.content)
         return (

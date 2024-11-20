@@ -147,6 +147,7 @@ const Search: React.FC = (): React.JSX.Element => {
                     style={styles.textInput}
                     value={keyword}
                     onChangeText={text => setKeyword(text)}
+                    onFocus={() => setShowSearchResults(false)}
                     inputMode='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
