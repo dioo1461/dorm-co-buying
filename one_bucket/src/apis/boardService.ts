@@ -126,6 +126,35 @@ export const getMyBoardPostList = async (
         })
 }
 
+export const searchBoardPosts = async (
+    boardId: number,
+    keyword: string,
+    option: 'title' | 'content' | 'titleAndContent',
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetBoardPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    const optionNumber = option === 'title' ? 1 : option === 'content' ? 2 : 3
+    return authAxios
+        .get(`/post/search/${boardId}`, {
+            params: {
+                keyword: keyword,
+                option: optionNumber,
+                page: page,
+                size: size,
+                sort: sortParams[0],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('searchPosts - ' + error)
+            throw error
+        })
+}
+
 // ########## POST ##########
 
 export const createBoardPost = async (
