@@ -44,6 +44,7 @@ const Search: React.FC = (): React.JSX.Element => {
             columns: {
                 name: 'string',
             },
+            debug: true,
         })
 
     useEffect(() => {
@@ -56,18 +57,21 @@ const Search: React.FC = (): React.JSX.Element => {
     const onSearchSubmit = async (text: string) => {
         if (!text) return
         const data = { name: text }
-        await deleteDataByKeys(data)
-        addData(data).then(() => {
-            setSearchHistory([...searchHistory, data])
-            setShowSearchResults(true)
-        })
+        updateSearchItem(data)
+        setShowSearchResults(true)
     }
 
     const deleteSearchItem = (data: HistoryItemProp) => {
-        deleteDataByKeys({ name: data.name }).then(() => {
-            setSearchHistory(
-                searchHistory.filter(item => item.name !== data.name),
-            )
+        deleteDataByKeys({ name: data.name }).then(async () => {
+            setSearchHistory(await getAllData(true))
+        })
+    }
+
+    const updateSearchItem = (data: HistoryItemProp) => {
+        deleteDataByKeys(data).then(async () => {
+            addData(data).then(async () => {
+                setSearchHistory(await getAllData(true))
+            })
         })
     }
 
@@ -111,12 +115,20 @@ const Search: React.FC = (): React.JSX.Element => {
         </TouchableOpacity>
     )
 
+    const onSearchHistoryItemPress = (data: HistoryItemProp) => {
+        const ndata = { name: data.name }
+        updateSearchItem(ndata)
+        setKeyword(data.name)
+        setShowSearchResults(true)
+    }
+
     const renderRecentSearchedItem = (data: HistoryItemProp) => (
         <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple(
                 themeColor.BG_SECONDARY,
                 false,
-            )}>
+            )}
+            onPress={() => onSearchHistoryItemPress(data)}>
             <View style={styles.recentSearchedItemContainer}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <IcHistory style={{ marginEnd: 8 }} />
