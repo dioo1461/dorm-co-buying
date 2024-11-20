@@ -24,7 +24,6 @@ import {
 import Toast from 'react-native-toast-message'
 import { getAnnouncPostList } from '@/apis/boardService'
 
-
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
 
@@ -114,11 +113,11 @@ const Setting: React.FC = (): React.JSX.Element => {
 
     const goAnnouncList = async () => {
         getAnnouncPostList()
-            .then(res=>{
+            .then(res => {
                 navigation.navigate('AnnouncementList', res)
             })
-            .catch(err=>{
-                console.log('getAnnouncPostList: ',err)
+            .catch(err => {
+                console.log('getAnnouncPostList: ', err)
             })
     }
 
@@ -195,7 +194,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                         <Text
                             style={[
                                 styles.contextLabel,
-                                { color: baseColors.RED, fontFamily: 'NanumGothic-Bold' },
+                                {
+                                    color: baseColors.RED,
+                                    fontFamily: 'NanumGothic-Bold',
+                                },
                             ]}>
                             회원탈퇴
                         </Text>

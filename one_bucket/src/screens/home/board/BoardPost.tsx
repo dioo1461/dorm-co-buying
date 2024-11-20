@@ -10,8 +10,8 @@ import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
-import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
+import Comment from '@/components/board/Comment'
 import {
     SelectableBottomSheet,
     SelectableBottomSheetButtonProps,
@@ -30,11 +30,9 @@ import {
     ActivityIndicator,
     Appearance,
     Keyboard,
-    KeyboardAvoidingView,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
-    Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -190,7 +188,9 @@ const BoardPost: React.FC = (): JSX.Element => {
         onSuccessCallback,
     )
 
-    useEffect(()=>{console.log("data:", data)})
+    useEffect(() => {
+        console.log('data:', data)
+    })
 
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
@@ -332,7 +332,7 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
-        {/*
+            {/*
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}

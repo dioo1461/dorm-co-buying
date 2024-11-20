@@ -3,15 +3,10 @@ import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import {
     Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    ScrollView,
     StyleSheet,
     Text,
     TextInput,
     ToastAndroid,
-    TouchableNativeFeedback,
     TouchableOpacity,
     View,
 } from 'react-native'
@@ -37,9 +32,9 @@ const Support: React.FC = (): React.JSX.Element => {
                 placeholderTextColor={themeColor.TEXT_SECONDARY}
                 multiline={true}
             />
-            <TouchableOpacity 
+            <TouchableOpacity
                 style={styles.reportButton}
-                onPress={()=>{
+                onPress={() => {
                     navigation.goBack()
                     ToastAndroid.show(
                         `소중한 의견 감사합니다!\n개발자에게 제출되었습니다.`,
