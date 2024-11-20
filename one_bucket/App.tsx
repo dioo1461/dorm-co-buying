@@ -34,7 +34,7 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Notification from '@/screens/Notification'
 import ProfileModify from '@/screens/PofileModify'
 import ProfileDetails from '@/screens/ProfileDetails'
-import Search from '@/screens/Search'
+import Search from '@/screens/search/Search'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import AnnouncementList from '@/screens/setting/AnnouncementList'
 import AnnouncementPost from '@/screens/setting/AnnouncementPost'
@@ -138,7 +138,6 @@ function App(): React.JSX.Element {
             if (!refreshTokenAvailable) return
             console.log('$$$$$$ refreshToken is valid')
             // refresh token으로 access token 갱신
-            // + 현재 서버 로직상 requestAccessTokenRenew 요청을 보내면 refresh token을 함께 반환함.
             const response = await requestAccessTokenRenew()
             await Promise.all([
                 setAccessToken(response.accessToken),

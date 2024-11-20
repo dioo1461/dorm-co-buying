@@ -14,9 +14,15 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from './navigation/NativeStackNavigation'
+import { stackNavigation } from '../navigation/NativeStackNavigation'
 import useDatabase from '@/hooks/useDatabase/useDatabase'
+import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import SearchTab from '../navigation/SearchTab'
 
+const Tab = createMaterialTopTabNavigator()
+
+// TODO: 같은 검색어 중복 저장 안 되게 하기
 type HistoryItemProp = {
     id: number
     name: string
@@ -27,7 +33,12 @@ const Search: React.FC = (): React.JSX.Element => {
         themeColor: state.themeColor,
     }))
 
+    const styles = CreateStyles(themeColor)
+    const navigation = stackNavigation()
+
+    const [keyword, setKeyword] = useState('')
     const [searchHistory, setSearchHistory] = useState<HistoryItemProp[]>([])
+    const [showSearchResults, setShowSearchResults] = useState(false)
 
     const { addData, getAllData, deleteDataByKeys } =
         useDatabase<HistoryItemProp>({
@@ -40,7 +51,7 @@ const Search: React.FC = (): React.JSX.Element => {
 
     useEffect(() => {
         const setupData = async () => {
-            setSearchHistory(await getAllData())
+            setSearchHistory(await getAllData(true))
         }
 
         setupData()
@@ -53,6 +64,7 @@ const Search: React.FC = (): React.JSX.Element => {
         addData(data).then(() => {
             setSearchHistory([...searchHistory, data])
         })
+        setShowSearchResults(true)
     }
 
     const deleteSearchItem = (data: HistoryItemProp) => {
@@ -60,9 +72,6 @@ const Search: React.FC = (): React.JSX.Element => {
             setSearchHistory(searchHistory.filter(item => item.id !== data.id))
         })
     }
-
-    const styles = CreateStyles(themeColor)
-    const navigation = stackNavigation()
 
     const historyRecommendations = [
         '우유',
@@ -130,6 +139,8 @@ const Search: React.FC = (): React.JSX.Element => {
         </TouchableNativeFeedback>
     )
 
+    const renderSearchedResults = (data: GetBoardPostListResponse) => {}
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -138,30 +149,38 @@ const Search: React.FC = (): React.JSX.Element => {
                 </TouchableOpacity>
                 <TextInput
                     style={styles.textInput}
+                    value={keyword}
+                    onChangeText={text => setKeyword(text)}
                     inputMode='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text)}
                 />
             </View>
-            <View style={styles.bodyContainer}>
-                <Text style={styles.recommendationText}>맞춤 검색</Text>
-                <ScrollView
-                    style={styles.recommendationScrollView}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}>
-                    {historyRecommendations.map((value, index) =>
-                        RecommendationItem(value, index),
-                    )}
-                </ScrollView>
-                <Text style={styles.recommendationText}>최근 검색</Text>
-            </View>
-            <FlatList
-                style={styles.historyFlatlist}
-                data={searchHistory}
-                renderItem={({ item }) => renderRecentSearchedItem(item)}
-                keyExtractor={(item, index) => index.toString()}
-            />
+            {!showSearchResults ? (
+                <View style={styles.bodyContainer}>
+                    <Text style={styles.recommendationText}>맞춤 검색</Text>
+                    <ScrollView
+                        style={styles.recommendationScrollView}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}>
+                        {historyRecommendations.map((value, index) =>
+                            RecommendationItem(value, index),
+                        )}
+                    </ScrollView>
+                    <Text style={styles.recommendationText}>최근 검색</Text>
+                    <FlatList
+                        style={styles.historyFlatlist}
+                        data={searchHistory}
+                        renderItem={({ item }) =>
+                            renderRecentSearchedItem(item)
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </View>
+            ) : (
+                <SearchTab keyword={keyword} />
+            )}
         </View>
     )
 }

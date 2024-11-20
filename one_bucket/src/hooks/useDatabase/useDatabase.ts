@@ -120,7 +120,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getAllData = async (): Promise<T[]> => {
+    const getAllData = async (inverted: boolean = false): Promise<T[]> => {
         const database = await waitForDbInitialization()
 
         return new Promise<T[]>((resolve, reject) => {
@@ -151,7 +151,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                         }
                         debug &&
                             console.log('[getAllData] Retrieved data:', data)
-                        resolve(data)
+                        !inverted ? resolve(data) : resolve(data.reverse())
                     },
                     error => {
                         debug && console.log('[getAllData] Error:', error)
@@ -162,7 +162,10 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const getDataByKeys = async (keys: Partial<T>) => {
+    const getDataByKeys = async (
+        keys: Partial<T>,
+        inverted: boolean = false,
+    ) => {
         const database = await waitForDbInitialization()
 
         const whereClause = Object.keys(keys)
@@ -195,7 +198,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
                         }
                         debug &&
                             console.log('[getDataByKeys] Retrieved data:', data)
-                        resolve(data)
+                        !inverted ? resolve(data) : resolve(data.reverse())
                     },
                     error => {
                         debug && console.log('[getDataByKeys] Error:', error)

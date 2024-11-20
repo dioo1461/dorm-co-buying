@@ -85,7 +85,13 @@ export type RootStackParamList = {
         index: number
         isLocalUri: boolean
     }
+
+    GroupTradeSearch: {
+        keyword: string
+    }
 }
+
+export type SearchTabParamList = {}
 
 type RootStackNavigationProp = NavigationProp<RootStackParamList>
 

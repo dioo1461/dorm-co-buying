@@ -103,6 +103,36 @@ export const getJoinedGroupTradePostList = async (
         })
 }
 
+export const searchGroupTradePosts = async (
+    boardId: number,
+    keyword: string,
+    option: 'title' | 'content' | 'titleAndContent',
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetGroupTradePostListResponse> => {
+    const authAxios = await createAuthAxios()
+    const optionNumber = option === 'title' ? 1 : option === 'content' ? 2 : 3
+    return authAxios
+        .get(`${MARKET_ENDPOINT_PREFIX}/search`, {
+            params: {
+                boardId: boardId,
+                keyword: keyword,
+                option: optionNumber,
+                page: page,
+                size: size,
+                sort: sortParams[0],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('searchGroupTradePosts - ' + error)
+            throw error
+        })
+}
+
 // ########## POST ##########
 
 export const createGroupTradePost = async (
