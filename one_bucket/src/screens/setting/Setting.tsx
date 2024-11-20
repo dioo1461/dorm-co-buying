@@ -63,6 +63,9 @@ const Setting: React.FC = (): React.JSX.Element => {
         setDelIDVisible(false)
     }
     const [countDelID, setCountDelID] = useState(3)
+    const delIDButtonText = (countDelID: any) => {
+        return `회원탈퇴 (${countDelID}회 터치)`
+    }
 
     const { data, isLoading, error } = queryGetMemberInfo()
 
@@ -300,7 +303,8 @@ const Setting: React.FC = (): React.JSX.Element => {
                     <Text style={styles.subjectLabel}>기타</Text>
                     <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={goAnnouncList}>
+                        onPress={goAnnouncList}
+                        >
                         <Text style={styles.contextLabel}>공지사항</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -351,11 +355,15 @@ const Setting: React.FC = (): React.JSX.Element => {
                 buttonsAlign='vertical'
                 buttons={[
                     {
-                        text: '회원탈퇴 (3회 터치)',
+                        text: delIDButtonText(countDelID),
                         style: 'destructive',
                         onPress: () => {
-                            setLogoutVisible(false)
-                            delAccount()
+                            setCountDelID(countDelID => countDelID - 1)
+                            if(countDelID == 1) {
+                                delAccount()
+                                closeDelID()
+                                setCountDelID(3) 
+                            }
                         },
                     },
                     {

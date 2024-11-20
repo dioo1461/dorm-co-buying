@@ -28,6 +28,7 @@ import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     ActivityIndicator,
+    Appearance,
     Keyboard,
     LayoutChangeEvent,
     NativeScrollEvent,

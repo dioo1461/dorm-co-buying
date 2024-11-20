@@ -37,7 +37,7 @@ const Board: React.FC = (): JSX.Element => {
         themeColor: state.themeColor,
         boardList: state.boardList,
     }))
-
+    
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>
