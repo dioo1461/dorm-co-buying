@@ -14,13 +14,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import SQLite from 'react-native-sqlite-storage'
 import { stackNavigation } from './navigation/NativeStackNavigation'
+import useDatabase from '@/hooks/useDatabase/useDatabase'
 
 type HistoryItemProp = {
     id: number
     name: string
-    category: string
 }
 
 const Search: React.FC = (): React.JSX.Element => {
@@ -28,101 +27,37 @@ const Search: React.FC = (): React.JSX.Element => {
         themeColor: state.themeColor,
     }))
 
-    var [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null)
-
     const [searchHistory, setSearchHistory] = useState<HistoryItemProp[]>([])
 
-    useEffect(() => {
-        // SQLite.enablePromise(true)
-        setDb(
-            SQLite.openDatabase(
-                {
-                    name: 'searchHistoryDB.db',
-                    location: 'default',
-                    createFromLocation: 1,
-                },
-                DB => {
-                    console.log('Database opened')
-                    createTable()
-                },
-                error => {
-                    console.log('Error:', error)
-                },
-            ),
-        )
-    }, [])
-
-    useEffect(() => {
-        loadSearchHistory()
-    }, [db])
-
-    const createTable = () => {
-        db?.transaction(tx => {
-            tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS searchHistory (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT);',
-                [],
-                () => {
-                    console.log('Table created successfully')
-                },
-                error => {
-                    console.log('Error creating table:', error)
-                },
-            )
+    const { addData, getAllData, deleteDataByKeys } =
+        useDatabase<HistoryItemProp>({
+            tableName: 'searchHistory',
+            columns: {
+                id: 'number',
+                name: 'string',
+            },
         })
-    }
+
+    useEffect(() => {
+        const setupData = async () => {
+            setSearchHistory(await getAllData())
+        }
+
+        setupData()
+    }, [])
 
     const onSearchSubmit = (text: string) => {
         if (!text) return
+        const data = { id: Date.now(), name: text }
 
-        db?.transaction(tx => {
-            tx.executeSql(
-                `INSERT INTO searchHistory (name, category) VALUES (?, 'default')`,
-                [text],
-                () => {
-                    loadSearchHistory()
-                },
-                error => {
-                    console.log('Error:', error)
-                },
-            )
-        })
-    }
-
-    const loadSearchHistory = () => {
-        db?.transaction(tx => {
-            tx.executeSql(
-                'SELECT * FROM searchHistory ORDER BY id DESC',
-                [],
-                (_, results) => {
-                    var history: HistoryItemProp[] = []
-                    for (let i = 0; i < results.rows.length; i++) {
-                        history.push({
-                            id: results.rows.item(i).id,
-                            name: results.rows.item(i).name,
-                            category: results.rows.item(i).category,
-                        })
-                    }
-                    setSearchHistory(history)
-                },
-                error => {
-                    console.log('Error:', error)
-                },
-            )
+        addData(data).then(() => {
+            setSearchHistory([...searchHistory, data])
         })
     }
 
     const deleteSearchItem = (data: HistoryItemProp) => {
-        db?.transaction(tx => {
-            tx.executeSql(
-                'DELETE FROM searchHistory WHERE id = ?;',
-                [data.id],
-                () => {
-                    loadSearchHistory() // 검색 기록 다시 불러오기
-                },
-                error => {
-                    console.log('Error deleting search item:', error)
-                },
-            )
+        deleteDataByKeys({ id: data.id }).then(() => {
+            setSearchHistory(searchHistory.filter(item => item.id !== data.id))
         })
     }
 
