@@ -16,7 +16,6 @@ import {
 } from 'react-native'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
 import useDatabase from '@/hooks/useDatabase/useDatabase'
-import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import SearchTab from '../navigation/SearchTab'
 
@@ -24,7 +23,6 @@ const Tab = createMaterialTopTabNavigator()
 
 // TODO: 같은 검색어 중복 저장 안 되게 하기
 type HistoryItemProp = {
-    id: number
     name: string
 }
 
@@ -44,7 +42,6 @@ const Search: React.FC = (): React.JSX.Element => {
         useDatabase<HistoryItemProp>({
             tableName: 'searchHistory',
             columns: {
-                id: 'number',
                 name: 'string',
             },
         })
@@ -53,23 +50,24 @@ const Search: React.FC = (): React.JSX.Element => {
         const setupData = async () => {
             setSearchHistory(await getAllData(true))
         }
-
         setupData()
     }, [])
 
-    const onSearchSubmit = (text: string) => {
+    const onSearchSubmit = async (text: string) => {
         if (!text) return
-        const data = { id: Date.now(), name: text }
-
+        const data = { name: text }
+        await deleteDataByKeys(data)
         addData(data).then(() => {
             setSearchHistory([...searchHistory, data])
+            setShowSearchResults(true)
         })
-        setShowSearchResults(true)
     }
 
     const deleteSearchItem = (data: HistoryItemProp) => {
-        deleteDataByKeys({ id: data.id }).then(() => {
-            setSearchHistory(searchHistory.filter(item => item.id !== data.id))
+        deleteDataByKeys({ name: data.name }).then(() => {
+            setSearchHistory(
+                searchHistory.filter(item => item.name !== data.name),
+            )
         })
     }
 
@@ -139,8 +137,6 @@ const Search: React.FC = (): React.JSX.Element => {
         </TouchableNativeFeedback>
     )
 
-    const renderSearchedResults = (data: GetBoardPostListResponse) => {}
-
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -158,7 +154,7 @@ const Search: React.FC = (): React.JSX.Element => {
                 />
             </View>
             {!showSearchResults ? (
-                <View style={styles.bodyContainer}>
+                <View>
                     <Text style={styles.recommendationText}>맞춤 검색</Text>
                     <ScrollView
                         style={styles.recommendationScrollView}
@@ -205,7 +201,6 @@ const CreateStyles = (theme: Icolor) =>
             paddingVertical: 8,
             paddingHorizontal: 16,
         },
-        bodyContainer: {},
         recommendationText: {
             color: theme.TEXT,
             marginHorizontal: 20,
