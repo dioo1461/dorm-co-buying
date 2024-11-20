@@ -7,8 +7,8 @@ import {
     SchoolAuthRequestBody,
     SignUpRequestBody,
 } from '@/data/request/SignUpRequestBody'
-import { LoginResponse } from '@/data/response/success/LoginResponse'
-import { SetUniversityResponse } from '@/data/response/success/SetUniversityResponse'
+import { LoginResponse } from '@/data/response/success/auth/LoginResponse'
+import { SetUniversityResponse } from '@/data/response/success/auth/SetUniversityResponse'
 import {
     getRefreshToken,
     setAccessToken,

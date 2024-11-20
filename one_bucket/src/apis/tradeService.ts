@@ -1,11 +1,11 @@
-import { JoinTradeResponse } from '@/data/response/success/market/JoinTradeResponse'
+import { JoinGroupTradeResponse } from '@/data/response/success/groupTrade/JoinGroupTradeResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const TRADE_ENDPOINT_PREFIX = 'trade'
+const TRADE_ENDPOINT_PREFIX = 'group-trade'
 
 export const joinTrade = async (
     tradeId: number,
-): Promise<JoinTradeResponse> => {
+): Promise<JoinGroupTradeResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .post(`/${TRADE_ENDPOINT_PREFIX}/join/${tradeId}`)
@@ -13,7 +13,7 @@ export const joinTrade = async (
             return res.data
         })
         .catch(err => {
-            console.log('joinGroupPurchase - ' + err)
+            console.log('joinGroupTrade - ' + err)
         })
 }
 
@@ -25,6 +25,6 @@ export const quitTrade = async (tradeId: number): Promise<void> => {
             return res.data
         })
         .catch(err => {
-            console.log('quitGroupPurchase - ' + err)
+            console.log('quitGroupTrade - ' + err)
         })
 }

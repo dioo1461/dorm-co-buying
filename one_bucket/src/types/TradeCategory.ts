@@ -1,4 +1,4 @@
-export type TMarketCategory =
+export type TradeCategory =
     | '전체'
     | '가공식품'
     | '신선식품'

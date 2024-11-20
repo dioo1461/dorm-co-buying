@@ -1,9 +1,9 @@
-import { saveMarketPostImage } from '@/apis/marketService'
+import { saveGroupTradePostImage } from '@/apis/groupTradeService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { CreateMarketPostBottomSheet } from '@/components/bottomSheet/CreateMarketPostBottomSheet'
+import { CreateGroupTradePostBottomSheet } from '@/components/bottomSheet/CreateGroupTradePostBottomSheet'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
+import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
@@ -26,7 +26,7 @@ import {
 
 // !!! 마감기한은 따로 update 해야함 !!!
 
-const CreateMarketPost: React.FC = (): React.JSX.Element => {
+const CreateGroupPost: React.FC = (): React.JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         boardList: state.boardList,
@@ -99,12 +99,12 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const findMarketBoardId = () => {
+    const findGroupBoardId = () => {
         const marketBoard = boardList.find(board => board.type === 'marketPost')
         if (marketBoard) {
             return marketBoard.id
         }
-        throw new Error('CreateMarketPost - Market board not found')
+        throw new Error('CreateGroupPost - Group board not found')
     }
 
     const onSubmitButtonPress = () => {
@@ -125,9 +125,9 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
     }
 
     const makeSubmitForm = () => {
-        const submitForm: CreateMarketPostRequestBody = {
+        const submitForm: CreateGroupTradePostRequestBody = {
             marketPostCreateDto: {
-                boardId: findMarketBoardId(),
+                boardId: findGroupBoardId(),
                 title: itemName,
                 text: descriptionTextInput,
             },
@@ -161,9 +161,9 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
             })
         })
         console.log(postId)
-        saveMarketPostImage(postId, formData).then(() => {
+        saveGroupTradePostImage(postId, formData).then(() => {
             navigation.goBack()
-            navigation.navigate('MarketPost', { postId: postId })
+            navigation.navigate('GroupTradePost', { postId: postId })
         })
     }
 
@@ -502,7 +502,7 @@ const CreateMarketPost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
-            <CreateMarketPostBottomSheet
+            <CreateGroupTradePostBottomSheet
                 enabled={bottomSheetEnabled}
                 theme={themeColor}
                 submitForm={makeSubmitForm()}
@@ -665,4 +665,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default CreateMarketPost
+export default CreateGroupPost

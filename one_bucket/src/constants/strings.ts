@@ -2,8 +2,8 @@ const strings = {
     // navigation screen names
     homeRouteScreenName: 'HomeRoute',
     homeScreenName: 'Home',
-    marketScreenName: 'Market',
-    marketPostScreenName: 'MarketPost',
+    groupTradeScreenName: 'GroupTrade',
+    groupTradePostScreenName: 'GroupTradePost',
     tradeScreenName: 'Trade',
     boardScreenName: 'Board',
     boardCreatePostScreenName: 'CreateBoardPost',
@@ -31,13 +31,13 @@ const strings = {
 
     unauthHomeScreenName: 'UnauthHome',
 
-    createMarketPostScreenName: 'CreateMarketPost',
+    createGroupTradePostScreenName: 'CreateGroupTradePost',
 
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
     myBoardPostsScreenName: 'MyBoardPosts',
-    myMarketPostsScreenName: 'MyMarketPosts',
-    joinedMarketPostsScreenName: 'JoinedMarketPosts',
+    myGroupTradePostsScreenName: 'MyGroupTradePosts',
+    joinedGroupTradePostsScreenName: 'JoinedGroupTradePosts',
 
     settingScreenName: '설정',
     schoolAuth1ScreenName: 'SchoolAuth1',
@@ -59,7 +59,7 @@ const strings = {
     // navigation screen titles
     homeRouteScreenTitle: '한바구니',
     homeScreenTitle: '홈',
-    marketScreenTitle: '공동구매',
+    groupTradeScreenTitle: '공동구매',
     tradeScreenTitle: '중고거래',
     boardScreenTitle: '게시판',
     boardCreatePostScreenTitle: '게시글 작성',
@@ -79,12 +79,12 @@ const strings = {
     supportScreenTitle: '개발자 문의',
     versionCheckScreenTitle: '버전 정보',
 
-    createMarketPostScreenTitle: '공동구매 글 작성',
+    createGroupTradePostScreenTitle: '공동구매 글 작성',
     // profileDetailsScreenTitle: 'ProfileDetails',
     // profileModifyScreenTitle: 'ProfileModify',
     myBoardPostsScreenTitle: '내가 쓴 게시글',
-    myMarketPostsScreenTitle: '내가 생성한 공동구매',
-    joinedMarketPostsScreenTitle: '내가 참여한 공동구매',
+    myGroupTradePostsScreenTitle: '내가 생성한 공동구매',
+    joinedGroupTradePostsScreenTitle: '내가 참여한 공동구매',
 
     // alertSettingScreenTitle: 'AlertSetting',
     // announcementScreenTitle: 'Ann/ouncement',

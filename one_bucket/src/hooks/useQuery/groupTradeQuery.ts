@@ -1,12 +1,12 @@
 import {
-    getJoinedMarketPostList,
-    getMarketPost,
-    getMarketPostList,
-    getMyMarketPostList,
-} from '@/apis/marketService'
-import { GetMarketPostListResponse } from '@/data/response/success/market/GetMarketPostListResponse'
-import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
-import { TMarketCategory } from '@/types/TMarketCategory'
+    getJoinedGroupTradePostList,
+    getGroupTradePost,
+    getGroupTradePostList,
+    getMyGroupTradePostList,
+} from '@/apis/groupTradeService'
+import { GetGroupTradePostListResponse } from '@/data/response/success/groupTrade/GetGroupTradePostListResponse'
+import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { TradeCategory } from '@/types/TradeCategory'
 import {
     useInfiniteQuery,
     UseInfiniteQueryOptions,
@@ -18,14 +18,14 @@ type SortType = {
     sort: 'asc' | 'desc'
 }
 
-export const queryMarketPostList = (
+export const queryGroupTradePostList = (
     boardId: number,
-    category: TMarketCategory,
+    category: TradeCategory,
     sortType: SortType,
     size = 5,
-    options: UseInfiniteQueryOptions<GetMarketPostListResponse> = {},
+    options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
 ) => {
-    return useInfiniteQuery<GetMarketPostListResponse>(
+    return useInfiniteQuery<GetGroupTradePostListResponse>(
         ['marketPostList', boardId, category, sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
@@ -34,7 +34,7 @@ export const queryMarketPostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getMarketPostList(boardId, pageParam, size, sortParam)
+            return getGroupTradePostList(boardId, pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {
@@ -48,13 +48,13 @@ export const queryMarketPostList = (
     )
 }
 
-export const queryMarketPost = (
+export const queryGroupTradePost = (
     postId: number,
-    onSuccessCallback?: (data: GetMarketPostResponse) => void,
+    onSuccessCallback?: (data: GetGroupTradePostResponse) => void,
 ) => {
-    return useQuery<GetMarketPostResponse>(
+    return useQuery<GetGroupTradePostResponse>(
         ['marketPost', postId],
-        () => getMarketPost(postId),
+        () => getGroupTradePost(postId),
         {
             onSuccess: data => {
                 if (onSuccessCallback) onSuccessCallback(data)
@@ -63,12 +63,12 @@ export const queryMarketPost = (
     )
 }
 
-export const queryMyMarketPostList = (
+export const queryMyGroupTradePostList = (
     sortType: SortType,
     size = 5,
-    options: UseInfiniteQueryOptions<GetMarketPostListResponse> = {},
+    options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
 ) => {
-    return useInfiniteQuery<GetMarketPostListResponse>(
+    return useInfiniteQuery<GetGroupTradePostListResponse>(
         ['marketPostList', sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
@@ -77,7 +77,7 @@ export const queryMyMarketPostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getMyMarketPostList(pageParam, size, sortParam)
+            return getMyGroupTradePostList(pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {
@@ -91,12 +91,12 @@ export const queryMyMarketPostList = (
     )
 }
 
-export const queryJoinedMarketPostList = (
+export const queryJoinedGroupTradePostList = (
     sortType: SortType,
     size = 5,
-    options: UseInfiniteQueryOptions<GetMarketPostListResponse> = {},
+    options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
 ) => {
-    return useInfiniteQuery<GetMarketPostListResponse>(
+    return useInfiniteQuery<GetGroupTradePostListResponse>(
         ['marketPostList', sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
@@ -105,7 +105,7 @@ export const queryJoinedMarketPostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getJoinedMarketPostList(pageParam, size, sortParam)
+            return getJoinedGroupTradePostList(pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {

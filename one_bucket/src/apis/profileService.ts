@@ -1,6 +1,6 @@
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
-import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
+import { GetMemberInfoResponse } from '@/data/response/success/auth/GetMemberInfoResponse'
 import { createAuthAxios, createStorageAxios } from 'utils/axiosFactory'
 
 /**

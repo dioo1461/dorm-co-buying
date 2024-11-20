@@ -64,7 +64,7 @@ const CreateBoardPost: React.FC = (): JSX.Element => {
     useEffect(() => {
         setDropdownItems(
             boardList
-                .filter(board => board.type !== 'marketPost')
+                .filter(board => board.type === 'post')
                 .map(board => ({ label: board.name, value: board.id })),
         )
         setDropdownValue(params.boardId)

@@ -1,3 +1,4 @@
 export interface CreateBoardPostRequestBody {
-    postId: number
+    message: string
+    id: number
 }

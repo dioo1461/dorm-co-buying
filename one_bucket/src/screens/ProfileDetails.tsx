@@ -1,6 +1,6 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { Gender } from '@/data/response/success/GetProfileResponse'
+import { Gender } from '@/data/response/success/auth/GetProfileResponse'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'

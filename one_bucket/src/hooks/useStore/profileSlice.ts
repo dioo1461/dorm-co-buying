@@ -1,5 +1,5 @@
-import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
-import { GetProfileResponse } from '@/data/response/success/GetProfileResponse'
+import { GetMemberInfoResponse } from '@/data/response/success/auth/GetMemberInfoResponse'
+import { GetProfileResponse } from '@/data/response/success/auth/GetProfileResponse'
 import { StateCreator } from 'zustand'
 
 export interface ProfileSlice {

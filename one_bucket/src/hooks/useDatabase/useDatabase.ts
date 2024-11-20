@@ -1,15 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { SQLiteDatabase, openDatabase } from 'react-native-sqlite-storage'
 
-type Serializable =
-    | string
-    | number
-    | boolean
-    | null
-    | Serializable[]
-    | { [key: string]: Serializable }
-
 type ColumnMapTypes = 'number' | 'string' | 'boolean' | 'serializable'
+
+type ColumnTypes = number | string | boolean | Object
 
 type UseDatabaseOptions<T> = {
     tableName: string
@@ -17,15 +11,15 @@ type UseDatabaseOptions<T> = {
     debug?: boolean
 }
 
-const serialize = (value: Serializable): string => {
+const serialize = (value: ColumnTypes): string => {
     return JSON.stringify(value)
 }
 
-const deserialize = <Serializable>(data: string): Serializable => {
+const deserialize = <ColumnTypes>(data: string): ColumnTypes => {
     return JSON.parse(data)
 }
 
-const useDatabase = <T extends Record<string, Serializable>>({
+const useDatabase = <T extends Record<string, ColumnTypes>>({
     tableName,
     columns,
     debug = false,
@@ -174,7 +168,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values: Serializable[] = Object.values(keys).map(
+        const values: ColumnTypes[] = Object.values(keys).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 
@@ -265,7 +259,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const placeholders = Object.keys(data)
             .map(() => '?')
             .join(', ')
-        const values: Serializable = Object.values(data).map(
+        const values: ColumnTypes[] = Object.values(data).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
         database!.transaction(tx =>
@@ -286,7 +280,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values: Serializable[] = Object.values(keys).map(
+        const values: ColumnTypes[] = Object.values(keys).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 
@@ -317,7 +311,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
-        const values: Serializable[] = Object.values(keys).map(
+        const values: ColumnTypes[] = Object.values(keys).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 
@@ -345,7 +339,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const fields = Object.keys(updatedData)
             .map(key => `${key} = ?`)
             .join(', ')
-        const values: Serializable[] = Object.values(updatedData).map(
+        const values: ColumnTypes[] = Object.values(updatedData).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 
@@ -377,7 +371,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const whereClause = Object.keys(keys)
             .map(key => `${key} = ?`)
             .join(' AND ')
-        const values: Serializable = Object.values(keys).map(
+        const values: ColumnTypes[] = Object.values(keys).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 
@@ -410,7 +404,7 @@ const useDatabase = <T extends Record<string, Serializable>>({
         const updates = Object.keys(data)
             .map(key => `${key} = excluded.${key}`)
             .join(', ')
-        const values: Serializable = Object.values(data).map(
+        const values: ColumnTypes[] = Object.values(data).map(
             value => (typeof value === 'object' ? serialize(value) : value), // 직렬화
         )
 

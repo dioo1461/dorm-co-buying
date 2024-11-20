@@ -30,6 +30,7 @@ import {
 } from 'react-native'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
+import { Member } from '@/data/common/Member'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -109,7 +110,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         useState(false)
     // TODO: bottomSheetButton 동적 관리 - userId 필요
     // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
-    const [memberList, setMemberList] = useState<string[]>([])
+    const [memberList, setMemberList] = useState<Member[]>([])
 
     const flatListRef = useRef<FlatList<ChatDataColumns> | null>(null)
     const stompClientRef = useRef<Client | null>(null)
@@ -308,7 +309,7 @@ const Chat: React.FC = (): React.JSX.Element => {
     useEffect(() => {
         const initialize = async () => {
             const [tradeInfo] = await Promise.all([getTradeInfo(params.roomId)])
-            setMemberList(tradeInfo.nickNames)
+            setMemberList(tradeInfo.joinMember)
         }
 
         initialize()
@@ -525,7 +526,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                 theme={themeColor}>
                 <Text>{memberInfo?.nickname}</Text>
                 {memberList.map((member, index) => {
-                    return <Text key={index}>{member}</Text>
+                    return <Text key={index}>{member.nickname}</Text>
                 })}
             </BottomSheet>
         </View>

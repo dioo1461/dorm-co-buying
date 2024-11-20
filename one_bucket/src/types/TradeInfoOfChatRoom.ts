@@ -1,17 +1,19 @@
+import { Member } from '@/data/common/Member'
+
 export type TradeInfoOfChatRoom = {
-    chatRoomId: string
+    id: number
     item: string
-    wanted: number
     price: number
-    count: number
     location: string
+    userId: number
+    wanted: number
+    count: number
     linkUrl: string
     tag: string
-    id: number
-    userId: number
-    dueDate: string // ISO 8601
+    dueDate: string
     joins: number
-    nickNames: string[]
-    startTradeAt: string // ISO 8601
+    joinMember: Member[]
+    startTradeAt: string
+    chatRoomId: string
     fin: boolean
 }

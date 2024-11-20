@@ -10,20 +10,20 @@ import {
 } from 'react-native'
 import BottomSheet from './BottomSheet'
 
-import { createMarketPost } from '@/apis/marketService'
-import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
+import { createGroupTradePost } from '@/apis/groupTradeService'
+import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
 import { useEffect, useState } from 'react'
 import Accordion from '../Accordion'
 
 interface Props {
     enabled: boolean
     theme: Icolor
-    submitForm: CreateMarketPostRequestBody
+    submitForm: CreateGroupTradePostRequestBody
     onClose: () => void
     onSubmitComplete: (postId: number) => void
 }
 
-export const CreateMarketPostBottomSheet: React.FC<Props> = ({
+export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
     enabled,
     theme,
     submitForm,
@@ -58,12 +58,12 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
     })
 
     useEffect(() => {
-        setChatName(submitForm.tradeCreateDto.item)
+        setChatName(submitForm.trade.item)
     }, [submitForm])
 
     const onSubmit = () => {
         submitForm.chatRoomName = chatName
-        createMarketPost(submitForm)
+        createGroupTradePost(submitForm)
             .then(res => {
                 onSubmitComplete(res.postId)
             })
@@ -104,7 +104,7 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>상품명</Text>
                             <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.item}
+                                {submitForm.trade.item}
                             </Text>
                         </View>
                         <View style={styles.secondaryItemContainer}>
@@ -112,13 +112,13 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                                 카테고리
                             </Text>
                             <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.tag}
+                                {submitForm.trade.tag}
                             </Text>
                         </View>
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>총 가격</Text>
                             <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.price} 원
+                                {submitForm.trade.price} 원
                             </Text>
                         </View>
                         <View style={styles.secondaryItemContainer}>
@@ -126,33 +126,33 @@ export const CreateMarketPostBottomSheet: React.FC<Props> = ({
                                 개당 가격
                             </Text>
                             <Text style={styles.secondaryItemText}>
-                                {submitForm.tradeCreateDto.price /
-                                    submitForm.tradeCreateDto.count}{' '}
+                                {submitForm.trade.price /
+                                    submitForm.trade.count}{' '}
                                 원
                             </Text>
                         </View>
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>총 수량</Text>
                             <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.count} 개
+                                {submitForm.trade.count} 개
                             </Text>
                         </View>
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>모집 인원 </Text>
                             <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.wanted} 명
+                                {submitForm.trade.wanted} 명
                             </Text>
                         </View>
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>마감 기한</Text>
                             <Text style={styles.itemText}>
-                                D - {submitForm.tradeCreateDto.dueDays}
+                                D - {submitForm.trade.dueDate}
                             </Text>
                         </View>
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>거래 위치</Text>
                             <Text style={styles.itemText}>
-                                {submitForm.tradeCreateDto.location}
+                                {submitForm.trade.location}
                             </Text>
                         </View>
                     </ScrollView>

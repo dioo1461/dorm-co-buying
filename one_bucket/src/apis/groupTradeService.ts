@@ -1,21 +1,21 @@
-import { CreateMarketPostRequestBody } from '@/data/request/market/CreateMarketPostBody'
-import { UpdateMarketPostRequestBody } from '@/data/request/market/UpdateMarketPostRequestBody'
-import { CreateMarketPostResponse } from '@/data/response/success/board/CreateMarketPostResponse'
-import { GetMarketPostListResponse } from '@/data/response/success/market/GetMarketPostListResponse'
-import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
+import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
+import { UpdateGroupTradePostRequestBody } from '@/data/request/groupTrade/UpdateGroupTradePostRequestBody'
+import { CreateGroupTradePostResponse } from '@/data/response/success/groupTrade/CreateGroupTradePostResponse'
+import { GetGroupTradePostListResponse } from '@/data/response/success/groupTrade/GetGroupTradePostListResponse'
 import { getAccessToken } from '@/utils/accessTokenUtils'
+import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const MARKET_ENDPOINT_PREFIX = '/market-post'
+const MARKET_ENDPOINT_PREFIX = '/group-post'
 
 // ########## GET ##########
 
-export const getMarketPostList = async (
+export const getGroupTradePostList = async (
     boardId: number,
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetMarketPostListResponse> => {
+): Promise<GetGroupTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .get(`${MARKET_ENDPOINT_PREFIX}/list/${boardId}`, {
@@ -30,16 +30,16 @@ export const getMarketPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getMarketPostList - ' + error)
+            console.log('getGroupTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
         })
 }
 
-export const getMarketPost = async (
+export const getGroupTradePost = async (
     postId: number,
-): Promise<GetMarketPostResponse> => {
+): Promise<GetGroupTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .get(`${MARKET_ENDPOINT_PREFIX}/${postId}`)
@@ -47,15 +47,15 @@ export const getMarketPost = async (
             return res.data
         })
         .catch(err => {
-            console.log('getMarketPost - ' + err)
+            console.log('getGroupTradePost - ' + err)
         })
 }
 
-export const getMyMarketPostList = async (
+export const getMyGroupTradePostList = async (
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetMarketPostListResponse> => {
+): Promise<GetGroupTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .get(`${MARKET_ENDPOINT_PREFIX}/list/my`, {
@@ -70,18 +70,18 @@ export const getMyMarketPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getMyMarketPostList - ' + error)
+            console.log('getMyGroupTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
         })
 }
 
-export const getJoinedMarketPostList = async (
+export const getJoinedGroupTradePostList = async (
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetMarketPostListResponse> => {
+): Promise<GetGroupTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .get(`${MARKET_ENDPOINT_PREFIX}/list/joins`, {
@@ -96,7 +96,7 @@ export const getJoinedMarketPostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getJoinedMarketPostList - ' + error)
+            console.log('getJoinedGroupTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
@@ -105,22 +105,22 @@ export const getJoinedMarketPostList = async (
 
 // ########## POST ##########
 
-export const createMarketPost = async (
-    data: CreateMarketPostRequestBody,
-): Promise<CreateMarketPostResponse> => {
+export const createGroupTradePost = async (
+    data: CreateGroupTradePostRequestBody,
+): Promise<CreateGroupTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .post(`${MARKET_ENDPOINT_PREFIX}/create`, data)
         .then(res => {
             return res.data
         })
-    // .catch(err => {
-    //     console.log('createMarketPost - ' + err)
-    // })
+        .catch(err => {
+            console.log('createGroupTradePost - ' + err)
+        })
 }
 
-export const updateMarketPost = async (
-    data: UpdateMarketPostRequestBody,
+export const updateGroupTradePost = async (
+    data: UpdateGroupTradePostRequestBody,
 ): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
@@ -129,11 +129,14 @@ export const updateMarketPost = async (
             return res.data
         })
         .catch(err => {
-            console.log('updateMarketPost - ' + err)
+            console.log('updateGroupTradePost - ' + err)
         })
 }
 
-export const saveMarketPostImage = async (postId: number, data: FormData) => {
+export const saveGroupTradePostImage = async (
+    postId: number,
+    data: FormData,
+) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({
         headers: {
@@ -153,7 +156,10 @@ export const saveMarketPostImage = async (postId: number, data: FormData) => {
         })
 }
 
-export const updateMarketPostImageReset = async (postId: number, data: any) => {
+export const updateGroupTradePostImageReset = async (
+    postId: number,
+    data: any,
+) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({
         headers: {
@@ -167,12 +173,17 @@ export const updateMarketPostImageReset = async (postId: number, data: any) => {
             return res.data
         })
         .catch(err => {
-            console.log(`updateMarketPostImageReset : update Error - ${err}`)
+            console.log(
+                `updateGroupTradePostImageReset : update Error - ${err}`,
+            )
             throw err
         })
 }
 
-export const updateMarketPostImageAdd = async (postId: number, data: any) => {
+export const updateGroupTradePostImageAdd = async (
+    postId: number,
+    data: any,
+) => {
     const token = await getAccessToken()
     const authAxios = await createAuthAxios({
         headers: {
@@ -186,12 +197,12 @@ export const updateMarketPostImageAdd = async (postId: number, data: any) => {
             return res.data
         })
         .catch(err => {
-            console.log(`updateMarketPostImageAdd : add Error - ${err}`)
+            console.log(`updateGroupTradePostImageAdd : add Error - ${err}`)
             throw err
         })
 }
 
-export const updateMarketPostImageDelete = async (
+export const updateGroupTradePostImageDelete = async (
     postId: number,
     data: any,
 ) => {
@@ -208,14 +219,16 @@ export const updateMarketPostImageDelete = async (
             return res.data
         })
         .catch(err => {
-            console.log(`updateMarketPostImageDelete : delete Error - ${err}`)
+            console.log(
+                `updateGroupTradePostImageDelete : delete Error - ${err}`,
+            )
             throw err
         })
 }
 
 // ########## DELETE ##########
 
-export const deleteMarketPost = async (postId: number): Promise<any> => {
+export const deleteGroupTradePost = async (postId: number): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .delete(`${MARKET_ENDPOINT_PREFIX}/delete/${postId}`)
@@ -223,6 +236,6 @@ export const deleteMarketPost = async (postId: number): Promise<any> => {
             return res.data
         })
         .catch(err => {
-            console.log('deleteMarketPost - ' + err)
+            console.log('deleteGroupTradePost - ' + err)
         })
 }

@@ -3,14 +3,15 @@ export interface GetBoardPostResponse {
     title: string
     text: string
     postId: number
+    authorId: number
     authorNickname: string
-    createdDate: Date
-    modifiedDate: Date
+    createdDate: string // ISO 8601
+    modifiedDate: string // ISO 8601
+    imageUrls: string[]
     views: number
     likes: number
-    imageUrls: string[]
-    commentsCount: number
     comments: IComment[]
+    commentsCount: number
     userAlreadyLikes: boolean
 }
 

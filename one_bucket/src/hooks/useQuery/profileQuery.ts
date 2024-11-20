@@ -3,8 +3,8 @@ import {
     getProfile,
     getProfileImage,
 } from '@/apis/profileService'
-import { GetMemberInfoResponse } from '@/data/response/success/GetMemberInfoResponse'
-import { GetProfileResponse } from '@/data/response/success/GetProfileResponse'
+import { GetMemberInfoResponse } from '@/data/response/success/auth/GetMemberInfoResponse'
+import { GetProfileResponse } from '@/data/response/success/auth/GetProfileResponse'
 import { useQuery } from 'react-query'
 import { useBoundStore } from '../useStore/useBoundStore'
 

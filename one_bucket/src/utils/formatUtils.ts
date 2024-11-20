@@ -1,5 +1,5 @@
 export const formatTimeAgo = (createdISODate: string): string => {
-    const createdDate = new Date(createdISODate + 'Z')
+    const createdDate = new Date(createdISODate)
     const now = new Date()
     const diffInSeconds = Math.floor(
         (now.getTime() - createdDate.getTime()) / 1000,

@@ -1,5 +1,5 @@
 import { GetChatLogAfterTimestampResponse } from '@/data/response/success/chat/GetChatLogAfterTimestampResponse'
-import { GetChatRoomTradeInfoResponse } from '@/data/response/success/chat/GetChatRoomTradeInfoResponse'
+import { GetChatRoomTradeInfoResponse } from '@/data/response/success/chat/GetChatRoomInfoResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
 const CHAT_ENDPOINT_PREFIX = '/chat'
@@ -76,7 +76,7 @@ export const getTradeInfoOfChatRoom = async (
 ): Promise<GetChatRoomTradeInfoResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(CHAT_ENDPOINT_PREFIX + `/trade/${chatRoomId}`)
+        .get(CHAT_ENDPOINT_PREFIX + `/info/${chatRoomId}`)
         .then(res => {
             return res.data
         })

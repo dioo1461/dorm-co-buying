@@ -1,7 +1,7 @@
 export interface GetBoardPostListResponse {
     totalPages: number
     totalElements: number
-    size: boolean
+    size: number
     content: BoardPostReduced[]
     number: number
     sort: Sort
@@ -17,6 +17,7 @@ export interface BoardPostReduced {
     title: string
     text: string
     postId: number
+    authorId: number
     authorNickname: string
     createdDate: string // ISO8601
     modifiedDate: string // ISO8601

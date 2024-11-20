@@ -23,13 +23,13 @@ export type RootStackParamList = {
 
     UnauthHome: undefined
 
-    Market: {
+    GroupTrade: {
         pendingRefresh: boolean
     }
-    MarketPost: {
+    GroupTradePost: {
         postId: number
     }
-    CreateMarketPost: undefined
+    CreateGroupTradePost: undefined
     Board: {
         pendingRefresh: boolean
     }
@@ -77,8 +77,8 @@ export type RootStackParamList = {
 
     ProfileDetails: undefined
     MyBoardPosts: undefined
-    MyMarketPosts: undefined
-    JoinedMarketPosts: undefined
+    MyGroupTradePosts: undefined
+    JoinedGroupTradePosts: undefined
 
     ImageEnlargement: {
         imageUriList: string[]

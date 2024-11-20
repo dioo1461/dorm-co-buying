@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
@@ -32,11 +25,11 @@ import Chat from '@/screens/chat/Chat'
 import BoardPost from '@/screens/home/board/BoardPost'
 import CreateBoardPost from '@/screens/home/board/CreateBoardPost'
 import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
-import CreateMarketPost from '@/screens/home/market/CreateMarketPost'
-import MarketPost from '@/screens/home/market/MarketPost'
+import CreateGroupTradePost from '@/screens/home/groupTrade/CreateGroupTradePost'
+import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
 import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
-import MyMarketPosts from '@/screens/myPage/MyMarketPosts'
+import MyGroupTradePosts from '@/screens/myPage/MyGroupTradePosts'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Notification from '@/screens/Notification'
 import ProfileModify from '@/screens/PofileModify'
@@ -276,10 +269,10 @@ function App(): React.JSX.Element {
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
-                            name={strings.createMarketPostScreenName}
-                            component={CreateMarketPost}
+                            name={strings.createGroupTradePostScreenName}
+                            component={CreateGroupTradePost}
                             options={{
-                                title: strings.createMarketPostScreenTitle,
+                                title: strings.createGroupTradePostScreenTitle,
                                 headerStyle: {
                                     backgroundColor:
                                         themeColor === lightColors
@@ -304,8 +297,8 @@ function App(): React.JSX.Element {
                             }}
                         />
                         <Stack.Screen
-                            name={strings.marketPostScreenName}
-                            component={MarketPost}
+                            name={strings.groupTradePostScreenName}
+                            component={GroupTradePost}
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
@@ -571,8 +564,8 @@ function App(): React.JSX.Element {
                             component={MyBoardPosts}
                         />
                         <Stack.Screen
-                            name={strings.myMarketPostsScreenName}
-                            component={MyMarketPosts}
+                            name={strings.myGroupTradePostsScreenName}
+                            component={MyGroupTradePosts}
                         />
                     </Stack.Navigator>
                 </NavigationContainer>

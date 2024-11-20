@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import useDatabase from './useDatabase'
 import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getTradeInfoOfChatRoom } from '@/apis/chatService'
@@ -8,20 +7,20 @@ const useTradeInfoOfChatRoomDB = () => {
         useDatabase<TradeInfoOfChatRoom>({
             tableName: 'tradeInfoOfChatRoom',
             columns: {
-                chatRoomId: 'string',
+                id: 'number',
                 item: 'string',
-                wanted: 'number',
                 price: 'number',
-                count: 'number',
                 location: 'string',
+                userId: 'number',
+                wanted: 'number',
+                count: 'number',
                 linkUrl: 'string',
                 tag: 'string',
-                id: 'number',
-                userId: 'number',
                 dueDate: 'string',
-                joins: 'string',
-                nickNames: 'serializable',
+                joins: 'number',
+                joinMember: 'serializable',
                 startTradeAt: 'string',
+                chatRoomId: 'string',
                 fin: 'boolean',
             },
             debug: false,
@@ -42,8 +41,7 @@ const useTradeInfoOfChatRoomDB = () => {
 
         console.log('fetching trade info from server')
         const fetchedTradeInfo: TradeInfoOfChatRoom = {
-            ...(await getTradeInfoOfChatRoom(chatRoomId)),
-            chatRoomId: chatRoomId,
+            ...(await getTradeInfoOfChatRoom(chatRoomId)).trade,
         }
 
         await addTradeInfo(fetchedTradeInfo)

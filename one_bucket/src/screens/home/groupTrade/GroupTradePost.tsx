@@ -8,8 +8,8 @@ import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Skeleton from '@/components/Skeleton'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { GetMarketPostResponse } from '@/data/response/success/market/GetMarketPostResponse'
-import { queryMarketPost } from '@/hooks/useQuery/marketQuery'
+import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { queryGroupTradePost } from '@/hooks/useQuery/groupTradeQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
@@ -36,7 +36,7 @@ const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
     Dimensions.get('window').height,
 ]
 
-const MarketPost: React.FC = (): JSX.Element => {
+const GroupTradePost: React.FC = (): JSX.Element => {
     const { themeColor } = useBoundStore(state => ({
         themeColor: state.themeColor,
     }))
@@ -44,8 +44,11 @@ const MarketPost: React.FC = (): JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    type MarketPostRouteProp = RouteProp<RootStackParamList, 'MarketPost'>
-    const { params } = useRoute<MarketPostRouteProp>()
+    type GroupTradePostRouteProp = RouteProp<
+        RootStackParamList,
+        'GroupTradePost'
+    >
+    const { params } = useRoute<GroupTradePostRouteProp>()
 
     // 레이아웃 관련 변수
     const scrollY = useRef(new Animated.Value(0)).current
@@ -68,7 +71,7 @@ const MarketPost: React.FC = (): JSX.Element => {
         return () => clearTimeout(timeout)
     }, [])
 
-    const onSuccessCallback = (data: GetMarketPostResponse) => {
+    const onSuccessCallback = (data: GetGroupTradePostResponse) => {
         const parseMetaData = async (url: string) => {
             OpenGraphParser.extractMeta(url)
                 .then(data => {
@@ -103,7 +106,7 @@ const MarketPost: React.FC = (): JSX.Element => {
         })
     }
 
-    const { data, isLoading, error } = queryMarketPost(
+    const { data, isLoading, error } = queryGroupTradePost(
         params.postId,
         onSuccessCallback,
     )
@@ -288,7 +291,7 @@ const MarketPost: React.FC = (): JSX.Element => {
                 <View style={{ position: 'relative', left: 0 }}>
                     {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
                     <Text style={styles.bottomBarCountText}>
-                        {data?.trade_nickNames.length ?? 0 + 1} /{' '}
+                        {data?.trade_joinMember.length ?? 0 + 1} /{' '}
                         {data?.trade_wanted}
                     </Text>
                 </View>
@@ -432,4 +435,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default MarketPost
+export default GroupTradePost

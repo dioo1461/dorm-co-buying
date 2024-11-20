@@ -1,7 +1,7 @@
 import strings from '@/constants/strings'
 import Board from '@/screens/home/board/Board'
 import Home from '@/screens/home/Home'
-import Market from '@/screens/home/market/Market'
+import GroupTrade from '@/screens/home/groupTrade/GroupTrade'
 
 export const homeRoutes = [
     {
@@ -10,14 +10,14 @@ export const homeRoutes = [
         component: Home,
     },
     {
-        name: strings.marketScreenName,
-        title: strings.marketScreenTitle,
-        component: Market,
+        name: strings.groupTradeScreenName,
+        title: strings.groupTradeScreenTitle,
+        component: GroupTrade,
     },
     {
         name: strings.tradeScreenName,
         title: strings.tradeScreenTitle,
-        component: Market,
+        component: GroupTrade,
     },
     {
         name: strings.boardScreenName,
