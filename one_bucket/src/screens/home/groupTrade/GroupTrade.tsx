@@ -302,50 +302,45 @@ const GroupTrade: React.FC = (): JSX.Element => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                             }}>
-                            {
-                                // data.trade_nickNames.length + 1 <
-                                data.trade_wanted ? (
-                                    <View
+                            {data.trade_joins + 1 < data.trade_wanted ? (
+                                <View
+                                    style={{
+                                        backgroundColor: themeColor.BUTTON_BG,
+                                        borderRadius: 30,
+                                        padding: 6,
+                                        marginEnd: 5,
+                                    }}>
+                                    <Text
                                         style={{
-                                            backgroundColor:
-                                                themeColor.BUTTON_BG,
-                                            borderRadius: 30,
-                                            padding: 6,
-                                            marginEnd: 5,
+                                            color: themeColor.BUTTON_TEXT,
+                                            fontFamily: 'NanumGothic-Bold',
+                                            fontSize: 11,
                                         }}>
-                                        <Text
-                                            style={{
-                                                color: themeColor.BUTTON_TEXT,
-                                                fontFamily: 'NanumGothic-Bold',
-                                                fontSize: 11,
-                                            }}>
-                                            참여 가능
-                                        </Text>
-                                    </View>
-                                ) : (
-                                    <View
+                                        참여 가능
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View
+                                    style={{
+                                        backgroundColor: baseColors.GRAY_2,
+                                        borderRadius: 30,
+                                        padding: 6,
+                                        marginEnd: 5,
+                                    }}>
+                                    <Text
                                         style={{
-                                            backgroundColor: baseColors.GRAY_2,
-                                            borderRadius: 30,
-                                            padding: 6,
-                                            marginEnd: 5,
+                                            color: baseColors.WHITE,
+                                            fontFamily: 'NanumGothic-Bold',
+                                            fontSize: 11,
                                         }}>
-                                        <Text
-                                            style={{
-                                                color: baseColors.WHITE,
-                                                fontFamily: 'NanumGothic-Bold',
-                                                fontSize: 11,
-                                            }}>
-                                            마감
-                                        </Text>
-                                    </View>
-                                )
-                            }
+                                        마감
+                                    </Text>
+                                </View>
+                            )}
                             <Text style={styles.postParticipants}>
-                                {`${
-                                    // data.trade_nickNames.length + 1
-                                    null
-                                } / ${data.trade_wanted}명`}
+                                {`${data.trade_joins + 1} / ${
+                                    data.trade_wanted
+                                }명`}
                             </Text>
                         </View>
                         <View style={styles.line} />

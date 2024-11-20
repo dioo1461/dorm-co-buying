@@ -13,6 +13,7 @@ export interface GroupTradePostReduced extends BoardPostReduced {
     trade_id: number
     trade_item: string
     trade_wanted: number
+    trade_joins: number
     trade_count: number
     trade_price: number
     trade_location: string

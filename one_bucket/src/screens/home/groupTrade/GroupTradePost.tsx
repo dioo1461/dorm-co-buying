@@ -75,7 +75,6 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         const parseMetaData = async (url: string) => {
             OpenGraphParser.extractMeta(url)
                 .then(data => {
-                    console.log(data)
                     const hostname = data[0].url.split('/')[2]
 
                     const meta = {
