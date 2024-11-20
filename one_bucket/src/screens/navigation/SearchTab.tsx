@@ -27,6 +27,7 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
     return (
         <Tab.Navigator
             screenOptions={{
+                tabBarScrollEnabled: true,
                 tabBarIndicatorStyle: {
                     backgroundColor: baseColors.GRAY_2,
                 },
