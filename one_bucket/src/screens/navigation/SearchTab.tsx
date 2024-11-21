@@ -26,12 +26,22 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
         }
     }, [])
 
+    const calculateWidth = (name: string) => {
+        const baseWidth = 50 // 최소 너비
+        const charWidth = 10 // 문자당 추가 너비
+        return baseWidth + name.length * charWidth
+    }
+
     return (
         <Tab.Navigator
             screenOptions={{
                 tabBarScrollEnabled: true,
                 tabBarIndicatorStyle: {
                     backgroundColor: baseColors.GRAY_2,
+                },
+                tabBarItemStyle: {
+                    width: 'auto',
+                    marginHorizontal: 10,
                 },
                 tabBarStyle: {
                     backgroundColor:
