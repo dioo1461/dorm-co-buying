@@ -295,6 +295,14 @@ const BoardPost: React.FC = (): JSX.Element => {
         setEditingCommentId(null)
     }
 
+    const countComments = (comments: IComment[]): number => {
+        let count = 0
+        comments.forEach(comment => {
+            count += 1 + countComments(comment.replies)
+        })
+        return count
+    }
+
     // ########## RENDERING PARTS ##########
 
     const handleRefresh = async () => {
@@ -476,7 +484,9 @@ const BoardPost: React.FC = (): JSX.Element => {
                                     styles.likesAndCommentCountText,
                                     { color: baseColors.LIGHT_BLUE },
                                 ]}>
-                                {data?.comments.length}
+                                {
+                                    countComments(data!.comments) // data!.commentsCount
+                                }
                             </Text>
                         </View>
                     </View>
