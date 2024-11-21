@@ -54,6 +54,8 @@ const Board: React.FC = (): JSX.Element => {
         }
     })
 
+    const boardCount = boardList.filter(item => item.type === "post").length
+
     const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
 
     const touchableNativeFeedbackBg = () => {
@@ -156,7 +158,7 @@ const Board: React.FC = (): JSX.Element => {
     const dropdownAnimatedStyle = {
         height: animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 200],
+            outputRange: [0, boardCount * 50],
         }),
         opacity: animation.interpolate({
             inputRange: [0, 1],
@@ -201,7 +203,7 @@ const Board: React.FC = (): JSX.Element => {
             {/* ### 게시판 선택 dropdown ### */}
             <Animated.View
                 style={[
-                    styles.boardTypeSelectionWrapper,
+                    {...styles.boardTypeSelectionWrapper, height: boardCount},
                     dropdownAnimatedStyle,
                 ]}>
                 <ScrollView

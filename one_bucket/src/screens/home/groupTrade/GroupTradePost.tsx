@@ -290,7 +290,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                 <View style={{ position: 'relative', left: 0 }}>
                     {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
                     <Text style={styles.bottomBarCountText}>
-                        {data?.trade_joinMember.length ?? 0 + 1} /{' '}
+                        {(data?.trade_joinMember.length ?? 0) + 1} /{' '}
                         {data?.trade_wanted}
                     </Text>
                 </View>
