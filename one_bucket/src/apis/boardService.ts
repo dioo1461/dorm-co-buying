@@ -302,7 +302,7 @@ export const addReplyComment = async (
 export const addLike = async (postId: number): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`/post/${postId}/likes`)
+        .post(`/post/${postId}/like`)
         .then(res => {
             return res.data
         })
