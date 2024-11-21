@@ -14,17 +14,20 @@ import {
 } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import { useQueryClient } from 'react-query'
+import { querySearchBoardPosts } from '@/hooks/useQuery/boardQuery'
+import PostComponent from '@/components/board/PostComponent'
+import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
 
 const FETCH_SIZE = 10
 
-const GroupTradeSearch: React.FC = (): JSX.Element => {
+const BoardPostSearch: React.FC = (): JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         boardList: state.boardList,
     }))
 
     const { params } =
-        useRoute<RouteProp<RootStackParamList, 'GroupTradeSearch'>>()
+        useRoute<RouteProp<RootStackParamList, 'BoardPostSearch'>>()
 
     const PostFlatList: React.FC = (): JSX.Element => {
         const [isRefreshing, setIsRefreshing] = useState(false)
@@ -36,13 +39,9 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
         }
 
         // ### 게시글 목록 flatlist ###
-        const renderItem: ListRenderItem<GroupTradePostReduced> = ({
-            item,
-        }) => <GroupTradePostComponent data={item} />
-
-        const boardId = boardList
-            ? boardList.find(board => board.type === 'groupTradePost')?.id
-            : undefined
+        const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
+            <PostComponent data={item} />
+        )
 
         const {
             data,
@@ -53,8 +52,8 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
             isSuccess,
             error,
             refetch,
-        } = querySearchGroupTradePosts(
-            boardId!,
+        } = querySearchBoardPosts(
+            params.boardId,
             params.keyword,
             'titleAndContent',
             {
@@ -62,7 +61,7 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
                 sort: 'desc',
             },
             FETCH_SIZE,
-            { enabled: !!boardId },
+            { enabled: !!params.boardId },
         )
 
         if (error) return <Text>Error...</Text>
@@ -76,7 +75,7 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
                 {isSuccess && posts!.length > 0 ? (
                     <Animated.FlatList
                         style={{ paddingTop: 20 }}
-                        data={posts}
+                        data={isLoading ? [] : posts}
                         renderItem={renderItem}
                         refreshControl={
                             <RefreshControl
@@ -117,4 +116,4 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
     )
 }
 
-export default GroupTradeSearch
+export default BoardPostSearch

@@ -1,19 +1,17 @@
-import React, { useState } from 'react'
-import {
-    View,
-    FlatList,
-    RefreshControl,
-    ActivityIndicator,
-    ListRenderItem,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-} from 'react-native'
-import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
-import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import { baseColors, Icolor } from '@/constants/colors'
+import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
+import { queryBoardPostList } from '@/hooks/useQuery/boardQuery'
+import React, { useState } from 'react'
+import {
+    ActivityIndicator,
+    FlatList,
+    ListRenderItem,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native'
 import PostComponent from './PostComponent'
 
 const FETCH_SIZE = 10
@@ -25,7 +23,7 @@ interface PostFlatListProps {
     onRefreshCallback?: () => void
 }
 
-const PostFlatList: React.FC<PostFlatListProps> = ({
+const SearchPostFlatList: React.FC<PostFlatListProps> = ({
     boardId,
     themeColor,
     boardName,
@@ -140,11 +138,6 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 8,
             marginTop: 10,
         },
-        line: {
-            borderBottomWidth: 1,
-            borderBottomColor: baseColors.GRAY_3,
-            marginVertical: 10,
-        },
     })
 
-export default PostFlatList
+export default SearchPostFlatList
