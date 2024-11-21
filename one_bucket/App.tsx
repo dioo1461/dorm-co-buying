@@ -124,7 +124,7 @@ function App(): React.JSX.Element {
                 ])
 
             console.log('accessTokenAvailable:', accessTokenAvailable)
-            console.log('refreshToke nAvailable:', refreshTokenAvailable)
+            console.log('refreshTokenAvailable:', refreshTokenAvailable)
             console.log('$$$$$$ accessToken', await getAccessToken())
             console.log('refreshToken', await getRefreshToken())
             console.log(
@@ -139,37 +139,42 @@ function App(): React.JSX.Element {
             console.log('$$$$$$ refreshToken is valid')
             // refresh token으로 access token 갱신
             const response = await requestAccessTokenRenew()
-            await Promise.all([
+
+            return Promise.all([
                 setAccessToken(response.accessToken),
                 setRefreshToken(response.refreshToken),
             ])
         }
 
         const checkLoginStatus = async () => {
-            const loginFlag = await getLoginInitFlag()
-            if (loginFlag === null || loginFlag === 'false') {
+            const loginInitFlag = await getLoginInitFlag()
+            if (loginInitFlag === null || loginInitFlag === 'false') {
                 SplashScreen.hide()
                 return
             }
-
             console.log('app - checkLoginStatus')
-            try {
-                const [memberInfo, boardList, profile] = await Promise.all([
-                    getMemberInfo(),
-                    getBoardList(),
-                    getProfile(),
-                ])
+            const [memberInfo, boardList, profile] = await Promise.all([
+                getMemberInfo(),
+                getBoardList(),
+                getProfile(),
+            ])
 
-                if (memberInfo) {
-                    setMemberInfo(memberInfo) // memberInfo 저장
-                    setAuthed(0)
-                }
-                if (memberInfo.university == 'null') {
-                    setAuthed(1)
-                }
-                setBoardList(boardList)
-                setProfile(profile)
-                setLoginState(true)
+            if (memberInfo) {
+                setMemberInfo(memberInfo) // memberInfo 저장
+                setAuthed(0)
+            }
+            if (memberInfo.university == 'null') {
+                setAuthed(1)
+            }
+            setBoardList(boardList)
+            setProfile(profile)
+            setLoginState(true)
+        }
+
+        const executeSynchronously = async () => {
+            try {
+                await renewAccessToken()
+                checkLoginStatus()
             } catch (error) {
                 // 요청 실패 시 처리
                 setAuthed(1)
@@ -188,11 +193,6 @@ function App(): React.JSX.Element {
             } finally {
                 SplashScreen.hide() // 모든 요청이 끝난 후 SplashScreen 숨기기
             }
-        }
-
-        const executeSynchronously = async () => {
-            await renewAccessToken()
-            checkLoginStatus()
         }
 
         executeSynchronously()

@@ -149,7 +149,6 @@ export const requestAccessTokenRenew = async (): Promise<LoginResponse> => {
         getAccessToken(),
         getRefreshToken(),
     ])
-    console.log(refreshToken)
 
     return axios
         .post('/refresh-token', {
