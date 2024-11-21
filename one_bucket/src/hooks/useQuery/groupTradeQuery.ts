@@ -21,13 +21,12 @@ type SortType = {
 
 export const queryGroupTradePostList = (
     boardId: number,
-    category: TradeCategory,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
 ) => {
     return useInfiniteQuery<GetGroupTradePostListResponse>(
-        ['marketPostList', boardId, category, sortType],
+        ['marketPostList', boardId, sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
             const sortParam =
