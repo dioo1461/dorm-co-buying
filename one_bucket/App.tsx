@@ -174,7 +174,7 @@ function App(): React.JSX.Element {
         const executeSynchronously = async () => {
             try {
                 await renewAccessToken()
-                checkLoginStatus()
+                await checkLoginStatus()
             } catch (error) {
                 // 요청 실패 시 처리
                 setAuthed(1)
