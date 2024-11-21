@@ -49,6 +49,7 @@ const BoardPostSearch: React.FC = (): JSX.Element => {
             hasNextPage,
             isFetchingNextPage,
             isLoading,
+            isSuccess,
             error,
             refetch,
         } = querySearchBoardPosts(
@@ -70,25 +71,41 @@ const BoardPostSearch: React.FC = (): JSX.Element => {
 
         const posts = data?.pages?.flatMap(page => page.content)
         return (
-            <Animated.FlatList
-                style={{ paddingTop: 20 }}
-                data={isLoading ? [] : posts}
-                renderItem={renderItem}
-                refreshControl={
-                    <RefreshControl
-                        progressViewOffset={40}
-                        refreshing={isRefreshing}
-                        onRefresh={handleRefresh}
+            <View>
+                {isSuccess && posts!.length > 0 ? (
+                    <Animated.FlatList
+                        style={{ paddingTop: 20 }}
+                        data={isLoading ? [] : posts}
+                        renderItem={renderItem}
+                        refreshControl={
+                            <RefreshControl
+                                progressViewOffset={40}
+                                refreshing={isRefreshing}
+                                onRefresh={handleRefresh}
+                            />
+                        }
+                        showsVerticalScrollIndicator={true}
+                        keyExtractor={item => item.postId.toString()}
+                        onEndReached={() => {
+                            if (!isFetchingNextPage && hasNextPage)
+                                fetchNextPage()
+                        }}
+                        onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
+                        ListFooterComponent={<View style={{ height: 40 }} />} // 마지막 Post가 잘려 보이는 문제 임시 조치
                     />
-                }
-                showsVerticalScrollIndicator={true}
-                keyExtractor={item => item.postId.toString()}
-                onEndReached={() => {
-                    if (!isFetchingNextPage && hasNextPage) fetchNextPage()
-                }}
-                onEndReachedThreshold={0.5} // 스크롤이 50% 남았을 때 데이터 요청
-                ListFooterComponent={<View style={{ height: 40 }} />} // 마지막 Post가 잘려 보이는 문제 임시 조치
-            />
+                ) : (
+                    <Text
+                        style={{
+                            color: themeColor.TEXT_SECONDARY,
+                            fontSize: 13,
+                            fontFamily: 'NanumGothic',
+                            textAlign: 'center',
+                            marginTop: 260,
+                        }}>
+                        검색 결과가 없습니다.
+                    </Text>
+                )}
+            </View>
         )
     }
 
