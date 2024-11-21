@@ -27,6 +27,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
+import PostComponent from '@/components/board/PostComponent'
 
 const FETCH_SIZE = 10
 
@@ -37,7 +38,7 @@ const Board: React.FC = (): JSX.Element => {
         themeColor: state.themeColor,
         boardList: state.boardList,
     }))
-    
+
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     type BoardRouteProp = RouteProp<RootStackParamList, 'Board'>
@@ -59,128 +60,6 @@ const Board: React.FC = (): JSX.Element => {
         return TouchableNativeFeedback.Ripple(
             themeColor === lightColors ? baseColors.GRAY_3 : baseColors.GRAY_1,
             false,
-        )
-    }
-
-    const Post = (data: BoardPostReduced) => {
-        return (
-            <View>
-                <TouchableNativeFeedback
-                    background={touchableNativeFeedbackBg()}
-                    onPress={() =>
-                        navigation.navigate('BoardPost', {
-                            boardName: boardList[currentBoardIndex].name,
-                            boardId: data.boardId,
-                            postId: data.postId,
-                            performRefresh: false,
-                        })
-                    }>
-                    <View
-                        style={{
-                            marginHorizontal: 10,
-                            paddingHorizontal: 10,
-                            paddingVertical: 10,
-                        }}>
-                        <View style={{ flexDirection: 'row', margin: 4 }}>
-                            <View style={{ flex: 1, marginEnd: 10 }}>
-                                {/* ### 제목 ### */}
-                                <View
-                                    style={{
-                                        // marginTop: 10,
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text
-                                        style={styles.postTitle}
-                                        ellipsizeMode='tail'
-                                        numberOfLines={1}>
-                                        {data.title}
-                                    </Text>
-                                </View>
-                                {/* ### 내용 ### */}
-                                <View
-                                    style={{
-                                        marginTop: 16,
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text
-                                        numberOfLines={2}
-                                        ellipsizeMode='tail'
-                                        style={styles.postContentText}>
-                                        {data.text}
-                                    </Text>
-                                </View>
-                            </View>
-                            {/* ### 이미지 ### */}
-                            {data.imageUrls.length > 0 ? (
-                                <View style={styles.postImage}>
-                                    <CachedImage
-                                        imageStyle={{
-                                            width: 72,
-                                            height: 72,
-                                            borderRadius: 8,
-                                        }}
-                                        imageUrl={data.imageUrls[0]}
-                                    />
-                                </View>
-                            ) : (
-                                <></>
-                            )}
-                        </View>
-                        <View
-                            style={{
-                                flex: 1,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginTop: 6,
-                            }}>
-                            {/* ### 생성일자, 조회수 ### */}
-                            <View
-                                style={{
-                                    flex: 1,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}>
-                                <Text style={styles.postMetaDataText}>
-                                    {`${formatTimeAgo(
-                                        data.createdDate,
-                                    )}ㆍ조회 ${data.views}`}
-                                </Text>
-                            </View>
-                            {/* ### 추천수, 댓글 ### */}
-                            <View
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'flex-end',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                }}>
-                                <IcLikes />
-                                <Text
-                                    style={[
-                                        styles.postlikeCountText,
-                                        { marginStart: 1, marginEnd: 6 },
-                                    ]}>
-                                    {data.likes}
-                                </Text>
-                                <IcComment />
-                                <Text
-                                    style={[
-                                        styles.postCommentCountText,
-                                        { marginStart: 2 },
-                                    ]}>
-                                    {data.commentsCount ?? 0}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableNativeFeedback>
-                <View style={styles.line} />
-            </View>
         )
     }
 
@@ -209,7 +88,7 @@ const Board: React.FC = (): JSX.Element => {
 
         // ### 게시글 목록 flatlist ###
         const renderItem: ListRenderItem<BoardPostReduced> = ({ item }) => (
-            <Post {...item} />
+            <PostComponent data={item} />
         )
 
         const boardId = boardList ? boardList[currentBoardIndex]?.id : null
