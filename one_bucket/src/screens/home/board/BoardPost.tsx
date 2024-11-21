@@ -125,6 +125,9 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const [commentValue, setCommentValue] = useState('')
     const [parentCommentId, setParentCommentId] = useState(-1)
+    const [editingCommentId, setEditingCommentId] = useState<number | null>(
+        null,
+    )
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
@@ -147,7 +150,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 setParentCommentId(-1)
             },
         )
-
         return () => {
             keyboardDidHideListener.remove()
         }
@@ -229,7 +231,33 @@ const BoardPost: React.FC = (): JSX.Element => {
     }
 
     const onCommentOptionButtonPress = (data: IComment) => {
-        // if (memberInfo?.nickname
+        console.log(data)
+        setCommentBottomSheetEnabled(true)
+        setCommentBottomSheetButtonProps(
+            data.authorNickname == memberInfo!.nickname
+                ? [
+                      {
+                          text: '수정하기',
+                          style: 'default',
+                          onPress: () => {
+                              setEditingCommentId(data.commentId)
+                              setCommentBottomSheetEnabled(false)
+                          },
+                      },
+                      {
+                          text: '삭제하기',
+                          style: 'destructive',
+                          onPress: () => {},
+                      },
+                  ]
+                : [
+                      {
+                          text: '신고하기',
+                          style: 'default',
+                          onPress: () => {},
+                      },
+                  ],
+        )
     }
 
     const onLikeButtonPress = async () => {
@@ -261,6 +289,10 @@ const BoardPost: React.FC = (): JSX.Element => {
             likeLock.current = false
             return
         }
+    }
+
+    const onCommentEditComplete = (data: IComment) => {
+        setEditingCommentId(null)
     }
 
     // ########## RENDERING PARTS ##########
@@ -482,6 +514,10 @@ const BoardPost: React.FC = (): JSX.Element => {
                                         setParentCommentId={id =>
                                             setParentCommentId(id)
                                         }
+                                        isEditing={
+                                            editingCommentId ===
+                                            comment.commentId
+                                        }
                                         highlight={highlight}
                                         onReplyButtonPress={() => {
                                             scrollToComment(comment.commentId)
@@ -494,23 +530,27 @@ const BoardPost: React.FC = (): JSX.Element => {
                                             )
                                         }}
                                         onOptionButtonPress={data =>
-                                            onCommentOptionButtonPress
+                                            onCommentOptionButtonPress(data)
                                         }
                                     />
                                 </View>
-                                {comment.replies.map((val, idx) => (
+                                {comment.replies.map((replyComment, idx) => (
                                     <Comment
                                         key={idx}
                                         theme={themeColor}
-                                        data={val}
+                                        data={replyComment}
                                         isReply={true}
                                         parentCommentId={parentCommentId}
                                         setParentCommentId={id =>
                                             setParentCommentId(id)
                                         }
+                                        isEditing={
+                                            editingCommentId ===
+                                            replyComment.commentId
+                                        }
                                         highlight={false}
                                         onOptionButtonPress={data =>
-                                            onCommentOptionButtonPress
+                                            onCommentOptionButtonPress(data)
                                         }
                                     />
                                 ))}
@@ -604,15 +644,13 @@ const BoardPost: React.FC = (): JSX.Element => {
             />
             <SelectableBottomSheet
                 theme={themeColor}
-                onClose={() => setBottomSheetEnabled(!bottomSheetEnabled)}
+                onClose={() => setBottomSheetEnabled(false)}
                 enabled={bottomSheetEnabled}
                 buttons={bottomSheetButtonProps}
             />
             <SelectableBottomSheet
                 theme={themeColor}
-                onClose={() =>
-                    setCommentBottomSheetEnabled(!commentBottomSheetEnabled)
-                }
+                onClose={() => setCommentBottomSheetEnabled(false)}
                 enabled={commentBottomSheetEnabled}
                 buttons={commentBottomSheetButtonProps}
             />
