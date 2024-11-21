@@ -45,10 +45,10 @@ const Comment: React.FC<{
     }
 
     const replyIcon = (isReply: boolean) => {
-        if(isReply) return <IcReply />
+        if (isReply) return <IcReply />
     }
     const commentLine = (isReply: boolean) => {
-        if(!isReply) return <View style={styles.line} />
+        if (!isReply) return <View style={styles.line} />
     }
 
     useEffect(() => {
@@ -60,18 +60,19 @@ const Comment: React.FC<{
     }, [highlight])
 
     return (
-        <View style={{paddingBottom: 8}}>
-            {commentLine(isReply)} 
-            <View style={{flexDirection: 'row'}}>
+        <View style={{ paddingBottom: 8 }}>
+            {commentLine(isReply)}
+            <View style={{ flexDirection: 'row' }}>
                 {replyIcon(isReply)}
                 <Animated.View
                     style={[styles.commentHighlight, replyAnimatedStyle]}
                 />
-                <View style={
-                    !isReply
-                        ? styles.commentContainer
-                        : styles.replyCommentContainer
-                }>
+                <View
+                    style={
+                        !isReply
+                            ? styles.commentContainer
+                            : styles.replyCommentContainer
+                    }>
                     <View style={styles.commentHeader}>
                         {/* ### 프로필 이미지 ### */}
                         <View style={styles.commentProfileImage}></View>
@@ -95,7 +96,9 @@ const Comment: React.FC<{
                     </View>
                     <View style={styles.commentFooter}>
                         <View style={styles.commentTime}>
-                            <Text style={styles.commentTimeText}>9/01 13:32</Text>
+                            <Text style={styles.commentTimeText}>
+                                9/01 13:32
+                            </Text>
                         </View>
                         <View style={styles.commentActions}>
                             {/* ### 답글 달기 버튼 ### */}
@@ -103,9 +106,12 @@ const Comment: React.FC<{
                                 <TouchableOpacity
                                     style={styles.commentActionButton}
                                     onPress={() => {
-                                        onReplyButtonPress && onReplyButtonPress(data)
+                                        onReplyButtonPress &&
+                                            onReplyButtonPress(data)
 
-                                        if (parentCommentId === data.commentId) {
+                                        if (
+                                            parentCommentId === data.commentId
+                                        ) {
                                             setParentCommentId(-1)
                                         } else {
                                             setParentCommentId(data.commentId)
@@ -146,7 +152,7 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 2,
         },
         commentHighlight: {
-            backgroundColor: baseColors.GRAY_3,
+            backgroundColor: baseColors.SCHOOL_BG,
             width: '100%',
             height: '100%',
             position: 'absolute',

@@ -10,13 +10,14 @@ import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
+import Loading from '@/components/Loading'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import Comment from '@/components/board/Comment'
 import {
     SelectableBottomSheet,
     SelectableBottomSheetButtonProps,
 } from '@/components/bottomSheet/SelectableBottomSheet'
-import { baseColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import {
     GetBoardPostResponse,
     IComment,
@@ -27,7 +28,6 @@ import { sleep } from '@/utils/asyncUtils'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
-    ActivityIndicator,
     Appearance,
     Keyboard,
     LayoutChangeEvent,
@@ -55,10 +55,21 @@ const LOCK_SLEEP_TIME = 2000
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
 const BoardPost: React.FC = (): JSX.Element => {
-    const { themeColor, memberInfo } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
         memberInfo: state.memberInfo,
     }))
+
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
 
     const styles = createStyles(themeColor)
 
@@ -83,7 +94,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                     <IcOthers fill={themeColor.HEADER_TEXT} />
                 </TouchableOpacity>
             ),
-
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
@@ -93,7 +103,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 fontSize: 18,
             },
         })
-    }, [navigation, themeColor])
+    }, [navigation])
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
@@ -102,6 +112,11 @@ const BoardPost: React.FC = (): JSX.Element => {
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
+
+    const commentLayouts = useRef<{
+        [key: string]: { yPos: number; height: number }
+    }>({}) // 댓글 레이아웃 정보
+    const contentHeight = useRef<number>(0)
 
     // 상태 관리 변수
     const userLiked = useRef<boolean>(true)
@@ -140,8 +155,6 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const onSuccessCallback = (data: GetBoardPostResponse) => {
         userLiked.current = data.userAlreadyLikes
-        console.log('onSuccessCallback', data)
-
         const onModifyPostButtonPress = () => {
             navigation.navigate('UpdateBoardPost', {
                 postId: params.postId,
@@ -188,10 +201,6 @@ const BoardPost: React.FC = (): JSX.Element => {
         onSuccessCallback,
     )
 
-    useEffect(() => {
-        console.log('data:', data)
-    })
-
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
         setLoadingBackdropEnabled(true)
@@ -208,7 +217,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 text: commentValue,
             }
         }
-
         addComment(requestBody)
             .then(res => {
                 setCommentValue('')
@@ -222,6 +230,37 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     const onCommentOptionButtonPress = (data: IComment) => {
         // if (memberInfo?.nickname
+    }
+
+    const onLikeButtonPress = async () => {
+        if (data!.authorNickname)
+            if (likeLock.current) {
+                ToastAndroid.show(
+                    '좋아요는 2초에 한 번 이상 누를 수 없습니다.',
+                    ToastAndroid.SHORT,
+                )
+                return
+            }
+        if (userLiked.current) {
+            ToastAndroid.show('좋아요를 취소했습니다.', ToastAndroid.SHORT)
+            likeLock.current = true
+            userLiked.current = false
+            setLikeAdded(likeAdded - 1)
+            await deleteLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
+        if (!userLiked.current) {
+            // TODO: 좋아요 완료 toast 출력
+            likeLock.current = true
+            userLiked.current = true
+            setLikeAdded(likeAdded + 1)
+            await addLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
     }
 
     // ########## RENDERING PARTS ##########
@@ -258,11 +297,6 @@ const BoardPost: React.FC = (): JSX.Element => {
         }
     }
 
-    const handleCommentLayout = (event: LayoutChangeEvent) => {
-        // 댓글 영역의 Y 위치 저장
-        setCommentPosition(event.nativeEvent.layout.y)
-    }
-
     const onMomentumScrollEnd = (
         event: NativeSyntheticEvent<NativeScrollEvent>,
     ) => {
@@ -270,73 +304,52 @@ const BoardPost: React.FC = (): JSX.Element => {
         setImageScrollPos(position)
     }
 
-    const onLikeButtonPress = async () => {
-        if (data!.authorNickname)
-            if (likeLock.current) {
-                ToastAndroid.show(
-                    '좋아요는 2초에 한 번 이상 누를 수 없습니다.',
-                    ToastAndroid.SHORT,
-                )
-                return
-            }
-
-        if (userLiked.current) {
-            ToastAndroid.show('좋아요를 취소했습니다.', ToastAndroid.SHORT)
-            likeLock.current = true
-            userLiked.current = false
-            setLikeAdded(likeAdded - 1)
-            await deleteLike(params.postId)
-            await sleep(LOCK_SLEEP_TIME)
-            likeLock.current = false
-            return
-        }
-
-        if (!userLiked.current) {
-            // TODO: 좋아요 완료 toast 출력
-            likeLock.current = true
-            userLiked.current = true
-            setLikeAdded(likeAdded + 1)
-            await addLike(params.postId)
-            await sleep(LOCK_SLEEP_TIME)
-            likeLock.current = false
-            return
-        }
-    }
-
     const likeButtonFill = (liked: boolean) => {
         if (liked) return baseColors.LIGHT_RED
         else return 'none'
     }
 
-    if (error) return <Text>Error...</Text>
+    const initContentHeight = (event: LayoutChangeEvent) => {
+        // 본문의 Y 위치 저장
+        contentHeight.current = event.nativeEvent.layout.height
+    }
 
-    if (isLoading)
-        return (
-            <View
-                style={{
-                    backgroundColor: themeColor.BG,
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator
-                    size='large'
-                    color={
-                        themeColor === lightColors
-                            ? baseColors.SCHOOL_BG
-                            : baseColors.GRAY_2
-                    }
-                />
-            </View>
-        )
+    const initCommentYpos = (commentId: number, event: LayoutChangeEvent) => {
+        // 각 댓글의 Y 위치 저장
+        const layout = event.nativeEvent.layout
+        commentLayouts.current[commentId] = {
+            yPos: layout.y,
+            height: 0,
+        }
+    }
+
+    const initCommentHeight = (commentId: number, event: LayoutChangeEvent) => {
+        // 각 댓글의 Y 위치 저장
+        const layout = event.nativeEvent.layout
+        commentLayouts.current[commentId].height = layout.height
+    }
+
+    const scrollToComment = (commentId: number) => {
+        const scrollView = scrollViewRef.current
+        const commentPosition = commentLayouts.current[commentId].yPos
+        const commentHeight = commentLayouts.current[commentId].height
+
+        if (scrollView && commentPosition !== undefined) {
+            // console.log('comment height:', commentHeight)
+            // console.log('comment position:', commentPosition)
+            // console.log('content height:', contentHeight.current)
+            scrollView.scrollTo({
+                y: contentHeight.current + commentPosition,
+                animated: true,
+            })
+        }
+    }
+
+    if (error) return <Text>Error...</Text>
+    if (isLoading) return <Loading theme={themeColor} />
 
     return (
         <View style={styles.container}>
-            {/*
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
-            {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
                     <RefreshControl
@@ -354,111 +367,137 @@ const BoardPost: React.FC = (): JSX.Element => {
                 onScroll={handleScroll}
                 ref={scrollViewRef}
                 scrollEventThrottle={0}>
-                <Text
-                    style={[
-                        styles.titleText,
-                        { marginHorizontal: 10, marginBottom: 10 },
-                    ]}>
-                    {data?.title}
-                </Text>
-                <Text
-                    style={[
-                        styles.contentText,
-                        { marginHorizontal: 6, marginBottom: 10 },
-                    ]}>
-                    {data?.text}
-                </Text>
-                {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
-                {!isImageInView && data!.imageUrls.length > 0 && (
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        style={{ flexDirection: 'row' }}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ flexGrow: 1 }}
-                        onMomentumScrollEnd={onMomentumScrollEnd}
-                        contentOffset={{ x: imageScrollPos, y: 0 }}>
-                        {data!.imageUrls.map((url, index) => (
-                            <TouchableOpacity
-                                style={styles.imageContainer}
-                                key={index}
-                                onPress={() =>
-                                    navigation.navigate('ImageEnlargement', {
-                                        imageUriList: data!.imageUrls,
-                                        index: index,
-                                        isLocalUri: false,
-                                    })
-                                }>
-                                <CachedImage
-                                    imageStyle={{
-                                        width: IMAGE_SIZE,
-                                        height: IMAGE_SIZE,
-                                        borderRadius: 8,
-                                    }}
-                                    imageUrl={url}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                )}
-                {isImageInView && data!.imageUrls.length > 0 && (
-                    <View style={{ height: IMAGE_SIZE }} />
-                )}
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                    {/* ### 좋아요 버튼 ### */}
-                    <View style={styles.likesAndCommentContainer}>
-                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
-                        <Text
-                            style={[
-                                styles.likesAndCommentCountText,
-                                { color: baseColors.LIGHT_RED },
-                            ]}>
-                            {data!.likes + likeAdded}
-                        </Text>
+                {/* ###### 본문 ###### */}
+                <View onLayout={e => initContentHeight(e)}>
+                    <Text
+                        style={[
+                            styles.titleText,
+                            { marginHorizontal: 10, marginBottom: 10 },
+                        ]}>
+                        {data?.title}
+                    </Text>
+                    <Text
+                        style={[
+                            styles.contentText,
+                            { marginHorizontal: 6, marginBottom: 10 },
+                        ]}>
+                        {data?.text}
+                    </Text>
+                    {/* 댓글이 보일 때 이미지 컨테이너가 본문 내로 이동 */}
+                    {!isImageInView && data!.imageUrls.length > 0 && (
+                        <ScrollView
+                            ref={scrollViewRef}
+                            horizontal
+                            style={{ flexDirection: 'row' }}
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ flexGrow: 1 }}
+                            onMomentumScrollEnd={onMomentumScrollEnd}
+                            contentOffset={{ x: imageScrollPos, y: 0 }}>
+                            {data!.imageUrls.map((url, index) => (
+                                <TouchableOpacity
+                                    style={styles.imageContainer}
+                                    key={index}
+                                    onPress={() =>
+                                        navigation.navigate(
+                                            'ImageEnlargement',
+                                            {
+                                                imageUriList: data!.imageUrls,
+                                                index: index,
+                                                isLocalUri: false,
+                                            },
+                                        )
+                                    }>
+                                    <CachedImage
+                                        imageStyle={{
+                                            width: IMAGE_SIZE,
+                                            height: IMAGE_SIZE,
+                                            borderRadius: 8,
+                                        }}
+                                        imageUrl={url}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    )}
+                    {isImageInView && data!.imageUrls.length > 0 && (
+                        <View style={{ height: IMAGE_SIZE }} />
+                    )}
+                    <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                        {/* ### 좋아요 버튼 ### */}
+                        <View style={styles.likesAndCommentContainer}>
+                            <IcThumbUp
+                                fill={likeButtonFill(userLiked.current)}
+                            />
+                            <Text
+                                style={[
+                                    styles.likesAndCommentCountText,
+                                    { color: baseColors.LIGHT_RED },
+                                ]}>
+                                {data!.likes + likeAdded}
+                            </Text>
+                        </View>
+                        {/* ### 댓글 수 ### */}
+                        <View style={styles.likesAndCommentContainer}>
+                            <IcComment />
+                            <Text
+                                style={[
+                                    styles.likesAndCommentCountText,
+                                    { color: baseColors.LIGHT_BLUE },
+                                ]}>
+                                {data?.comments.length}
+                            </Text>
+                        </View>
                     </View>
-                    {/* ### 댓글 수 ### */}
-                    <View style={styles.likesAndCommentContainer}>
-                        <IcComment />
-                        <Text
-                            style={[
-                                styles.likesAndCommentCountText,
-                                { color: baseColors.LIGHT_BLUE },
-                            ]}>
-                            {data?.comments.length}
-                        </Text>
+                    <View>
+                        <TouchableOpacity
+                            style={styles.likeButton}
+                            onPress={() => onLikeButtonPress()}>
+                            <IcThumbUp
+                                fill={likeButtonFill(userLiked.current)}
+                            />
+                            <Text style={styles.likeButtonText}>좋아요</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <View>
-                    <TouchableOpacity
-                        style={styles.likeButton}
-                        onPress={() => onLikeButtonPress()}>
-                        <IcThumbUp fill={likeButtonFill(userLiked.current)} />
-                        <Text style={styles.likeButtonText}>좋아요</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* <View onLayout={handleCommentLayout} style={styles.line} /> */}
+                {/* <View onLayout={initCommentLayout} style={styles.line} /> */}
                 {/* ### 댓글 리스트 ### */}
                 <View>
                     {data?.comments.map((comment, index) => {
                         var highlight = comment.commentId === parentCommentId
                         return (
-                            <View key={index}>
-                                <Comment
-                                    theme={themeColor}
-                                    data={comment}
-                                    isReply={false}
-                                    parentCommentId={parentCommentId}
-                                    setParentCommentId={id =>
-                                        setParentCommentId(id)
-                                    }
-                                    highlight={highlight}
-                                    onReplyButtonPress={() => {
-                                        commentInputRef.current?.focus()
-                                    }}
-                                    onOptionButtonPress={data =>
-                                        onCommentOptionButtonPress
-                                    }
-                                />
+                            <View
+                                key={index}
+                                onLayout={e =>
+                                    initCommentYpos(comment.commentId, e)
+                                }>
+                                <View
+                                    onLayout={e =>
+                                        initCommentHeight(comment.commentId, e)
+                                    }>
+                                    <Comment
+                                        theme={themeColor}
+                                        data={comment}
+                                        isReply={false}
+                                        parentCommentId={parentCommentId}
+                                        setParentCommentId={id =>
+                                            setParentCommentId(id)
+                                        }
+                                        highlight={highlight}
+                                        onReplyButtonPress={() => {
+                                            scrollToComment(comment.commentId)
+                                            commentInputRef.current?.focus()
+                                            console.log(
+                                                comment.commentId,
+                                                commentLayouts.current[
+                                                    comment.commentId
+                                                ],
+                                            )
+                                        }}
+                                        onOptionButtonPress={data =>
+                                            onCommentOptionButtonPress
+                                        }
+                                    />
+                                </View>
                                 {comment.replies.map((val, idx) => (
                                     <Comment
                                         key={idx}
