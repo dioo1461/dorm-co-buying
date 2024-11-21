@@ -3,28 +3,34 @@ import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getTradeInfoOfChatRoom } from '@/apis/chatService'
 
 const useTradeInfoOfChatRoomDB = () => {
-    const { getDataByKeys, addData, updateDataByKey, deleteDataByKeys } =
-        useDatabase<TradeInfoOfChatRoom>({
-            tableName: 'tradeInfoOfChatRoom',
-            columns: {
-                id: 'number',
-                item: 'string',
-                price: 'number',
-                location: 'string',
-                userId: 'number',
-                wanted: 'number',
-                count: 'number',
-                linkUrl: 'string',
-                tag: 'string',
-                dueDate: 'string',
-                joins: 'number',
-                joinMember: 'serializable',
-                startTradeAt: 'string',
-                chatRoomId: 'string',
-                fin: 'boolean',
-            },
-            debug: false,
-        })
+    const {
+        getDataByKeys,
+        addData,
+        updateDataByKey,
+        deleteDataByKeys,
+        dropTable,
+    } = useDatabase<TradeInfoOfChatRoom>({
+        tableName: 'tradeInfoOfChatRoom',
+        columns: {
+            id: 'number',
+            item: 'string',
+            price: 'number',
+            location: 'string',
+            userId: 'number',
+            wanted: 'number',
+            count: 'number',
+            linkUrl: 'string',
+            tag: 'string',
+            dueDate: 'string',
+            joins: 'number',
+            joinMember: 'serializable',
+            createAt: 'string',
+            updateAt: 'string',
+            chatRoomId: 'string',
+            fin: 'boolean',
+        },
+        debug: true,
+    })
 
     const addTradeInfo = async (data: TradeInfoOfChatRoom) => {
         return await addData(data)
