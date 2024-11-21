@@ -203,7 +203,7 @@ const Board: React.FC = (): JSX.Element => {
             {/* ### 게시판 선택 dropdown ### */}
             <Animated.View
                 style={[
-                    {...styles.boardTypeSelectionWrapper, height: boardCount},
+                    styles.boardTypeSelectionWrapper,
                     dropdownAnimatedStyle,
                 ]}>
                 <ScrollView

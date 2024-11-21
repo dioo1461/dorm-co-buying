@@ -1,11 +1,14 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcClose from '@/assets/drawable/ic-close.svg'
+import IcFilter from '@/assets/drawable/ic-filter.svg'
 import IcHistory from '@/assets/drawable/ic-history.svg'
-import { baseColors, Icolor } from '@/constants/colors'
+import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import {
+    Animated,
     FlatList,
+    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
@@ -92,6 +95,10 @@ const Search: React.FC = (): React.JSX.Element => {
         '콜라',
     ]
 
+    const searchModes = ['제목 + 내용', '제목만', '내용만']
+    const [searchMode, setSearchMode] = useState(0)
+    // 0: 제목+내용, 1: 제목만, 2: 내용만
+
     const RecommendationItem = (name: string, key: number) => (
         <TouchableOpacity key={key}>
             <View
@@ -149,6 +156,36 @@ const Search: React.FC = (): React.JSX.Element => {
         </TouchableNativeFeedback>
     )
 
+    const [expanded, setExpanded] = useState(false)
+    const animation = useRef(new Animated.Value(0)).current
+
+    const toggleDropdown = () => {
+        setExpanded(!expanded)
+        Animated.timing(animation, {
+            toValue: expanded ? 0 : 1,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const dropdownAnimatedStyle = {
+        height: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 130],
+        }),
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+        }),
+    }
+
+    const buttonAnimatedStyle = {
+        opacity: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 0],
+        }),
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -165,6 +202,54 @@ const Search: React.FC = (): React.JSX.Element => {
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text)}
                 />
+                <View
+                style={[
+                    styles.boardTypeToggleButton,
+                    { backgroundColor: baseColors.GRAY_3 },
+                ]}>
+                    <TouchableOpacity onPress={toggleDropdown}>
+                        <IcFilter />
+                    </TouchableOpacity>
+                </View>
+                <Animated.View
+                    style={[styles.boardTypeToggleButton, buttonAnimatedStyle]}>
+                    <TouchableOpacity onPress={toggleDropdown}>
+                        <IcFilter />
+                    </TouchableOpacity>
+                </Animated.View>
+                {/* ### 게시판 선택 dropdown ### */}
+                <Animated.View
+                    style={[
+                        styles.boardTypeSelectionWrapper,
+                        dropdownAnimatedStyle,
+                    ]}>
+                    <ScrollView
+                        style={styles.boardTypeSelectionContainer}
+                        contentContainerStyle={styles.boardTypeSelectionContent}
+                        showsVerticalScrollIndicator={false}>
+                        {searchModes.map(
+                            (key, index) => (
+                                <TouchableNativeFeedback
+                                        key={index}
+                                        // background={touchableNativeFeedbackBg()}
+                                        onPress={() => {
+                                            setSearchMode(index)
+                                        }}>
+                                        <View style={styles.boardTypeItem}>
+                                            <Text
+                                                style={[
+                                                    styles.boardTypeText,
+                                                    searchMode === index &&
+                                                        styles.boardTypeTextActive,
+                                                ]}>
+                                                {searchModes[index]}
+                                            </Text>
+                                        </View>
+                                    </TouchableNativeFeedback>
+                                ),
+                        )}
+                    </ScrollView>
+                </Animated.View>
             </View>
             {!showSearchResults ? (
                 <View>
@@ -213,6 +298,46 @@ const CreateStyles = (theme: Icolor) =>
             marginStart: 20,
             paddingVertical: 8,
             paddingHorizontal: 16,
+        },
+        boardTypeToggleButton: {
+            position: 'absolute',
+            right: 8,
+            padding: 6,
+            borderRadius: 10,
+            zIndex: 2,
+            backgroundColor: theme.BG_SECONDARY,
+        },
+        boardTypeSelectionWrapper: {
+            position: 'absolute',
+            top: 60,
+            right: 14,
+            width: 100,
+            borderRadius: 10,
+            backgroundColor:
+                theme === lightColors ? baseColors.WHITE : baseColors.GRAY_2,
+            elevation: 4,
+            zIndex: 2,
+        },
+        boardTypeSelectionContainer: {
+            maxHeight: 200,
+        },
+        boardTypeSelectionContent: {
+            paddingVertical: 5,
+        },
+        boardTypeItem: {
+            paddingVertical: 12,
+            paddingHorizontal: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        boardTypeText: {
+            fontSize: 14,
+            color: theme === lightColors ? theme.TEXT_SECONDARY : theme.TEXT,
+            fontFamily: 'NanumGothic',
+        },
+        boardTypeTextActive: {
+            color: baseColors.SCHOOL_BG,
+            fontFamily: 'NanumGothic-Bold',
         },
         recommendationText: {
             color: theme.TEXT,
