@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { View } from 'react-native'
 import { useQueryClient } from 'react-query'
 import GroupTradeSearch from '../search/GroupTradeSearch'
+import BoardPostSearch from '../search/BoardPostSearch'
 
 interface Props {
     keyword: string
@@ -12,8 +13,9 @@ interface Props {
 
 const Tab = createMaterialTopTabNavigator()
 const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
-    const { themeColor } = useBoundStore(state => ({
+    const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        boardList: state.boardList,
     }))
 
     const queryClient = useQueryClient()
@@ -54,6 +56,21 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
                 component={View}
                 initialParams={{ keyword }}
             />
+            {boardList.map(board => {
+                if (board.type !== 'post') return null
+                return (
+                    <Tab.Screen
+                        key={board.id}
+                        name={board.name}
+                        component={BoardPostSearch}
+                        initialParams={{
+                            boardId: board.id,
+                            boardName: board.name,
+                            keyword: keyword,
+                        }}
+                    />
+                )
+            })}
         </Tab.Navigator>
     )
 }

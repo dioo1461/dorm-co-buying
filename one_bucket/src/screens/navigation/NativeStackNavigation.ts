@@ -89,6 +89,12 @@ export type RootStackParamList = {
     GroupTradeSearch: {
         keyword: string
     }
+
+    BoardPostSearch: {
+        boardId: number
+        boardName: string
+        keyword: string
+    }
 }
 
 export type SearchTabParamList = {}

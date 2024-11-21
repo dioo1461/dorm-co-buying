@@ -137,8 +137,9 @@ export const searchBoardPosts = async (
     const authAxios = await createAuthAxios()
     const optionNumber = option === 'title' ? 1 : option === 'content' ? 2 : 3
     return authAxios
-        .get(`/post/search/${boardId}`, {
+        .get(`/post/search`, {
             params: {
+                boardId: boardId,
                 keyword: keyword,
                 option: optionNumber,
                 page: page,
