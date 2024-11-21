@@ -235,6 +235,7 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
             error,
             refetch,
         } = queryMyBoardPostList(
+            1,
             {
                 sortType: 'createdDate',
                 sort: 'desc',

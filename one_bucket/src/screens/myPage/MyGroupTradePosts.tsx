@@ -96,6 +96,7 @@ const MyGroupTradePosts: React.FC = (): JSX.Element => {
             error,
             refetch,
         } = queryMyGroupTradePostList(
+            boardList.find(board => board.name === 'groupTrade')?.id ?? 0,
             {
                 sortType: 'createdDate',
                 sort: 'desc',
@@ -227,8 +228,7 @@ const MyGroupTradePosts: React.FC = (): JSX.Element => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                             }}>
-                            {data.trade_nickNames?.length + 1 <
-                            data.trade_wanted ? (
+                            {data.trade_joins + 1 < data.trade_wanted ? (
                                 <View
                                     style={{
                                         backgroundColor: themeColor.BUTTON_BG,
@@ -264,7 +264,7 @@ const MyGroupTradePosts: React.FC = (): JSX.Element => {
                                 </View>
                             )}
                             <Text style={styles.postParticipants}>
-                                {`${data.trade_nickNames?.length + 1} / ${
+                                {`${data.trade_joins + 1} / ${
                                     data.trade_wanted
                                 }명`}
                             </Text>

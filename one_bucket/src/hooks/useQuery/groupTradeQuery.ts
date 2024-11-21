@@ -105,6 +105,7 @@ export const querySearchGroupTradePosts = (
 }
 
 export const queryMyGroupTradePostList = (
+    boardId: number,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
@@ -118,7 +119,7 @@ export const queryMyGroupTradePostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getMyGroupTradePostList(pageParam, size, sortParam)
+            return getMyGroupTradePostList(boardId, pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {
