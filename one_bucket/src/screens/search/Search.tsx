@@ -1,6 +1,7 @@
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcClose from '@/assets/drawable/ic-close.svg'
 import IcFilter from '@/assets/drawable/ic-filter.svg'
+import IcSearch from '@/assets/drawable/ic-select-search.svg'
 import IcHistory from '@/assets/drawable/ic-history.svg'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -97,7 +98,6 @@ const Search: React.FC = (): React.JSX.Element => {
 
     const optionList = ['제목 + 내용', '제목만', '내용만']
     const [option, setOption] = useState(0)
-    // 0: 제목+내용, 1: 제목만, 2: 내용만
 
     const RecommendationItem = (name: string, key: number) => (
         <TouchableOpacity key={key}>
@@ -200,7 +200,6 @@ const Search: React.FC = (): React.JSX.Element => {
                     inputMode='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
-                    onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text)}
                 />
                 <View
                 style={[
@@ -217,7 +216,14 @@ const Search: React.FC = (): React.JSX.Element => {
                         <IcFilter />
                     </TouchableOpacity>
                 </Animated.View>
-                {/* ### 게시판 선택 dropdown ### */}
+                <TouchableOpacity 
+                    onPress={()=>{
+                    onSearchSubmit(keyword)
+                    setShowSearchResults(true)
+                    }}
+                    disabled={!keyword}>
+                    <IcSearch />
+                </TouchableOpacity>
                 <Animated.View
                     style={[
                         styles.boardTypeSelectionWrapper,
@@ -234,6 +240,7 @@ const Search: React.FC = (): React.JSX.Element => {
                                         // background={touchableNativeFeedbackBg()}
                                         onPress={() => {
                                             setOption(index)
+                                            toggleDropdown()
                                         }}>
                                         <View style={styles.boardTypeItem}>
                                             <Text
@@ -299,12 +306,13 @@ const CreateStyles = (theme: Icolor) =>
             backgroundColor: theme.BG_SECONDARY,
             borderRadius: 10,
             marginStart: 20,
+            marginEnd: 15,
             paddingVertical: 8,
             paddingHorizontal: 16,
         },
         boardTypeToggleButton: {
             position: 'absolute',
-            right: 8,
+            right: 45,
             padding: 6,
             borderRadius: 10,
             zIndex: 2,
