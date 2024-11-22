@@ -66,7 +66,7 @@ export const queryBoardPostList = (
 export const querySearchBoardPosts = (
     boardId: number,
     keyword: string,
-    option: 'title' | 'content' | 'titleAndContent',
+    option: 'titleAndContent' | 'title' | 'content' ,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetBoardPostListResponse> = {},

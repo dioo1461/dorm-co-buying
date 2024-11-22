@@ -9,10 +9,11 @@ import BoardPostSearch from '../search/BoardPostSearch'
 
 interface Props {
     keyword: string
+    option: number
 }
 
 const Tab = createMaterialTopTabNavigator()
-const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
+const SearchTab: React.FC<Props> = ({ keyword, option }): JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         boardList: state.boardList,
@@ -59,12 +60,12 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
             <Tab.Screen
                 name='공동구매'
                 component={GroupTradeSearch}
-                initialParams={{ keyword }}
+                initialParams={{ keyword: keyword, option: option }}
             />
             <Tab.Screen
                 name='중고거래'
                 component={View}
-                initialParams={{ keyword }}
+                initialParams={{ keyword: keyword, option: option }}
             />
             {boardList.map(board => {
                 if (board.type !== 'post') return null
@@ -77,6 +78,7 @@ const SearchTab: React.FC<Props> = ({ keyword }): JSX.Element => {
                             boardId: board.id,
                             boardName: board.name,
                             keyword: keyword,
+                            option: option,
                         }}
                     />
                 )

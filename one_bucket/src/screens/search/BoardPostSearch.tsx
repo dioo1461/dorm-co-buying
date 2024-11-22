@@ -29,6 +29,13 @@ const BoardPostSearch: React.FC = (): JSX.Element => {
     const { params } =
         useRoute<RouteProp<RootStackParamList, 'BoardPostSearch'>>()
 
+    const returnOption = (option: number) => {
+        if(option == 0) return 'titleAndContent'
+        if(option == 1) return 'title'
+        if(option == 2) return 'content'
+        else return 'titleAndContent'
+    }
+
     const PostFlatList: React.FC = (): JSX.Element => {
         const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -55,7 +62,7 @@ const BoardPostSearch: React.FC = (): JSX.Element => {
         } = querySearchBoardPosts(
             params.boardId,
             params.keyword,
-            'titleAndContent',
+            returnOption(params.option),
             {
                 sortType: 'createdDate',
                 sort: 'desc',

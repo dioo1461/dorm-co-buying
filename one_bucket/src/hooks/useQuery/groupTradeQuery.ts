@@ -67,7 +67,7 @@ export const queryGroupTradePost = (
 export const querySearchGroupTradePosts = (
     boardId: number,
     keyword: string,
-    option: 'title' | 'content' | 'titleAndContent',
+    option: 'titleAndContent' | 'title' | 'content',
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},

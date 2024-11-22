@@ -95,8 +95,8 @@ const Search: React.FC = (): React.JSX.Element => {
         '콜라',
     ]
 
-    const searchModes = ['제목 + 내용', '제목만', '내용만']
-    const [searchMode, setSearchMode] = useState(0)
+    const optionList = ['제목 + 내용', '제목만', '내용만']
+    const [option, setOption] = useState(0)
     // 0: 제목+내용, 1: 제목만, 2: 내용만
 
     const RecommendationItem = (name: string, key: number) => (
@@ -227,22 +227,22 @@ const Search: React.FC = (): React.JSX.Element => {
                         style={styles.boardTypeSelectionContainer}
                         contentContainerStyle={styles.boardTypeSelectionContent}
                         showsVerticalScrollIndicator={false}>
-                        {searchModes.map(
+                        {optionList.map(
                             (key, index) => (
                                 <TouchableNativeFeedback
                                         key={index}
                                         // background={touchableNativeFeedbackBg()}
                                         onPress={() => {
-                                            setSearchMode(index)
+                                            setOption(index)
                                         }}>
                                         <View style={styles.boardTypeItem}>
                                             <Text
                                                 style={[
                                                     styles.boardTypeText,
-                                                    searchMode === index &&
+                                                    option === index &&
                                                         styles.boardTypeTextActive,
                                                 ]}>
-                                                {searchModes[index]}
+                                                {optionList[index]}
                                             </Text>
                                         </View>
                                     </TouchableNativeFeedback>
@@ -273,7 +273,10 @@ const Search: React.FC = (): React.JSX.Element => {
                     />
                 </View>
             ) : (
-                <SearchTab keyword={keyword} />
+                <SearchTab 
+                    keyword={keyword}
+                    option={option}
+                />
             )}
         </View>
     )

@@ -26,6 +26,13 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
     const { params } =
         useRoute<RouteProp<RootStackParamList, 'GroupTradeSearch'>>()
 
+    const returnOption = (option: number) => {
+        if(option == 0) return 'titleAndContent'
+        if(option == 1) return 'title'
+        if(option == 2) return 'content'
+        else return 'titleAndContent'
+    }
+
     const PostFlatList: React.FC = (): JSX.Element => {
         const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -56,7 +63,7 @@ const GroupTradeSearch: React.FC = (): JSX.Element => {
         } = querySearchGroupTradePosts(
             boardId!,
             params.keyword,
-            'titleAndContent',
+            returnOption(params.option),
             {
                 sortType: 'createdDate',
                 sort: 'desc',
