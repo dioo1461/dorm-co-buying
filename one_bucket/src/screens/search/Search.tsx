@@ -3,6 +3,7 @@ import IcClose from '@/assets/drawable/ic-close.svg'
 import IcFilter from '@/assets/drawable/ic-filter.svg'
 import IcSearch from '@/assets/drawable/ic-select-search.svg'
 import IcHistory from '@/assets/drawable/ic-history.svg'
+import Backdrop from '@/components/Backdrop'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { useEffect, useState, useRef } from 'react'
@@ -28,6 +29,7 @@ const Tab = createMaterialTopTabNavigator()
 // TODO: 같은 검색어 중복 저장 안 되게 하기
 type HistoryItemProp = {
     name: string
+    option: number
 }
 
 const Search: React.FC = (): React.JSX.Element => {
@@ -42,11 +44,12 @@ const Search: React.FC = (): React.JSX.Element => {
     const [searchHistory, setSearchHistory] = useState<HistoryItemProp[]>([])
     const [showSearchResults, setShowSearchResults] = useState(false)
 
-    const { addData, getAllData, deleteDataByKeys } =
+    const { addData, getAllData, deleteDataByKeys, dropTable } =
         useDatabase<HistoryItemProp>({
             tableName: 'searchHistory',
             columns: {
                 name: 'string',
+                option: 'number',
             },
             debug: true,
         })
@@ -58,15 +61,15 @@ const Search: React.FC = (): React.JSX.Element => {
         setupData()
     }, [])
 
-    const onSearchSubmit = async (text: string) => {
+    const onSearchSubmit = async (text: string, option: number) => {
         if (!text) return
-        const data = { name: text }
+        const data = { name: text, option: option }
         updateSearchItem(data)
         setShowSearchResults(true)
     }
 
     const deleteSearchItem = (data: HistoryItemProp) => {
-        deleteDataByKeys({ name: data.name }).then(async () => {
+        deleteDataByKeys({ name: data.name, option: data.option }).then(async () => {
             setSearchHistory(await getAllData(true))
         })
     }
@@ -123,9 +126,10 @@ const Search: React.FC = (): React.JSX.Element => {
     )
 
     const onSearchHistoryItemPress = (data: HistoryItemProp) => {
-        const ndata = { name: data.name }
+        const ndata = { name: data.name, option: data.option }
         updateSearchItem(ndata)
         setKeyword(data.name)
+        setOption(data.option)
         setShowSearchResults(true)
     }
 
@@ -141,6 +145,9 @@ const Search: React.FC = (): React.JSX.Element => {
                     <IcHistory style={{ marginEnd: 8 }} />
                     <Text style={styles.recentSearchedItemText}>
                         {data.name}
+                    </Text>
+                    <Text style={styles.recentSearchedItemOptionText}>
+                        {optionList[data.option]}
                     </Text>
                 </View>
                 <TouchableNativeFeedback
@@ -171,7 +178,7 @@ const Search: React.FC = (): React.JSX.Element => {
     const dropdownAnimatedStyle = {
         height: animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 130],
+            outputRange: [0, 125],
         }),
         opacity: animation.interpolate({
             inputRange: [0, 1],
@@ -188,6 +195,7 @@ const Search: React.FC = (): React.JSX.Element => {
 
     return (
         <View style={styles.container}>
+            <Backdrop enabled={expanded} onPress={toggleDropdown} />
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <IcAngleLeft fill={baseColors.GRAY_2} />
@@ -200,6 +208,7 @@ const Search: React.FC = (): React.JSX.Element => {
                     inputMode='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
+                    onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text, option)}
                 />
                 <View
                 style={[
@@ -218,7 +227,7 @@ const Search: React.FC = (): React.JSX.Element => {
                 </Animated.View>
                 <TouchableOpacity 
                     onPress={()=>{
-                    onSearchSubmit(keyword)
+                    onSearchSubmit(keyword, option)
                     setShowSearchResults(true)
                     }}
                     disabled={!keyword}>
@@ -269,7 +278,15 @@ const Search: React.FC = (): React.JSX.Element => {
                             RecommendationItem(value, index),
                         )}
                     </ScrollView>
-                    <Text style={styles.recommendationText}>최근 검색</Text>
+                    <View style={{flexDirection: "row", justifyContent:"space-between"}}>
+                        <Text style={styles.recommendationText}>최근 검색</Text>
+                        <TouchableOpacity onPress={()=>{
+                            dropTable()
+                            setSearchHistory([])
+                        }}>
+                            <Text style={styles.historyResetText}>전체 삭제</Text>
+                        </TouchableOpacity>
+                    </View>
                     <FlatList
                         style={styles.historyFlatlist}
                         data={searchHistory}
@@ -293,7 +310,7 @@ const CreateStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: {
             flex: 1,
-            marginTop: 20,
+            paddingTop: 20,
         },
         headerContainer: {
             marginHorizontal: 20,
@@ -372,8 +389,20 @@ const CreateStyles = (theme: Icolor) =>
             fontSize: 16,
             fontFamily: 'NanumGothic',
         },
+        recentSearchedItemOptionText: {
+            color: theme.TEXT_TERTIARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+            paddingStart: 8,
+        },
         historyFlatlist: {
             marginTop: 14,
+        },
+        historyResetText: {
+            color: theme.TEXT_SECONDARY,
+            marginHorizontal: 20,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
         },
     })
 

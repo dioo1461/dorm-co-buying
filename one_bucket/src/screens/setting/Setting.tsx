@@ -312,11 +312,12 @@ const Setting: React.FC = (): React.JSX.Element => {
                         onPress={() => navigation.navigate('Support')}>
                         <Text style={styles.contextLabel}>개발자 문의</Text>
                     </TouchableOpacity>
+                    {/*
                     <TouchableOpacity
                         style={styles.contextContainer}
                         onPress={() => navigation.navigate('VersionCheck')}>
                         <Text style={styles.contextLabel}>버전 정보</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </ScrollView>
             <Dialog

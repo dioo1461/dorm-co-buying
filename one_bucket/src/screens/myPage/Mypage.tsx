@@ -191,7 +191,8 @@ const Mypage = (): React.JSX.Element => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.activityItem}
-                    onPress={() => navigation.navigate('MyMarketPosts')}>
+                    // onPress={() => navigation.navigate('MyMarketPosts')}
+                    >
                     {/* <Icon name='description' size={24} color='black' /> */}
                     <Text style={styles.activityText}>내가 쓴 거래글</Text>
                 </TouchableOpacity>
@@ -349,7 +350,7 @@ const createStyles = (theme: Icolor) =>
         activityItem: {
             flexDirection: 'row',
             alignItems: 'center',
-            paddingVertical: 8,
+            paddingVertical: 10,
         },
         activityText: {
             color: theme.TEXT,
