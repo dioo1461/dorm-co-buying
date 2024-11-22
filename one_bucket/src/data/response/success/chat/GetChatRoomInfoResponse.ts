@@ -22,7 +22,8 @@ export interface GetChatRoomTradeInfoResponse {
         dueDate: string
         joins: number
         joinMember: Member[]
-        startTradeAt: string
+        createAt: string // ISO 8601
+        updateAt: string // ISO 8601
         chatRoomId: string
         fin: boolean
     }

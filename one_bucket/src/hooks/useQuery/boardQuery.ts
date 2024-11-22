@@ -102,6 +102,7 @@ export const querySearchBoardPosts = (
 }
 
 export const queryMyBoardPostList = (
+    boardId: number,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetBoardPostListResponse> = {},
@@ -116,7 +117,7 @@ export const queryMyBoardPostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getMyBoardPostList(pageParam, size, sortParam)
+            return getMyBoardPostList(boardId, pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {

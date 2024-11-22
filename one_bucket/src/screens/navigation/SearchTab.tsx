@@ -27,12 +27,6 @@ const SearchTab: React.FC<Props> = ({ keyword, option }): JSX.Element => {
         }
     }, [])
 
-    const calculateWidth = (name: string) => {
-        const baseWidth = 50 // 최소 너비
-        const charWidth = 10 // 문자당 추가 너비
-        return baseWidth + name.length * charWidth
-    }
-
     return (
         <Tab.Navigator
             screenOptions={{
@@ -55,7 +49,7 @@ const SearchTab: React.FC<Props> = ({ keyword, option }): JSX.Element => {
                     fontFamily: 'NanumGothic',
                     fontSize: 12,
                 },
-                swipeEnabled: false,
+                swipeEnabled: true,
             }}>
             <Tab.Screen
                 name='공동구매'

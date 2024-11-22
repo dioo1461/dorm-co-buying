@@ -102,13 +102,14 @@ export const getAnnouncPost = async (id: number): Promise<any> => {
 }
 
 export const getMyBoardPostList = async (
+    boardId: number,
     page = 0,
     size = 10,
     sortParams: string[],
 ): Promise<GetBoardPostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`/post/list/my`, {
+        .get(`/post/list/my/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -302,7 +303,7 @@ export const addReplyComment = async (
 export const addLike = async (postId: number): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`/post/${postId}/likes`)
+        .post(`/post/${postId}/like`)
         .then(res => {
             return res.data
         })
