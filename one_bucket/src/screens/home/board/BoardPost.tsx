@@ -10,13 +10,13 @@ import IcOthers from '@/assets/drawable/ic-others.svg'
 import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
-import LoadingBackdrop from '@/components/LoadingBackdrop'
 import Comment from '@/components/board/Comment'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {
     SelectableBottomSheet,
     SelectableBottomSheetButtonProps,
 } from '@/components/bottomSheet/SelectableBottomSheet'
-import { baseColors, Icolor, lightColors } from '@/constants/colors'
+import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
 import {
     GetBoardPostResponse,
     IComment,
@@ -30,9 +30,11 @@ import {
     ActivityIndicator,
     Appearance,
     Keyboard,
+    KeyboardAvoidingView,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -55,10 +57,21 @@ const LOCK_SLEEP_TIME = 2000
 // TODO: 댓글 삭제 기능 구현
 // TODO: 게시글 및 댓글 신고 기능 구현
 const BoardPost: React.FC = (): JSX.Element => {
-    const { themeColor, memberInfo } = useBoundStore(state => ({
+    const { themeColor, setThemeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        setThemeColor: state.setThemeColor,
         memberInfo: state.memberInfo,
     }))
+
+    // 다크모드 변경 감지
+    useEffect(() => {
+        const themeSubscription = Appearance.addChangeListener(
+            ({ colorScheme }) => {
+                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
+            },
+        )
+        return () => themeSubscription.remove()
+    }, [])
 
     const styles = createStyles(themeColor)
 
@@ -93,7 +106,7 @@ const BoardPost: React.FC = (): JSX.Element => {
                 fontSize: 18,
             },
         })
-    }, [navigation, themeColor])
+    }, [navigation])
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
@@ -188,9 +201,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         onSuccessCallback,
     )
 
-    useEffect(() => {
-        console.log('data:', data)
-    })
+    useEffect(()=>{console.log("data:", data)})
 
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
@@ -332,10 +343,19 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
-            {/*
+        {/*
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
+            {/* 작성자 프로필, 닉네임 */}
+            <View style={styles.postHeader}>
+                <View style={styles.authorProfileImage}>
+                    
+                </View>
+                <Text style={{...styles.titleText, fontSize: 16}}>
+                    {data?.authorNickname}
+                </Text>
+            </View>
             {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
@@ -347,7 +367,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 style={{
                     flex: 1,
                     marginBottom: 60,
-                    marginTop: 20,
                     marginHorizontal: 16,
                 }}
                 showsVerticalScrollIndicator={false}
@@ -586,6 +605,18 @@ export default BoardPost
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
+        postHeader: {
+            flexDirection: "row",
+            alignItems: 'center',
+            marginHorizontal: 15,
+            marginVertical: 10,
+        },
+        authorProfileImage: {
+            backgroundColor: 'white',
+            width: 40,
+            height: 40,
+            margin: 10,
+        },
         titleText: {
             color: theme.TEXT,
             fontSize: 20,

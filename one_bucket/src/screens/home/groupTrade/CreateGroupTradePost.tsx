@@ -55,8 +55,6 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
 
-    const [preventMultPost, setPreventMultPost] = useState(true)
-
     const addImage = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -504,10 +502,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                                 : themeColor.BUTTON_SECONDARY_BG_DARKER,
                         },
                     ]}
-                    onPress={() => {
-                        onSubmitButtonPress()
-                        setPreventMultPost(false)
-                    }}
+                    onPress={onSubmitButtonPress}
                     disabled={!checkFormAvailable()}>
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>

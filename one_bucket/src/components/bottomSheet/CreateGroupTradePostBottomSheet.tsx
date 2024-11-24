@@ -33,6 +33,7 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
     const styles = createStyles(theme)
     const [chatName, setChatName] = useState('')
     const [accordionExpanded, setAccordionExpanded] = useState(true)
+    const [preventMultPost, setPreventMultPost] = useState(true)
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
@@ -83,7 +84,11 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
                 />
                 <TouchableOpacity
                     style={styles.submitButton}
-                    onPress={() => onSubmit()}>
+                    disabled={!preventMultPost}
+                    onPress={() => {
+                        onSubmit()
+                        setPreventMultPost(false)
+                    }}>
                     <Text style={styles.submitButtonText}>거래글 생성하기</Text>
                 </TouchableOpacity>
                 {/* <TouchableOpacity

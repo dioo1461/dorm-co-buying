@@ -150,7 +150,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                 {/* ### 게시자 프로필 ### */}
                 <View style={styles.profileContainer}>
                     {/* TODO: 프로필 사진 */}
-                    <View></View>
+                    <View style={styles.authorProfileImage}></View>
                     <Text style={styles.usernameText}>
                         {data?.authorNickname}
                     </Text>
@@ -307,6 +307,12 @@ const GroupTradePost: React.FC = (): JSX.Element => {
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
+        authorProfileImage: {
+            backgroundColor: 'white',
+            width: 40,
+            height: 40,
+            margin: 10,
+        },
         imageContainer: {
             width: SCREEN_WIDTH,
             height: SCREEN_WIDTH,
@@ -314,6 +320,7 @@ const createStyles = (theme: Icolor) =>
         },
         profileContainer: {
             flexDirection: 'row',
+            alignItems: 'center',
             paddingVertical: 20,
             paddingHorizontal: 16,
         },

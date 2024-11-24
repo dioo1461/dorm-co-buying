@@ -221,15 +221,15 @@ const Search: React.FC = (): React.JSX.Element => {
                 </View>
                 <Animated.View
                     style={[styles.boardTypeToggleButton, buttonAnimatedStyle]}>
-                    <TouchableOpacity onPress={toggleDropdown}>
+                    <TouchableOpacity onPress={()=>{
+                            toggleDropdown()
+                            setShowSearchResults(false)
+                        }}>
                         <IcFilter />
                     </TouchableOpacity>
                 </Animated.View>
                 <TouchableOpacity 
-                    onPress={()=>{
-                    onSearchSubmit(keyword, option)
-                    setShowSearchResults(true)
-                    }}
+                    onPress={()=>{onSearchSubmit(keyword, option)}}
                     disabled={!keyword}>
                     <IcSearch />
                 </TouchableOpacity>
