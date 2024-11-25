@@ -262,7 +262,7 @@ export const updateGroupTradePostImageDelete = async (
 export const deleteGroupTradePost = async (postId: number): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(`${MARKET_ENDPOINT_PREFIX}/delete/${postId}`)
+        .delete(`${MARKET_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })

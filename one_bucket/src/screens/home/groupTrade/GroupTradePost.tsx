@@ -1,4 +1,5 @@
 import { joinTrade, quitTrade } from '@/apis/tradeService'
+import { deleteGroupTradePost } from '@/apis/groupTradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
@@ -13,6 +14,10 @@ import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
 import { useEffect, useRef, useState } from 'react'
+import {
+    SelectableBottomSheet,
+    SelectableBottomSheetButtonProps,
+} from '@/components/bottomSheet/SelectableBottomSheet'
 import {
     Animated,
     Dimensions,
@@ -99,6 +104,46 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         if (data?.trade_linkUrl) {
             parseMetaData(data.trade_linkUrl)
         }
+        /*
+        const onModifyPostButtonPress = () => {
+            navigation.navigate('UpdateBoardPost', {
+                postId: params.postId,
+                boardId: params.boardId,
+                title: data!.title,
+                content: data!.text,
+                imageUrlList: data!.imageUrls,
+            })
+        } */
+        const onDeletePostButtonPress = () => {
+            deleteGroupTradePost(params.postId).then(() => {
+                navigation.navigate('GroupTrade', { pendingRefresh: true })
+            })
+        }
+        const onReportPostButtonPress = () => {}
+
+
+        if (data.authorNickname == memberInfo!.nickname) {
+            setBottomSheetButtonProps([
+                /*{
+                    text: '수정하기',
+                    style: 'default',
+                    onPress: onModifyPostButtonPress,
+                }, */
+                {
+                    text: '삭제하기',
+                    style: 'destructive',
+                    onPress: onDeletePostButtonPress,
+                },
+            ])
+        } else {
+            setBottomSheetButtonProps([
+                {
+                    text: '신고하기',
+                    style: 'default',
+                    onPress: onReportPostButtonPress,
+                },
+            ])
+        }
     }
 
     const onJoinButtonPress = async () => {
@@ -113,24 +158,31 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         })
     }
 
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    const [bottomSheetButtonProps, setBottomSheetButtonProps] = useState<any>(
+        [],
+    )
+
+
+
     const { data, isLoading, error } = queryGroupTradePost(
         params.postId,
         onSuccessCallback,
     )
-
+    
     const findIfJoined = data?.trade_joinMember.findIndex((item)=>item.nickname == memberInfo?.nickname)
     // -1: 참여 안함
-    const joinCondition = (findIfJoined: any, joined: any, joinMax: any) => {
+    const joinCase = (findIfJoined: any, joined: any, joinMax: any) => {
         if(joined != joinMax) {
             if(findIfJoined == -1) return '0' // 참여 가능
             else return '1' //참여 취소
         }
         else {
-            if(findIfJoined != -1) return '2' // 마감이지만 참여 취소 가능
+            if(findIfJoined != -1) return '2' // 마감이지만 했던참여 취소 가능
             else return '3' // 참여 불가능(마감)
         }
     }
-    const buttonMode = joinCondition(
+    const buttonMode = joinCase(
         findIfJoined, 
         (data?.trade_joinMember.length ?? 0) + 1, 
         data?.trade_wanted
@@ -267,7 +319,9 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     <View
                         style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <IcLocation width={24} height={24} />
-                        <Text style={styles.locationText}>A동 1층</Text>
+                        <Text style={styles.locationText}>
+                            {data?.trade_location}
+                        </Text>
                     </View>
                 </View>
             </Animated.ScrollView>
@@ -281,21 +335,15 @@ const GroupTradePost: React.FC = (): JSX.Element => {
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <IcAngleLeft
-                        fill={
-                            themeColor === lightColors
-                                ? baseColors.GRAY_1
-                                : baseColors.GRAY_4
-                        }
+                        fill={'white'}
+                        style={{elevation: 25}}
                     />
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => setBottomSheetEnabled(true)}>
                         <IcOthers
-                            fill={
-                                themeColor === lightColors
-                                    ? baseColors.GRAY_1
-                                    : baseColors.GRAY_4
-                            }
+                            fill={'white'}
+                            style={{elevation: 25}}
                         />
                     </TouchableOpacity>
                 </View>
@@ -319,11 +367,11 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                 <TouchableOpacity
                     style={{...styles.joinButton,
                         backgroundColor: (
-                            buttonMode != '3' || 
-                            data?.authorNickname != memberInfo?.nickname
+                            buttonMode == '3' || 
+                            data?.authorNickname == memberInfo?.nickname
                         )
-                                ? themeColor.BUTTON_BG
-                                : themeColor.BUTTON_SECONDARY_BG_DARKER,
+                                ? themeColor.BUTTON_SECONDARY_BG_DARKER
+                                : themeColor.BUTTON_BG
                         
                     }}
                     onPress={()=>{
@@ -344,6 +392,12 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     </Text>
                 </TouchableOpacity>
             </View>
+            <SelectableBottomSheet
+                theme={themeColor}
+                onClose={() => setBottomSheetEnabled(false)}
+                enabled={bottomSheetEnabled}
+                buttons={bottomSheetButtonProps}
+            />
         </View>
     )
 }

@@ -93,25 +93,6 @@ const GroupTradePostComponent: React.FC<Props> = ({ data }): JSX.Element => {
                     <View
                         style={{
                             position: 'absolute',
-                            right: 10,
-                            top: -4,
-                        }}>
-                        <TouchableNativeFeedback
-                            background={touchableNativeFeedbackBg()}
-                            useForeground={true}>
-                            <View
-                                style={{
-                                    borderRadius: 30,
-                                    padding: 10,
-                                    overflow: 'hidden',
-                                }}>
-                                <IcOthers fill={baseColors.GRAY_3} />
-                            </View>
-                        </TouchableNativeFeedback>
-                    </View>
-                    <View
-                        style={{
-                            position: 'absolute',
                             bottom: 16,
                             right: 16,
                             flexDirection: 'row',

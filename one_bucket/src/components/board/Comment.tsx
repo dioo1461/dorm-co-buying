@@ -182,7 +182,7 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 2,
         },
         commentHighlight: {
-            backgroundColor: baseColors.SCHOOL_BG,
+            backgroundColor: 'rgba(0, 44, 98, 0.4)',
             width: '100%',
             height: '100%',
             position: 'absolute',
