@@ -1,5 +1,5 @@
 import { postProfile } from '@/apis/profileService'
-import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { CachedImage } from '@/components/CachedImage'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
@@ -8,8 +8,9 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { createSignUpStyles } from '@/styles/signUp/signUpStyles'
 import { StringFilter } from '@/utils/StringFilter'
 import CheckBox from '@react-native-community/checkbox'
-import React, { useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import {
+    Image,
     ScrollView,
     StyleSheet,
     Text,
@@ -18,8 +19,15 @@ import {
     View,
 } from 'react-native'
 import Toast from 'react-native-toast-message'
+import IcPlus from '@/assets/drawable/ic-plus.svg'
+import strings from '@/constants/strings'
+import { SelectableBottomSheet } from '@/components/bottomSheet/SelectableBottomSheet'
+import {
+    ImageLibraryOptions,
+    launchImageLibrary,
+} from 'react-native-image-picker'
 
-const ProfileDetails: React.FC = (): React.JSX.Element => {
+const Profile: React.FC = (): React.JSX.Element => {
     const { themeColor, profile } = useBoundStore(state => ({
         themeColor: state.themeColor,
         profile: state.profile,
@@ -27,8 +35,18 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
     const styles = createStyles(themeColor)
     const signUpStyles = createSignUpStyles(themeColor)
-
     const navigation = stackNavigation()
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: false,
+        })
+    }, [navigation])
+
+    // ########## 상태 관리 변수 ##########
+
+    const [imageUri, setImageUri] = useState<string>('')
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
 
     const getYear = (raw: any) => {
         const date = new Date(raw)
@@ -71,6 +89,25 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
         setName(cleaned)
     }
 
+    const onImageAddButtonPress = () => {
+        setBottomSheetEnabled(true)
+    }
+
+    const addImageFromGallery = () => {
+        const options: ImageLibraryOptions = {
+            mediaType: 'photo',
+            selectionLimit: 10 - imageUri.length,
+        }
+        setBottomSheetEnabled(false)
+        launchImageLibrary(options, response => {
+            response.assets?.forEach(asset => {
+                if (asset.uri) {
+                    setImageUri(asset.uri)
+                }
+            })
+        })
+    }
+
     const handleSubmit = async () => {
         // const result = await submitSignupForm(signUpForm)
         const form: AddProfileRequestBody = {
@@ -90,41 +127,55 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
     }
 
     return (
-        <View style={signUpStyles.container}>
-            <View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.goBack()
-                    }}
-                    style={signUpStyles.backButton}>
-                    <IcArrowLeft />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.verificationContainer}>
-                <Text style={styles.infoText}>
-                    입력했던 프로필을 수정할 수 있습니다.
-                </Text>
-            </View>
-            <ScrollView>
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.goBack()
+                }}
+                style={signUpStyles.backButton}>
+                <IcAngleLeft fill={baseColors.GRAY_2} />
+            </TouchableOpacity>
+            <ScrollView
+                style={styles.scrollViewContainer}
+                showsVerticalScrollIndicator={false}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={styles.label}>프로필 사진</Text>
-                    <View>
-                        <CachedImage
-                            imageStyle={styles.profileImage}
-                            imageUrl={''}
-                        />
-                        <TouchableOpacity
+                    <View style={styles.verificationContainer}>
+                        <Text style={styles.infoText}>
+                            입력했던 프로필을 수정할 수 있습니다.
+                        </Text>
+                    </View>
+                    <TouchableOpacity onPress={onImageAddButtonPress}>
+                        {imageUri ? (
+                            <Image
+                                source={{ uri: imageUri }}
+                                style={styles.profileImage}
+                            />
+                        ) : (
+                            <View
+                                style={[
+                                    styles.profileImage,
+                                    {
+                                        backgroundColor: baseColors.GRAY_2,
+                                    },
+                                ]}
+                            />
+                        )}
+                        <View
                             style={{
-                                width: 24,
-                                height: 24,
+                                width: 26,
+                                height: 26,
                                 backgroundColor: baseColors.GRAY_2,
                                 borderRadius: 16,
                                 position: 'absolute',
-                                bottom: 18,
+                                bottom: 26,
                                 right: 0,
                                 elevation: 3,
-                            }}></TouchableOpacity>
-                    </View>
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                            <IcPlus />
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.label}>이름</Text>
@@ -217,18 +268,39 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     multiline={true}
                     numberOfLines={3}
                 />
-                <TouchableOpacity
-                    style={{
-                        ...styles.button,
-                        backgroundColor: !name
+            </ScrollView>
+            <TouchableOpacity
+                style={{
+                    ...styles.button,
+                    backgroundColor:
+                        !name || !year || !month || !day
                             ? baseColors.GRAY_2
                             : baseColors.SCHOOL_BG,
-                    }}
-                    disabled={!name || !year || !month || !day}
-                    onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>수정하기</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                }}
+                disabled={!name || !year || !month || !day}
+                onPress={handleSubmit}>
+                <Text style={styles.buttonText}>수정하기</Text>
+            </TouchableOpacity>
+            <SelectableBottomSheet
+                enabled={bottomSheetEnabled}
+                theme={themeColor}
+                onClose={() => setBottomSheetEnabled(false)}
+                buttons={[
+                    {
+                        text: '갤러리에서 이미지 선택하기',
+                        style: 'default',
+                        onPress: addImageFromGallery,
+                    },
+                    {
+                        text: '기본 이미지로 변경',
+                        style: 'default',
+                        onPress: () => {
+                            setBottomSheetEnabled(false)
+                            setImageUri('')
+                        },
+                    },
+                ]}
+            />
         </View>
     )
 }
@@ -237,6 +309,10 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: {
             flex: 1,
+        },
+        scrollViewContainer: {
+            paddingHorizontal: 20,
+            marginBottom: 54,
         },
         infoText: {
             color: theme.TEXT_SECONDARY,
@@ -248,9 +324,9 @@ const createStyles = (theme: Icolor) =>
             alignItems: 'center',
         },
         profileImage: {
-            width: 100,
-            height: 100,
-            borderRadius: 50,
+            width: 120,
+            height: 120,
+            borderRadius: 60,
             marginBottom: 20,
         },
         label: {
@@ -293,11 +369,13 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 10,
         },
         button: {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
             backgroundColor: lightColors.BUTTON_BG,
-            paddingVertical: 15,
-            borderRadius: 5,
+            paddingVertical: 18,
             alignItems: 'center',
-            marginTop: 10,
         },
         buttonText: {
             color: 'white',
@@ -316,210 +394,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default ProfileDetails
-
-{
-    /*
-import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import { baseColors, darkColors, Icolor, lightColors } from '@/constants/colors'
-import {
-    queryGetMemberInfo,
-    queryGetProfile,
-} from '@/hooks/useQuery/profileQuery'
-import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import React, { useEffect } from 'react'
-import {
-    ActivityIndicator,
-    Appearance,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native'
-import { stackNavigation } from './navigation/NativeStackNavigation'
-
-const ProfileDetails: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor } = useBoundStore(state => ({
-        themeColor: state.themeColor,
-        setThemeColor: state.setThemeColor,
-    }))
-
-    // 다크모드 변경 감지
-    useEffect(() => {
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
-
-    const styles = createStyles(themeColor)
-    const navigation = stackNavigation()
-
-    const {
-        data: profileData,
-        isLoading: isProfileLoading,
-        error: profileError,
-    } = queryGetProfile()
-
-    const {
-        data: memberInfoData,
-        isLoading: isMemberInfoLoading,
-        error: memberInfoError,
-    } = queryGetMemberInfo()
-
-    const formatDate = (raw: any) => {
-        const date = new Date(raw)
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0') // 월은 0부터 시작하므로 1을 더해줌
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}년 ${month}년 ${day}일`
-    }
-    var formattedCreateDate
-    if (profileData) {
-        formattedCreateDate = formatDate(profileData.createAt)
-    }
-
-    if (profileError || memberInfoError) return <Text>Error...</Text>
-
-    if (isProfileLoading || isMemberInfoLoading)
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                <ActivityIndicator size='large' color={baseColors.SCHOOL_BG} />
-            </View>
-        )
-
-    return (
-        <View style={styles.container}>
-            
-            <View style={styles.backButtonContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <IcAngleLeft
-                        style={styles.backButtonImage}
-                        fill={baseColors.GRAY_2}
-                    />
-                </TouchableOpacity>
-            </View>
-            <View>
-                <Image
-                    source={require('@/assets/drawable/vector.png')}
-                    style={styles.profileImage}
-                />
-            </View>
-        </View>
-    )
-}
-
-const createStyles = (theme: Icolor) =>
-    StyleSheet.create({
-        container: {
-            flex: 1,
-            paddingHorizontal: 16,
-            paddingTop: 20,
-            backgroundColor: 'white',
-        },
-        backButtonContainer: {
-            flex: 1,
-            marginTop: 10,
-        },
-        backButtonImage: {
-            width: 24,
-            height: 24,
-        },
-        headerContainer: {
-            flex: 3,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 16,
-        },
-        profileImageContainer: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        profileImage: {
-            backgroundColor: 'black',
-            width: 84,
-            height: 96,
-            borderRadius: 50,
-        },
-        nicknameText: {
-            color: theme.BG,
-            fontFamily: 'NanumGothic-Bold',
-            fontSize: 18,
-            marginTop: 16,
-        },
-        bioContainer: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        bioImage: {
-            width: 159,
-            height: 192,
-        },
-        bioTextScrollView: {
-            position: 'absolute',
-            top: 4,
-            left: 16,
-            width: '80%',
-            height: '100%',
-        },
-        bioText: {
-            color: theme.BG,
-            fontFamily: 'NanumGothic',
-            fontSize: 14,
-        },
-        profilesContainer: {
-            backgroundColor: theme.BG,
-            flex: 8,
-            padding: 10,
-            marginHorizontal: 16,
-            borderRadius: 8,
-            elevation: 3,
-        },
-        profileLabel: {
-            color: theme.TEXT,
-            fontSize: 16,
-            fontFamily: 'NanumGothic-Bold',
-            marginTop: 10,
-        },
-        profileContext: {
-            color: theme.TEXT,
-            fontSize: 18,
-            fontFamily: 'NanumGothic-Bold',
-            marginTop: 10,
-            marginBottom: 16,
-            marginStart: 12,
-        },
-        profileModifyButtonContainer: {
-            flex: 2,
-            justifyContent: 'center',
-        },
-        profileModifyButton: {
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: baseColors.SCHOOL_BG,
-            borderRadius: 8,
-            paddingVertical: 16,
-            marginHorizontal: 4,
-        },
-        profileModifyButtonText: {
-            color: 'white',
-            fontSize: 14,
-            fontFamily: 'NanumGothic',
-            marginEnd: 6,
-        },
-    })
-
-export default ProfileDetails
-*/
-}
+export default Profile

@@ -289,7 +289,7 @@ const createStyles = (theme: Icolor) =>
         },
         postButton: {
             backgroundColor: baseColors.SCHOOL_BG,
-            padding: 20,
+            padding: 18,
             alignItems: 'center',
         },
         postButtonText: {

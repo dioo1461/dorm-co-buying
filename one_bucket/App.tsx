@@ -317,7 +317,6 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.profileModifyScreenName}
                             component={ProfileModify}
-                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name={strings.settingScreenName}
