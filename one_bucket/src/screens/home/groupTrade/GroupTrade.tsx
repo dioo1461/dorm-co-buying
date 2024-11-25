@@ -25,6 +25,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import { useQueryClient } from 'react-query'
 
 const FETCH_SIZE = 10
 
@@ -75,6 +76,8 @@ const GroupTrade: React.FC = (): JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
     const flatlistRef = useRef(null)
+
+    const queryClient = useQueryClient()
 
     const scrollY = useRef(new Animated.Value(0)).current
     const prevScrollY = useRef(0) // 이전 스크롤 위치 저장
@@ -159,7 +162,6 @@ const GroupTrade: React.FC = (): JSX.Element => {
             refetch,
         } = queryGroupTradePostList(
             boardId!,
-            currentCategory,
             {
                 sortType: 'createdDate',
                 sort: 'desc',
@@ -178,7 +180,11 @@ const GroupTrade: React.FC = (): JSX.Element => {
             <Animated.FlatList
                 style={styles.flatList}
                 ref={flatlistRef}
-                data={posts}
+                data={posts?.filter(
+                    post =>
+                        currentCategory === '전체' ||
+                        post.trade_tag === currentCategory,
+                )}
                 renderItem={renderItem}
                 refreshControl={
                     <RefreshControl

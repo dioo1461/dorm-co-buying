@@ -53,7 +53,7 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
     type AnnouncementListRouteProp = RouteProp<RootStackParamList, 'AnnouncementList'>
     const { params } = useRoute< AnnouncementListRouteProp>()
 
-    useEffect(()=>{ console.log("AnnouncementList params:",params) })
+    useEffect(()=>{ console.log("AnnouncementList params:", params) })
 
     {/*
         AnnouncementList params: 
@@ -216,11 +216,11 @@ const AnnouncementList: React.FC = (): React.JSX.Element => {
         </View>
         ) : (
             <View style={styles.container2}>
-            <IcNone />
-            <Text style={{fontSize: 20, textAlign: 'center'}}>
-                공지사항이 없습니다.
-            </Text>
-        </View>
+                <IcNone />
+                <Text style={{fontSize: 20, textAlign: 'center'}}>
+                    공지사항이 없습니다.
+                </Text>
+            </View>
         )
     )
 }

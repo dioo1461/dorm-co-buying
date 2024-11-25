@@ -97,10 +97,6 @@ const Setting: React.FC = (): React.JSX.Element => {
     }
 
     const delAccount = async () => {
-        if (data?.nickname == 'test1') {
-            Alert.alert('관리자 계정은 삭제할 수 없습니다.')
-            return
-        } // 공용계정 삭제 방지
         delProfile()
             .then(res => {
                 onLogOut(false)

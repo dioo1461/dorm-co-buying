@@ -21,13 +21,12 @@ type SortType = {
 
 export const queryGroupTradePostList = (
     boardId: number,
-    category: TradeCategory,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
 ) => {
     return useInfiniteQuery<GetGroupTradePostListResponse>(
-        ['marketPostList', boardId, category, sortType],
+        ['marketPostList', boardId, sortType],
         // 데이터를 페이지 단위로 가져오기 위한 함수
         ({ pageParam = 0 }) => {
             const sortParam =
@@ -105,6 +104,7 @@ export const querySearchGroupTradePosts = (
 }
 
 export const queryMyGroupTradePostList = (
+    boardId: number,
     sortType: SortType,
     size = 5,
     options: UseInfiniteQueryOptions<GetGroupTradePostListResponse> = {},
@@ -118,7 +118,7 @@ export const queryMyGroupTradePostList = (
                     ? [`title,${sortType.sort}`, `createdDate,${sortType.sort}`]
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
-            return getMyGroupTradePostList(pageParam, size, sortParam)
+            return getMyGroupTradePostList(boardId, pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {

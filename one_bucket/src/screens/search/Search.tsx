@@ -206,6 +206,7 @@ const Search: React.FC = (): React.JSX.Element => {
                     onChangeText={text => setKeyword(text)}
                     onFocus={() => setShowSearchResults(false)}
                     inputMode='search'
+                    returnKeyType='search'
                     placeholder='공동구매 및 중고거래 게시글 검색'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     onSubmitEditing={e => onSearchSubmit(e.nativeEvent.text, option)}

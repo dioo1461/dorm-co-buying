@@ -2,6 +2,7 @@ import { saveGroupTradePostImage } from '@/apis/groupTradeService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
 import { CreateGroupTradePostBottomSheet } from '@/components/bottomSheet/CreateGroupTradePostBottomSheet'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -31,6 +32,8 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
 
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
+
+    const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
@@ -511,8 +514,13 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                 enabled={bottomSheetEnabled}
                 theme={themeColor}
                 submitForm={makeSubmitForm()}
+                setLoadingEnabled={setLoadingBackdropEnabled}
                 onClose={() => setBottomSheetEnabled(false)}
                 onSubmitComplete={onSubmitComplete}
+            />
+            <LoadingBackdrop
+                enabled={loadingBackdropEnabled}
+                theme={themeColor}
             />
         </View>
     )

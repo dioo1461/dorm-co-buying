@@ -19,6 +19,7 @@ interface Props {
     enabled: boolean
     theme: Icolor
     submitForm: CreateGroupTradePostRequestBody
+    setLoadingEnabled: (enabled: boolean) => void
     onClose: () => void
     onSubmitComplete: (postId: number) => void
 }
@@ -27,10 +28,11 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
     enabled,
     theme,
     submitForm,
+    setLoadingEnabled,
     onClose,
     onSubmitComplete,
 }): JSX.Element => {
-    const styles = createStyles(theme)
+    const styles = createBottomSheetStyles(theme)
     const [chatName, setChatName] = useState('')
     const [accordionExpanded, setAccordionExpanded] = useState(true)
     const [preventMultPost, setPreventMultPost] = useState(true)
@@ -64,11 +66,15 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
 
     const onSubmit = () => {
         submitForm.chatRoomName = chatName
+        setLoadingEnabled(true)
         createGroupTradePost(submitForm)
             .then(res => {
                 onSubmitComplete(res.postId)
+                // setLoadingEnabled(false)
             })
-            .catch(err => {})
+            .catch(err => {
+                setPreventMultPost(true)
+            })
     }
 
     return (
@@ -167,7 +173,7 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
     )
 }
 
-const createStyles = (theme: Icolor) =>
+const createBottomSheetStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: {
             marginTop: 10,

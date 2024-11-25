@@ -10,6 +10,7 @@ import {
 import { LoginResponse } from '@/data/response/success/auth/LoginResponse'
 import { SetUniversityResponse } from '@/data/response/success/auth/SetUniversityResponse'
 import {
+    getAccessToken,
     getRefreshToken,
     setAccessToken,
     setRefreshToken,
@@ -143,14 +144,15 @@ export const setUniversity = async (
 }
 
 export const requestAccessTokenRenew = async (): Promise<LoginResponse> => {
-    const [authAxios, refreshToken] = await Promise.all([
-        createAuthAxios(),
+    const axios = createAxios()
+    const [accessToken, refreshToken] = await Promise.all([
+        getAccessToken(),
         getRefreshToken(),
     ])
-    console.log(refreshToken)
 
-    return authAxios
+    return axios
         .post('/refresh-token', {
+            accessToken: accessToken,
             refreshToken: refreshToken,
         })
         .then(response => {
@@ -158,6 +160,19 @@ export const requestAccessTokenRenew = async (): Promise<LoginResponse> => {
         })
         .catch(error => {
             console.log('requestAccessTokenRenew error -', error)
+            throw error
+        })
+}
+
+export const submitFCMDeviceToken = async (fcmToken: string) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/device-token/register', { token: fcmToken })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('registerFCMDeviceToken error -', error)
             throw error
         })
 }

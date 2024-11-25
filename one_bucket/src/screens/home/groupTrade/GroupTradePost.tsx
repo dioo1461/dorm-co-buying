@@ -1,9 +1,8 @@
-import { joinTrade } from '@/apis/tradeService'
+import { joinTrade, quitTrade } from '@/apis/tradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
-import IcShare from '@/assets/drawable/ic-share.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Skeleton from '@/components/Skeleton'
@@ -20,10 +19,12 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    ToastAndroid,
     TouchableNativeFeedback,
     TouchableOpacity,
     View,
 } from 'react-native'
+import Dialog from '@/components/Dialog'
 import {
     RootStackParamList,
     stackNavigation,
@@ -37,8 +38,9 @@ const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
 ]
 
 const GroupTradePost: React.FC = (): JSX.Element => {
-    const { themeColor } = useBoundStore(state => ({
+    const { themeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        memberInfo: state.memberInfo,
     }))
 
     const styles = createStyles(themeColor)
@@ -105,10 +107,39 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         })
     }
 
+    const onQuitButtonPress = async () => {
+        await quitTrade(data!.trade_id).then(() => {
+            navigation.goBack()
+        })
+    }
+
     const { data, isLoading, error } = queryGroupTradePost(
         params.postId,
         onSuccessCallback,
     )
+
+    const findIfJoined = data?.trade_joinMember.findIndex((item)=>item.nickname == memberInfo?.nickname)
+    // -1: 참여 안함
+    const joinCondition = (findIfJoined: any, joined: any, joinMax: any) => {
+        if(joined != joinMax) {
+            if(findIfJoined == -1) return '0' // 참여 가능
+            else return '1' //참여 취소
+        }
+        else {
+            if(findIfJoined != -1) return '2' // 마감이지만 참여 취소 가능
+            else return '3' // 참여 불가능(마감)
+        }
+    }
+    const buttonMode = joinCondition(
+        findIfJoined, 
+        (data?.trade_joinMember.length ?? 0) + 1, 
+        data?.trade_wanted
+    )
+    const buttonText = (buttonMode: any) => {
+        if (buttonMode == '0') return `참여하기`
+        if (buttonMode == '1' || '2') return `참여 취소`
+        if (buttonMode == '3') return `마감`
+    }
 
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 300], // 스크롤 범위
@@ -259,15 +290,6 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity>
-                        <IcShare
-                            fill={
-                                themeColor === lightColors
-                                    ? baseColors.GRAY_1
-                                    : baseColors.GRAY_4
-                            }
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
                         <IcOthers
                             fill={
                                 themeColor === lightColors
@@ -295,9 +317,31 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    style={styles.joinButton}
-                    onPress={onJoinButtonPress}>
-                    <Text style={styles.bottomBarButtonText}>참여하기</Text>
+                    style={{...styles.joinButton,
+                        backgroundColor: (
+                            buttonMode != '3' || 
+                            data?.authorNickname != memberInfo?.nickname
+                        )
+                                ? themeColor.BUTTON_BG
+                                : themeColor.BUTTON_SECONDARY_BG_DARKER,
+                        
+                    }}
+                    onPress={()=>{
+                        (findIfJoined == -1) ? 
+                            onJoinButtonPress() :
+                            onQuitButtonPress()
+                        
+                        }}
+                    disabled={
+                        buttonMode == '3' || 
+                        data?.authorNickname == memberInfo?.nickname
+                    }
+                    >
+                    <Text style={styles.bottomBarButtonText}>
+                        {data?.authorNickname != memberInfo?.nickname ? 
+                            (buttonText(buttonMode)) : (`내 게시글`)
+                        }
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>

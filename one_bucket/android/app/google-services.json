@@ -1,0 +1,29 @@
+{
+    "project_info": {
+        "project_number": "331916439075",
+        "project_id": "one-bucket",
+        "storage_bucket": "one-bucket.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:331916439075:android:6541383a4b5a7f9f9f4b96",
+                "android_client_info": {
+                    "package_name": "com.one_bucket"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBFdSmRiI-giAaem_ldRXtG_elvTIsZKtI"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}

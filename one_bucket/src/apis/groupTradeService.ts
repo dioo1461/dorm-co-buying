@@ -52,13 +52,14 @@ export const getGroupTradePost = async (
 }
 
 export const getMyGroupTradePostList = async (
+    boardId: number,
     page = 0,
     size = 10,
     sortParams: string[],
 ): Promise<GetGroupTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/list/my`, {
+        .get(`${MARKET_ENDPOINT_PREFIX}/list/my/${boardId}`, {
             params: {
                 page: page,
                 size: size,
