@@ -1,6 +1,6 @@
 import { Member } from '@/data/common/Member'
 
-export interface GetChatRoomTradeInfoResponse {
+export interface GetChatRoomInfoResponse {
     chatRoom: {
         roomId: string
         name: string

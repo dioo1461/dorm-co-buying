@@ -1,16 +1,7 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
-import React, { useEffect, useState } from 'react'
 import {
-    Appearance,
-    Text,
-    TouchableOpacity,
-    useColorScheme,
-    View,
-} from 'react-native'
-
-import { requestAccessTokenRenew } from '@/apis/authService'
+    requestAccessTokenRenew,
+    submitFCMDeviceToken,
+} from '@/apis/authService'
 import { getBoardList } from '@/apis/boardService'
 import { getMemberInfo, getProfile } from '@/apis/profileService'
 import strings from '@/constants/strings'
@@ -30,10 +21,10 @@ import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
 import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
 import MyGroupTradePosts from '@/screens/myPage/MyGroupTradePosts'
+import ProfileModify from '@/screens/myPage/PofileModify'
+import ProfileDetails from '@/screens/myPage/ProfileDetails'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import Notification from '@/screens/Notification'
-import ProfileModify from '@/screens/PofileModify'
-import ProfileDetails from '@/screens/ProfileDetails'
 import Search from '@/screens/search/Search'
 import AlertSetting from '@/screens/setting/AlertSetting'
 import AnnouncementList from '@/screens/setting/AnnouncementList'
@@ -60,15 +51,26 @@ import {
 import {
     getAutoLoginEnabled,
     getLoginInitFlag,
-    setAutoLoginEnabled,
 } from '@/utils/asyncStorageUtils'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
 import IcAngleLeft from 'assets/drawable/ic-angle-left.svg'
 import axios from 'axios'
 import { baseColors, darkColors, lightColors } from 'constants/colors'
+import React, { useEffect, useState } from 'react'
+import {
+    Appearance,
+    Text,
+    TouchableOpacity,
+    useColorScheme,
+    View,
+} from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 import Toast from 'react-native-toast-message'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
+import messaging from '@react-native-firebase/messaging'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -171,10 +173,17 @@ function App(): React.JSX.Element {
             setLoginState(true)
         }
 
+        const submitFCMToken = async () => {
+            const token = await messaging().getToken()
+            console.log('device token:', token)
+            submitFCMDeviceToken(token)
+        }
+
         const executeSynchronously = async () => {
             try {
                 await renewAccessToken()
                 await checkLoginStatus()
+                if (loginState) submitFCMToken()
             } catch (error) {
                 // 요청 실패 시 처리
                 setAuthed(1)

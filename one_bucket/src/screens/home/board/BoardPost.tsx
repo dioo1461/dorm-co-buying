@@ -237,7 +237,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             data.authorNickname == memberInfo!.nickname
                 ? [
                       {
-                          text: '수정하기',
+                          text: '댓글 수정하기',
                           style: 'default',
                           onPress: () => {
                               setEditingCommentId(data.commentId)
@@ -245,14 +245,14 @@ const BoardPost: React.FC = (): JSX.Element => {
                           },
                       },
                       {
-                          text: '삭제하기',
+                          text: '댓글 삭제하기',
                           style: 'destructive',
                           onPress: () => {},
                       },
                   ]
                 : [
                       {
-                          text: '신고하기',
+                          text: '댓글 신고하기',
                           style: 'default',
                           onPress: () => {},
                       },

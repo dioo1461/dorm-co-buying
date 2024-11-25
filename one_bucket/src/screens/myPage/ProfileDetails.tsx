@@ -24,12 +24,6 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
 
     const navigation = useNavigation()
 
-    // const {
-    //     data: profileImageData,
-    //     isLoading: isProfileImageLoading,
-    //     error: profileImageError,
-    // } = queryGetProfileImage()
-
     const formatDate = (raw: any) => {
         const date = new Date(raw)
         const year = date.getFullYear()

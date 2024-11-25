@@ -54,7 +54,7 @@ const Board: React.FC = (): JSX.Element => {
         }
     })
 
-    const boardCount = boardList.filter(item => item.type === "post").length
+    const boardCount = boardList.filter(item => item.type === 'post').length
 
     const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
 

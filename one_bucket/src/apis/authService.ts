@@ -163,3 +163,16 @@ export const requestAccessTokenRenew = async (): Promise<LoginResponse> => {
             throw error
         })
 }
+
+export const submitFCMDeviceToken = async (fcmToken: string) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post('/device-token/register', { token: fcmToken })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('registerFCMDeviceToken error -', error)
+            throw error
+        })
+}
