@@ -1,5 +1,6 @@
 import { postProfile } from '@/apis/profileService'
 import IcArrowLeft from '@/assets/drawable/ic-arrow-left.svg'
+import { CachedImage } from '@/components/CachedImage'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -105,6 +106,26 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                 </Text>
             </View>
             <ScrollView>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.label}>프로필 사진</Text>
+                    <View>
+                        <CachedImage
+                            imageStyle={styles.profileImage}
+                            imageUrl={''}
+                        />
+                        <TouchableOpacity
+                            style={{
+                                width: 24,
+                                height: 24,
+                                backgroundColor: baseColors.GRAY_2,
+                                borderRadius: 16,
+                                position: 'absolute',
+                                bottom: 18,
+                                right: 0,
+                                elevation: 3,
+                            }}></TouchableOpacity>
+                    </View>
+                </View>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.label}>이름</Text>
                     <Text style={styles.accent}>*</Text>
@@ -219,23 +240,29 @@ const createStyles = (theme: Icolor) =>
         },
         infoText: {
             color: theme.TEXT_SECONDARY,
-            fontSize: 14,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
         },
         verificationContainer: {
             marginVertical: 20,
             alignItems: 'center',
         },
+        profileImage: {
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            marginBottom: 20,
+        },
         label: {
             color: theme.TEXT,
-            fontSize: 18,
+            fontSize: 16,
             fontFamily: 'NanumGothic-Bold',
             marginTop: 15,
             marginBottom: 10,
         },
         accent: {
             color: theme.ACCENT_TEXT,
-            fontSize: 18,
+            fontSize: 16,
             fontFamily: 'NanumGothic-Bold',
             marginTop: 15,
             marginBottom: 10,
@@ -244,7 +271,7 @@ const createStyles = (theme: Icolor) =>
             borderBottomWidth: 1,
             paddingBottom: 4,
             borderBottomColor: baseColors.GRAY_1,
-            fontSize: 16,
+            fontSize: 14,
             marginBottom: 20,
         },
         birthInput: {
@@ -254,7 +281,7 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 5,
             paddingBottom: 5,
             borderBottomColor: baseColors.GRAY_1,
-            fontSize: 16,
+            fontSize: 14,
             marginBottom: 20,
         },
         bioInput: {

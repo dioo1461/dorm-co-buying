@@ -14,6 +14,9 @@ const TOPIC_CHAT = ''
 
 const initializeFcm = () => {
     const init = async () => {
+        const token = await messaging().getToken()
+        console.log('device token:', token)
+        submitFCMDeviceToken(token)
         const channelIdAll = await notifee.createChannel({
             id: 'all',
             name: 'All Notifications',

@@ -30,11 +30,3 @@ export const queryGetProfile = () => {
 
     return useQuery<GetProfileResponse>(['profile', memberInfo], getProfile)
 }
-
-export const queryGetProfileImage = () => {
-    return useQuery<ArrayBuffer>(
-        // TODO: cache 갱신 parameter 수정
-        ['profileImage'],
-        getProfileImage,
-    )
-}
