@@ -11,7 +11,6 @@ import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
-import LoadingBackdrop from '@/components/LoadingBackdrop'
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {
@@ -392,16 +391,14 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
-        {/*
+            {/*
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
             {/* 작성자 프로필, 닉네임 */}
             <View style={styles.postHeader}>
-                <View style={styles.authorProfileImage}>
-                    
-                </View>
-                <Text style={{...styles.titleText, fontSize: 16}}>
+                <View style={styles.authorProfileImage}></View>
+                <Text style={{ ...styles.titleText, fontSize: 16 }}>
                     {data?.authorNickname}
                 </Text>
             </View>
@@ -689,7 +686,7 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
         postHeader: {
-            flexDirection: "row",
+            flexDirection: 'row',
             alignItems: 'center',
             marginHorizontal: 15,
             marginVertical: 10,
