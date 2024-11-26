@@ -1,6 +1,16 @@
-import IcDisposableItem from '@/assets/drawable/ic-disposable-item.svg'
 import IcFrozenItem from '@/assets/drawable/ic-frozen-item.svg'
+import IcMediaItem from '@/assets/drawable/ic-media-item.svg'
+import IcToyItem from '@/assets/drawable/ic-toy-item.svg'
+import IcSupplyItem from '@/assets/drawable/ic-supply-item.svg'
+import IcSportItem from '@/assets/drawable/ic-sport-item.svg'
 import IcRefridgeratedItem from '@/assets/drawable/ic-refridgerated-item.svg'
+import IcBevItem from '@/assets/drawable/ic-beverage-item.svg'
+import IcClothesItem from '@/assets/drawable/ic-clothes-item.svg'
+import IcMedicineItem from '@/assets/drawable/ic-medicine-item.svg'
+import IcDisposableItem from '@/assets/drawable/ic-disposable-item.svg'
+import IcElecItem from '@/assets/drawable/ic-elec-item.svg'
+import IcCouponItem from '@/assets/drawable/ic-coupon-item.svg'
+import IcOtherItem from '@/assets/drawable/ic-other-item.svg'
 import GroupTradePostComponent from '@/components/groupTrade/GroupTradePostComponent'
 import Loading from '@/components/Loading'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
@@ -33,38 +43,19 @@ const FETCH_SIZE = 10
 // TODO: 스크롤 시 동적으로 헤더 숨김 / 표시
 const categoryProps = [
     { categoryName: '전체', icon: <></> },
-    {
-        categoryName: '가공식품',
-        icon: <IcFrozenItem />,
-    },
-    {
-        categoryName: '신선식품',
-        icon: <IcRefridgeratedItem />,
-    },
-    {
-        categoryName: '음료/물',
-        icon: <></>,
-    },
-    {
-        categoryName: '의약폼',
-        icon: <></>,
-    },
-    {
-        categoryName: '일회용품',
-        icon: <IcDisposableItem />,
-    },
-    {
-        categoryName: '전자기기',
-        icon: <></>,
-    },
-    {
-        categoryName: '쿠폰',
-        icon: <></>,
-    },
-    {
-        categoryName: '기타',
-        icon: <></>,
-    },
+    { categoryName: '가공식품', icon: <IcFrozenItem /> },
+    { categoryName: '도서/미디어', icon: <IcMediaItem /> },
+    { categoryName: '문구/완구', icon: <IcToyItem /> },
+    { categoryName: '생활용품', icon: <IcSupplyItem /> },
+    { categoryName: '스포츠/레저', icon: <IcSportItem /> },
+    { categoryName: '신선식품', icon: <IcRefridgeratedItem /> },
+    { categoryName: '음료/물', icon: <IcBevItem /> },
+    { categoryName: '의류', icon: <IcClothesItem /> },
+    { categoryName: '의약폼', icon: <IcMedicineItem /> },
+    { categoryName: '일회용품', icon: <IcDisposableItem /> },
+    { categoryName: '전자기기', icon: <IcElecItem /> },
+    { categoryName: '쿠폰', icon: <IcCouponItem /> },
+    { categoryName: '기타', icon: <IcOtherItem /> },
 ]
 
 const GroupTrade: React.FC = (): JSX.Element => {

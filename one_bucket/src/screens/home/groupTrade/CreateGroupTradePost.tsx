@@ -49,7 +49,21 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const [keyboardHeight, setKeyboardHeight] = useState(0)
     const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
 
-    const tagList = ['가공식품','신선식품', '음료/물', '의약품', '일회용품', '전자기기', '쿠폰', '기타']
+    const tagList = [
+        '가공식품',
+        '도서/미디어',
+        '문구/완구',
+        '생활용품',
+        '스포츠/레저',
+        '신선식품', 
+        '음료/물',
+        '의류',
+        '의약품', 
+        '일회용품', 
+        '전자기기', 
+        '쿠폰', 
+        '기타'
+    ]
 
     const [peopleCountManualInputEnabled, setPeopleCountManualInputEnabled] =
         useState(false)
