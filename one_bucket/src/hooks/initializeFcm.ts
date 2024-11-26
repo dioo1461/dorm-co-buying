@@ -1,16 +1,20 @@
 import messaging, {
     FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging'
-import notifee, { AuthorizationStatus } from '@notifee/react-native'
+import notifee, {
+    AndroidImportance,
+    AndroidVisibility,
+    AuthorizationStatus,
+} from '@notifee/react-native'
 import { submitFCMDeviceToken } from '@/apis/authService'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 
 const TOPIC_ALL = 'ALL_USER'
+const TOPIC_CHAT = ''
 
 const initializeFcm = () => {
     const init = async () => {
-        const token = await messaging().getToken()
-        submitFCMDeviceToken(token)
-        const channelId = await notifee.createChannel({
+        const channelIdAll = await notifee.createChannel({
             id: 'all',
             name: 'All Notifications',
         })
@@ -19,13 +23,20 @@ const initializeFcm = () => {
             message: FirebaseMessagingTypes.RemoteMessage,
         ) => {
             console.log('message:', message)
-            if (message.notification === undefined) return
+
+            if (message.data === undefined) {
+                console.log('FCM - message.data is undefined')
+                return
+            }
+
             await notifee.displayNotification({
-                title: message.notification.title,
-                body: message.notification.body,
+                title: message.data.title as string,
+                body: message.data.body as string,
                 android: {
-                    channelId: channelId,
+                    channelId: channelIdAll,
                     smallIcon: 'ic_launcher',
+                    importance: AndroidImportance.HIGH,
+                    visibility: AndroidVisibility.PUBLIC,
                 },
             })
         }
@@ -60,6 +71,7 @@ const initializeFcm = () => {
         messaging().onMessage(() => {
             console.log('onMessage')
         })
+        messaging().setBackgroundMessageHandler(backgroundMessageHandler)
     }
 
     init()

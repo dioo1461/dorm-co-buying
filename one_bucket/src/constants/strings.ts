@@ -81,7 +81,7 @@ const strings = {
 
     createGroupTradePostScreenTitle: '공동구매 글 작성',
     // profileDetailsScreenTitle: 'ProfileDetails',
-    // profileModifyScreenTitle: 'ProfileModify',
+    profileModifyScreenTitle: '프로필 수정',
     myBoardPostsScreenTitle: '내가 쓴 게시글',
     myGroupTradePostsScreenTitle: '내가 생성한 공동구매',
     joinedGroupTradePostsScreenTitle: '내가 참여한 공동구매',

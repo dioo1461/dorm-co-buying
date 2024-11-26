@@ -192,8 +192,7 @@ const Mypage = (): React.JSX.Element => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.activityItem}
-                    // onPress={() => navigation.navigate('MyMarketPosts')}
-                    >
+                    onPress={() => navigation.navigate('MyGroupTradePosts')}>
                     {/* <Icon name='description' size={24} color='black' /> */}
                     <Text style={styles.activityText}>내가 쓴 거래글</Text>
                 </TouchableOpacity>

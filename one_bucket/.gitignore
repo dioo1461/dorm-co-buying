@@ -70,3 +70,4 @@ yarn-error.log
 .env.local
 .keystore
 gradle.properties
+/android/app/google-services.json

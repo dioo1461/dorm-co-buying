@@ -11,6 +11,7 @@ import IcSend from '@/assets/drawable/ic-send.svg'
 import IcThumbUp from '@/assets/drawable/ic-thumb-up.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {

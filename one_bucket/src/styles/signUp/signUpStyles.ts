@@ -6,13 +6,14 @@ export const createSignUpStyles = (theme: Icolor) =>
         container: {
             flex: 1,
             paddingHorizontal: 20,
-            paddingTop: 24,
             backgroundColor: theme.BG,
         },
         headerContainer: {
             marginTop: 10,
         },
         backButton: {
+            paddingVertical: 24,
+            paddingHorizontal: 18,
             // position: 'absolute',
         },
         title: {
