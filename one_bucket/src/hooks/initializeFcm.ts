@@ -61,7 +61,6 @@ const initializeFcm = () => {
         const backgroundMessageHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
-            console.log('backgroundMessageHandler')
             displayNotification(remoteMessage)
         }
 
@@ -73,15 +72,6 @@ const initializeFcm = () => {
             console.log('onMessage')
         })
         messaging().setBackgroundMessageHandler(backgroundMessageHandler)
-
-        // notifee.onBackgroundEvent(async ({ type, detail }) => {
-        //     console.log('onBackgroundEvent:', type, detail)
-        //     if (type === 'ACTION_PRESS') {
-        //         if (detail.actionId === 'chat') {
-        //             navigation.navigate('Chat')
-        //         }
-        //     }
-        // })
     }
 
     init()

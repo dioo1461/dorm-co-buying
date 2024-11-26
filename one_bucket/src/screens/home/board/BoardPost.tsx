@@ -13,6 +13,7 @@ import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import Comment from '@/components/board/Comment'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 import {
     SelectableBottomSheet,
     SelectableBottomSheetButtonProps,
@@ -30,9 +31,11 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
     Appearance,
     Keyboard,
+    KeyboardAvoidingView,
     LayoutChangeEvent,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -202,7 +205,6 @@ const BoardPost: React.FC = (): JSX.Element => {
         params.postId,
         onSuccessCallback,
     )
-
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
         setLoadingBackdropEnabled(true)
@@ -390,6 +392,20 @@ const BoardPost: React.FC = (): JSX.Element => {
 
     return (
         <View style={styles.container}>
+        {/*
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
+            {/* 작성자 프로필, 닉네임 */}
+            <View style={styles.postHeader}>
+                <View style={styles.authorProfileImage}>
+                    
+                </View>
+                <Text style={{...styles.titleText, fontSize: 16}}>
+                    {data?.authorNickname}
+                </Text>
+            </View>
+            {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
                     <RefreshControl
@@ -400,7 +416,6 @@ const BoardPost: React.FC = (): JSX.Element => {
                 style={{
                     flex: 1,
                     marginBottom: 60,
-                    marginTop: 20,
                     marginHorizontal: 16,
                 }}
                 showsVerticalScrollIndicator={false}
@@ -673,6 +688,18 @@ export default BoardPost
 const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
+        postHeader: {
+            flexDirection: "row",
+            alignItems: 'center',
+            marginHorizontal: 15,
+            marginVertical: 10,
+        },
+        authorProfileImage: {
+            backgroundColor: 'white',
+            width: 40,
+            height: 40,
+            margin: 10,
+        },
         titleText: {
             color: theme.TEXT,
             fontSize: 20,

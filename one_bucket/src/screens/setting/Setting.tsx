@@ -97,10 +97,6 @@ const Setting: React.FC = (): React.JSX.Element => {
     }
 
     const delAccount = async () => {
-        if (data?.nickname == 'test1') {
-            Alert.alert('관리자 계정은 삭제할 수 없습니다.')
-            return
-        } // 공용계정 삭제 방지
         delProfile()
             .then(res => {
                 onLogOut(false)
@@ -312,11 +308,12 @@ const Setting: React.FC = (): React.JSX.Element => {
                         onPress={() => navigation.navigate('Support')}>
                         <Text style={styles.contextLabel}>개발자 문의</Text>
                     </TouchableOpacity>
+                    {/*
                     <TouchableOpacity
                         style={styles.contextContainer}
                         onPress={() => navigation.navigate('VersionCheck')}>
                         <Text style={styles.contextLabel}>버전 정보</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </ScrollView>
             <Dialog

@@ -56,7 +56,7 @@ const Board: React.FC = (): JSX.Element => {
 
     const boardCount = boardList.filter(item => item.type === 'post').length
 
-    const [currentBoardIndex, setCurrentBoardIndex] = useState(0)
+    const [currentBoardIndex, setCurrentBoardIndex] = useState(1)
 
     const touchableNativeFeedbackBg = () => {
         return TouchableNativeFeedback.Ripple(

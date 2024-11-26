@@ -350,7 +350,7 @@ const createStyles = (theme: Icolor) =>
         activityItem: {
             flexDirection: 'row',
             alignItems: 'center',
-            paddingVertical: 8,
+            paddingVertical: 10,
         },
         activityText: {
             color: theme.TEXT,
