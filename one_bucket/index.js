@@ -12,7 +12,7 @@ import * as encoding from 'text-encoding'
 import { decode } from 'base-64'
 global.atob = decode
 import messaging from '@react-native-firebase/messaging'
-import initializeFcm from '@/hooks/initializeFcm'
+import initializeFcm from '@/utils/initializeFcm'
 
 const ProvidedNavigator = () => {
     return (

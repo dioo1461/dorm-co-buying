@@ -1,6 +1,5 @@
 import { delProfile } from '@/apis/profileService'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import useFcm from '@/hooks/initializeFcm'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
