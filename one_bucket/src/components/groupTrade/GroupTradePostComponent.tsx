@@ -52,10 +52,12 @@ const GroupTradePostComponent: React.FC<Props> = ({ data }): JSX.Element => {
                                     marginTop: 10,
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
                                 }}>
                                 <Text style={styles.postTitle}>
                                     {data.title}
+                                </Text>
+                                <Text style={styles.postLocation}>
+                                    {data.trade_tag}
                                 </Text>
                             </View>
                             <View
@@ -171,6 +173,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 11,
             fontFamily: 'NanumGothic',
+            paddingHorizontal: 8,
         },
         postDeadline: {
             color: theme.TEXT_SECONDARY,
