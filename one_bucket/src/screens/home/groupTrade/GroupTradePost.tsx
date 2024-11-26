@@ -1,5 +1,5 @@
 import { joinTrade, quitTrade } from '@/apis/tradeService'
-import { deleteGroupTradePost } from '@/apis/groupTradeService'
+import { addLike, deleteLike, deleteGroupTradePost } from '@/apis/groupTradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
@@ -29,7 +29,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import Dialog from '@/components/Dialog'
+import { formatTimeAgo } from '@/utils/formatUtils'
+import { sleep } from '@/utils/asyncUtils'
 import {
     RootStackParamList,
     stackNavigation,
@@ -41,6 +42,8 @@ const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
     Dimensions.get('window').width,
     Dimensions.get('window').height,
 ]
+
+const LOCK_SLEEP_TIME = 2000
 
 const GroupTradePost: React.FC = (): JSX.Element => {
     const { themeColor, memberInfo } = useBoundStore(state => ({
@@ -64,8 +67,12 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     const metaData = useRef<any>(null)
     const [isValidLink, setIsValidLink] = useState(true)
     const [_, forceRefresh] = useState({})
-
     // 5초 후에도 metaData를 받아오지 못하면 유효하지 않은 링크로 설정
+
+    const userLiked = useRef<boolean>(true)
+    const likeLock = useRef<boolean>(false)
+    const [likeAdded, setLikeAdded] = useState(0)
+
     useEffect(() => {
         const timeout = setTimeout(() => {
             // 3초 후에도 metaData가 없으면 유효하지 않은 링크로 설정
@@ -79,6 +86,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     }, [])
 
     const onSuccessCallback = (data: GetGroupTradePostResponse) => {
+        userLiked.current = data.userAlreadyLikes
         const parseMetaData = async (url: string) => {
             OpenGraphParser.extractMeta(url)
                 .then(data => {
@@ -121,7 +129,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         }
         const onReportPostButtonPress = () => {}
 
-
+        setLikeAdded(0)
         if (data.authorNickname == memberInfo!.nickname) {
             setBottomSheetButtonProps([
                 /*{
@@ -146,6 +154,12 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         }
     }
 
+    const { data, isLoading, error } = queryGroupTradePost(
+        params.postId,
+        onSuccessCallback,
+    )
+    useEffect(()=>{console.log("queryGroupTradePost:", data)})
+
     const onJoinButtonPress = async () => {
         await joinTrade(data!.trade_id).then(() => {
             navigation.goBack()
@@ -163,12 +177,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         [],
     )
 
-
-
-    const { data, isLoading, error } = queryGroupTradePost(
-        params.postId,
-        onSuccessCallback,
-    )
+    
     
     const findIfJoined = data?.trade_joinMember.findIndex((item)=>item.nickname == memberInfo?.nickname)
     // -1: 참여 안함
@@ -191,6 +200,43 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         if (buttonMode == '0') return `참여하기`
         if (buttonMode == '1' || '2') return `참여 취소`
         if (buttonMode == '3') return `마감`
+    }
+
+
+    const onLikeButtonPress = async () => {
+        if (data!.authorNickname)
+            if (likeLock.current) {
+                ToastAndroid.show(
+                    '좋아요는 2초에 한 번 이상 누를 수 없습니다.',
+                    ToastAndroid.SHORT,
+                )
+                return
+            }
+        if (userLiked.current) {
+            ToastAndroid.show('좋아요를 취소했습니다.', ToastAndroid.SHORT)
+            likeLock.current = true
+            userLiked.current = false
+            setLikeAdded(likeAdded - 1)
+            await deleteLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
+        if (!userLiked.current) {
+            // TODO: 좋아요 완료 toast 출력
+            likeLock.current = true
+            userLiked.current = true
+            setLikeAdded(likeAdded + 1)
+            await addLike(params.postId)
+            await sleep(LOCK_SLEEP_TIME)
+            likeLock.current = false
+            return
+        }
+    }
+
+    const likeButtonFill = (liked: boolean) => {
+        if (liked) return baseColors.LIGHT_RED
+        else return 'none'
     }
 
     const headerOpacity = scrollY.interpolate({
@@ -241,10 +287,11 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                 {/* ### 본문 ### */}
                 <View style={styles.bodyContainer}>
                     <Text style={styles.titleText}>{data?.title}</Text>
-                    <Text
-                        style={
-                            styles.metadataText
-                        }>{`2시간 전ㆍ${data?.trade_tag}`}</Text>
+                    <Text style={styles.metadataText}>
+                        {`${formatTimeAgo(
+                            data!.createdDate,
+                        )}ㆍ${data?.trade_tag}`}
+                    </Text>
                     <Text style={styles.contentText}>{data?.text}</Text>
                     {/* ### 사이트 링크 프리뷰 ### */}
                     {metaData.current ? (
@@ -315,7 +362,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
                     </View>
-                    <View style={styles.locationMapContainer}></View>
+                    {/* <View style={styles.locationMapContainer}></View> */}
                     <View
                         style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <IcLocation width={24} height={24} />
@@ -350,8 +397,11 @@ const GroupTradePost: React.FC = (): JSX.Element => {
             </View>
             {/* ### 하단 바 ### */}
             <View style={styles.bottomBarContainer}>
-                <TouchableOpacity>
-                    <IcHeart />
+                <TouchableOpacity
+                    style={{flexDirection: "row", alignItems: 'center'}}
+                    onPress={() => onLikeButtonPress()}>
+                    <IcHeart fill={likeButtonFill(userLiked.current)}/>
+                    <Text style={styles.likesText}>{data!.likes + likeAdded}</Text>
                 </TouchableOpacity>
                 <View style={{ position: 'relative', left: -16 }}>
                     {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
@@ -419,8 +469,8 @@ const createStyles = (theme: Icolor) =>
         profileContainer: {
             flexDirection: 'row',
             alignItems: 'center',
-            paddingVertical: 20,
-            paddingHorizontal: 16,
+            paddingVertical: 10,
+            paddingHorizontal: 10,
         },
         usernameText: {
             color: theme.TEXT,
@@ -471,6 +521,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT,
             fontFamily: 'NanumGothic-Bold',
             fontSize: 14,
+            paddingBottom: 10,
         },
         locationMapContainer: {
             backgroundColor: 'gray',
@@ -525,6 +576,12 @@ const createStyles = (theme: Icolor) =>
             color: theme.BUTTON_TEXT,
             fontFamily: 'NanumGothic',
             fontSize: 14,
+        },
+        likesText: {
+            color: baseColors.LIGHT_RED,
+            fontFamily: 'NanumGothic-Bold',
+            fontSize: 14,
+            paddingHorizontal: 10,
         },
         joinButton: {
             backgroundColor: theme.BUTTON_BG,

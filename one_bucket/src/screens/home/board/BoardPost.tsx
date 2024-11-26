@@ -204,6 +204,7 @@ const BoardPost: React.FC = (): JSX.Element => {
         params.postId,
         onSuccessCallback,
     )
+    useEffect(()=>{console.log("queryBoardPost:", data)})
     // TODO: 댓글 내용 validate
     const handleCommentSubmit = async () => {
         setLoadingBackdropEnabled(true)

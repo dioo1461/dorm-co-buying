@@ -270,3 +270,33 @@ export const deleteGroupTradePost = async (postId: number): Promise<any> => {
             console.log('deleteGroupTradePost - ' + err)
         })
 }
+
+// ########## LIKE ##########
+
+export const addLike = async (postId: number): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(`${MARKET_ENDPOINT_PREFIX}/${postId}/like`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('addLike - ' + err)
+            throw err
+        })
+}
+
+export const deleteLike = async (
+    postId: number,
+): Promise<{ message: string }> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(`${MARKET_ENDPOINT_PREFIX}/${postId}/like`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('deleteLike - ' + err)
+            throw err
+        })
+}
