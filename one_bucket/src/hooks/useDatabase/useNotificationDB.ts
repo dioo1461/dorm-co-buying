@@ -1,9 +1,10 @@
+import { FcmMessageData } from '@/data/response/success/fcm/FcmMessageData'
 import useDatabase from './useDatabase'
 
 export type NotificationColumns = {
     title: string
     content: string
-    type: string
+    type: FcmMessageData['type']
     id: string
 }
 
