@@ -45,6 +45,7 @@ import {
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
 import Comment from '@/components/board/Comment'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -636,6 +637,10 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                 onClose={() => setCommentBottomSheetEnabled(false)}
                 enabled={commentBottomSheetEnabled}
                 buttons={commentBottomSheetButtonProps}
+            />
+            <LoadingBackdrop
+                theme={themeColor}
+                enabled={loadingBackdropEnabled}
             />
         </View>
     )
