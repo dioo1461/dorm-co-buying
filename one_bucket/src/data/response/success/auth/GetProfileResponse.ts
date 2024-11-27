@@ -10,6 +10,7 @@ export interface GetProfileResponse {
     gender: Gender
     description: string | null
     email: string
+    imageUrl: string | null
     birth: string
     createAt: string
     updateAt: string

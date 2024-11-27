@@ -1,4 +1,8 @@
-import { postProfile, updateProfileImage } from '@/apis/profileService'
+import {
+    getProfile,
+    postProfile,
+    updateProfileImage,
+} from '@/apis/profileService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
@@ -25,7 +29,7 @@ import {
     ImageLibraryOptions,
     launchImageLibrary,
 } from 'react-native-image-picker'
-import BaseProfileImage from '@/assets/drawable/base-profile-image.svg'
+import BasicProfileImage from '@/assets/drawable/basic-profile-image.svg'
 import { Gender } from '@/data/response/success/auth/GetProfileResponse'
 
 const Profile: React.FC = (): React.JSX.Element => {
@@ -136,12 +140,8 @@ const Profile: React.FC = (): React.JSX.Element => {
         console.log(imageFormData)
         console.log(imageFormData?.getParts())
         Promise.all([postProfile(form), updateProfileImage(imageFormData)])
-            .then(res => {
-                setProfile({
-                    ...form,
-                    createAt: profile!.createAt,
-                    updateAt: profile!.updateAt,
-                })
+            .then(async res => {
+                setProfile(await getProfile())
                 Toast.show({ text1: '프로필이 성공적으로 수정되었습니다.' })
             })
             .catch(err => {
@@ -174,7 +174,7 @@ const Profile: React.FC = (): React.JSX.Element => {
                                 style={styles.profileImage}
                             />
                         ) : (
-                            <BaseProfileImage width={138} height={138} />
+                            <BasicProfileImage width={138} height={138} />
                         )}
                         <View
                             style={{

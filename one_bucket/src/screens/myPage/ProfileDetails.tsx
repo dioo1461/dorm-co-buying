@@ -12,6 +12,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
+import BasicProfileImage from '@/assets/drawable/basic-profile-image.svg'
+import { CachedImage } from '@/components/CachedImage'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
     const { themeColor, memberInfo, profile } = useBoundStore(state => ({
@@ -53,10 +55,15 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
             </View>
             <View style={styles.headerContainer}>
                 <View style={styles.profileImageContainer}>
-                    <Image
-                        source={require('@/assets/drawable/vector.png')}
-                        style={styles.profileImage}
-                    />
+                    {profile?.imageUrl ? (
+                        <CachedImage
+                            imageStyle={styles.profileImage}
+                            imageUrl={profile.imageUrl}
+                        />
+                    ) : (
+                        <BasicProfileImage width={112} height={112} />
+                    )}
+
                     <Text style={styles.nicknameText}>
                         {memberInfo!.nickname}
                     </Text>
@@ -149,9 +156,8 @@ const createStyles = (theme: Icolor) =>
             justifyContent: 'center',
         },
         profileImage: {
-            backgroundColor: 'gray',
-            width: 84,
-            height: 96,
+            width: 112,
+            height: 112,
             borderRadius: 50,
         },
         nicknameText: {
