@@ -48,6 +48,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
+import ProfileImage from '@/components/ProfileImage'
 
 const IMAGE_SIZE = 112
 // 좋아요 요청을 보낼 수 있는 시간 간격 (ms)
@@ -398,7 +399,9 @@ const BoardPost: React.FC = (): JSX.Element => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
             {/* 작성자 프로필, 닉네임 */}
             <View style={styles.postHeader}>
-                <View style={styles.authorProfileImage}></View>
+                <View style={styles.authorProfileImage}>
+                    {/* <ProfileImage imageUrl={}> */}
+                </View>
                 <Text style={{ ...styles.titleText, fontSize: 16 }}>
                     {data?.authorNickname}
                 </Text>

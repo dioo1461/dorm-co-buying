@@ -14,6 +14,7 @@ import {
 } from 'react-native'
 import BasicProfileImage from '@/assets/drawable/basic-profile-image.svg'
 import { CachedImage } from '@/components/CachedImage'
+import ProfileImage from '@/components/ProfileImage'
 
 const ProfileDetails: React.FC = (): React.JSX.Element => {
     const { themeColor, memberInfo, profile } = useBoundStore(state => ({
@@ -55,15 +56,12 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
             </View>
             <View style={styles.headerContainer}>
                 <View style={styles.profileImageContainer}>
-                    {profile?.imageUrl ? (
-                        <CachedImage
-                            imageStyle={styles.profileImage}
-                            imageUrl={profile.imageUrl}
-                        />
-                    ) : (
-                        <BasicProfileImage width={112} height={112} />
-                    )}
-
+                    <ProfileImage
+                        imageUrl={profile?.imageUrl}
+                        theme={themeColor}
+                        width={112}
+                        height={112}
+                    />
                     <Text style={styles.nicknameText}>
                         {memberInfo!.nickname}
                     </Text>
@@ -154,11 +152,6 @@ const createStyles = (theme: Icolor) =>
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        profileImage: {
-            width: 112,
-            height: 112,
-            borderRadius: 50,
         },
         nicknameText: {
             color: theme.TEXT,
