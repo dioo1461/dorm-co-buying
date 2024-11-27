@@ -4,6 +4,7 @@ import {
     Dimensions,
     FlatList,
     Image,
+    ListRenderItem,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
@@ -35,12 +36,13 @@ const Notification: React.FC = (): React.JSX.Element => {
         const init = async () => {
             setNotificationList(await getNotifications(10, 0))
             setOffset(10)
+            console.log(await getNotifications(10, 0))
         }
 
         init()
     }, [])
 
-    const notifFrame = (data: any) => (
+    const renderItem: ListRenderItem<NotificationColumns> = ({ item }) => (
         <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple(
                 themeColor.BG_SECONDARY,
@@ -51,7 +53,7 @@ const Notification: React.FC = (): React.JSX.Element => {
                     {/*
                     <IcNotification 
                         style={{ marginEnd: 8 }} 
-                        fill='black'
+                        fill='black'a
                     />
                     */}
                     <Image
@@ -61,10 +63,10 @@ const Notification: React.FC = (): React.JSX.Element => {
                     <View style={styles.notifTitle}>
                         <Text
                             style={{ ...styles.notifText, fontWeight: 'bold' }}>
-                            {data.item[0]}
+                            {item.title}
                         </Text>
                         <View style={styles.notifCont}>
-                            <Text style={styles.notifText}>{data.item[1]}</Text>
+                            <Text style={styles.notifText}>{item.content}</Text>
                         </View>
                     </View>
                 </View>
@@ -77,7 +79,7 @@ const Notification: React.FC = (): React.JSX.Element => {
             <FlatList
                 style={styles.notifList}
                 data={notificationList}
-                renderItem={notifFrame}
+                renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
             />
         </View>

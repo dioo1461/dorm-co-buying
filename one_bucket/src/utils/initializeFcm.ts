@@ -137,26 +137,14 @@ const initializeFcm = async () => {
                                             '[notificationDB] Table created or already exists',
                                         )
 
-                                        // remoteMessage에서 필요한 데이터 추출
-                                        const notification = {
-                                            id: remoteMessage.messageId,
-                                            title:
-                                                remoteMessage.notification
-                                                    ?.title || '',
-                                            content:
-                                                remoteMessage.notification
-                                                    ?.body || '',
-                                            type: data.type,
-                                        }
-
                                         // notification 테이블에 데이터 삽입
                                         tx.executeSql(
                                             `INSERT INTO notification (id, title, content, type) VALUES (?, ?, ?, ?)`,
                                             [
-                                                notification.id,
-                                                notification.title,
-                                                notification.content,
-                                                notification.type,
+                                                data.id,
+                                                data.title,
+                                                data.body,
+                                                data.type,
                                             ],
                                             (tx, results) => {
                                                 console.log(
