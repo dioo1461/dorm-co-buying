@@ -45,7 +45,7 @@ const UsedTradePostComponent: React.FC<Props> = ({ data }): JSX.Element => {
                         <View style={styles.postImage} />
                     )}
                     <View style={styles.postContentContainer}>
-                        <View>
+                        <View style={{ marginStart: 6 }}>
                             <View
                                 style={{
                                     marginTop: 10,
@@ -80,64 +80,14 @@ const UsedTradePostComponent: React.FC<Props> = ({ data }): JSX.Element => {
                                 </Text>
                             </View>
                             <View style={{ marginTop: 10 }}>
-                                <Text style={styles.postPrice}>{`${
-                                    data.trade_count
-                                }개  ${data.trade_price.toLocaleString()} 원`}</Text>
-                            </View>
-                            <View style={{ marginTop: 10 }}>
-                                <Text style={styles.postEachPrice}>{`개당 ${(
-                                    data.trade_price / data.trade_count
-                                ).toFixed(0)} 원`}</Text>
+                                <Text
+                                    style={
+                                        styles.postPrice
+                                    }>{`${data.trade_price.toLocaleString()} 원`}</Text>
                             </View>
                         </View>
                     </View>
-                    <View
-                        style={{
-                            position: 'absolute',
-                            bottom: 16,
-                            right: 16,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}>
-                        {data.trade_joins + 1 < data.trade_wanted ? (
-                            <View
-                                style={{
-                                    backgroundColor: themeColor.BUTTON_BG,
-                                    borderRadius: 30,
-                                    padding: 6,
-                                    marginEnd: 5,
-                                }}>
-                                <Text
-                                    style={{
-                                        color: themeColor.BUTTON_TEXT,
-                                        fontFamily: 'NanumGothic-Bold',
-                                        fontSize: 11,
-                                    }}>
-                                    참여 가능
-                                </Text>
-                            </View>
-                        ) : (
-                            <View
-                                style={{
-                                    backgroundColor: baseColors.GRAY_2,
-                                    borderRadius: 30,
-                                    padding: 6,
-                                    marginEnd: 5,
-                                }}>
-                                <Text
-                                    style={{
-                                        color: baseColors.WHITE,
-                                        fontFamily: 'NanumGothic-Bold',
-                                        fontSize: 11,
-                                    }}>
-                                    마감
-                                </Text>
-                            </View>
-                        )}
-                        <Text style={styles.postParticipants}>
-                            {`${data.trade_joins + 1} / ${data.trade_wanted}명`}
-                        </Text>
-                    </View>
+
                     <View style={styles.line} />
                 </View>
             </TouchableNativeFeedback>
@@ -172,26 +122,26 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 11,
             fontFamily: 'NanumGothic',
-            paddingHorizontal: 8,
+            paddingHorizontal: 4,
         },
         postDeadline: {
             color: theme.TEXT_SECONDARY,
-            fontSize: 11,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
         },
         postPrice: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'NanumGothic-Bold',
         },
         postEachPrice: {
             color: theme.TEXT_SECONDARY,
-            fontSize: 11,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
         },
         postParticipants: {
             color: theme.TEXT,
-            fontSize: 13,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
         },
     })

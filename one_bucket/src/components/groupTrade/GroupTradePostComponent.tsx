@@ -46,7 +46,7 @@ const GroupTradePostComponent: React.FC<Props> = ({ data }): JSX.Element => {
                         <View style={styles.postImage} />
                     )}
                     <View style={styles.postContentContainer}>
-                        <View>
+                        <View style={{ marginStart: 6 }}>
                             <View
                                 style={{
                                     marginTop: 10,
@@ -173,26 +173,26 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 11,
             fontFamily: 'NanumGothic',
-            paddingHorizontal: 8,
+            paddingHorizontal: 4,
         },
         postDeadline: {
             color: theme.TEXT_SECONDARY,
-            fontSize: 11,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
         },
         postPrice: {
             color: theme.TEXT,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'NanumGothic-Bold',
         },
         postEachPrice: {
             color: theme.TEXT_SECONDARY,
-            fontSize: 11,
+            fontSize: 10,
             fontFamily: 'NanumGothic',
         },
         postParticipants: {
             color: theme.TEXT,
-            fontSize: 13,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
         },
     })
