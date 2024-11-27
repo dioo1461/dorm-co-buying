@@ -2,7 +2,7 @@ import useDatabase from './useDatabase'
 import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getChatroomInfo } from '@/apis/chatService'
 
-const useTradeInfoOfChatRoomDB = () => {
+const useChatRoomInfoDB = () => {
     const { getDataByKeys, addData, updateDataByKeys, deleteDataByKeys } =
         useDatabase<TradeInfoOfChatRoom>({
             tableName: 'tradeInfoOfChatRoom',
@@ -63,4 +63,4 @@ const useTradeInfoOfChatRoomDB = () => {
     return { getTradeInfo, updateTradeInfo, addTradeInfo, deleteTradeInfo }
 }
 
-export default useTradeInfoOfChatRoomDB
+export default useChatRoomInfoDB

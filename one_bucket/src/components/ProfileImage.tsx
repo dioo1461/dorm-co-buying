@@ -1,6 +1,6 @@
 import BasicProfileImage from '@/assets/drawable/basic-profile-image.svg'
 import { CachedImage } from './CachedImage'
-import { ImageStyle, View } from 'react-native'
+import { ImageStyle, View, ViewStyle } from 'react-native'
 import Skeleton from './Skeleton'
 import { Icolor } from '@/constants/colors'
 
@@ -9,9 +9,19 @@ const ProfileImage: React.FC<{
     width: number
     height: number
     theme: Icolor
-}> = ({ imageUrl, width, height, theme }): React.JSX.Element => {
+    containerStyle?: ViewStyle
+}> = ({
+    imageUrl,
+    width,
+    height,
+    theme,
+    containerStyle,
+}): React.JSX.Element => {
     return (
-        <Skeleton theme={theme} isLoading={imageUrl === undefined}>
+        <Skeleton
+            containerStyle={[{}, containerStyle]}
+            theme={theme}
+            isLoading={imageUrl === undefined}>
             {imageUrl ? (
                 <CachedImage
                     imageUrl={imageUrl}

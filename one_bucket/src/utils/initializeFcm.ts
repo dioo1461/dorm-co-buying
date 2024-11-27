@@ -9,6 +9,7 @@ import messaging, {
     FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging'
 import {
+    getChatRoomNotificationEnabled,
     getGlobalChatNotificationEnabled,
     getGlobalCommentNotificationEnabled,
     getPostNotificationEnabled,
@@ -167,15 +168,18 @@ const initializeFcm = async () => {
         ): Promise<boolean> => {
             switch (data.type) {
                 case 'CHAT':
-                    if (!(await getGlobalChatNotificationEnabled()))
-                        return false
+                    const [globalChat, localChat] = await Promise.all([
+                        getGlobalChatNotificationEnabled(),
+                        getChatRoomNotificationEnabled(data.id),
+                    ])
+                    if (!globalChat || !localChat) return false
                     break
                 case 'COMMENT':
-                    const [global, local] = await Promise.all([
+                    const [globalComment, localComment] = await Promise.all([
                         getGlobalCommentNotificationEnabled(),
                         getPostNotificationEnabled(data.id),
                     ])
-                    if (!global || !local) return false
+                    if (!globalComment || !localComment) return false
                     break
                 case 'TRADE':
                     break

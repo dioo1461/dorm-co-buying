@@ -30,6 +30,24 @@ export const getLastTimestampOfChatRoom = async (roomId: string) => {
     return AsyncStorage.getItem(`chatRoomLastTimestamp:${roomId}`)
 }
 
+export const setChatRoomNotificationEnabled = async (
+    roomId: string,
+    enabled: boolean,
+) => {
+    return AsyncStorage.setItem(
+        `chatRoomNotificationEnabled:${roomId}`,
+        enabled.toString(),
+    )
+}
+
+export const getChatRoomNotificationEnabled = async (roomId: string) => {
+    return (
+        (await AsyncStorage.getItem(
+            `chatRoomNotificationEnabled:${roomId}`,
+        )) !== 'false'
+    )
+}
+
 // 서버 단에서 구현됨
 // export const setChatRoomNotificationEnabled = async (
 //     chatRoomId: string,

@@ -137,8 +137,10 @@ export const CreateGroupTradePostBottomSheet: React.FC<Props> = ({
                                 개당 가격
                             </Text>
                             <Text style={styles.secondaryItemText}>
-                                {submitForm.trade.price /
-                                    submitForm.trade.count}{' '}
+                                {Math.round(
+                                    submitForm.trade.price /
+                                        submitForm.trade.count,
+                                )}{' '}
                                 원
                             </Text>
                         </View>

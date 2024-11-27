@@ -1,6 +1,8 @@
 import {
     getChatLogAfterTimestamp,
-    getTradeInfoOfChatRoom,
+    getChatroomInfo,
+    registerChatNotification,
+    unRegisterChatNotification,
 } from '@/apis/chatService'
 import IcOthers from '@/assets/drawable/ic-others.svg'
 import BottomSheet from '@/components/bottomSheet/BottomSheet'
@@ -13,7 +15,9 @@ import useTradeInfoOfChatRoomDB from '@/hooks/useDatabase/useTradeInfoOfChatRoom
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { getAccessToken } from '@/utils/accessTokenUtils'
 import {
+    getChatRoomNotificationEnabled,
     getLastTimestampOfChatRoom,
+    setChatRoomNotificationEnabled,
     setLastTimestampOfChatRoom,
 } from '@/utils/asyncStorageUtils'
 import { CHAT_BASE_URL } from '@env'
@@ -22,15 +26,21 @@ import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import {
     FlatList,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
+    ToastAndroid,
     TouchableOpacity,
     View,
 } from 'react-native'
 import encoding from 'text-encoding'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
 import { Member } from '@/data/common/Member'
+import ProfileImage from '@/components/ProfileImage'
+import { GetChatRoomInfoResponse } from '@/data/response/success/chat/GetChatRoomInfoResponse'
+import { getDDays } from '@/utils/dateUtils'
+import LoadingBackdrop from '@/components/LoadingBackdrop'
 
 Object.assign(global, {
     TextEncoder: encoding.TextEncoder,
@@ -50,9 +60,10 @@ const RENDER_AMOUNT = 20
 // TODO: 이미지 전송 가능하도록 구현
 const Chat: React.FC = (): React.JSX.Element => {
     const navigation = useNavigation()
-    const { themeColor, memberInfo } = useBoundStore(state => ({
+    const { themeColor, memberInfo, profile } = useBoundStore(state => ({
         themeColor: state.themeColor,
         memberInfo: state.memberInfo,
+        profile: state.profile,
     }))
 
     // navigation 헤더 옵션 설정
@@ -92,6 +103,8 @@ const Chat: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     // ########## 상태 관리 변수 ##########
+    const [chatroomInfo, setChatroomInfo] =
+        useState<GetChatRoomInfoResponse | null>(null)
 
     const [isLoading, setIsLoading] = useState(true)
     const lastTimestamp = useRef<string | null>(null)
@@ -104,9 +117,13 @@ const Chat: React.FC = (): React.JSX.Element => {
     const [messageRenderOffset, setMessageRenderOffset] =
         useState(RENDER_AMOUNT)
 
+    const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
+    const [notificationEnabled, setNotificationEnabled] = useState(false)
     const [standardBottomSheetEnabled, setStandardBottomSheetEnabled] =
         useState(false)
     const [membersBottomSheetEnabled, setMembersBottomSheetEnabled] =
+        useState(false)
+    const [tradeInfoBottomSheetEnabled, setTradeInfoSheetEnabled] =
         useState(false)
     // TODO: bottomSheetButton 동적 관리 - userId 필요
     // const [bottomSheetButtons, setBottomSheetButtons] = useState(null)
@@ -129,6 +146,18 @@ const Chat: React.FC = (): React.JSX.Element => {
         })
 
     const { getTradeInfo, deleteTradeInfo } = useTradeInfoOfChatRoomDB()
+
+    useEffect(() => {
+        const initChatroomInfo = async () => {
+            const [chatroomInfo, notificationFlag] = await Promise.all([
+                getChatroomInfo(params.roomId),
+                getChatRoomNotificationEnabled(params.roomId),
+            ])
+            setChatroomInfo(await getChatroomInfo(params.roomId))
+            setNotificationEnabled(notificationFlag)
+        }
+        initChatroomInfo()
+    }, [])
 
     // ########## STATE MANAGEMENT ##########
     useEffect(() => {
@@ -197,7 +226,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             await Promise.all([
                 initStompClient(),
                 initChatMessages(),
-                getTradeInfoOfChatRoom(params.roomId),
+                getChatroomInfo(params.roomId),
             ])
             await fetchFreshChats()
             setIsLoading(false)
@@ -303,14 +332,18 @@ const Chat: React.FC = (): React.JSX.Element => {
 
     // ############ BOTTOM SHEET PROPS ############
 
-    useEffect(() => {
-        const initialize = async () => {
-            const [tradeInfo] = await Promise.all([getTradeInfo(params.roomId)])
-            setMemberList(tradeInfo.joinMember)
-        }
+    // useEffect(() => {
+    //     const initialize = async () => {
+    //         const [tradeInfo] = await Promise.all([getTradeInfo(params.roomId)])
+    //         setMemberList(tradeInfo.joinMember)
+    //     }
 
-        initialize()
-    }, [])
+    //     initialize()
+    // }, [])
+
+    const onTradeInfoDisplayButtonPress = () => {
+        setTradeInfoSheetEnabled(true)
+    }
 
     const onMembersButtonPress = () => {
         setMembersBottomSheetEnabled(true)
@@ -341,6 +374,32 @@ const Chat: React.FC = (): React.JSX.Element => {
     }
 
     const bottomSheetButtons = [
+        {
+            text: notificationEnabled ? '채팅방 알림 끄기' : '채팅방 알림 켜기',
+            style: 'default' as const,
+            onPress: () => {
+                if (notificationEnabled) {
+                    setNotificationEnabled(false)
+                    setChatRoomNotificationEnabled(params.roomId, false)
+                    ToastAndroid.show(
+                        '채팅방 알림을 비활성화했습니다.',
+                        ToastAndroid.SHORT,
+                    )
+                } else {
+                    setNotificationEnabled(true)
+                    setChatRoomNotificationEnabled(params.roomId, true)
+                    ToastAndroid.show(
+                        '채팅방 알림을 활성화했습니다.',
+                        ToastAndroid.SHORT,
+                    )
+                }
+            },
+        },
+        {
+            text: '거래 정보 보기',
+            style: 'default' as const,
+            onPress: onTradeInfoDisplayButtonPress,
+        },
         {
             text: '거래 참여 멤버 보기',
             style: 'default' as const,
@@ -521,10 +580,119 @@ const Chat: React.FC = (): React.JSX.Element => {
                 enabled={membersBottomSheetEnabled}
                 onClose={() => setMembersBottomSheetEnabled(false)}
                 theme={themeColor}>
-                <Text>{memberInfo?.nickname}</Text>
-                {memberList.map((member, index) => {
-                    return <Text key={index}>{member.nickname}</Text>
+                <View>
+                    <Text
+                        style={{
+                            color: themeColor.TEXT,
+                            fontFamily: 'NanumGothic',
+                            fontSize: 14,
+                            alignSelf: 'center',
+                            marginVertical: 16,
+                        }}>
+                        거래 참여 멤버
+                    </Text>
+                </View>
+                {chatroomInfo?.chatRoom.membersInfo.map((member, index) => {
+                    return (
+                        <View
+                            key={index}
+                            style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}>
+                            <ProfileImage
+                                theme={themeColor}
+                                width={64}
+                                height={64}
+                                imageUrl={member.imageUrl}
+                                containerStyle={{ padding: 6 }}
+                            />
+                            <Text
+                                style={{
+                                    color: themeColor.TEXT,
+                                    fontFamily: 'NanumGothic',
+                                    fontSize: 14,
+                                    marginBottom: 10,
+                                    marginStart: 10,
+                                }}>
+                                {member.nickname}
+                            </Text>
+                        </View>
+                    )
                 })}
+            </BottomSheet>
+            <BottomSheet
+                enabled={tradeInfoBottomSheetEnabled}
+                onClose={() => setTradeInfoSheetEnabled(false)}
+                theme={themeColor}>
+                <View>
+                    <Text
+                        style={{
+                            color: themeColor.TEXT,
+                            fontFamily: 'NanumGothic',
+                            fontSize: 16,
+                            alignSelf: 'center',
+                            marginVertical: 16,
+                        }}>
+                        거래 정보
+                    </Text>
+                </View>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>상품명</Text>
+                        <Text style={styles.itemText}>
+                            {chatroomInfo?.trade.item}
+                        </Text>
+                    </View>
+                    <View style={styles.secondaryItemContainer}>
+                        <Text style={styles.secondaryItemLabel}>카테고리</Text>
+                        <Text style={styles.secondaryItemText}>
+                            {chatroomInfo?.trade.tag}
+                        </Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>총 가격</Text>
+                        <Text style={styles.itemText}>
+                            {chatroomInfo?.trade.price} 원
+                        </Text>
+                    </View>
+                    <View style={styles.secondaryItemContainer}>
+                        <Text style={styles.secondaryItemLabel}>개당 가격</Text>
+                        <Text style={styles.secondaryItemText}>
+                            {Math.round(
+                                (chatroomInfo?.trade.price ?? 0) /
+                                    (chatroomInfo?.trade.count ?? 1),
+                            ).toLocaleString()}{' '}
+                            원
+                        </Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>총 수량</Text>
+                        <Text style={styles.itemText}>
+                            {chatroomInfo?.trade.count} 개
+                        </Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>모집 인원 </Text>
+                        <Text style={styles.itemText}>
+                            {chatroomInfo?.trade.wanted} 명
+                        </Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>마감 기한</Text>
+                        <Text style={styles.itemText}>
+                            D -{' '}
+                            {getDDays(new Date(chatroomInfo?.trade.dueDate!))}
+                        </Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.itemLabel}>거래 위치</Text>
+                        <Text style={styles.itemText}>
+                            {chatroomInfo?.trade.location}
+                        </Text>
+                    </View>
+                </ScrollView>
             </BottomSheet>
         </View>
     )
@@ -653,6 +821,47 @@ const createStyles = (theme: Icolor) =>
             color: theme.BUTTON_SECONDARY_TEXT,
             fontFamily: 'NanumGothic',
             fontSize: 12,
+        },
+
+        scrollView: {
+            height: 300,
+            paddingHorizontal: 20,
+            marginTop: 10,
+        },
+        itemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingVertical: 16,
+            borderRadius: 5,
+        },
+        itemLabel: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        itemText: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: 6,
+            marginBottom: 10,
+            borderRadius: 5,
+        },
+        secondaryItemLabel: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
         },
     })
 

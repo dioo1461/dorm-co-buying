@@ -71,12 +71,36 @@ export const destroyChatRoom = async (chatRoomId: string): Promise<any> => {
         })
 }
 
-export const getTradeInfoOfChatRoom = async (
+export const getChatroomInfo = async (
     chatRoomId: string,
 ): Promise<GetChatRoomInfoResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
         .get(CHAT_ENDPOINT_PREFIX + `/info/${chatRoomId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const registerChatNotification = async (chatRoomId: string) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(CHAT_ENDPOINT_PREFIX + `/push/re-register/${chatRoomId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            throw err
+        })
+}
+
+export const unRegisterChatNotification = async (chatRoomId: string) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .delete(CHAT_ENDPOINT_PREFIX + `/push/un-register/${chatRoomId}`)
         .then(res => {
             return res.data
         })
