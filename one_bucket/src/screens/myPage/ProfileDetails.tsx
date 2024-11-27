@@ -59,8 +59,7 @@ const ProfileDetails: React.FC = (): React.JSX.Element => {
                     <ProfileImage
                         imageUrl={profile?.imageUrl}
                         theme={themeColor}
-                        width={112}
-                        height={112}
+                        size={112}
                     />
                     <Text style={styles.nicknameText}>
                         {memberInfo!.nickname}

@@ -13,6 +13,7 @@ import {
     View,
 } from 'react-native'
 import Line from '../Line'
+import ProfileImage from '../ProfileImage'
 
 const Comment: React.FC<{
     theme: Icolor
@@ -85,7 +86,13 @@ const Comment: React.FC<{
                         <View>
                             <View style={styles.commentHeader}>
                                 {/* ### 프로필 이미지 ### */}
-                                <View style={styles.commentProfileImage}></View>
+                                <View style={styles.commentProfileImage}>
+                                    <ProfileImage
+                                        imageUrl={data?.imageUrl}
+                                        size={44}
+                                        theme={theme}
+                                    />
+                                </View>
                                 {/* ### 닉네임 ### */}
                                 <View style={styles.commentNicknameContainer}>
                                     <Text style={styles.commentNicknameText}>
@@ -196,10 +203,9 @@ const createStyles = (theme: Icolor) =>
             justifyContent: 'space-between',
         },
         commentProfileImage: {
-            backgroundColor: 'white',
-            width: 40,
-            height: 40,
-            margin: 6,
+            width: 44,
+            height: 44,
+            margin: 8,
         },
         commentNicknameContainer: {
             flex: 1,
@@ -207,8 +213,8 @@ const createStyles = (theme: Icolor) =>
         commentNicknameText: {
             color: theme.TEXT,
             fontSize: 16,
-            marginStart: 10,
             fontFamily: 'NanumGothic',
+            marginBottom: 4,
         },
         commentBody: {
             flex: 1,

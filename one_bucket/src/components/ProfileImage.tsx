@@ -6,17 +6,10 @@ import { Icolor } from '@/constants/colors'
 
 const ProfileImage: React.FC<{
     imageUrl: string | null | undefined
-    width: number
-    height: number
+    size: number
     theme: Icolor
     containerStyle?: ViewStyle
-}> = ({
-    imageUrl,
-    width,
-    height,
-    theme,
-    containerStyle,
-}): React.JSX.Element => {
+}> = ({ imageUrl, size, theme, containerStyle }): React.JSX.Element => {
     return (
         <Skeleton
             containerStyle={[{}, containerStyle]}
@@ -24,11 +17,19 @@ const ProfileImage: React.FC<{
             isLoading={imageUrl === undefined}>
             {imageUrl ? (
                 <CachedImage
-                    imageUrl={imageUrl}
-                    imageStyle={{ width: width, height: height } as ImageStyle}
+                    imageUrl={imageUrl + '.png'}
+                    imageStyle={
+                        {
+                            width: size,
+                            height: size,
+                            borderWidth: 0.3,
+                            borderColor: theme.BORDER,
+                            borderRadius: size / 2,
+                        } as ImageStyle
+                    }
                 />
             ) : (
-                <BasicProfileImage width={width} height={height} />
+                <BasicProfileImage width={size} height={size} />
             )}
         </Skeleton>
     )

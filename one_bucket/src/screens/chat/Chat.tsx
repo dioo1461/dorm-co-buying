@@ -603,8 +603,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                             }}>
                             <ProfileImage
                                 theme={themeColor}
-                                width={64}
-                                height={64}
+                                size={64}
                                 imageUrl={member.imageUrl}
                                 containerStyle={{ padding: 6 }}
                             />

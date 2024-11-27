@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import * as RNFS from 'react-native-fs'
 import Skeleton from './Skeleton'
+import { getAccessToken } from '@/utils/accessTokenUtils'
 
 interface Props {
     imageStyle: StyleProp<ImageStyle>
@@ -18,6 +19,7 @@ interface Props {
     isExternalUrl?: boolean
     getSavedPath?: (originUrl: string, path: string) => void
     onLoad?: (res: Promise<void>) => void
+    auth?: boolean
 }
 
 export const CachedImage = ({
@@ -26,6 +28,7 @@ export const CachedImage = ({
     isExternalUrl = false,
     getSavedPath,
     onLoad,
+    auth = false,
 }: Props): React.JSX.Element => {
     const [source, setSource] = useState<undefined | { uri: string }>(undefined)
     if (!imageUrl)
@@ -66,7 +69,13 @@ export const CachedImage = ({
                 }
                 return Promise.resolve()
             })
-            .then(() => {
+            .then(async () => {
+                const headers: Record<string, string> = {}
+                if (auth) {
+                    const token = await getAccessToken()
+                    headers['Authorization'] = `Bearer ${token}`
+                }
+
                 // 파일 다운로드
                 const downloadUrl = isExternalUrl
                     ? imageUrl
@@ -74,6 +83,7 @@ export const CachedImage = ({
                 return RNFS.downloadFile({
                     fromUrl: downloadUrl,
                     toFile: path,
+                    headers,
                 }).promise
             })
             .then(res => {

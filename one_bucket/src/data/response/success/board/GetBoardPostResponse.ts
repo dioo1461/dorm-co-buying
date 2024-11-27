@@ -5,6 +5,7 @@ export interface GetBoardPostResponse {
     postId: number
     authorId: number
     authorNickname: string
+    authorImage: string | null
     createdDate: string // ISO 8601
     modifiedDate: string // ISO 8601
     imageUrls: string[]
@@ -20,6 +21,7 @@ export interface IComment {
     postId: number
     commentId: number
     authorNickname: string
+    imageUrl: string | null
     modifiedDate: string
     replies: IComment[]
 }

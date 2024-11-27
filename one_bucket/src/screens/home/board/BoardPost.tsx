@@ -398,14 +398,7 @@ const BoardPost: React.FC = (): JSX.Element => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
             {/* 작성자 프로필, 닉네임 */}
-            <View style={styles.postHeader}>
-                <View style={styles.authorProfileImage}>
-                    {/* <ProfileImage imageUrl={}> */}
-                </View>
-                <Text style={{ ...styles.titleText, fontSize: 16 }}>
-                    {data?.authorNickname}
-                </Text>
-            </View>
+
             {/* ### 본문 container ### */}
             <ScrollView
                 refreshControl={
@@ -425,6 +418,18 @@ const BoardPost: React.FC = (): JSX.Element => {
                 scrollEventThrottle={0}>
                 {/* ###### 본문 ###### */}
                 <View onLayout={e => initContentHeight(e)}>
+                    <View style={styles.postHeader}>
+                        <View style={styles.authorProfileImageContainer}>
+                            <ProfileImage
+                                theme={themeColor}
+                                imageUrl={data?.authorImage}
+                                size={52}
+                            />
+                        </View>
+                        <Text style={{ ...styles.titleText, fontSize: 16 }}>
+                            {data?.authorNickname}
+                        </Text>
+                    </View>
                     <Text
                         style={[
                             styles.titleText,
@@ -692,14 +697,14 @@ const createStyles = (theme: Icolor) =>
         postHeader: {
             flexDirection: 'row',
             alignItems: 'center',
-            marginHorizontal: 15,
+            marginHorizontal: 0,
             marginVertical: 10,
         },
-        authorProfileImage: {
-            backgroundColor: 'white',
-            width: 40,
-            height: 40,
-            margin: 10,
+        authorProfileImageContainer: {
+            height: 52,
+            width: 52,
+            marginEnd: 10,
+            marginVertical: 10,
         },
         titleText: {
             color: theme.TEXT,

@@ -1,4 +1,5 @@
 import { delProfile } from '@/apis/profileService'
+import ProfileImage from '@/components/ProfileImage'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -19,8 +20,9 @@ import Toast from 'react-native-toast-message'
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const Mypage = (): React.JSX.Element => {
-    const { themeColor, onLogOut } = useBoundStore(state => ({
+    const { themeColor, profile, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        profile: state.profile,
         onLogOut: state.onLogOut,
     }))
 
@@ -128,13 +130,13 @@ const Mypage = (): React.JSX.Element => {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profileTextContainer}>
-                    {/* <CachedImage
-                        imageStyle={{}}
-                        image={data![1]}
-                        imageId='profile2'
-                    /> */}
+                    <ProfileImage
+                        imageUrl={profile?.imageUrl}
+                        size={60}
+                        theme={themeColor}
+                    />
                     <Text style={styles.username}>{data?.nickname}</Text>
-                    <Text style={styles.userInfo}>거래 6건</Text>
+                    {/* <Text style={styles.userInfo}>거래 6건</Text> */}
                 </View>
                 <TouchableOpacity
                     style={styles.profileButton}
@@ -179,9 +181,9 @@ const Mypage = (): React.JSX.Element => {
             </View>
             <View style={styles.activityContainer}>
                 <Text style={styles.activityTitle}>나의 활동</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.activityItem}
-                    onPress={()=> navigation.navigate('MyLikedPosts')}>
+                    onPress={() => navigation.navigate('MyLikedPosts')}>
                     {/* <Icon name='favorite' size={24} color='black' /> */}
                     <Text style={styles.activityText}>좋아요 누른 글</Text>
                 </TouchableOpacity>
@@ -231,6 +233,7 @@ const createStyles = (theme: Icolor) =>
             flexDirection: 'row',
             alignItems: 'center',
             padding: 16,
+            paddingVertical: 24,
         },
         profileImage: {
             width: 60,
@@ -239,14 +242,17 @@ const createStyles = (theme: Icolor) =>
             backgroundColor: baseColors.GRAY_2,
         },
         profileTextContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
             flex: 1,
-            marginLeft: 16,
+            marginLeft: 0,
         },
         username: {
             color: theme.TEXT,
             fontSize: 18,
             fontFamily: 'NanumGothic',
             marginBottom: 8,
+            marginStart: 10,
         },
         userInfo: {
             color: theme.TEXT_SECONDARY,
@@ -258,74 +264,11 @@ const createStyles = (theme: Icolor) =>
             borderRadius: 6,
             borderWidth: 1,
             padding: 8,
-            marginTop: 12,
         },
         profileLink: {
             color: theme.TEXT_SECONDARY,
             fontFamily: 'NanumGothic',
             fontSize: 14,
-        },
-        payMoneyContainer: {
-            backgroundColor: theme.BG,
-            borderColor: theme === lightColors ? '' : baseColors.GRAY_2,
-            borderWidth: theme === lightColors ? 0 : 1,
-            padding: 10,
-            marginHorizontal: 16,
-            borderRadius: 8,
-            elevation: 3,
-        },
-        payMoneyTextContainer: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: 8,
-            marginBottom: 16,
-        },
-        payMoneyLabel: {
-            color: theme.TEXT,
-            flex: 1,
-            fontSize: 16,
-            fontFamily: 'NanumGothic',
-        },
-        payMoneyAmount: {
-            color: theme.TEXT,
-            flex: 1,
-            fontSize: 16,
-            fontFamily: 'NanumGothic',
-        },
-        payMoneyDetailsButton: {
-            flex: 1,
-            alignItems: 'flex-end',
-            width: 20,
-            height: 20,
-        },
-        payMoneyButtonsContainer: {
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-        },
-        payMoneyButton: {
-            backgroundColor:
-                theme === lightColors
-                    ? baseColors.SCHOOL_BG
-                    : baseColors.GRAY_0,
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 8,
-            paddingVertical: 10,
-            marginHorizontal: 4,
-        },
-        payMoneyButtonImage: {
-            height: 16,
-            width: 16,
-            marginEnd: 4,
-        },
-        payMoneyButtonText: {
-            color: theme.BUTTON_TEXT,
-            fontSize: 14,
-            fontFamily: 'NanumGothic',
-            marginEnd: 6,
         },
         activityContainer: {
             backgroundColor: theme.BG,
@@ -336,7 +279,6 @@ const createStyles = (theme: Icolor) =>
             padding: 16,
             marginHorizontal: 16,
             borderRadius: 8,
-            marginTop: 16,
             borderWidth: 1,
         },
         activityTitle: {

@@ -74,8 +74,8 @@ export const createAuthStorageAxios = async (
     const token = await getAccessToken()
     return axios.create({
         headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
             Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json;charset=UTF-8',
         },
         baseURL: STORAGE_BASE_URL,
         ...options,
