@@ -1,10 +1,13 @@
-import { saveGroupTradePostImage } from '@/apis/groupTradeService'
+import {
+    saveUsedTradePostImage,
+    updateUsedTradePostImageReset,
+} from '@/apis/usedTradeService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { CreateGroupTradePostBottomSheet } from '@/components/bottomSheet/CreateGroupTradePostBottomSheet'
+import { CreateUsedTradePostBottomSheet } from '@/components/bottomSheet/CreateUsedTradePostBottomSheet'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
+import { CreateUsedTradePostRequestBody } from '@/data/request/usedTrade/CreateUsedTradePostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
@@ -41,8 +44,6 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
     const [itemName, setItemName] = useState('')
     const [tag, setTag] = useState('')
     const [price, setPrice] = useState('')
-    const [totalAmount, setTotalAmount] = useState('')
-    const [peopleCount, setPeopleCount] = useState<number | null>(null)
     const [deadline, setDeadline] = useState<number | null>(null)
     const [location, setLocation] = useState('')
     const [descriptionTextInput, setDescriptionTextInput] = useState('')
@@ -100,14 +101,6 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
         setImageUriList(newImageUriList)
     }
 
-    const onPeopleCountManualInputPress = () => {
-        setPeopleCount(null)
-        setPeopleCountManualInputEnabled(true)
-        requestAnimationFrame(() => {
-            peopleCountManualInputRef.current?.focus()
-        })
-    }
-
     const onDeadlineManualInputPress = () => {
         setDeadline(null)
         setDeadlineManualInputEnabled(true)
@@ -116,14 +109,14 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const findGroupTradeBoardId = () => {
-        const groupTradeBoard = boardList.find(
-            board => board.type === 'groupTradePost',
+    const findUsedTradeBoardId = () => {
+        const usedTradeBoard = boardList.find(
+            board => board.type === 'usedTradePost',
         )
-        if (groupTradeBoard) {
-            return groupTradeBoard.id
+        if (usedTradeBoard) {
+            return usedTradeBoard.id
         }
-        throw new Error('CreateUsedTradePost - GroupTrade board not found')
+        throw new Error('CreateUsedTradePost - UsedTrade board not found')
     }
 
     const onSubmitButtonPress = () => {
@@ -136,31 +129,26 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
             itemName.length > 0 &&
             tag != '' &&
             price.length > 0 &&
-            totalAmount.length > 0 &&
-            peopleCount !== null &&
             deadline !== null &&
             location !== ''
         )
     }
 
     const makeSubmitForm = () => {
-        const submitForm: CreateGroupTradePostRequestBody = {
+        const submitForm: CreateUsedTradePostRequestBody = {
             post: {
-                boardId: findGroupTradeBoardId(),
+                boardId: findUsedTradeBoardId(),
                 title: itemName,
                 text: descriptionTextInput,
             },
             trade: {
                 item: itemName,
-                wanted: peopleCount ?? 0,
                 price: Number(price),
-                count: Number(totalAmount),
                 location: location,
                 linkUrl: siteLink,
                 tag: tag,
                 dueDate: deadline ?? -1,
             },
-            chatRoomName: '',
         }
 
         return submitForm
@@ -180,9 +168,9 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
             })
         })
         console.log(postId)
-        saveGroupTradePostImage(postId, formData).then(() => {
+        saveUsedTradePostImage(postId, formData).then(() => {
             navigation.goBack()
-            navigation.navigate('GroupTradePost', { postId: postId })
+            navigation.navigate('UsedTradePost', { postId: postId })
         })
     }
 
@@ -285,98 +273,6 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
                         onChangeText={setPrice}
                         keyboardType='numeric'
                     />
-
-                    {/* ### 총 수량 ### */}
-                    <View style={styles.labelContainer}>
-                        <Text style={styles.label}>총 수량</Text>
-                        <Text style={styles.accent}> *</Text>
-                    </View>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder='총 수량'
-                        placeholderTextColor={themeColor.TEXT_TERTIARY}
-                        value={totalAmount}
-                        onChangeText={setTotalAmount}
-                        keyboardType='numeric'
-                    />
-
-                    {/* ### 모집 인원 ### */}
-                    <View style={styles.labelContainer}>
-                        <Text style={styles.label}>모집 인원 (본인 포함)</Text>
-                        <Text style={styles.accent}> *</Text>
-                    </View>
-                    <View style={styles.peopleCountContainer}>
-                        {[2, 3, 4, 5].map(count => (
-                            <View
-                                key={count}
-                                style={{
-                                    flex: 2,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.selectionButton,
-                                        peopleCount === count &&
-                                            styles.selectedButton,
-                                    ]}
-                                    onPress={() => {
-                                        setPeopleCount(count)
-                                        setPeopleCountManualInputEnabled(false)
-                                    }}>
-                                    <Text
-                                        style={{
-                                            color:
-                                                peopleCount === count
-                                                    ? 'white'
-                                                    : 'gray',
-                                        }}>
-                                        {`${count}명`}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                        <TouchableOpacity
-                            style={[
-                                styles.manualInputButton,
-                                peopleCountManualInputEnabled
-                                    ? styles.selectedButton
-                                    : {},
-                            ]}
-                            onPress={onPeopleCountManualInputPress}>
-                            <TextInput
-                                ref={peopleCountManualInputRef}
-                                style={[
-                                    styles.manualInputText,
-                                    peopleCountManualInputEnabled
-                                        ? { color: baseColors.WHITE }
-                                        : { color: baseColors.GRAY_2 },
-                                ]}
-                                onChangeText={text =>
-                                    setPeopleCount(Number(text))
-                                }
-                                placeholder='직접 입력'
-                                placeholderTextColor={
-                                    peopleCountManualInputEnabled
-                                        ? 'white'
-                                        : 'gray'
-                                }
-                                maxLength={2}
-                                editable={peopleCountManualInputEnabled}
-                                keyboardType='numeric'
-                            />
-                            <Text
-                                style={[
-                                    styles.manualInputAffixText,
-                                    { marginBottom: 2 },
-                                ]}>
-                                {peopleCountManualInputEnabled && peopleCount
-                                    ? ' 명'
-                                    : ''}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
 
                     {/* ### 마감 기한 ### */}
                     <View style={styles.labelContainer}>
@@ -540,7 +436,7 @@ const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
-            <CreateGroupTradePostBottomSheet
+            <CreateUsedTradePostBottomSheet
                 enabled={bottomSheetEnabled}
                 theme={themeColor}
                 submitForm={makeSubmitForm()}

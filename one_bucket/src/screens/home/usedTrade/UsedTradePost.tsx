@@ -3,8 +3,8 @@ import { joinTrade, quitTrade } from '@/apis/tradeService'
 import {
     addLike,
     deleteLike,
-    deleteGroupTradePost,
-} from '@/apis/groupTradeService'
+    deleteUsedTradePost,
+} from '@/apis/usedTradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
@@ -14,9 +14,9 @@ import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Skeleton from '@/components/Skeleton'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { GetUsedTradePostResponse } from '@/data/response/success/usedTrade/GetUsedTradePostResponse'
 import { IComment } from '@/data/response/success/board/GetBoardPostResponse'
-import { queryGroupTradePost } from '@/hooks/useQuery/groupTradeQuery'
+import { queryUsedTradePost } from '@/hooks/useQuery/usedTradeQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { OpenGraphParser } from '@sleiv/react-native-opengraph-parser'
@@ -64,11 +64,8 @@ const UsedTradePost: React.FC = (): JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    type GroupTradePostRouteProp = RouteProp<
-        RootStackParamList,
-        'UsedTradePost'
-    >
-    const { params } = useRoute<GroupTradePostRouteProp>()
+    type UsedTradePostRouteProp = RouteProp<RootStackParamList, 'UsedTradePost'>
+    const { params } = useRoute<UsedTradePostRouteProp>()
 
     // 레이아웃 관련 변수
     const [isImageInView, setImageInView] = useState(false)
@@ -128,7 +125,7 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         return () => clearTimeout(timeout)
     }, [time])
 
-    const onSuccessCallback = (data: GetGroupTradePostResponse) => {
+    const onSuccessCallback = (data: GetUsedTradePostResponse) => {
         userLiked.current = data.userAlreadyLikes
         const parseMetaData = async (url: string) => {
             OpenGraphParser.extractMeta(url)
@@ -157,11 +154,11 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         } else setTime(0)
 
         const onModifyPostButtonPress = () => {
-            navigation.navigate('UpdateGroupTradePost', data)
+            navigation.navigate('UpdateUsedTradePost', data)
         }
         const onDeletePostButtonPress = () => {
-            deleteGroupTradePost(params.postId).then(() => {
-                navigation.navigate('GroupTrade', { pendingRefresh: true })
+            deleteUsedTradePost(params.postId).then(() => {
+                navigation.navigate('UsedTrade', { pendingRefresh: true })
             })
         }
         const onReportPostButtonPress = () => {}
@@ -191,12 +188,12 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         }
     }
 
-    const { data, isLoading, error, refetch } = queryGroupTradePost(
+    const { data, isLoading, error, refetch } = queryUsedTradePost(
         params.postId,
         onSuccessCallback,
     )
     useEffect(() => {
-        console.log('queryGroupTradePost:', data)
+        console.log('queryUsedTradePost:', data)
     })
 
     const onJoinButtonPress = async () => {
@@ -211,24 +208,6 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         })
     }
 
-    const findIfJoined = data?.trade_joinMember.findIndex(
-        item => item.nickname == memberInfo?.nickname,
-    )
-    // -1: 참여 안함
-    const joinCase = (findIfJoined: any, joined: any, joinMax: any) => {
-        if (joined != joinMax) {
-            if (findIfJoined == -1) return '0' // 참여 가능
-            else return '1' //참여 취소
-        } else {
-            if (findIfJoined != -1) return '2' // 마감이지만 했던참여 취소 가능
-            else return '3' // 참여 불가능(마감)
-        }
-    }
-    const buttonMode = joinCase(
-        findIfJoined,
-        (data?.trade_joinMember.length ?? 0) + 1,
-        data?.trade_wanted,
-    )
     const buttonText = (buttonMode: any) => {
         if (buttonMode == '0') return `참여하기`
         if (buttonMode == '1' || '2') return `참여 취소`
@@ -517,45 +496,6 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                                 {data?.trade_location}
                             </Text>
                         </View>
-                    </View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            marginBottom: 10,
-                        }}>
-                        {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
-                        <Text style={styles.bottomBarLabel}>모집 인원</Text>
-                        {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
-                        <Text style={styles.bottomBarCountText}>
-                            {(data?.trade_joinMember.length ?? 0) + 1} /{' '}
-                            {data?.trade_wanted}
-                        </Text>
-                        <TouchableOpacity
-                            style={{
-                                ...styles.joinButton,
-                                backgroundColor:
-                                    buttonMode == '3' ||
-                                    data?.authorNickname == memberInfo?.nickname
-                                        ? themeColor.BUTTON_SECONDARY_BG_DARKER
-                                        : themeColor.BUTTON_BG,
-                            }}
-                            onPress={() => {
-                                findIfJoined == -1
-                                    ? onJoinButtonPress()
-                                    : onQuitButtonPress()
-                            }}
-                            disabled={
-                                buttonMode == '3' ||
-                                data?.authorNickname == memberInfo?.nickname
-                            }>
-                            <Text style={styles.bottomBarButtonText}>
-                                {data?.authorNickname != memberInfo?.nickname
-                                    ? buttonText(buttonMode)
-                                    : `내 게시글`}
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
                 {/* ### 댓글 ### */}

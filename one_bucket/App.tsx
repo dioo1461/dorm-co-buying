@@ -75,6 +75,8 @@ import UsedTradePost from '@/screens/home/usedTrade/UsedTradePost'
 import CreateGroupTradePost from '@/screens/home/groupTrade/CreateGroupTradePost'
 import UpdateGroupTradePost from '@/screens/home/groupTrade/UpdateGroupTradePost'
 import CreateUsedTradePost from '@/screens/home/usedTrade/CreateUsedTradePost'
+import UpdateUsedTradePost from '@/screens/home/usedTrade/UpdateUsedTradePost'
+import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -281,6 +283,11 @@ function App(): React.JSX.Element {
                             options={{ headerShown: false }}
                         />
                         <Stack.Screen
+                            name={strings.groupTradePostScreenName}
+                            component={GroupTradePost}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
                             name={strings.createGroupTradePostScreenName}
                             component={CreateGroupTradePost}
                             options={{
@@ -326,7 +333,7 @@ function App(): React.JSX.Element {
                             name={strings.createUsedTradePostScreenName}
                             component={CreateUsedTradePost}
                             options={{
-                                title: strings.createGroupTradePostScreenTitle,
+                                title: strings.createUsedTradePostScreenTitle,
                                 headerStyle: {
                                     backgroundColor: themeColor.HEADER_BG,
                                 },
@@ -349,7 +356,7 @@ function App(): React.JSX.Element {
                         />
                         <Stack.Screen
                             name={strings.updateUsedTradePostScreenName}
-                            component={UpdateGroupTradePost}
+                            component={UpdateUsedTradePost}
                             options={{
                                 title: strings.updateUsedTradePostScreenTitle,
                                 headerStyle: {

@@ -1,24 +1,24 @@
-import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
-import { UpdateGroupTradePostRequestBody } from '@/data/request/groupTrade/UpdateGroupTradePostRequestBody'
-import { CreateGroupTradePostResponse } from '@/data/response/success/groupTrade/CreateGroupTradePostResponse'
-import { GetGroupTradePostListResponse } from '@/data/response/success/groupTrade/GetGroupTradePostListResponse'
+import { CreateUsedTradePostRequestBody } from '@/data/request/usedTrade/CreateUsedTradePostRequestBody'
+import { UpdateUsedTradePostRequestBody } from '@/data/request/usedTrade/UpdateUsedTradePostRequestBody'
+import { CreateUsedTradePostResponse } from '@/data/response/success/usedTrade/CreateUsedTradePostResponse'
+import { GetUsedTradePostListResponse } from '@/data/response/success/usedTrade/GetUsedTradePostListResponse'
 import { getAccessToken } from '@/utils/accessTokenUtils'
-import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { GetUsedTradePostResponse } from '@/data/response/success/usedTrade/GetUsedTradePostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const MARKET_ENDPOINT_PREFIX = '/group-post'
+const USED_TRADE_ENDPOINT_PREFIX = '/used-post'
 
 // ########## GET ##########
 
-export const getGroupTradePostList = async (
+export const getUsedTradePostList = async (
     boardId: number,
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetGroupTradePostListResponse> => {
+): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/list/${boardId}`, {
+        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -30,36 +30,36 @@ export const getGroupTradePostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getGroupTradePostList - ' + error)
+            console.log('getUsedTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
         })
 }
 
-export const getGroupTradePost = async (
+export const getUsedTradePost = async (
     postId: number,
-): Promise<GetGroupTradePostResponse> => {
+): Promise<GetUsedTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/${postId}`)
+        .get(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })
         .catch(err => {
-            console.log('getGroupTradePost - ' + err)
+            console.log('getUsedTradePost - ' + err)
         })
 }
 
-export const getMyGroupTradePostList = async (
+export const getMyUsedTradePostList = async (
     boardId: number,
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetGroupTradePostListResponse> => {
+): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/list/my/${boardId}`, {
+        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/my/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -71,21 +71,21 @@ export const getMyGroupTradePostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getMyGroupTradePostList - ' + error)
+            console.log('getMyUsedTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
         })
 }
 
-export const getJoinedGroupTradePostList = async (
+export const getJoinedUsedTradePostList = async (
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetGroupTradePostListResponse> => {
+): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/list/joins`, {
+        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/joins`, {
             params: {
                 page: page,
                 size: size,
@@ -97,25 +97,25 @@ export const getJoinedGroupTradePostList = async (
             return response.data
         })
         .catch(error => {
-            console.log('getJoinedGroupTradePostList - ' + error)
+            console.log('getJoinedUsedTradePostList - ' + error)
             // console.log(error.response)
 
             throw error
         })
 }
 
-export const searchGroupTradePosts = async (
+export const searchUsedTradePosts = async (
     boardId: number,
     keyword: string,
     option: 'title' | 'content' | 'titleAndContent',
     page = 0,
     size = 10,
     sortParams: string[],
-): Promise<GetGroupTradePostListResponse> => {
+): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     const optionNumber = option === 'title' ? 1 : option === 'content' ? 2 : 3
     return authAxios
-        .get(`${MARKET_ENDPOINT_PREFIX}/search`, {
+        .get(`${USED_TRADE_ENDPOINT_PREFIX}/search`, {
             params: {
                 boardId: boardId,
                 keyword: keyword,
@@ -129,42 +129,42 @@ export const searchGroupTradePosts = async (
             return response.data
         })
         .catch(error => {
-            console.log('searchGroupTradePosts - ' + error)
+            console.log('searchUsedTradePosts - ' + error)
             throw error
         })
 }
 
 // ########## POST ##########
 
-export const createGroupTradePost = async (
-    data: CreateGroupTradePostRequestBody,
-): Promise<CreateGroupTradePostResponse> => {
+export const createUsedTradePost = async (
+    data: CreateUsedTradePostRequestBody,
+): Promise<CreateUsedTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/create`, data)
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/create`, data)
         .then(res => {
             return res.data
         })
         .catch(err => {
-            console.log('createGroupTradePost - ' + err)
+            console.log('createUsedTradePost - ' + err)
         })
 }
 
-export const updateGroupTradePost = async (
-    data: UpdateGroupTradePostRequestBody,
+export const updateUsedTradePost = async (
+    data: UpdateUsedTradePostRequestBody,
 ): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .put(`${MARKET_ENDPOINT_PREFIX}/update`, data)
+        .put(`${USED_TRADE_ENDPOINT_PREFIX}/update`, data)
         .then(res => {
             return res.data
         })
         .catch(err => {
-            console.log('updateGroupTradePost - ' + err)
+            console.log('updateUsedTradePost - ' + err)
         })
 }
 
-export const saveGroupTradePostImage = async (
+export const saveUsedTradePostImage = async (
     postId: number,
     data: FormData,
 ) => {
@@ -176,7 +176,7 @@ export const saveGroupTradePostImage = async (
         },
     })
     return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/save/image/${postId}`, data)
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/save/image/${postId}`, data)
         .then(res => {
             console.log('saveImage Success', res.data)
             return res.data
@@ -187,7 +187,7 @@ export const saveGroupTradePostImage = async (
         })
 }
 
-export const updateGroupTradePostImageReset = async (
+export const updateUsedTradePostImageReset = async (
     postId: number,
     data: any,
 ) => {
@@ -199,59 +199,63 @@ export const updateGroupTradePostImageReset = async (
         },
     })
     return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/update/image/update/${postId}`, data)
+        .post(
+            `${USED_TRADE_ENDPOINT_PREFIX}/update/image/update/${postId}`,
+            data,
+        )
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`updateUsedTradePostImageReset : update Error - ${err}`)
+            throw err
+        })
+}
+
+export const updateUsedTradePostImageAdd = async (
+    postId: number,
+    data: any,
+) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/update/image/add/${postId}`, data)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log(`updateUsedTradePostImageAdd : add Error - ${err}`)
+            throw err
+        })
+}
+
+export const updateUsedTradePostImageDelete = async (
+    postId: number,
+    data: any,
+) => {
+    const token = await getAccessToken()
+    const authAxios = await createAuthAxios({
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    return authAxios
+        .post(
+            `${USED_TRADE_ENDPOINT_PREFIX}/update/image/delete/${postId}`,
+            data,
+        )
         .then(res => {
             return res.data
         })
         .catch(err => {
             console.log(
-                `updateGroupTradePostImageReset : update Error - ${err}`,
-            )
-            throw err
-        })
-}
-
-export const updateGroupTradePostImageAdd = async (
-    postId: number,
-    data: any,
-) => {
-    const token = await getAccessToken()
-    const authAxios = await createAuthAxios({
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-        },
-    })
-    return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/update/image/add/${postId}`, data)
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            console.log(`updateGroupTradePostImageAdd : add Error - ${err}`)
-            throw err
-        })
-}
-
-export const updateGroupTradePostImageDelete = async (
-    postId: number,
-    data: any,
-) => {
-    const token = await getAccessToken()
-    const authAxios = await createAuthAxios({
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-        },
-    })
-    return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/update/image/delete/${postId}`, data)
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            console.log(
-                `updateGroupTradePostImageDelete : delete Error - ${err}`,
+                `updateUsedTradePostImageDelete : delete Error - ${err}`,
             )
             throw err
         })
@@ -259,15 +263,15 @@ export const updateGroupTradePostImageDelete = async (
 
 // ########## DELETE ##########
 
-export const deleteGroupTradePost = async (postId: number): Promise<any> => {
+export const deleteUsedTradePost = async (postId: number): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(`${MARKET_ENDPOINT_PREFIX}/${postId}`)
+        .delete(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })
         .catch(err => {
-            console.log('deleteGroupTradePost - ' + err)
+            console.log('deleteUsedTradePost - ' + err)
         })
 }
 
@@ -276,7 +280,7 @@ export const deleteGroupTradePost = async (postId: number): Promise<any> => {
 export const addLike = async (postId: number): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`${MARKET_ENDPOINT_PREFIX}/${postId}/like`)
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}/like`)
         .then(res => {
             return res.data
         })
@@ -291,7 +295,7 @@ export const deleteLike = async (
 ): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(`${MARKET_ENDPOINT_PREFIX}/${postId}/like`)
+        .delete(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}/like`)
         .then(res => {
             return res.data
         })

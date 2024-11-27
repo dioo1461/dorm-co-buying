@@ -11,11 +11,11 @@ import IcDisposableItem from '@/assets/drawable/ic-disposable-item.svg'
 import IcElecItem from '@/assets/drawable/ic-elec-item.svg'
 import IcCouponItem from '@/assets/drawable/ic-coupon-item.svg'
 import IcOtherItem from '@/assets/drawable/ic-other-item.svg'
-import GroupTradePostComponent from '@/components/groupTrade/GroupTradePostComponent'
+import UsedTradePostComponent from '@/components/usedTrade/UsedTradePostComponent'
 import Loading from '@/components/Loading'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { GroupTradePostReduced } from '@/data/response/success/groupTrade/GetGroupTradePostListResponse'
-import { queryGroupTradePostList } from '@/hooks/useQuery/groupTradeQuery'
+import { UsedTradePostReduced } from '@/data/response/success/UsedTrade/GetUsedTradePostListResponse'
+import { queryUsedTradePostList } from '@/hooks/useQuery/usedTradeQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
@@ -110,8 +110,8 @@ const UsedTrade: React.FC = (): JSX.Element => {
         prevScrollY.current = currentY
     }
 
-    type GroupTradeRouteProp = RouteProp<RootStackParamList, 'UsedTrade'>
-    const { params } = useRoute<GroupTradeRouteProp>()
+    type UsedTradeRouteProp = RouteProp<RootStackParamList, 'UsedTrade'>
+    const { params } = useRoute<UsedTradeRouteProp>()
 
     var refetchCallback: () => void
 
@@ -135,12 +135,12 @@ const UsedTrade: React.FC = (): JSX.Element => {
         }
 
         // ### 게시글 목록 flatlist ###
-        const renderItem: ListRenderItem<GroupTradePostReduced> = ({
-            item,
-        }) => <GroupTradePostComponent data={item} />
+        const renderItem: ListRenderItem<UsedTradePostReduced> = ({ item }) => (
+            <UsedTradePostComponent data={item} />
+        )
 
         const boardId = boardList
-            ? boardList.find(board => board.type === 'groupTradePost')?.id
+            ? boardList.find(board => board.type === 'usedTradePost')?.id
             : undefined
 
         const {
@@ -151,7 +151,7 @@ const UsedTrade: React.FC = (): JSX.Element => {
             isLoading,
             error,
             refetch,
-        } = queryGroupTradePostList(
+        } = queryUsedTradePostList(
             boardId!,
             {
                 sortType: 'createdDate',

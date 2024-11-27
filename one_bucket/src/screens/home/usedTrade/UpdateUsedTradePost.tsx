@@ -1,10 +1,8 @@
-import { saveGroupTradePostImage } from '@/apis/groupTradeService'
 import CloseButton from '@/assets/drawable/close-button.svg'
 import IcPhotoAdd from '@/assets/drawable/ic-photo-add.svg'
-import { CreateGroupTradePostBottomSheet } from '@/components/bottomSheet/CreateGroupTradePostBottomSheet'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
-import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
+import { CreateUsedTradePostRequestBody } from '@/data/request/UsedTrade/CreateUsedTradePostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
@@ -29,6 +27,7 @@ import {
 import { SelectList } from 'react-native-dropdown-select-list'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { getDDays } from '@/utils/dateUtils'
+import { saveUsedTradePostImage } from '@/apis/usedTradeService'
 
 const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
@@ -39,11 +38,11 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    type UpdateGroupTradePostProp = RouteProp<
+    type UpdateUsedTradePostProp = RouteProp<
         RootStackParamList,
         'UpdateUsedTradePost'
     >
-    const { params } = useRoute<UpdateGroupTradePostProp>()
+    const { params } = useRoute<UpdateUsedTradePostProp>()
 
     const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
 
@@ -52,12 +51,6 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
     const [itemName, setItemName] = useState(params.trade_item)
     const [tag, setTag] = useState(params.trade_tag.toString())
     const [price, setPrice] = useState(params.trade_price.toString())
-    const [totalAmount, setTotalAmount] = useState(
-        params.trade_count.toString(),
-    )
-    const [peopleCount, setPeopleCount] = useState<number | null>(
-        params.trade_joins + 1,
-    )
     const [deadline, setDeadline] = useState<number | null>(
         getDDays(new Date(params.trade_dueDate)),
     )
@@ -115,7 +108,6 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
     }
 
     const onPeopleCountManualInputPress = () => {
-        setPeopleCount(null)
         setPeopleCountManualInputEnabled(true)
         requestAnimationFrame(() => {
             peopleCountManualInputRef.current?.focus()
@@ -130,14 +122,14 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
         })
     }
 
-    const findGroupTradeBoardId = () => {
-        const groupTradeBoard = boardList.find(
-            board => board.type === 'groupTradePost',
+    const findUsedTradeBoardId = () => {
+        const UsedTradeBoard = boardList.find(
+            board => board.type === 'usedTradePost',
         )
-        if (groupTradeBoard) {
-            return groupTradeBoard.id
+        if (UsedTradeBoard) {
+            return UsedTradeBoard.id
         }
-        throw new Error('UpdateUsedTradePost - GroupTrade board not found')
+        throw new Error('UpdateUsedTradePost - UsedTrade board not found')
     }
 
     const onSubmitButtonPress = () => {}
@@ -148,31 +140,26 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
             itemName.length > 0 &&
             tag != '' &&
             price.length > 0 &&
-            totalAmount.length > 0 &&
-            peopleCount !== null &&
             deadline !== null &&
             location !== ''
         )
     }
 
     const makeSubmitForm = () => {
-        const submitForm: CreateGroupTradePostRequestBody = {
+        const submitForm: CreateUsedTradePostRequestBody = {
             post: {
-                boardId: findGroupTradeBoardId(),
+                boardId: findUsedTradeBoardId(),
                 title: itemName,
                 text: descriptionTextInput,
             },
             trade: {
                 item: itemName,
-                wanted: Number(totalAmount),
                 price: Number(price),
-                count: peopleCount ?? 0,
                 location: location,
                 linkUrl: siteLink,
                 tag: tag,
                 dueDate: deadline ?? -1,
             },
-            chatRoomName: '',
         }
 
         return submitForm
@@ -192,9 +179,9 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
             })
         })
         console.log(postId)
-        saveGroupTradePostImage(postId, formData).then(() => {
+        saveUsedTradePostImage(postId, formData).then(() => {
             navigation.goBack()
-            navigation.navigate('GroupTradePost', { postId: postId })
+            navigation.navigate('UsedTradePost', { postId: postId })
         })
     }
 
@@ -297,98 +284,6 @@ const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
                         onChangeText={setPrice}
                         keyboardType='numeric'
                     />
-
-                    {/* ### 총 수량 ### */}
-                    <View style={styles.labelContainer}>
-                        <Text style={styles.label}>총 수량</Text>
-                        <Text style={styles.accent}> *</Text>
-                    </View>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder='총 수량'
-                        placeholderTextColor={themeColor.TEXT_TERTIARY}
-                        value={totalAmount}
-                        onChangeText={setTotalAmount}
-                        keyboardType='numeric'
-                    />
-
-                    {/* ### 모집 인원 ### */}
-                    <View style={styles.labelContainer}>
-                        <Text style={styles.label}>모집 인원 (본인 포함)</Text>
-                        <Text style={styles.accent}> *</Text>
-                    </View>
-                    <View style={styles.peopleCountContainer}>
-                        {[2, 3, 4, 5].map(count => (
-                            <View
-                                key={count}
-                                style={{
-                                    flex: 2,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.selectionButton,
-                                        peopleCount === count &&
-                                            styles.selectedButton,
-                                    ]}
-                                    onPress={() => {
-                                        setPeopleCount(count)
-                                        setPeopleCountManualInputEnabled(false)
-                                    }}>
-                                    <Text
-                                        style={{
-                                            color:
-                                                peopleCount === count
-                                                    ? 'white'
-                                                    : 'gray',
-                                        }}>
-                                        {`${count}명`}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                        <TouchableOpacity
-                            style={[
-                                styles.manualInputButton,
-                                peopleCountManualInputEnabled
-                                    ? styles.selectedButton
-                                    : {},
-                            ]}
-                            onPress={onPeopleCountManualInputPress}>
-                            <TextInput
-                                ref={peopleCountManualInputRef}
-                                style={[
-                                    styles.manualInputText,
-                                    peopleCountManualInputEnabled
-                                        ? { color: baseColors.WHITE }
-                                        : { color: baseColors.GRAY_2 },
-                                ]}
-                                onChangeText={text =>
-                                    setPeopleCount(Number(text))
-                                }
-                                placeholder='직접 입력'
-                                placeholderTextColor={
-                                    peopleCountManualInputEnabled
-                                        ? 'white'
-                                        : 'gray'
-                                }
-                                maxLength={2}
-                                editable={peopleCountManualInputEnabled}
-                                keyboardType='numeric'
-                            />
-                            <Text
-                                style={[
-                                    styles.manualInputAffixText,
-                                    { marginBottom: 2 },
-                                ]}>
-                                {peopleCountManualInputEnabled && peopleCount
-                                    ? ' 명'
-                                    : ''}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
 
                     {/* ### 마감 기한 ### */}
                     <View style={styles.labelContainer}>
