@@ -9,6 +9,7 @@ export interface GetProfileResponse {
     name: string
     gender: Gender
     description: string | null
+    email: string
     birth: string
     createAt: string
     updateAt: string

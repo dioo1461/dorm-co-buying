@@ -1,4 +1,4 @@
-import { postProfile } from '@/apis/profileService'
+import { postProfile, updateProfileImage } from '@/apis/profileService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import { CachedImage } from '@/components/CachedImage'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
@@ -118,7 +118,23 @@ const Profile: React.FC = (): React.JSX.Element => {
             description: bio,
             birth: birth,
         }
-        postProfile(form)
+        var imageFormData: FormData | null = new FormData()
+        if (imageUri) {
+            const filename = imageUri.split('/').pop() // 파일 이름 추출
+            const fileExtension = filename!.split('.').pop() // 파일 확장자 추출
+            // FormData에 파일 추가
+            imageFormData.append('file', {
+                uri: imageUri,
+                name: filename, // 파일 이름
+                type: `image/${fileExtension}`, // MIME 타입 설정
+            })
+        } else {
+            imageFormData = null
+        }
+
+        console.log(imageFormData)
+        console.log(imageFormData?.getParts())
+        Promise.all([postProfile(form), updateProfileImage(imageFormData)])
             .then(res => {
                 Toast.show({ text1: '프로필이 성공적으로 수정되었습니다.' })
             })
@@ -193,7 +209,7 @@ const Profile: React.FC = (): React.JSX.Element => {
                         <CheckBox
                             disabled={false}
                             value={male}
-                            onValueChange={newVal => setMale(newVal)}
+                            onValueChange={() => setMale(true)}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,
@@ -207,7 +223,7 @@ const Profile: React.FC = (): React.JSX.Element => {
                         <CheckBox
                             disabled={false}
                             value={!male}
-                            onValueChange={newVal => setMale(!newVal)}
+                            onValueChange={() => setMale(false)}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,

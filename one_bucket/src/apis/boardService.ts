@@ -8,7 +8,7 @@ import { GetBoardListResponse } from '@/data/response/success/board/GetBoardList
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
 import { GetBoardPostResponse } from '@/data/response/success/board/GetBoardPostResponse'
 import { getAccessToken } from '@/utils/accessTokenUtils'
-import { createAuthAxios } from '@/utils/axiosFactory'
+import { createAuthAxios, createAxios } from '@/utils/axiosFactory'
 
 /** API서버에 Login 요청을 보내고, 토큰을 localStorage에 저장
  * @returns: 요청 성공시 true, 요청 실패시 false 반환
@@ -195,13 +195,13 @@ export const updateBoardPost = async (
 
 export const saveBoardPostImage = async (postId: number, data: FormData) => {
     const token = await getAccessToken()
-    const authAxios = await createAuthAxios({
+    const axios = createAxios({
         headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
         },
     })
-    return authAxios
+    return axios
         .post(`/post/save/image/${postId}`, data)
         .then(res => {
             console.log('saveImage Success', res.data)

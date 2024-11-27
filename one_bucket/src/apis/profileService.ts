@@ -1,7 +1,12 @@
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { SetUniversityRequestBody } from '@/data/request/SetUniversityRequestBody'
 import { GetMemberInfoResponse } from '@/data/response/success/auth/GetMemberInfoResponse'
-import { createAuthAxios, createStorageAxios } from 'utils/axiosFactory'
+import { getAccessToken } from '@/utils/accessTokenUtils'
+import {
+    createAuthAxios,
+    createAxios,
+    createStorageAxios,
+} from 'utils/axiosFactory'
 
 /**
  * @returns:
@@ -71,6 +76,38 @@ export const getProfileImage = async () => {
         })
 }
 
+export const updateProfileImage = async (image: FormData | null) => {
+    if (!image) {
+        const authAxios = await createAuthAxios()
+        return authAxios
+            .post('/profile/basic-image')
+            .then(response => {
+                return response
+            })
+            .catch(error => {
+                console.log(error)
+                throw error
+            })
+    } else {
+        const token = await getAccessToken()
+        const axios = createAxios({
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        return axios
+            .post('/profile/image', image)
+            .then(response => {
+                return response
+            })
+            .catch(error => {
+                console.log(error)
+                throw error
+            })
+    }
+}
+
 /**
  * @returns:
  */
@@ -78,7 +115,7 @@ export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
     console.log('AddProfileRequestBody:', data)
     return authAxios
-        .post('/guest/profile/update', data)
+        .post('/profile', data)
         .then(response => {
             return response
         })
