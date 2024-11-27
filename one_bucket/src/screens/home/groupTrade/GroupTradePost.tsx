@@ -1,14 +1,17 @@
+import { addComment } from '@/apis/boardService'
 import { joinTrade, quitTrade } from '@/apis/tradeService'
 import { addLike, deleteLike, deleteGroupTradePost } from '@/apis/groupTradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
 import IcLocation from '@/assets/drawable/ic-location.svg'
 import IcOthers from '@/assets/drawable/ic-others.svg'
+import IcSend from '@/assets/drawable/ic-send.svg'
 import { CachedImage } from '@/components/CachedImage'
 import Loading from '@/components/Loading'
 import Skeleton from '@/components/Skeleton'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { IComment } from '@/data/response/success/board/GetBoardPostResponse'
 import { queryGroupTradePost } from '@/hooks/useQuery/groupTradeQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { RouteProp, useRoute } from '@react-navigation/native'
@@ -21,9 +24,11 @@ import {
 import {
     Animated,
     Dimensions,
+    LayoutChangeEvent,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     ToastAndroid,
     TouchableNativeFeedback,
     TouchableOpacity,
@@ -35,6 +40,7 @@ import {
     RootStackParamList,
     stackNavigation,
 } from '../../navigation/NativeStackNavigation'
+import Comment from '@/components/board/Comment'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -61,6 +67,19 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     const { params } = useRoute<GroupTradePostRouteProp>()
 
     // 레이아웃 관련 변수
+    const [isImageInView, setImageInView] = useState(false)
+    const scrollViewRef = useRef<ScrollView>(null)
+    const commentInputRef = useRef<TextInput>(null)
+    const imageScrollViewRef = useRef<ScrollView>(null)
+    const [imageScrollPos, setImageScrollPos] = useState(0)
+    const [commentPosition, setCommentPosition] = useState(0)
+
+    const commentLayouts = useRef<{
+        [key: string]: { yPos: number; height: number }
+    }>({}) // 댓글 레이아웃 정보
+    const contentHeight = useRef<number>(0)
+
+    // 레이아웃 관련 변수
     const scrollY = useRef(new Animated.Value(0)).current
 
     // 상태 관리 변수
@@ -72,6 +91,25 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     const userLiked = useRef<boolean>(true)
     const likeLock = useRef<boolean>(false)
     const [likeAdded, setLikeAdded] = useState(0)
+
+    const [commentValue, setCommentValue] = useState('')
+    const [parentCommentId, setParentCommentId] = useState(-1)
+    const [editingCommentId, setEditingCommentId] = useState<number | null>(
+        null,
+    )
+
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
+
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
+    const [bottomSheetButtonProps, setBottomSheetButtonProps] = useState<any>(
+        [],
+    )
+
+    const [commentBottomSheetEnabled, setCommentBottomSheetEnabled] =
+        useState(false)
+    const [commentBottomSheetButtonProps, setCommentBottomSheetButtonProps] =
+        useState<SelectableBottomSheetButtonProps[]>([])
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -158,12 +196,11 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         }
     }
 
-    const { data, isLoading, error } = queryGroupTradePost(
+    const { data, isLoading, error, refetch } = queryGroupTradePost(
         params.postId,
         onSuccessCallback,
     )
     useEffect(()=>{console.log("queryGroupTradePost:", data)})
-    
 
     const onJoinButtonPress = async () => {
         await joinTrade(data!.trade_id).then(() => {
@@ -176,13 +213,6 @@ const GroupTradePost: React.FC = (): JSX.Element => {
             navigation.goBack()
         })
     }
-
-    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
-    const [bottomSheetButtonProps, setBottomSheetButtonProps] = useState<any>(
-        [],
-    )
-
-    
     
     const findIfJoined = data?.trade_joinMember.findIndex((item)=>item.nickname == memberInfo?.nickname)
     // -1: 참여 안함
@@ -244,6 +274,62 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         else return 'none'
     }
 
+    const handleCommentSubmit = async () => {
+        setLoadingBackdropEnabled(true)
+        var requestBody
+        if (parentCommentId !== -1) {
+            requestBody = {
+                postId: params.postId,
+                text: commentValue,
+                parentCommentId: parentCommentId,
+            }
+        } else {
+            requestBody = {
+                postId: params.postId,
+                text: commentValue,
+            }
+        }
+        addComment(requestBody)
+            .then(res => {
+                setCommentValue('')
+                refetch()
+                setLoadingBackdropEnabled(false)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const onCommentOptionButtonPress = (data: IComment) => {
+        console.log(data)
+        setCommentBottomSheetEnabled(true)
+        setCommentBottomSheetButtonProps(
+            data.authorNickname == memberInfo!.nickname
+                ? [
+                      {
+                          text: '댓글 수정하기',
+                          style: 'default',
+                          onPress: () => {
+                              setEditingCommentId(data.commentId)
+                              setCommentBottomSheetEnabled(false)
+                          },
+                      },
+                      {
+                          text: '댓글 삭제하기',
+                          style: 'destructive',
+                          onPress: () => {},
+                      },
+                  ]
+                : [
+                      {
+                          text: '댓글 신고하기',
+                          style: 'default',
+                          onPress: () => {},
+                      },
+                  ],
+        )
+    }
+
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 300], // 스크롤 범위
         outputRange: [0, 1], // opacity 값 변화
@@ -255,6 +341,37 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         { useNativeDriver: false },
     )
 
+    const initCommentYpos = (commentId: number, event: LayoutChangeEvent) => {
+        // 각 댓글의 Y 위치 저장
+        const layout = event.nativeEvent.layout
+        commentLayouts.current[commentId] = {
+            yPos: layout.y,
+            height: 0,
+        }
+    }
+
+    const initCommentHeight = (commentId: number, event: LayoutChangeEvent) => {
+        // 각 댓글의 Y 위치 저장
+        const layout = event.nativeEvent.layout
+        commentLayouts.current[commentId].height = layout.height
+    }
+
+    const scrollToComment = (commentId: number) => {
+        const scrollView = scrollViewRef.current
+        const commentPosition = commentLayouts.current[commentId].yPos
+        const commentHeight = commentLayouts.current[commentId].height
+
+        if (scrollView && commentPosition !== undefined) {
+            // console.log('comment height:', commentHeight)
+            // console.log('comment position:', commentPosition)
+            // console.log('content height:', contentHeight.current)
+            scrollView.scrollTo({
+                y: contentHeight.current + commentPosition,
+                animated: true,
+            })
+        }
+    }
+
     if (error) return <Text>Error...</Text>
     if (isLoading) return <Loading theme={themeColor} />
 
@@ -262,7 +379,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         <View style={styles.container}>
             {/* ### 본문 ScrollView ### */}
             <Animated.ScrollView
-                style={{ flex: 1, marginBottom: 72 }}
+                style={{ flex: 1, marginBottom: 72, }}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}>
                 <ScrollView
@@ -282,12 +399,21 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     ))}
                 </ScrollView>
                 {/* ### 게시자 프로필 ### */}
-                <View style={styles.profileContainer}>
-                    {/* TODO: 프로필 사진 */}
-                    <View style={styles.authorProfileImage}></View>
-                    <Text style={styles.usernameText}>
-                        {data?.authorNickname}
-                    </Text>
+                <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                    <View style={styles.profileContainer}>
+                        {/* TODO: 프로필 사진 */}
+                        <View style={styles.authorProfileImage}></View>
+                        <Text style={styles.usernameText}>
+                            {data?.authorNickname}
+                        </Text>
+                    </View>
+                    {/* ### 좋아요 버튼 ### */}
+                    <TouchableOpacity
+                        style={{flexDirection: "row", alignItems: 'center', paddingHorizontal: 20}}
+                        onPress={() => onLikeButtonPress()}>
+                        <Text style={styles.likesText}>{data!.likes + likeAdded}</Text>
+                        <IcHeart fill={likeButtonFill(userLiked.current)}/>
+                    </TouchableOpacity>
                 </View>
                 {/* ### 본문 ### */}
                 <View style={styles.bodyContainer}>
@@ -369,12 +495,125 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     </View>
                     {/* <View style={styles.locationMapContainer}></View> */}
                     <View
-                        style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <IcLocation width={24} height={24} />
-                        <Text style={styles.locationText}>
-                            {data?.trade_location}
-                        </Text>
+                        style={{ 
+                            flexDirection: 'row', 
+                            alignItems: 'center', 
+                            marginBottom: 10,
+                            }}>
+                        <View style={{flexDirection: "row", alignItems: 'center'}}>
+                            <IcLocation width={24} height={24} />
+                            <Text style={styles.locationText}>
+                                {data?.trade_location}
+                            </Text>
+                        </View>
                     </View>
+                    <View style={{
+                        flexDirection: "row", 
+                        alignItems: 'center', 
+                        justifyContent: 'flex-end',
+                        marginBottom: 10
+                        }}>
+                        {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
+                        <Text style={styles.bottomBarLabel}>모집 인원</Text>
+                        {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
+                        <Text style={styles.bottomBarCountText}>
+                            {(data?.trade_joinMember.length ?? 0) + 1} /{' '}
+                            {data?.trade_wanted}
+                        </Text>
+                        <TouchableOpacity
+                                style={{...styles.joinButton,
+                                    backgroundColor: (
+                                        buttonMode == '3' || 
+                                        data?.authorNickname == memberInfo?.nickname
+                                    )
+                                            ? themeColor.BUTTON_SECONDARY_BG_DARKER
+                                            : themeColor.BUTTON_BG
+                                    
+                                }}
+                                onPress={()=>{
+                                    (findIfJoined == -1) ? 
+                                        onJoinButtonPress() :
+                                        onQuitButtonPress()
+                                    
+                                    }}
+                                disabled={
+                                    buttonMode == '3' || 
+                                    data?.authorNickname == memberInfo?.nickname
+                                }
+                                >
+                                <Text style={styles.bottomBarButtonText}>
+                                    {data?.authorNickname != memberInfo?.nickname ? 
+                                        (buttonText(buttonMode)) : (`내 게시글`)
+                                    }
+                                </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                {/* ### 댓글 ### */}
+                <View style={{marginHorizontal: 16}}>
+                    {data?.comments.map((comment, index) => {
+                        var highlight = comment.commentId === parentCommentId
+                        return (
+                            <View
+                                key={index}
+                                onLayout={e =>
+                                    initCommentYpos(comment.commentId, e)
+                                }>
+                                <View
+                                    onLayout={e =>
+                                        initCommentHeight(comment.commentId, e)
+                                    }>
+                                    <Comment
+                                        theme={themeColor}
+                                        data={comment}
+                                        isReply={false}
+                                        parentCommentId={parentCommentId}
+                                        setParentCommentId={id =>
+                                            setParentCommentId(id)
+                                        }
+                                        isEditing={
+                                            editingCommentId ===
+                                            comment.commentId
+                                        }
+                                        highlight={highlight}
+                                        onReplyButtonPress={() => {
+                                            scrollToComment(comment.commentId)
+                                            commentInputRef.current?.focus()
+                                            console.log(
+                                                comment.commentId,
+                                                commentLayouts.current[
+                                                    comment.commentId
+                                                ],
+                                            )
+                                        }}
+                                        onOptionButtonPress={data =>
+                                            onCommentOptionButtonPress(data)
+                                        }
+                                    />
+                                </View>
+                                {comment.replies.map((replyComment, idx) => (
+                                    <Comment
+                                        key={idx}
+                                        theme={themeColor}
+                                        data={replyComment}
+                                        isReply={true}
+                                        parentCommentId={parentCommentId}
+                                        setParentCommentId={id =>
+                                            setParentCommentId(id)
+                                        }
+                                        isEditing={
+                                            editingCommentId ===
+                                            replyComment.commentId
+                                        }
+                                        highlight={false}
+                                        onOptionButtonPress={data =>
+                                            onCommentOptionButtonPress(data)
+                                        }
+                                    />
+                                ))}
+                            </View>
+                        )
+                    })}
                 </View>
             </Animated.ScrollView>
             {/* ### 헤더 ### */}
@@ -402,50 +641,48 @@ const GroupTradePost: React.FC = (): JSX.Element => {
             </View>
             {/* ### 하단 바 ### */}
             <View style={styles.bottomBarContainer}>
-                <TouchableOpacity
-                    style={{flexDirection: "row", alignItems: 'center'}}
-                    onPress={() => onLikeButtonPress()}>
-                    <IcHeart fill={likeButtonFill(userLiked.current)}/>
-                    <Text style={styles.likesText}>{data!.likes + likeAdded}</Text>
-                </TouchableOpacity>
-                <View style={{ position: 'relative', left: -16 }}>
-                    {/* <Text style={styles.bottomBarLabel}>남은 수량</Text> */}
-                    <Text style={styles.bottomBarLabel}>모집 인원</Text>
+                
+                
+            </View>
+            {/* ### 댓글 입력 container ### */}
+            <View
+                style={{
+                    backgroundColor: themeColor.BG,
+                    alignItems: 'center',
+                    width: '100%',
+                    height: 52,
+                    position: 'absolute',
+                    bottom: 0,
+                }}>
+                <View style={styles.commentInputContainer}>
+                    <TextInput
+                        ref={commentInputRef}
+                        style={styles.commentTextInput}
+                        placeholder='댓글을 입력하세요.'
+                        placeholderTextColor={themeColor.TEXT_SECONDARY}
+                        value={commentValue}
+                        onChangeText={text => setCommentValue(text)}
+                    />
+                    <TouchableOpacity
+                        style={{ marginEnd: 10 }}
+                        onPress={() => {
+                            if (!commentValue) {
+                                ToastAndroid.showWithGravity(
+                                    '내용을 입력해 주세요.',
+                                    ToastAndroid.SHORT,
+                                    ToastAndroid.CENTER,
+                                )
+                            } else handleCommentSubmit()
+                        }}>
+                        <IcSend
+                            fill={
+                                themeColor === lightColors
+                                    ? baseColors.SCHOOL_BG
+                                    : baseColors.GRAY_2
+                            }
+                        />
+                    </TouchableOpacity>
                 </View>
-                <View style={{ position: 'relative', left: 0 }}>
-                    {/* <Text style={styles.bottomBarCountText}>{data.}</Text> */}
-                    <Text style={styles.bottomBarCountText}>
-                        {(data?.trade_joinMember.length ?? 0) + 1} /{' '}
-                        {data?.trade_wanted}
-                    </Text>
-                </View>
-                <TouchableOpacity
-                    style={{...styles.joinButton,
-                        backgroundColor: (
-                            buttonMode == '3' || 
-                            data?.authorNickname == memberInfo?.nickname
-                        )
-                                ? themeColor.BUTTON_SECONDARY_BG_DARKER
-                                : themeColor.BUTTON_BG
-                        
-                    }}
-                    onPress={()=>{
-                        (findIfJoined == -1) ? 
-                            onJoinButtonPress() :
-                            onQuitButtonPress()
-                        
-                        }}
-                    disabled={
-                        buttonMode == '3' || 
-                        data?.authorNickname == memberInfo?.nickname
-                    }
-                    >
-                    <Text style={styles.bottomBarButtonText}>
-                        {data?.authorNickname != memberInfo?.nickname ? 
-                            (buttonText(buttonMode)) : (`내 게시글`)
-                        }
-                    </Text>
-                </TouchableOpacity>
             </View>
             <SelectableBottomSheet
                 theme={themeColor}
@@ -576,6 +813,7 @@ const createStyles = (theme: Icolor) =>
             fontSize: 14,
             textAlign: 'right',
             marginVertical: 2,
+            marginHorizontal: 20,
         },
         bottomBarButtonText: {
             color: theme.BUTTON_TEXT,
@@ -598,6 +836,23 @@ const createStyles = (theme: Icolor) =>
             fontSize: 12,
             fontFamily: 'NanumGothic',
             marginVertical: 10,
+        },
+        commentInputContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginVertical: 4,
+            marginHorizontal: 20,
+            borderRadius: 40,
+        },
+        commentTextInput: {
+            color: theme.TEXT,
+            fontFamily: 'NanumGothic',
+            fontSize: 14,
+            flex: 1,
+            marginStart: 6,
         },
     })
 
