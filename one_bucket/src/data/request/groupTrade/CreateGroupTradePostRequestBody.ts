@@ -11,7 +11,7 @@ export interface CreateGroupTradePostRequestBody {
         price: number
         location: string
         linkUrl: string
-        tag: TradeCategory
+        tag: string
         dueDate: number
         wanted: number
         count: number

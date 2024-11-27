@@ -161,11 +161,13 @@ const MyGroupTradePosts: React.FC = (): JSX.Element => {
                                         marginTop: 10,
                                         flexDirection: 'row',
                                         alignItems: 'center',
-                                        justifyContent: 'space-between',
                                     }}>
                                     <Text style={styles.postTitle}>
                                         {data.title}
                                     </Text>
+                                    <Text style={styles.postLocation}>
+                                    {data.trade_tag}
+                                </Text>
                                 </View>
                                 <View
                                     style={{
@@ -200,25 +202,6 @@ const MyGroupTradePosts: React.FC = (): JSX.Element => {
                                     ).toFixed(0)} 원`}</Text>
                                 </View>
                             </View>
-                        </View>
-                        <View
-                            style={{
-                                position: 'absolute',
-                                right: 10,
-                                top: -4,
-                            }}>
-                            <TouchableNativeFeedback
-                                background={touchableNativeFeedbackBg()}
-                                useForeground={true}>
-                                <View
-                                    style={{
-                                        borderRadius: 30,
-                                        padding: 10,
-                                        overflow: 'hidden',
-                                    }}>
-                                    <IcOthers fill={baseColors.GRAY_3} />
-                                </View>
-                            </TouchableNativeFeedback>
                         </View>
                         <View
                             style={{
@@ -345,6 +328,7 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontSize: 11,
             fontFamily: 'NanumGothic',
+            paddingHorizontal: 8,
         },
         postDeadline: {
             color: theme.TEXT_SECONDARY,

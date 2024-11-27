@@ -23,6 +23,7 @@ import {
     ImageLibraryOptions,
     launchImageLibrary,
 } from 'react-native-image-picker'
+import { SelectList } from 'react-native-dropdown-select-list'
 
 const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
@@ -38,6 +39,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [itemName, setItemName] = useState('')
+    const [tag, setTag] = useState('')
     const [price, setPrice] = useState('')
     const [totalAmount, setTotalAmount] = useState('')
     const [peopleCount, setPeopleCount] = useState<number | null>(null)
@@ -46,6 +48,22 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const [descriptionTextInput, setDescriptionTextInput] = useState('')
     const [keyboardHeight, setKeyboardHeight] = useState(0)
     const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
+
+    const tagList = [
+        '가공식품',
+        '도서/미디어',
+        '문구/완구',
+        '생활용품',
+        '스포츠/레저',
+        '신선식품', 
+        '음료/물',
+        '의류',
+        '의약품', 
+        '일회용품', 
+        '전자기기', 
+        '쿠폰', 
+        '기타'
+    ]
 
     const [peopleCountManualInputEnabled, setPeopleCountManualInputEnabled] =
         useState(false)
@@ -115,6 +133,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
         return (
             imageUriList.length > 0 &&
             itemName.length > 0 &&
+            tag != '' &&
             price.length > 0 &&
             totalAmount.length > 0 &&
             peopleCount !== null &&
@@ -137,7 +156,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                 count: peopleCount ?? 0,
                 location: location,
                 linkUrl: siteLink,
-                tag: '신선식품',
+                tag: tag,
                 dueDate: deadline ?? -1,
             },
             chatRoomName: '',
@@ -229,7 +248,6 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                         onChangeText={setSiteLink}
                         keyboardType='url'
                     />
-
                     <View style={styles.labelContainer}>
                         <Text style={styles.label}>품목명</Text>
                         <Text style={styles.accent}> *</Text>
@@ -241,7 +259,18 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                         value={itemName}
                         onChangeText={setItemName}
                     />
-
+                    <View style={styles.labelContainer}>
+                        <Text style={styles.label}>카테고리</Text>
+                        <Text style={styles.accent}> *</Text>
+                    </View>
+                    <SelectList
+                        setSelected={setTag}
+                        data={tagList}
+                        save='value'
+                        placeholder={'카테고리를 선택해 주세요.'}
+                        inputStyles={styles.categoryText}
+                        search={false}
+                    />  
                     {/* ### 가격 ### */}
                     <View style={styles.labelContainer}>
                         <Text style={styles.label}>가격</Text>
@@ -598,6 +627,9 @@ const createStyles = (theme: Icolor) =>
             borderWidth: 1,
             borderRadius: 8,
             padding: 8,
+        },
+        categoryText: {
+            color: theme.TEXT,
         },
         peopleCountContainer: {
             flexDirection: 'row',
