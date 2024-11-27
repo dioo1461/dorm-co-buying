@@ -47,7 +47,7 @@ const Login: React.FC = (): React.JSX.Element => {
         setAutoLoginEnabled(autoLogin.current)
         requestLogin(loginForm)
             .then(res => {
-                onLogInSuccess()
+                onLogInSuccess(res.accessToken)
             })
             .catch(err => {
                 console.log(err)

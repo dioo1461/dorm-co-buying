@@ -135,10 +135,11 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                     username: email,
                     password: password,
                 }
-
                 requestLogin(loginForm)
                     .then(res => {
-                        navigation.navigate('SignUp6')
+                        navigation.navigate('SignUp6', {
+                            accessToken: res.accessToken,
+                        })
                     })
                     .catch(err => {
                         console.log(`signUp5 - requestLogin: ${err}`)

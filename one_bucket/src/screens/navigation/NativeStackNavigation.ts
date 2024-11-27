@@ -14,8 +14,8 @@ export type RootStackParamList = {
         schoolEmail: string
     } */
     SignUp5: undefined
-    SignUp6: undefined
-    SignUp7: undefined
+    SignUp6: { accessToken: string }
+    SignUp7: { accessToken: string }
     NewPw: undefined
     NewPw2: {
         email: string

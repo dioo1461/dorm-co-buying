@@ -1,5 +1,5 @@
 import { Icolor, lightColors } from '@/constants/colors'
-import { removeAccessToken } from '@/utils/accessTokenUtils'
+import { removeAccessToken, setAccessToken } from '@/utils/accessTokenUtils'
 import { setLoginInitFlag } from '@/utils/asyncStorageUtils'
 import Toast from 'react-native-toast-message'
 import { StateCreator } from 'zustand'
@@ -11,7 +11,7 @@ export interface AppSlice {
         (showToast: boolean): void
         (): void
     }
-    onLogInSuccess: () => void
+    onLogInSuccess: (accessToken: string) => void
     onLoginFailure: () => void
     onPhoneVerificationFailure: () => void
     onSchoolEmailVerificationFailure: () => void
@@ -40,7 +40,8 @@ export const createAppSlice: StateCreator<AppSlice, [], []> = (set, get) => ({
             })
         }
     },
-    onLogInSuccess: () => {
+    onLogInSuccess: accessToken => {
+        setAccessToken(accessToken)
         setLoginInitFlag(true)
         get().setLoginState(true) // 상태 변경
         Toast.show({

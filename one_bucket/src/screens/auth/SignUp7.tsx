@@ -1,6 +1,6 @@
 import { Icolor } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import { RouteProp } from '@react-navigation/native'
+import { RouteProp, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { RootStackParamList } from '../navigation/NativeStackNavigation'
@@ -17,9 +17,10 @@ const SignUp7: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
 
     type SignUp7RouteProp = RouteProp<RootStackParamList, 'SignUp7'>
+    const { params } = useRoute<SignUp7RouteProp>()
 
     const handleLogin = async () => {
-        onLogInSuccess()
+        onLogInSuccess(params.accessToken)
     }
 
     return (

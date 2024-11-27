@@ -16,27 +16,20 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native'
-import { stackNavigation } from '../navigation/NativeStackNavigation'
+import {
+    RootStackParamList,
+    stackNavigation,
+} from '../navigation/NativeStackNavigation'
+import { RouteProp, useRoute } from '@react-navigation/native'
 
 const SignUp6: React.FC = (): React.JSX.Element => {
-    const { themeColor, setThemeColor, onSignUpSuccess } = useBoundStore(
-        state => ({
-            themeColor: state.themeColor,
-            setThemeColor: state.setThemeColor,
-            onSignUpSuccess: state.onSignUpSuccess,
-        }),
-    )
+    const { themeColor, onSignUpSuccess } = useBoundStore(state => ({
+        themeColor: state.themeColor,
+        onSignUpSuccess: state.onSignUpSuccess,
+    }))
 
-    // 다크모드 변경 감지
-    useEffect(() => {
-        onPressBackBtn(true)
-        const themeSubscription = Appearance.addChangeListener(
-            ({ colorScheme }) => {
-                setThemeColor(colorScheme === 'dark' ? darkColors : lightColors)
-            },
-        )
-        return () => themeSubscription.remove()
-    }, [])
+    type SignUp6RouteProp = RouteProp<RootStackParamList, 'SignUp6'>
+    const { params } = useRoute<SignUp6RouteProp>()
 
     const onPressBackBtn = (action: boolean) => {
         const backAction = (): boolean => {
@@ -90,7 +83,9 @@ const SignUp6: React.FC = (): React.JSX.Element => {
         }
         postProfile(form)
             .then(res => {
-                navigation.navigate('SignUp7')
+                navigation.navigate('SignUp7', {
+                    accessToken: params.accessToken,
+                })
                 onPressBackBtn(false)
             })
             .catch(err => {
