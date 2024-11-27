@@ -3,6 +3,7 @@ import notifee, {
     AndroidImportance,
     AndroidVisibility,
     AuthorizationStatus,
+    EventType,
 } from '@notifee/react-native'
 import messaging, {
     FirebaseMessagingTypes,
@@ -14,6 +15,7 @@ import {
 } from './asyncStorageUtils'
 import { openDatabase } from 'react-native-sqlite-storage'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
+import { Linking } from 'react-native'
 
 const TOPIC_ALL = 'ALL_USER'
 
@@ -238,6 +240,29 @@ const initializeFcm = async () => {
         messaging().subscribeToTopic(TOPIC_ALL)
         messaging().onMessage(foregroundHandler)
         messaging().setBackgroundMessageHandler(backgroundHandler)
+        notifee.onForegroundEvent(({ type, detail }) => {
+            if (type === EventType.PRESS) {
+                console.log('Notification Pressed:', detail.notification)
+                const link = detail.notification?.data?.link as string // 알림의 데이터에서 Deep Linking URL 가져오기
+                if (link) {
+                    Linking.openURL(link) // Deep Linking URL로 이동
+                }
+            }
+        })
+
+        // Background 알림 이벤트 처리
+        notifee.onBackgroundEvent(async ({ type, detail }) => {
+            if (type === EventType.PRESS) {
+                console.log(
+                    'Notification Pressed in Background:',
+                    detail.notification,
+                )
+                const link = detail.notification?.data?.link as string
+                if (link) {
+                    Linking.openURL(link)
+                }
+            }
+        })
     }
 
     init()

@@ -1,39 +1,71 @@
 import strings from '@/constants/strings'
 
 const linking = {
-    prefixes: ['app://'], // 앱에서 처리할 URL의 prefix
+    prefixes: ['app://'],
     config: {
         screens: {
-            Home: '', // 기본 루트 경로
-            Search: 'search/:keyword/:option', // 검색 페이지
-            Notification: 'notification', // 알림 페이지
-            ProfileDetails: 'profile/:userId', // 사용자 프로필 상세
-
-            // 개별 스크린 매핑
-            [strings.unauthHomeScreenName]: 'unauth/home',
-            [strings.createGroupTradePostScreenName]: 'group-trade/create-post',
-            [strings.groupTradePostScreenName]: 'group-trade/:postId',
-            [strings.profileDetailsScreenName]: 'profile/:userId',
-            [strings.profileModifyScreenName]: 'profile/modify',
-            [strings.settingScreenName]: 'settings',
-            [strings.schoolAuth1ScreenName]: 'auth/school/step1',
-            [strings.schoolAuth2ScreenName]: 'auth/school/step2',
-            [strings.schoolAuth3ScreenName]: 'auth/school/step3',
-            [strings.changePwScreenName]: 'auth/change-password/step1',
-            [strings.changePw2ScreenName]: 'auth/change-password/step2',
-            [strings.alertSettingScreenName]: 'settings/alerts',
-            [strings.announcementListScreenName]: 'announcements',
-            [strings.announcementPostScreenName]: 'announcement/:postId',
+            // 로그인된 상태
+            Main: {
+                path: 'main',
+                screens: {
+                    [strings.homeRouteScreenName]: {
+                        path: 'home',
+                        screens: {
+                            Board: {
+                                path: 'board',
+                                screens: {
+                                    [strings.boardPostScreenName]:
+                                        'post/:postId',
+                                },
+                            },
+                            GroupTrade: {
+                                path: 'group-trade',
+                                screens: {
+                                    [strings.groupTradePostScreenName]:
+                                        'post/:postId',
+                                },
+                            },
+                        },
+                    },
+                    [strings.chatListScreenName]: 'chat-list',
+                    [strings.myPageScreenName]: 'my-page',
+                },
+            },
+            // 개별 스크린들
+            [strings.unauthHomeScreenName]: 'unauth-home',
+            [strings.createGroupTradePostScreenName]: 'create-group-trade-post',
+            [strings.groupTradePostScreenName]: 'group-trade-post/:postId',
+            [strings.profileDetailsScreenName]: 'profile-details',
+            [strings.profileModifyScreenName]: 'profile-modify',
+            [strings.settingScreenName]: 'setting',
+            [strings.schoolAuth1ScreenName]: 'school-auth-step1',
+            [strings.schoolAuth2ScreenName]: 'school-auth-step2',
+            [strings.schoolAuth3ScreenName]: 'school-auth-step3',
+            [strings.changePwScreenName]: 'change-password',
+            [strings.changePw2ScreenName]: 'change-password-confirm',
+            [strings.alertSettingScreenName]: 'alert-setting',
+            [strings.announcementListScreenName]: 'announcement-list',
+            [strings.announcementPostScreenName]: 'announcement-post/:postId',
             [strings.supportScreenName]: 'support',
-            [strings.versionCheckScreenName]: 'settings/version',
-            [strings.boardCreatePostScreenName]: 'board/create-post',
-            [strings.updateBoardPostScreenName]: 'board/update-post/:postId',
-            [strings.boardPostScreenName]: 'board/:postId',
+            [strings.versionCheckScreenName]: 'version-check',
+            [strings.boardCreatePostScreenName]: 'create-board-post',
+            [strings.updateBoardPostScreenName]: 'update-board-post/:postId',
+            [strings.boardPostScreenName]: 'board-post/:postId',
             [strings.imageEnlargementScreenName]: 'image-enlargement',
-            [strings.chatScreenName]: 'chat/:roomId',
-            [strings.myLikedPostsScreenName]: 'profile/liked-posts',
-            [strings.myBoardPostsScreenName]: 'profile/board-posts',
-            [strings.myGroupTradePostsScreenName]: 'profile/group-trade-posts',
+            [strings.chatScreenName]: 'chat/:chatId',
+            [strings.searchScreenName]: 'search',
+            [strings.notificationScreenName]: 'notification',
+            [strings.myLikedPostsScreenName]: 'my-liked-posts',
+            [strings.myBoardPostsScreenName]: 'my-board-posts',
+            [strings.myGroupTradePostsScreenName]: 'my-group-trade-posts',
+            // 로그인되지 않은 상태
+            Login: 'login',
+            [strings.loginScreenName]: 'login',
+            [strings.signUp5ScreenName]: 'sign-up-step5',
+            [strings.signUp6ScreenName]: 'sign-up-step6',
+            [strings.signUp7ScreenName]: 'sign-up-step7',
+            [strings.newPwScreenName]: 'new-password',
+            [strings.newPw2ScreenName]: 'new-password-confirm',
         },
     },
 }
