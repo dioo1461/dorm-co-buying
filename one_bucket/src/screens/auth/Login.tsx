@@ -7,6 +7,7 @@ import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import { setAutoLoginEnabled } from '@/utils/asyncStorageUtils'
 import React, { useRef } from 'react'
 import {
+    Dimensions,
     Image,
     Modal,
     StyleSheet,
@@ -126,7 +127,10 @@ const Login: React.FC = (): React.JSX.Element => {
                     width: '100%',
                 }}>
                 <TextInput
-                    style={styles.textInput}
+                    style={[
+                        styles.textInput,
+                        { width: Dimensions.get('window').width - 40 },
+                    ]}
                     placeholder='아이디'
                     placeholderTextColor={themeColor.TEXT_SECONDARY}
                     value={id}
@@ -139,7 +143,10 @@ const Login: React.FC = (): React.JSX.Element => {
                         alignItems: 'center',
                     }}>
                     <TextInput
-                        style={{ ...styles.textInput, width: '85%' }}
+                        style={[
+                            styles.textInput,
+                            { width: Dimensions.get('window').width - 80 },
+                        ]}
                         placeholder='비밀번호'
                         placeholderTextColor={themeColor.TEXT_SECONDARY}
                         secureTextEntry={hidePw}
@@ -222,7 +229,6 @@ const createStyles = (theme: Icolor) =>
             borderBottomWidth: 1,
             fontFamily: 'NanumGothic',
             fontSize: 14,
-            width: '95%',
             padding: 6,
             marginStart: 20,
             marginEnd: 20,

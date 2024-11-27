@@ -6,7 +6,8 @@ import { getAccessToken } from '@/utils/accessTokenUtils'
 import { GetUsedTradePostResponse } from '@/data/response/success/usedTrade/GetUsedTradePostResponse'
 import { createAuthAxios } from '@/utils/axiosFactory'
 
-const USED_TRADE_ENDPOINT_PREFIX = '/used-post'
+const USED_TRADE_POST_ENDPOINT_PREFIX = '/used-post'
+const USED_TRADE_ENDPOINT_PREFIX = '/used-trade'
 
 // ########## GET ##########
 
@@ -18,7 +19,7 @@ export const getUsedTradePostList = async (
 ): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/${boardId}`, {
+        .get(`${USED_TRADE_POST_ENDPOINT_PREFIX}/list/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -42,7 +43,7 @@ export const getUsedTradePost = async (
 ): Promise<GetUsedTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}`)
+        .get(`${USED_TRADE_POST_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })
@@ -59,7 +60,7 @@ export const getMyUsedTradePostList = async (
 ): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/my/${boardId}`, {
+        .get(`${USED_TRADE_POST_ENDPOINT_PREFIX}/list/my/${boardId}`, {
             params: {
                 page: page,
                 size: size,
@@ -85,7 +86,7 @@ export const getJoinedUsedTradePostList = async (
 ): Promise<GetUsedTradePostListResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .get(`${USED_TRADE_ENDPOINT_PREFIX}/list/joins`, {
+        .get(`${USED_TRADE_POST_ENDPOINT_PREFIX}/list/joins`, {
             params: {
                 page: page,
                 size: size,
@@ -115,7 +116,7 @@ export const searchUsedTradePosts = async (
     const authAxios = await createAuthAxios()
     const optionNumber = option === 'title' ? 1 : option === 'content' ? 2 : 3
     return authAxios
-        .get(`${USED_TRADE_ENDPOINT_PREFIX}/search`, {
+        .get(`${USED_TRADE_POST_ENDPOINT_PREFIX}/search`, {
             params: {
                 boardId: boardId,
                 keyword: keyword,
@@ -141,7 +142,7 @@ export const createUsedTradePost = async (
 ): Promise<CreateUsedTradePostResponse> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`${USED_TRADE_ENDPOINT_PREFIX}/create`, data)
+        .post(`${USED_TRADE_POST_ENDPOINT_PREFIX}/create`, data)
         .then(res => {
             return res.data
         })
@@ -155,7 +156,7 @@ export const updateUsedTradePost = async (
 ): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .put(`${USED_TRADE_ENDPOINT_PREFIX}/update`, data)
+        .put(`${USED_TRADE_POST_ENDPOINT_PREFIX}/update`, data)
         .then(res => {
             return res.data
         })
@@ -176,7 +177,7 @@ export const saveUsedTradePostImage = async (
         },
     })
     return authAxios
-        .post(`${USED_TRADE_ENDPOINT_PREFIX}/save/image/${postId}`, data)
+        .post(`${USED_TRADE_POST_ENDPOINT_PREFIX}/save/image/${postId}`, data)
         .then(res => {
             console.log('saveImage Success', res.data)
             return res.data
@@ -200,7 +201,7 @@ export const updateUsedTradePostImageReset = async (
     })
     return authAxios
         .post(
-            `${USED_TRADE_ENDPOINT_PREFIX}/update/image/update/${postId}`,
+            `${USED_TRADE_POST_ENDPOINT_PREFIX}/update/image/update/${postId}`,
             data,
         )
         .then(res => {
@@ -224,7 +225,10 @@ export const updateUsedTradePostImageAdd = async (
         },
     })
     return authAxios
-        .post(`${USED_TRADE_ENDPOINT_PREFIX}/update/image/add/${postId}`, data)
+        .post(
+            `${USED_TRADE_POST_ENDPOINT_PREFIX}/update/image/add/${postId}`,
+            data,
+        )
         .then(res => {
             return res.data
         })
@@ -247,7 +251,7 @@ export const updateUsedTradePostImageDelete = async (
     })
     return authAxios
         .post(
-            `${USED_TRADE_ENDPOINT_PREFIX}/update/image/delete/${postId}`,
+            `${USED_TRADE_POST_ENDPOINT_PREFIX}/update/image/delete/${postId}`,
             data,
         )
         .then(res => {
@@ -261,12 +265,25 @@ export const updateUsedTradePostImageDelete = async (
         })
 }
 
+export const createUsedTradeChat = async (usedTradePostId: number) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/chat/${usedTradePostId}`)
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('createUsedTradeChat - ' + err)
+            throw err
+        })
+}
+
 // ########## DELETE ##########
 
 export const deleteUsedTradePost = async (postId: number): Promise<any> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}`)
+        .delete(`${USED_TRADE_POST_ENDPOINT_PREFIX}/${postId}`)
         .then(res => {
             return res.data
         })
@@ -280,7 +297,7 @@ export const deleteUsedTradePost = async (postId: number): Promise<any> => {
 export const addLike = async (postId: number): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .post(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}/like`)
+        .post(`${USED_TRADE_POST_ENDPOINT_PREFIX}/${postId}/like`)
         .then(res => {
             return res.data
         })
@@ -295,7 +312,7 @@ export const deleteLike = async (
 ): Promise<{ message: string }> => {
     const authAxios = await createAuthAxios()
     return authAxios
-        .delete(`${USED_TRADE_ENDPOINT_PREFIX}/${postId}/like`)
+        .delete(`${USED_TRADE_POST_ENDPOINT_PREFIX}/${postId}/like`)
         .then(res => {
             return res.data
         })

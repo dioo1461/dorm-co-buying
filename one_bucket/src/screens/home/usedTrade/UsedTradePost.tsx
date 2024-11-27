@@ -2,6 +2,7 @@ import { addComment } from '@/apis/boardService'
 import { joinTrade, quitTrade } from '@/apis/tradeService'
 import {
     addLike,
+    createUsedTradeChat,
     deleteLike,
     deleteUsedTradePost,
 } from '@/apis/usedTradeService'
@@ -46,6 +47,7 @@ import {
 } from '../../navigation/NativeStackNavigation'
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
+import ProfileImage from '@/components/ProfileImage'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -333,6 +335,10 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         commentLayouts.current[commentId].height = layout.height
     }
 
+    const checkIfMyPost = () => {
+        return data?.authorNickname === memberInfo?.nickname
+    }
+
     const scrollToComment = (commentId: number) => {
         const scrollView = scrollViewRef.current
         const commentPosition = commentLayouts.current[commentId].yPos
@@ -383,7 +389,13 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                     }}>
                     <View style={styles.profileContainer}>
                         {/* TODO: 프로필 사진 */}
-                        <View style={styles.authorProfileImage}></View>
+                        <View style={styles.authorProfileImage}>
+                            <ProfileImage
+                                size={52}
+                                imageUrl={data?.authorImage}
+                                theme={themeColor}
+                            />
+                        </View>
                         <Text style={styles.usernameText}>
                             {data?.authorNickname}
                         </Text>
@@ -499,6 +511,32 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                         </View>
                     </View>
                 </View>
+                {/* ### 참여 버튼 ### */}
+                <TouchableOpacity
+                    style={[
+                        styles.joinButton,
+                        checkIfMyPost()
+                            ? {
+                                  backgroundColor:
+                                      themeColor.BUTTON_SECONDARY_BG,
+                              }
+                            : { backgroundColor: themeColor.BUTTON_BG },
+                    ]}
+                    onPress={() => {
+                        // 아래 코드 실행 시, sse get chatlist 400 bad request 에러 발생
+                        // createUsedTradeChat(data!.trade_id)
+                        //     .then(res => {
+                        //         navigation.navigate('ChatList')
+                        //     })
+                        //     .catch(err => {
+                        //         console.log(err)
+                        //     })
+                    }}
+                    disabled={checkIfMyPost()}>
+                    <Text style={styles.joinButtonText}>
+                        {checkIfMyPost() ? '내 게시글' : '판매자에게 채팅하기'}
+                    </Text>
+                </TouchableOpacity>
                 {/* ### 댓글 ### */}
                 <View style={{ marginHorizontal: 16 }}>
                     {data?.comments.map((comment, index) => {
@@ -650,9 +688,8 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
         authorProfileImage: {
-            backgroundColor: 'white',
-            width: 40,
-            height: 40,
+            width: 52,
+            height: 52,
             margin: 10,
         },
         imageContainer: {
@@ -779,9 +816,18 @@ const createStyles = (theme: Icolor) =>
             paddingHorizontal: 10,
         },
         joinButton: {
-            backgroundColor: theme.BUTTON_BG,
+            flex: 1,
+            paddingVertical: 16,
+            marginHorizontal: 36,
             padding: 10,
             borderRadius: 8,
+            marginVertical: 16,
+        },
+        joinButtonText: {
+            color: theme.BUTTON_TEXT,
+            fontFamily: 'NanumGothic-Bold',
+            fontSize: 14,
+            textAlign: 'center',
         },
         invalidLinkText: {
             color: theme.TEXT_TERTIARY,

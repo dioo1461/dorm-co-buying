@@ -46,6 +46,7 @@ import {
 } from '../../navigation/NativeStackNavigation'
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
+import ProfileImage from '@/components/ProfileImage'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -404,7 +405,13 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     }}>
                     <View style={styles.profileContainer}>
                         {/* TODO: 프로필 사진 */}
-                        <View style={styles.authorProfileImage}></View>
+                        <View style={styles.authorProfileImage}>
+                            <ProfileImage
+                                size={52}
+                                imageUrl={data?.authorImage}
+                                theme={themeColor}
+                            />
+                        </View>
                         <Text style={styles.usernameText}>
                             {data?.authorNickname}
                         </Text>
@@ -710,9 +717,8 @@ const createStyles = (theme: Icolor) =>
     StyleSheet.create({
         container: { flex: 1 },
         authorProfileImage: {
-            backgroundColor: 'white',
-            width: 40,
-            height: 40,
+            width: 52,
+            height: 52,
             margin: 10,
         },
         imageContainer: {
