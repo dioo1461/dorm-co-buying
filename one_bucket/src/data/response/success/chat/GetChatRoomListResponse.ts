@@ -8,4 +8,5 @@ export interface ChatRoom {
     recentMessage: string
     recentMessageTime: string
     ownerId: number
+    imageUrl: string[]
 }

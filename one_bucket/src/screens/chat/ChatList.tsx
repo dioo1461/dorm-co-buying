@@ -22,6 +22,7 @@ import {
 import { Text } from 'react-native-elements'
 import EventSource, { SSEMessage } from 'react-native-oksse'
 import { stackNavigation } from '../navigation/NativeStackNavigation'
+import { CachedImage } from '@/components/CachedImage'
 
 // TODO: 채팅방 대표 이미지 설정
 // TODO: 채팅방 인원수 등 정보 표시
@@ -197,9 +198,13 @@ const ChatList: React.FC = (): React.JSX.Element => {
                     background={touchableNativeFeedbackBg()}
                     onPress={() => navigation.navigate('Chat', chatRoom)}>
                     <View style={styles.chatContainer}>
-                        <Text>{}</Text>
                         {/* ### 채팅 이미지 ### */}
-                        <View style={styles.imageContainer}></View>
+                        <View style={styles.imageContainer}>
+                            <CachedImage
+                                imageUrl={chatRoom.imageUrl[0]}
+                                imageStyle={styles.imageStyle}
+                            />
+                        </View>
                         <View style={{ flex: 1 }}>
                             <View style={styles.headerContainer}>
                                 <View style={styles.headerFirstContainer}>
@@ -305,9 +310,15 @@ const createChatitemStyles = (theme: Icolor) =>
             paddingVertical: 6,
         },
         imageContainer: {
+            borderColor: theme.BORDER,
             width: 80,
             height: 80,
-            backgroundColor: 'white',
+            borderRadius: 40,
+            borderWidth: 1,
+        },
+        imageStyle: {
+            width: 80,
+            height: 80,
             borderRadius: 40,
         },
         headerContainer: {

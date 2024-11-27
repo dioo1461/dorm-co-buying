@@ -1,3 +1,3 @@
-import { GetChatRoomTradeInfoResponse } from '@/data/response/success/chat/GetChatRoomInfoResponse'
+import { GetChatRoomInfoResponse } from '@/data/response/success/chat/GetChatRoomInfoResponse'
 
-export type TradeInfoOfChatRoom = GetChatRoomTradeInfoResponse['trade']
+export type TradeInfoOfChatRoom = GetChatRoomInfoResponse['trade']
