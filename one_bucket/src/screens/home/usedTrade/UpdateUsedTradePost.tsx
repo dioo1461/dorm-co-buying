@@ -30,7 +30,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { getDDays } from '@/utils/dateUtils'
 
-const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
+const UpdateUsedTradePost: React.FC = (): React.JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         boardList: state.boardList,
@@ -41,7 +41,7 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
 
     type UpdateGroupTradePostProp = RouteProp<
         RootStackParamList,
-        'UpdateGroupTradePost'
+        'UpdateUsedTradePost'
     >
     const { params } = useRoute<UpdateGroupTradePostProp>()
 
@@ -137,7 +137,7 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
         if (groupTradeBoard) {
             return groupTradeBoard.id
         }
-        throw new Error('UpdateGroupTradePost - GroupTrade board not found')
+        throw new Error('UpdateUsedTradePost - GroupTrade board not found')
     }
 
     const onSubmitButtonPress = () => {}
@@ -715,4 +715,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default UpdateGroupTradePost
+export default UpdateUsedTradePost

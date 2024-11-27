@@ -16,8 +16,6 @@ import Chat from '@/screens/chat/Chat'
 import BoardPost from '@/screens/home/board/BoardPost'
 import CreateBoardPost from '@/screens/home/board/CreateBoardPost'
 import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
-import CreateGroupTradePost from '@/screens/home/groupTrade/CreateGroupTradePost'
-import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
 import MyLikedPosts from '@/screens/myPage/MyLikedPosts'
 import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
@@ -73,6 +71,10 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { mainRoutes } from 'screens/navigation/mainRoutes'
 import messaging from '@react-native-firebase/messaging'
 import linking from '@/screens/navigation/linking'
+import UsedTradePost from '@/screens/home/usedTrade/UsedTradePost'
+import CreateGroupTradePost from '@/screens/home/groupTrade/CreateGroupTradePost'
+import UpdateGroupTradePost from '@/screens/home/groupTrade/UpdateGroupTradePost'
+import CreateUsedTradePost from '@/screens/home/usedTrade/CreateUsedTradePost'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -284,10 +286,7 @@ function App(): React.JSX.Element {
                             options={{
                                 title: strings.createGroupTradePostScreenTitle,
                                 headerStyle: {
-                                    backgroundColor:
-                                        themeColor === lightColors
-                                            ? themeColor.HEADER_BG
-                                            : themeColor.HEADER_BG,
+                                    backgroundColor: themeColor.HEADER_BG,
                                 },
                                 headerTintColor: themeColor.HEADER_TEXT,
                                 headerRight: () => (
@@ -307,9 +306,57 @@ function App(): React.JSX.Element {
                             }}
                         />
                         <Stack.Screen
-                            name={strings.groupTradePostScreenName}
-                            component={GroupTradePost}
+                            name={strings.updateGroupTradePostScreenName}
+                            component={UpdateGroupTradePost}
+                            options={{
+                                title: strings.updateGroupTradePostScreenTitle,
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTintColor: themeColor.HEADER_TEXT,
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.usedTradePostScreenName}
+                            component={UsedTradePost}
                             options={{ headerShown: false }}
+                        />
+
+                        <Stack.Screen
+                            name={strings.createUsedTradePostScreenName}
+                            component={CreateUsedTradePost}
+                            options={{
+                                title: strings.createGroupTradePostScreenTitle,
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTintColor: themeColor.HEADER_TEXT,
+                                headerRight: () => (
+                                    <View>
+                                        <TouchableOpacity>
+                                            <Text
+                                                style={{
+                                                    color: themeColor.HEADER_TEXT,
+                                                    fontFamily: 'NanumGothic',
+                                                    marginEnd: 16,
+                                                }}>
+                                                임시저장
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                ),
+                            }}
+                        />
+                        <Stack.Screen
+                            name={strings.updateUsedTradePostScreenName}
+                            component={UpdateGroupTradePost}
+                            options={{
+                                title: strings.updateUsedTradePostScreenTitle,
+                                headerStyle: {
+                                    backgroundColor: themeColor.HEADER_BG,
+                                },
+                                headerTintColor: themeColor.HEADER_TEXT,
+                            }}
                         />
                         <Stack.Screen
                             name={strings.profileDetailsScreenName}

@@ -55,7 +55,7 @@ const [SCREEN_WIDTH, SCREEN_HEIGHT] = [
 
 const LOCK_SLEEP_TIME = 2000
 
-const GroupTradePost: React.FC = (): JSX.Element => {
+const UsedTradePost: React.FC = (): JSX.Element => {
     const { themeColor, memberInfo } = useBoundStore(state => ({
         themeColor: state.themeColor,
         memberInfo: state.memberInfo,
@@ -66,7 +66,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
 
     type GroupTradePostRouteProp = RouteProp<
         RootStackParamList,
-        'GroupTradePost'
+        'UsedTradePost'
     >
     const { params } = useRoute<GroupTradePostRouteProp>()
 
@@ -863,4 +863,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default GroupTradePost
+export default UsedTradePost

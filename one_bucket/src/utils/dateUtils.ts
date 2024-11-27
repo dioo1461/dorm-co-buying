@@ -8,3 +8,9 @@ export const convertToKoreanTime = (utcDate: Date | String): Date => {
 
     return koreanDate
 }
+
+export const getDDays = (date: Date): number => {
+    const now = new Date()
+    const diff = date.getTime() - now.getTime()
+    return Math.floor(diff / (1000 * 60 * 60 * 24))
+}

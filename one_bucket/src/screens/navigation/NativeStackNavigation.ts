@@ -1,4 +1,6 @@
 import { ChatRoom } from '@/data/response/success/chat/GetChatRoomListResponse'
+import { GetGroupTradePostResponse } from '@/data/response/success/groupTrade/GetGroupTradePostResponse'
+import { GetUsedTradePostResponse } from '@/data/response/success/usedTrade/GetUsedTradePostResponse'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
@@ -30,6 +32,17 @@ export type RootStackParamList = {
         postId: number
     }
     CreateGroupTradePost: undefined
+    UpdateGroupTradePost: GetGroupTradePostResponse
+
+    UsedTrade: {
+        pendingRefresh: boolean
+    }
+    UsedTradePost: {
+        postId: number
+    }
+    CreateUsedTradePost: undefined
+    UpdateUsedTradePost: GetUsedTradePostResponse
+
     Board: {
         pendingRefresh: boolean
     }

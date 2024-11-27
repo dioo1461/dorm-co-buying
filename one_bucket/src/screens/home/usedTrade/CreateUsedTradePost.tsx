@@ -6,10 +6,7 @@ import LoadingBackdrop from '@/components/LoadingBackdrop'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { CreateGroupTradePostRequestBody } from '@/data/request/groupTrade/CreateGroupTradePostRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
-import {
-    RootStackParamList,
-    stackNavigation,
-} from '@/screens/navigation/NativeStackNavigation'
+import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import CheckBox from '@react-native-community/checkbox'
 import React, { useRef, useState } from 'react'
 import {
@@ -27,10 +24,8 @@ import {
     launchImageLibrary,
 } from 'react-native-image-picker'
 import { SelectList } from 'react-native-dropdown-select-list'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { getDDays } from '@/utils/dateUtils'
 
-const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
+const CreateUsedTradePost: React.FC = (): React.JSX.Element => {
     const { themeColor, boardList } = useBoundStore(state => ({
         themeColor: state.themeColor,
         boardList: state.boardList,
@@ -39,34 +34,23 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
     const styles = createStyles(themeColor)
     const navigation = stackNavigation()
 
-    type UpdateGroupTradePostProp = RouteProp<
-        RootStackParamList,
-        'UpdateGroupTradePost'
-    >
-    const { params } = useRoute<UpdateGroupTradePostProp>()
-
     const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
 
     const [imageUriList, setImageUriList] = useState<string[]>([])
-    const [siteLink, setSiteLink] = useState(params.trade_linkUrl)
-    const [itemName, setItemName] = useState(params.trade_item)
-    const [tag, setTag] = useState(params.trade_tag.toString())
-    const [price, setPrice] = useState(params.trade_price.toString())
-    const [totalAmount, setTotalAmount] = useState(
-        params.trade_count.toString(),
-    )
-    const [peopleCount, setPeopleCount] = useState<number | null>(
-        params.trade_joins + 1,
-    )
-    const [deadline, setDeadline] = useState<number | null>(
-        getDDays(new Date(params.trade_dueDate)),
-    )
+    const [siteLink, setSiteLink] = useState('')
+    const [itemName, setItemName] = useState('')
+    const [tag, setTag] = useState('')
+    const [price, setPrice] = useState('')
+    const [totalAmount, setTotalAmount] = useState('')
+    const [peopleCount, setPeopleCount] = useState<number | null>(null)
+    const [deadline, setDeadline] = useState<number | null>(null)
     const [location, setLocation] = useState('')
     const [descriptionTextInput, setDescriptionTextInput] = useState('')
     const [keyboardHeight, setKeyboardHeight] = useState(0)
     const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
 
     const tagList = [
+        '전체',
         '가공식품',
         '도서/미디어',
         '문구/완구',
@@ -87,6 +71,8 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
     const peopleCountManualInputRef = useRef<TextInput>(null)
     const [deadlineManualInputEnabled, setDeadlineManualInputEnabled] =
         useState(false)
+
+    const [bottomSheetEnabled, setBottomSheetEnabled] = useState(false)
 
     const deadlineManualInputRef = useRef<TextInput>(null)
     const scrollViewRef = useRef<ScrollView>(null)
@@ -137,10 +123,12 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
         if (groupTradeBoard) {
             return groupTradeBoard.id
         }
-        throw new Error('UpdateGroupTradePost - GroupTrade board not found')
+        throw new Error('CreateUsedTradePost - GroupTrade board not found')
     }
 
-    const onSubmitButtonPress = () => {}
+    const onSubmitButtonPress = () => {
+        setBottomSheetEnabled(true)
+    }
 
     const checkFormAvailable = () => {
         return (
@@ -164,9 +152,9 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
             },
             trade: {
                 item: itemName,
-                wanted: Number(totalAmount),
+                wanted: peopleCount ?? 0,
                 price: Number(price),
-                count: peopleCount ?? 0,
+                count: Number(totalAmount),
                 location: location,
                 linkUrl: siteLink,
                 tag: tag,
@@ -552,6 +540,14 @@ const UpdateGroupTradePost: React.FC = (): React.JSX.Element => {
                     <Text style={styles.postButtonText}>게시</Text>
                 </TouchableOpacity>
             </View>
+            <CreateGroupTradePostBottomSheet
+                enabled={bottomSheetEnabled}
+                theme={themeColor}
+                submitForm={makeSubmitForm()}
+                setLoadingEnabled={setLoadingBackdropEnabled}
+                onClose={() => setBottomSheetEnabled(false)}
+                onSubmitComplete={onSubmitComplete}
+            />
             <LoadingBackdrop
                 enabled={loadingBackdropEnabled}
                 theme={themeColor}
@@ -715,4 +711,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default UpdateGroupTradePost
+export default CreateUsedTradePost

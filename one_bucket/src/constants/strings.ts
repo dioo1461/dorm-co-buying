@@ -1,10 +1,12 @@
+import { updateGroupTradePost } from '@/apis/groupTradeService'
+
 const strings = {
     // navigation screen names
     homeRouteScreenName: 'HomeRoute',
     homeScreenName: 'Home',
     groupTradeScreenName: 'GroupTrade',
     groupTradePostScreenName: 'GroupTradePost',
-    tradeScreenName: 'Trade',
+    usedTradeScreenName: 'UsedTrade',
     boardScreenName: 'Board',
     boardCreatePostScreenName: 'CreateBoardPost',
     updateBoardPostScreenName: 'UpdateBoardPost',
@@ -32,6 +34,11 @@ const strings = {
     unauthHomeScreenName: 'UnauthHome',
 
     createGroupTradePostScreenName: 'CreateGroupTradePost',
+    updateGroupTradePostScreenName: 'UpdateGroupTradePost',
+
+    usedTradePostScreenName: 'UsedTradePost',
+    createUsedTradePostScreenName: 'CreateUsedTradePost',
+    updateUsedTradePostScreenName: 'UpdateUsedTradePost',
 
     profileDetailsScreenName: 'ProfileDetails',
     profileModifyScreenName: 'ProfileModify',
@@ -61,7 +68,7 @@ const strings = {
     homeRouteScreenTitle: '한바구니',
     homeScreenTitle: '홈',
     groupTradeScreenTitle: '공동구매',
-    tradeScreenTitle: '중고거래',
+    usedTradeScreenTitle: '중고거래',
     boardScreenTitle: '게시판',
     boardCreatePostScreenTitle: '게시글 작성',
     updateBoardPostScreenTitle: '게시글 수정',
@@ -81,6 +88,12 @@ const strings = {
     versionCheckScreenTitle: '버전 정보',
 
     createGroupTradePostScreenTitle: '공동구매 글 작성',
+    updateGroupTradePostScreenTitle: '공동구매 글 수정',
+
+    usedTradePostScreenTitle: '중고거래 게시글',
+    createUsedTradePostScreenTitle: '중고거래 글 작성',
+    updateUsedTradePostScreenTitle: '중고거래 글 수정',
+
     // profileDetailsScreenTitle: 'ProfileDetails',
     profileModifyScreenTitle: '프로필 수정',
     myLikedPostsScreenTitle: '좋아요 누른 글',
