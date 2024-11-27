@@ -50,19 +50,20 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
     const [isLocationNegotiable, setIsLocationNegotiable] = useState(true)
 
     const tagList = [
+        '전체',
         '가공식품',
         '도서/미디어',
         '문구/완구',
         '생활용품',
         '스포츠/레저',
-        '신선식품', 
+        '신선식품',
         '음료/물',
         '의류',
-        '의약품', 
-        '일회용품', 
-        '전자기기', 
-        '쿠폰', 
-        '기타'
+        '의약품',
+        '일회용품',
+        '전자기기',
+        '쿠폰',
+        '기타',
     ]
 
     const [peopleCountManualInputEnabled, setPeopleCountManualInputEnabled] =
@@ -151,9 +152,9 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
             },
             trade: {
                 item: itemName,
-                wanted: Number(totalAmount),
+                wanted: peopleCount ?? 0,
                 price: Number(price),
-                count: peopleCount ?? 0,
+                count: Number(totalAmount),
                 location: location,
                 linkUrl: siteLink,
                 tag: tag,
@@ -270,7 +271,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                         placeholder={'카테고리를 선택해 주세요.'}
                         inputStyles={styles.categoryText}
                         search={false}
-                    />  
+                    />
                     {/* ### 가격 ### */}
                     <View style={styles.labelContainer}>
                         <Text style={styles.label}>가격</Text>
