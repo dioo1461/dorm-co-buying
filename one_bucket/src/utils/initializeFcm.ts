@@ -37,6 +37,7 @@ const initializeFcm = async () => {
             const data = message.data as unknown as FcmMessageData
 
             const channelId = data.type
+            var deepLink = 'app://'
             var notificationId = undefined
 
             switch (data.type) {
@@ -64,6 +65,9 @@ const initializeFcm = async () => {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
                     },
+                    data: {
+                        link: 'app://board/12345', // Deep Linking URL 설정
+                    },
                 })
             } else {
                 notifee.displayNotification({
@@ -72,6 +76,9 @@ const initializeFcm = async () => {
                     android: {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
+                    },
+                    data: {
+                        link: deepLink, // Deep Linking URL 설정
                     },
                 })
             }
