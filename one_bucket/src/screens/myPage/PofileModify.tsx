@@ -1,6 +1,5 @@
 import { postProfile, updateProfileImage } from '@/apis/profileService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
-import { CachedImage } from '@/components/CachedImage'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { AddProfileRequestBody } from '@/data/request/AddProfileRequestBody'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
@@ -27,11 +26,13 @@ import {
     launchImageLibrary,
 } from 'react-native-image-picker'
 import BaseProfileImage from '@/assets/drawable/base-profile-image.svg'
+import { Gender } from '@/data/response/success/auth/GetProfileResponse'
 
 const Profile: React.FC = (): React.JSX.Element => {
-    const { themeColor, profile } = useBoundStore(state => ({
+    const { themeColor, profile, setProfile } = useBoundStore(state => ({
         themeColor: state.themeColor,
         profile: state.profile,
+        setProfile: state.setProfile,
     }))
 
     const styles = createStyles(themeColor)
@@ -69,9 +70,9 @@ const Profile: React.FC = (): React.JSX.Element => {
         else return false
     }
 
+    const [email, setEmail] = useState(profile!.email)
     const [name, setName] = useState(profile!.name)
-    const [male, setMale] = useState(getGender(profile!.gender))
-    const gender = male == true ? 'man' : 'woman'
+    const [gender, setGender] = useState(profile!.gender)
     const [year, setYear] = useState(getYear(profile!.birth))
     const [month, setMonth] = useState(getMonth(profile!.birth))
     const [day, setDay] = useState(getDay(profile!.birth))
@@ -110,12 +111,12 @@ const Profile: React.FC = (): React.JSX.Element => {
     }
 
     const handleSubmit = async () => {
-        // const result = await submitSignupForm(signUpForm)
         const form: AddProfileRequestBody = {
             name: name,
             gender: gender,
             age: age,
             description: bio,
+            email: email,
             birth: birth,
         }
         var imageFormData: FormData | null = new FormData()
@@ -136,6 +137,11 @@ const Profile: React.FC = (): React.JSX.Element => {
         console.log(imageFormData?.getParts())
         Promise.all([postProfile(form), updateProfileImage(imageFormData)])
             .then(res => {
+                setProfile({
+                    ...form,
+                    createAt: profile!.createAt,
+                    updateAt: profile!.updateAt,
+                })
                 Toast.show({ text1: '프로필이 성공적으로 수정되었습니다.' })
             })
             .catch(err => {
@@ -204,12 +210,12 @@ const Profile: React.FC = (): React.JSX.Element => {
                 </View>
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
-                        onPress={() => setMale(true)}
+                        onPress={() => setGender('man')}
                         style={styles.dormContainer}>
                         <CheckBox
+                            value={gender === 'man'}
                             disabled={false}
-                            value={male}
-                            onValueChange={() => setMale(true)}
+                            onValueChange={() => setGender('man')}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,
@@ -218,12 +224,12 @@ const Profile: React.FC = (): React.JSX.Element => {
                         <Text style={styles.dormText}>남성</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => setMale(false)}
+                        onPress={() => setGender('woman')}
                         style={styles.dormContainer}>
                         <CheckBox
+                            value={gender === 'woman'}
                             disabled={false}
-                            value={!male}
-                            onValueChange={() => setMale(false)}
+                            onValueChange={() => setGender('woman')}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,

@@ -1,8 +1,10 @@
+type Gender = 'man' | 'woman'
+
 export interface AddProfileRequestBody {
     name: string
-    gender: string
+    gender: Gender
     age: number
     description: string
-    // birth format : 'YYYY-MM-DD'
-    birth: string
+    email: string
+    birth: string // birth format : 'YYYY-MM-DD'
 }

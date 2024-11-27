@@ -115,7 +115,7 @@ export const postProfile = async (data: AddProfileRequestBody) => {
     const authAxios = await createAuthAxios()
     console.log('AddProfileRequestBody:', data)
     return authAxios
-        .post('/profile', data)
+        .post('/guest/profile/update', data)
         .then(response => {
             return response
         })

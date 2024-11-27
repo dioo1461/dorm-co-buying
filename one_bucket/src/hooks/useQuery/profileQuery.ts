@@ -25,8 +25,8 @@ export const queryGetMemberInfo = () => {
 }
 
 export const queryGetProfile = () => {
-    const memberInfo = useBoundStore.getState().memberInfo
+    const profile = useBoundStore.getState().profile
     // TODO: 캐싱 제대로 작동하는지 확인
 
-    return useQuery<GetProfileResponse>(['profile', memberInfo], getProfile)
+    return useQuery<GetProfileResponse>(['profile', profile], getProfile)
 }
