@@ -26,6 +26,7 @@ import {
     ImageLibraryOptions,
     launchImageLibrary,
 } from 'react-native-image-picker'
+import BaseProfileImage from '@/assets/drawable/base-profile-image.svg'
 
 const Profile: React.FC = (): React.JSX.Element => {
     const { themeColor, profile } = useBoundStore(state => ({
@@ -151,14 +152,7 @@ const Profile: React.FC = (): React.JSX.Element => {
                                 style={styles.profileImage}
                             />
                         ) : (
-                            <View
-                                style={[
-                                    styles.profileImage,
-                                    {
-                                        backgroundColor: baseColors.GRAY_2,
-                                    },
-                                ]}
-                            />
+                            <BaseProfileImage width={138} height={138} />
                         )}
                         <View
                             style={{
