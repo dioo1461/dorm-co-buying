@@ -20,8 +20,9 @@ import { useEffect, useState } from 'react'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const Notification: React.FC = (): React.JSX.Element => {
-    const { themeColor } = useBoundStore(state => ({
+    const { themeColor, setNewNotificationCount } = useBoundStore(state => ({
         themeColor: state.themeColor,
+        setNewNotificationCount: state.setNewNotificationCount,
     }))
 
     const styles = CreateStyles(themeColor)
@@ -36,7 +37,7 @@ const Notification: React.FC = (): React.JSX.Element => {
         const init = async () => {
             setNotificationList(await getNotifications(10, 0))
             setOffset(10)
-            console.log(await getNotifications(10, 0))
+            setNewNotificationCount(0)
         }
 
         init()

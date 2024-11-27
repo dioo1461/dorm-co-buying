@@ -19,6 +19,9 @@ export interface AppSlice {
     onSignUpFailure: () => void
     themeColor: Icolor
     setThemeColor: (color: Icolor) => void
+    newNotificationCount: number
+    setNewNotificationCount: (count: number) => void
+    increaseNewNotificationCount: () => void
 }
 
 export const createAppSlice: StateCreator<AppSlice, [], []> = (set, get) => ({
@@ -83,5 +86,12 @@ export const createAppSlice: StateCreator<AppSlice, [], []> = (set, get) => ({
     themeColor: lightColors,
     setThemeColor: (theme: Icolor) => {
         set({ themeColor: theme })
+    },
+    newNotificationCount: 0,
+    setNewNotificationCount: (count: number) => {
+        set({ newNotificationCount: count })
+    },
+    increaseNewNotificationCount: () => {
+        set({ newNotificationCount: get().newNotificationCount + 1 })
     },
 })

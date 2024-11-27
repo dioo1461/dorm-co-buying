@@ -20,9 +20,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import ChatList from 'screens/chat/ChatList'
 import Mypage from '@/screens/myPage/Mypage'
 import HomeTab from 'screens/navigation/HomeTab'
-import { notifsNum } from 'screens/Notification'
 import UnauthHome from 'screens/UnauthHome'
 import { stackNavigation } from './NativeStackNavigation'
+import { useEffect, useState } from 'react'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 
 export const mainRoutes = [
     [
@@ -40,6 +41,10 @@ export const mainRoutes = [
             inactiveIconDark: <IcTabHomeInactive fill={baseColors.WHITE} />,
             headerRight: () => {
                 const navigation = stackNavigation()
+                const [notifCount, setNotifCount] = useState(0)
+                const { newNotificationCount } = useBoundStore(state => ({
+                    newNotificationCount: state.newNotificationCount,
+                }))
 
                 return (
                     <View style={{ flexDirection: 'row' }}>
@@ -80,8 +85,12 @@ export const mainRoutes = [
                                         marginTop: -20,
                                         marginLeft: -8,
                                         borderRadius: 20,
-                                        backgroundColor: true ? 'red' : '',
-                                    }}></View>
+                                        backgroundColor:
+                                            newNotificationCount > 0
+                                                ? 'red'
+                                                : '',
+                                    }}
+                                />
                             </View>
                         </TouchableOpacity>
                     </View>

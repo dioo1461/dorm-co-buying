@@ -13,6 +13,7 @@ import {
     getPostNotificationEnabled,
 } from './asyncStorageUtils'
 import { openDatabase } from 'react-native-sqlite-storage'
+import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 
 const TOPIC_ALL = 'ALL_USER'
 
@@ -152,22 +153,20 @@ const initializeFcm = async () => {
             )
         }
 
-        const foregroundHandler = async (
-            remoteMessage: FirebaseMessagingTypes.RemoteMessage,
-        ) => {
-            const data = remoteMessage.data as unknown as FcmMessageData
-            var addFlag = true
+        const checkWouldDisplayNotification = async (
+            data: FcmMessageData,
+        ): Promise<boolean> => {
             switch (data.type) {
                 case 'CHAT':
-                    addFlag = false
-                    if (!(await getGlobalChatNotificationEnabled())) return
+                    if (!(await getGlobalChatNotificationEnabled()))
+                        return false
                     break
                 case 'COMMENT':
                     const [global, local] = await Promise.all([
                         getGlobalCommentNotificationEnabled(),
                         getPostNotificationEnabled(data.id),
                     ])
-                    if (!global || !local) return
+                    if (!global || !local) return false
                     break
                 case 'TRADE':
                     break
@@ -176,47 +175,61 @@ const initializeFcm = async () => {
                 case 'WARNING':
                     break
             }
+            return true
+        }
 
-            if (addFlag) addToDB(data)
+        const checkWouldAddToDB = async (
+            data: FcmMessageData,
+        ): Promise<boolean> => {
+            switch (data.type) {
+                case 'CHAT':
+                    return false
+                case 'COMMENT':
+                    return true
+                case 'TRADE':
+                    return true
+                case 'ALL':
+                    return true
+                case 'WARNING':
+                    return false
+            }
+        }
+
+        const foregroundHandler = async (
+            remoteMessage: FirebaseMessagingTypes.RemoteMessage,
+        ) => {
+            useBoundStore.getState().increaseNewNotificationCount()
+            const data = remoteMessage.data as unknown as FcmMessageData
+            const [addFlag] = await Promise.all([checkWouldAddToDB(data)])
+
+            if (addFlag) {
+                useBoundStore.getState().increaseNewNotificationCount()
+                addToDB(data)
+            }
         }
 
         const backgroundHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
+            useBoundStore.getState().increaseNewNotificationCount()
             const data = remoteMessage.data as unknown as FcmMessageData
-            var addFlag = true
+            const [displayFlag, addFlag] = await Promise.all([
+                checkWouldDisplayNotification(data),
+                checkWouldAddToDB(data),
+            ])
 
-            switch (data.type) {
-                case 'CHAT':
-                    addFlag = false
-                    if (!(await getGlobalChatNotificationEnabled())) return
-                    break
-                case 'COMMENT':
-                    const [global, local] = await Promise.all([
-                        getGlobalCommentNotificationEnabled(),
-                        getPostNotificationEnabled(data.id),
-                    ])
-                    if (!global || !local) return
-                    break
-                case 'TRADE':
-                    break
-                case 'ALL':
-                    break
-                case 'WARNING':
-                    break
+            if (addFlag) {
+                useBoundStore.getState().increaseNewNotificationCount()
+                addToDB(data)
             }
-
-            if (addFlag) addToDB(data)
-
-            // 알림 표시
-            displayNotification(remoteMessage)
+            if (displayFlag) displayNotification(remoteMessage)
         }
 
         // ########### MAIN ###########
 
         requestNotificationPermission()
         messaging().subscribeToTopic(TOPIC_ALL)
-        messaging().onMessage(() => {})
+        messaging().onMessage(foregroundHandler)
         messaging().setBackgroundMessageHandler(backgroundHandler)
     }
 
