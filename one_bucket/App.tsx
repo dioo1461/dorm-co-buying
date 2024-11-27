@@ -74,6 +74,7 @@ import messaging from '@react-native-firebase/messaging'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
+
 function App(): React.JSX.Element {
     // key를 통해 테마 변경 시 리렌더링
     const {

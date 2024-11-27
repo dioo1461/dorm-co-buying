@@ -3,34 +3,29 @@ import { TradeInfoOfChatRoom } from '@/types/TradeInfoOfChatRoom'
 import { getTradeInfoOfChatRoom } from '@/apis/chatService'
 
 const useTradeInfoOfChatRoomDB = () => {
-    const {
-        getDataByKeys,
-        addData,
-        updateDataByKey,
-        deleteDataByKeys,
-        dropTable,
-    } = useDatabase<TradeInfoOfChatRoom>({
-        tableName: 'tradeInfoOfChatRoom',
-        columns: {
-            id: 'number',
-            item: 'string',
-            price: 'number',
-            location: 'string',
-            userId: 'number',
-            wanted: 'number',
-            count: 'number',
-            linkUrl: 'string',
-            tag: 'string',
-            dueDate: 'string',
-            joins: 'number',
-            joinMember: 'serializable',
-            createAt: 'string',
-            updateAt: 'string',
-            chatRoomId: 'string',
-            fin: 'boolean',
-        },
-        debug: true,
-    })
+    const { getDataByKeys, addData, updateDataByKeys, deleteDataByKeys } =
+        useDatabase<TradeInfoOfChatRoom>({
+            tableName: 'tradeInfoOfChatRoom',
+            columns: {
+                id: 'number',
+                item: 'string',
+                price: 'number',
+                location: 'string',
+                userId: 'number',
+                wanted: 'number',
+                count: 'number',
+                linkUrl: 'string',
+                tag: 'string',
+                dueDate: 'string',
+                joins: 'number',
+                joinMember: 'serializable',
+                createAt: 'string',
+                updateAt: 'string',
+                chatRoomId: 'string',
+                fin: 'boolean',
+            },
+            debug: true,
+        })
 
     const addTradeInfo = async (data: TradeInfoOfChatRoom) => {
         return await addData(data)
@@ -58,7 +53,7 @@ const useTradeInfoOfChatRoomDB = () => {
         chatRoomId: string,
         data: Partial<TradeInfoOfChatRoom>,
     ) => {
-        return await updateDataByKey({ chatRoomId: chatRoomId }, data)
+        return await updateDataByKeys({ chatRoomId: chatRoomId }, data)
     }
 
     const deleteTradeInfo = async (chatRoomId: string) => {

@@ -32,7 +32,7 @@ const useChat = ({ chatRoomId }: inputProps) => {
     const [db, setDb] = useState<SQLiteDatabase | null>(null)
     const stompClientRef = useRef<Client | null>(null)
 
-    const { getDataByWhereClause, addData, removeData } =
+    const { getDataByWhereClause, addData, deleteDataByKeys } =
         useDatabase<ChatDataColumns>({
             tableName: 'chat',
             columns: {

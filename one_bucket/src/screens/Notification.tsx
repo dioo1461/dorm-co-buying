@@ -10,19 +10,13 @@ import {
     View,
 } from 'react-native'
 import { stackNavigation } from './navigation/NativeStackNavigation'
+import useNotificationDB, {
+    NotificationColumns,
+} from '@/hooks/useDatabase/useNotificationDB'
+import IcClose from '@/assets/drawable/ic-close.svg'
+import { useEffect, useState } from 'react'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
-
-const notifs = [
-    ['새로운 댓글', '수수수 수퍼노바'],
-    ['내 공동구매 마감', '물티슈'],
-    ['참여한 공동구매 마감', '두루마리 휴지'],
-    ['공동구매 추천', '일회용 플라스틱 숟가락'],
-]
-export const notifsNum = notifs.length // mainRoutes에 import
-const getNotifs = () => {
-    // append.notifs
-}
 
 const Notification: React.FC = (): React.JSX.Element => {
     const { themeColor } = useBoundStore(state => ({
@@ -31,7 +25,20 @@ const Notification: React.FC = (): React.JSX.Element => {
 
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
-    const notifsType = []
+    const [offset, setOffset] = useState(0)
+    const [notificationList, setNotificationList] = useState<
+        NotificationColumns[]
+    >([])
+    const { getNotifications, deleteNotification } = useNotificationDB()
+
+    useEffect(() => {
+        const init = async () => {
+            setNotificationList(await getNotifications(10, 0))
+            setOffset(10)
+        }
+
+        init()
+    }, [])
 
     const notifFrame = (data: any) => (
         <TouchableNativeFeedback
@@ -69,7 +76,7 @@ const Notification: React.FC = (): React.JSX.Element => {
         <View>
             <FlatList
                 style={styles.notifList}
-                data={notifs}
+                data={notificationList}
                 renderItem={notifFrame}
                 keyExtractor={(item, index) => index.toString()}
             />

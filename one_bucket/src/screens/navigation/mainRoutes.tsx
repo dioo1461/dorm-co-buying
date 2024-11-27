@@ -80,8 +80,7 @@ export const mainRoutes = [
                                         marginTop: -20,
                                         marginLeft: -8,
                                         borderRadius: 20,
-                                        backgroundColor:
-                                            notifsNum != 0 ? 'red' : '',
+                                        backgroundColor: true ? 'red' : '',
                                     }}></View>
                             </View>
                         </TouchableOpacity>

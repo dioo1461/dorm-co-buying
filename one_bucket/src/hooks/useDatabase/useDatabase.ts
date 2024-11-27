@@ -302,7 +302,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         })
     }
 
-    const updateDataByKey = async (
+    const updateDataByKeys = async (
         keys: Partial<T>,
         updatedData: Partial<T>,
     ) => {
@@ -438,7 +438,7 @@ const useDatabase = <T extends Record<string, ColumnTypes>>({
         getDataByKeys,
         getDataByWhereClause,
         addData,
-        updateDataByKey,
+        updateDataByKeys,
         updateDataByWhereClause,
         deleteDataByKeys,
         dropTable,

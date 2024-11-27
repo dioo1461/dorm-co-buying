@@ -176,7 +176,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                         time: chatLog.timestamp,
                     }
                 })
-                addMessagesToData(freshMessages)
+                addMessagesToDB(freshMessages)
                 if (freshMessages.length === 0) return
                 setChatMessages(prev => [...freshMessages.reverse(), ...prev])
                 setLastTimestampOfChatRoom(params.roomId, freshMessages[0].time)
@@ -186,10 +186,7 @@ const Chat: React.FC = (): React.JSX.Element => {
 
         const initChatMessages = async (): Promise<void> => {
             console.log('lastTimeStamp: ', lastTimestamp.current)
-            const messages = await retrieveMessagesFromData(
-                messageRenderLimit,
-                0,
-            )
+            const messages = await retrieveMessagesFromDB(messageRenderLimit, 0)
             if (messages) setChatMessages(messages)
         }
 
@@ -214,9 +211,9 @@ const Chat: React.FC = (): React.JSX.Element => {
         }
     }, [])
 
-    const retrieveMessagesFromData = async (limit: number, offset: number) => {
+    const retrieveMessagesFromDB = async (limit: number, offset: number) => {
         console.log(
-            `<retrieveMessagesFromData>, limit: ${limit}, offset: ${offset}`,
+            `<retrieveMessagesFromDB>, limit: ${limit}, offset: ${offset}`,
         )
         const messages = await getDataByWhereClause(
             `WHERE roomId = '${params.roomId}' ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
@@ -236,16 +233,16 @@ const Chat: React.FC = (): React.JSX.Element => {
         console.log('onMessageReceive - ', messageBody)
         const message = messageBody as ChatDataColumns
         setChatMessages(prev => [message, ...prev!])
-        addMessagesToData([message]).then(() => {
+        addMessagesToDB([message]).then(() => {
             console.log('onMessageReceive - addData done')
             setLastTimestampOfChatRoom(messageBody.roomId, messageBody.time)
         })
     }
 
-    const addMessagesToData = async (
+    const addMessagesToDB = async (
         messages: ChatDataColumns[],
     ): Promise<void> => {
-        console.log('addMessagesToData - ', messages)
+        console.log('addMessagesToDB - ', messages)
         await Promise.all(
             messages.map(async message => {
                 await addData({
@@ -280,7 +277,7 @@ const Chat: React.FC = (): React.JSX.Element => {
         if (isLoadingMore.current || !hasMoreMessages) return
         isLoadingMore.current = true
 
-        const moreMessages = await retrieveMessagesFromData(
+        const moreMessages = await retrieveMessagesFromDB(
             messageRenderLimit,
             messageRenderOffset,
         )

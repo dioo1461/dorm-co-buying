@@ -12,10 +12,11 @@ import {
     getGlobalCommentNotificationEnabled,
     getPostNotificationEnabled,
 } from './asyncStorageUtils'
+import { openDatabase } from 'react-native-sqlite-storage'
 
 const TOPIC_ALL = 'ALL_USER'
 
-const initializeFcm = () => {
+const initializeFcm = async () => {
     const init = async () => {
         const channelIdAll = await notifee.createChannel({
             id: 'all',
@@ -89,10 +90,12 @@ const initializeFcm = () => {
             displayNotification(remoteMessage)
         }
 
-        const backgroundMessageHandler = async (
+        const backgroundHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
             const data = remoteMessage.data as unknown as FcmMessageData
+            var addToDB = true
+
             switch (data.type) {
                 case 'CHAT':
                     if (!(await getGlobalChatNotificationEnabled())) return
@@ -112,6 +115,87 @@ const initializeFcm = () => {
                     break
             }
 
+            if (addToDB)
+                openDatabase(
+                    { name: 'database.db', location: 'default' },
+                    DB => {
+                        console.log('[notificationDB] Database opened')
+                        DB.transaction(
+                            tx => {
+                                // notification 테이블 생성 (없으면 생성)
+                                tx.executeSql(
+                                    `CREATE TABLE IF NOT EXISTS notification (
+                                        tupleId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        title TEXT,
+                                        content TEXT,
+                                        type TEXT,
+                                        id TEXT
+                                    );`,
+                                    [],
+                                    () => {
+                                        console.log(
+                                            '[notificationDB] Table created or already exists',
+                                        )
+
+                                        // remoteMessage에서 필요한 데이터 추출
+                                        const notification = {
+                                            id: remoteMessage.messageId,
+                                            title:
+                                                remoteMessage.notification
+                                                    ?.title || '',
+                                            content:
+                                                remoteMessage.notification
+                                                    ?.body || '',
+                                            type: data.type,
+                                        }
+
+                                        // notification 테이블에 데이터 삽입
+                                        tx.executeSql(
+                                            `INSERT INTO notification (id, title, content, type) VALUES (?, ?, ?, ?)`,
+                                            [
+                                                notification.id,
+                                                notification.title,
+                                                notification.content,
+                                                notification.type,
+                                            ],
+                                            (tx, results) => {
+                                                console.log(
+                                                    '[notificationDB] Notification inserted',
+                                                )
+                                            },
+                                            error => {
+                                                console.log(
+                                                    '[notificationDB] Error inserting notification:',
+                                                    error,
+                                                )
+                                            },
+                                        )
+                                    },
+                                    error => {
+                                        console.log(
+                                            '[notificationDB] Error creating table:',
+                                            error,
+                                        )
+                                    },
+                                )
+                            },
+                            error => {
+                                console.log(
+                                    '[notificationDB] Transaction error:',
+                                    error,
+                                )
+                            },
+                        )
+                    },
+                    error => {
+                        console.log(
+                            '[notificationDB] Error opening database:',
+                            error,
+                        )
+                    },
+                )
+
+            // 알림 표시
             displayNotification(remoteMessage)
         }
 
@@ -122,7 +206,7 @@ const initializeFcm = () => {
         messaging().onMessage(() => {
             console.log('onMessage')
         })
-        messaging().setBackgroundMessageHandler(backgroundMessageHandler)
+        messaging().setBackgroundMessageHandler(backgroundHandler)
     }
 
     init()
