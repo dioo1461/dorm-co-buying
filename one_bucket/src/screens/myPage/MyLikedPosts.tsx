@@ -6,7 +6,7 @@ import Loading from '@/components/Loading'
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import strings from '@/constants/strings'
 import { BoardPostReduced } from '@/data/response/success/board/GetBoardPostListResponse'
-import { queryMyBoardPostList } from '@/hooks/useQuery/boardQuery'
+import { queryMyLikedPostList } from '@/hooks/useQuery/boardQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import {
     RootStackParamList,
@@ -30,7 +30,7 @@ const FETCH_SIZE = 10
 
 // TODO: 사진 올리기
 // TODO: type-Post 인 게시판만 보여주도록 수정
-const MyBoardPosts: React.FC = (): JSX.Element => {
+const MyLikedPosts: React.FC = (): JSX.Element => {
     const { themeColor, boardList, getBoardNameById } = useBoundStore(
         state => ({
             themeColor: state.themeColor,
@@ -49,7 +49,7 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: strings.myBoardPostsScreenTitle,
+            title: strings.myLikedPostsScreenTitle,
             headerStyle: {
                 backgroundColor: themeColor.HEADER_BG,
             },
@@ -89,13 +89,18 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
             <View>
                 <TouchableNativeFeedback
                     background={touchableNativeFeedbackBg()}
-                    onPress={() =>
+                    onPress={() => { (data.boardId == 1 || data.boardId == 2) ?
                         navigation.navigate('BoardPost', {
                             boardName: boardList[currentBoardIndex].name,
                             boardId: data.boardId,
                             postId: data.postId,
                             performRefresh: false,
                         })
+                        :
+                        navigation.navigate('GroupTradePost', {
+                            postId: data.postId,
+                        })
+                        }
                     }>
                     <View
                         style={{
@@ -234,8 +239,7 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
             isLoading, // 첫 번째 페이지 로딩 여부
             error,
             refetch,
-        } = queryMyBoardPostList(
-            1,
+        } = queryMyLikedPostList(
             {
                 sortType: 'createdDate',
                 sort: 'desc',
@@ -250,10 +254,7 @@ const MyBoardPosts: React.FC = (): JSX.Element => {
         if (isLoading) return <Loading theme={themeColor} />
 
         const posts = data?.pages?.flatMap(page => page.content)
-            .filter(post => post.boardId === 1 || post.boardId === 2)
-            // 거래글은 제외
-            // 자유게시판 boardId : 1, 컴공게시판 boardId : 2
-
+        
         return (
             <FlatList
                 style={styles.flatList}
@@ -417,4 +418,4 @@ const createStyles = (theme: Icolor) =>
         },
     })
 
-export default MyBoardPosts
+export default MyLikedPosts

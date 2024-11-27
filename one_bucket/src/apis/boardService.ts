@@ -127,6 +127,31 @@ export const getMyBoardPostList = async (
         })
 }
 
+export const getMyLikedPostList = async (
+    page = 0,
+    size = 10,
+    sortParams: string[],
+): Promise<GetBoardPostListResponse> => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .get(`/post/list/likes`, {
+            params: {
+                page: page,
+                size: size,
+                sort: sortParams[0],
+                // sort: sortParams[1],
+            },
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(error => {
+            console.log('getMyBoardPost - ' + error)
+            // console.log(error.response)
+            throw error
+        })
+}
+
 export const searchBoardPosts = async (
     boardId: number,
     keyword: string,

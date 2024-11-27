@@ -2,6 +2,7 @@ import {
     getBoardPost,
     getBoardPostList,
     getMyBoardPostList,
+    getMyLikedPostList,
     searchBoardPosts,
 } from '@/apis/boardService'
 import { GetBoardPostListResponse } from '@/data/response/success/board/GetBoardPostListResponse'
@@ -118,6 +119,37 @@ export const queryMyBoardPostList = (
                     : [`createdDate,${sortType.sort}`, `title,${sortType.sort}`]
 
             return getMyBoardPostList(boardId, pageParam, size, sortParam)
+        },
+        {
+            getNextPageParam: (lastPage, allPages) => {
+                console.log('lastPage-pagenumber', lastPage.pageable.pageNumber)
+                console.log('lastPage-totalPages', lastPage.totalPages)
+                if (lastPage.pageable.pageNumber + 1 < lastPage.totalPages) {
+                    return lastPage.pageable.pageNumber + 1 // 다음 페이지가 있으면 페이지 번호 반환
+                }
+                return null // 더 이상 페이지가 없으면 null 반환
+            },
+            ...options,
+        },
+    )
+}
+
+export const queryMyLikedPostList = (
+    sortType: SortType,
+    size = 5,
+    options: UseInfiniteQueryOptions<GetBoardPostListResponse> = {},
+) => {
+    return useInfiniteQuery<GetBoardPostListResponse>(
+        ['myLikedPostList', sortType],
+        // 데이터를 페이지 단위로 가져오기 위한 함수
+        ({ pageParam = 0 }) => {
+            console.log('pageParam', pageParam)
+            const sortParam =
+                sortType.sortType === 'title'
+                    ? [`title,${sortType.sort}`, `post.createdDate,${sortType.sort}`]
+                    : [`post.createdDate,${sortType.sort}`, `title,${sortType.sort}`]
+
+            return getMyLikedPostList(pageParam, size, sortParam)
         },
         {
             getNextPageParam: (lastPage, allPages) => {
