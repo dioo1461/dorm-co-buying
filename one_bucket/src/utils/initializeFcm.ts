@@ -7,6 +7,11 @@ import notifee, {
 import messaging, {
     FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging'
+import {
+    getGlobalChatNotificationEnabled,
+    getGlobalCommentNotificationEnabled,
+    getPostNotificationEnabled,
+} from './asyncStorageUtils'
 
 const TOPIC_ALL = 'ALL_USER'
 
@@ -15,6 +20,8 @@ const initializeFcm = () => {
         const channelIdAll = await notifee.createChannel({
             id: 'all',
             name: 'All Notifications',
+            importance: AndroidImportance.HIGH,
+            visibility: AndroidVisibility.PUBLIC,
         })
 
         const displayNotification = async (
@@ -29,8 +36,6 @@ const initializeFcm = () => {
 
             const channelId = data.type
             var notificationId = undefined
-            var importance
-            var visibility
 
             switch (data.type) {
                 case 'CHAT':
@@ -56,9 +61,6 @@ const initializeFcm = () => {
                     android: {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
-                        // groupId: groupId ?? undefined,
-                        importance: AndroidImportance.HIGH,
-                        visibility: AndroidVisibility.PUBLIC,
                     },
                 })
             } else {
@@ -68,19 +70,13 @@ const initializeFcm = () => {
                     android: {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
-                        // groupId: groupId ?? undefined,
-                        importance: AndroidImportance.HIGH,
-                        visibility: AndroidVisibility.PUBLIC,
                     },
                 })
             }
         }
 
         const requestNotificationPermission = async () => {
-            // 사용자에게 알림 권한 허용을 요청한다, 설정된 권한 상태를 반환한다
             const settings = await notifee.requestPermission()
-
-            // 권한 상태는 settings.authorizationStatus로 확인할 수 있다
             if (settings.authorizationStatus >= AuthorizationStatus.DENIED) {
                 return true
             } else return false
@@ -96,6 +92,26 @@ const initializeFcm = () => {
         const backgroundMessageHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
+            const data = remoteMessage.data as unknown as FcmMessageData
+            switch (data.type) {
+                case 'CHAT':
+                    if (!(await getGlobalChatNotificationEnabled())) return
+                    break
+                case 'COMMENT':
+                    const [global, local] = await Promise.all([
+                        getGlobalCommentNotificationEnabled(),
+                        getPostNotificationEnabled(data.id),
+                    ])
+                    if (!global || !local) return
+                    break
+                case 'TRADE':
+                    break
+                case 'ALL':
+                    break
+                case 'WARNING':
+                    break
+            }
+
             displayNotification(remoteMessage)
         }
 

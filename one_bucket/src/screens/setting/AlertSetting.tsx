@@ -1,6 +1,7 @@
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
+import { setGlobalChatNotificationEnabled } from '@/utils/asyncStorageUtils'
 import { useState } from 'react'
 import { Dimensions, StyleSheet, Switch, Text, View } from 'react-native'
 
@@ -14,8 +15,10 @@ const AlertSetting: React.FC = (): React.JSX.Element => {
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
-    const [tempValue1, setTempValue1] = useState(false)
-    const [tempValue2, setTempValue2] = useState(false)
+    const [chatNotificationEnabled, setChatNotificationEnabled] =
+        useState(false)
+    const [commentNotificationEnabled, setCommentNotificationEnabled] =
+        useState(false)
 
     return (
         <View style={styles.container}>
@@ -40,28 +43,23 @@ const AlertSetting: React.FC = (): React.JSX.Element => {
                     }}>
                     <Switch
                         style={styles.switch}
-                        trackColor={
-                            themeColor === lightColors
-                                ? {
-                                      false: baseColors.GRAY_3,
-                                      true: baseColors.SCHOOL_BG_LIGHT,
-                                  }
-                                : {
-                                      false: baseColors.GRAY_3,
-                                      true: baseColors.SCHOOL_BG_LIGHT,
-                                  }
-                        }
+                        trackColor={{
+                            false: baseColors.GRAY_3,
+                            true: baseColors.SCHOOL_BG_LIGHT,
+                        }}
                         thumbColor={
-                            tempValue1
+                            chatNotificationEnabled
                                 ? baseColors.SCHOOL_BG
                                 : themeColor === lightColors
                                 ? baseColors.WHITE
                                 : baseColors.GRAY_2
                         }
-                        value={tempValue1}
+                        value={chatNotificationEnabled}
                         onValueChange={() => {
-                            setTempValue1(!tempValue1)
-                            setTempValue1(!tempValue1)
+                            setGlobalChatNotificationEnabled(
+                                !chatNotificationEnabled,
+                            )
+                            setChatNotificationEnabled(!chatNotificationEnabled)
                         }}
                     />
                 </View>
@@ -87,28 +85,25 @@ const AlertSetting: React.FC = (): React.JSX.Element => {
                     }}>
                     <Switch
                         style={styles.switch}
-                        trackColor={
-                            themeColor === lightColors
-                                ? {
-                                      false: baseColors.GRAY_3,
-                                      true: baseColors.SCHOOL_BG_LIGHT,
-                                  }
-                                : {
-                                      false: baseColors.GRAY_3,
-                                      true: baseColors.SCHOOL_BG_LIGHT,
-                                  }
-                        }
+                        trackColor={{
+                            false: baseColors.GRAY_3,
+                            true: baseColors.SCHOOL_BG_LIGHT,
+                        }}
                         thumbColor={
-                            tempValue2
+                            commentNotificationEnabled
                                 ? baseColors.SCHOOL_BG
                                 : themeColor === lightColors
                                 ? baseColors.WHITE
                                 : baseColors.GRAY_2
                         }
-                        value={tempValue2}
+                        value={commentNotificationEnabled}
                         onValueChange={() => {
-                            setTempValue2(!tempValue2)
-                            setTempValue2(!tempValue2)
+                            setGlobalChatNotificationEnabled(
+                                !commentNotificationEnabled,
+                            )
+                            setCommentNotificationEnabled(
+                                !commentNotificationEnabled,
+                            )
                         }}
                     />
                 </View>

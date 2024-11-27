@@ -5,10 +5,10 @@ import { queryGetMemberInfo } from '@/hooks/useQuery/profileQuery'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
 import {
-    getAlertSoundEnabled,
-    getAlertVibrationEnabled,
-    setAlertSoundEnabled,
-    setAlertVibrationEnabled,
+    getGlobalAlertSoundEnabled,
+    getGlobalAlertVibrationEnabled,
+    setGlobalAlertSoundEnabled,
+    setGlobalAlertVibrationEnabled,
 } from '@/utils/asyncStorageUtils'
 import { useEffect, useState } from 'react'
 import {
@@ -119,12 +119,8 @@ const Setting: React.FC = (): React.JSX.Element => {
 
     useEffect(() => {
         const setAlertParameters = async () => {
-            setIsAlertSoundEnabled(
-                (await getAlertSoundEnabled()) == 'true' ? true : false,
-            )
-            setIsAlertVibrationEnabled(
-                (await getAlertVibrationEnabled()) == 'true' ? true : false,
-            )
+            setIsAlertSoundEnabled(await getGlobalAlertSoundEnabled())
+            setIsAlertVibrationEnabled(await getGlobalAlertVibrationEnabled())
             setIsScreenReady(true)
         }
 
@@ -226,17 +222,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                             }}>
                             <Switch
                                 style={styles.switch}
-                                trackColor={
-                                    themeColor === lightColors
-                                        ? {
-                                              false: baseColors.GRAY_3,
-                                              true: baseColors.SCHOOL_BG_LIGHT,
-                                          }
-                                        : {
-                                              false: baseColors.GRAY_3,
-                                              true: baseColors.SCHOOL_BG_LIGHT,
-                                          }
-                                }
+                                trackColor={{
+                                    false: baseColors.GRAY_3,
+                                    true: baseColors.SCHOOL_BG_LIGHT,
+                                }}
                                 thumbColor={
                                     isAlertSoundEnabled
                                         ? baseColors.SCHOOL_BG
@@ -246,8 +235,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                                 }
                                 value={isAlertSoundEnabled}
                                 onValueChange={() => {
+                                    setGlobalAlertSoundEnabled(
+                                        !isAlertSoundEnabled,
+                                    )
                                     setIsAlertSoundEnabled(!isAlertSoundEnabled)
-                                    setAlertSoundEnabled(!isAlertSoundEnabled)
                                 }}
                             />
                         </View>
@@ -286,7 +277,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                                     setIsAlertVibrationEnabled(
                                         !isAlertVibrationEnabled,
                                     )
-                                    setAlertVibrationEnabled(
+                                    setGlobalAlertVibrationEnabled(
                                         !isAlertVibrationEnabled,
                                     )
                                 }}
@@ -299,8 +290,7 @@ const Setting: React.FC = (): React.JSX.Element => {
                     <Text style={styles.subjectLabel}>기타</Text>
                     <TouchableOpacity
                         style={styles.contextContainer}
-                        onPress={goAnnouncList}
-                        >
+                        onPress={goAnnouncList}>
                         <Text style={styles.contextLabel}>공지사항</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -356,10 +346,10 @@ const Setting: React.FC = (): React.JSX.Element => {
                         style: 'destructive',
                         onPress: () => {
                             setCountDelID(countDelID => countDelID - 1)
-                            if(countDelID == 1) {
+                            if (countDelID == 1) {
                                 delAccount()
                                 closeDelID()
-                                setCountDelID(3) 
+                                setCountDelID(3)
                             }
                         },
                     },
