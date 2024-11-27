@@ -83,21 +83,83 @@ const initializeFcm = async () => {
             } else return false
         }
 
-        const notificationHandler = async (
-            remoteMessage: FirebaseMessagingTypes.RemoteMessage,
-        ) => {
-            console.log(remoteMessage)
-            displayNotification(remoteMessage)
+        const addToDB = async (data: FcmMessageData) => {
+            openDatabase(
+                { name: 'database.db', location: 'default' },
+                DB => {
+                    console.log('[notificationDB] Database opened')
+                    DB.transaction(
+                        tx => {
+                            // notification 테이블 생성 (없으면 생성)
+                            tx.executeSql(
+                                `CREATE TABLE IF NOT EXISTS notification (
+                                    tupleId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    title TEXT,
+                                    content TEXT,
+                                    type TEXT,
+                                    id TEXT
+                                );`,
+                                [],
+                                () => {
+                                    console.log(
+                                        '[notificationDB] Table created or already exists',
+                                    )
+
+                                    // notification 테이블에 데이터 삽입
+                                    tx.executeSql(
+                                        `INSERT INTO notification (id, title, content, type) VALUES (?, ?, ?, ?)`,
+                                        [
+                                            data.id,
+                                            data.title,
+                                            data.body,
+                                            data.type,
+                                        ],
+                                        (tx, results) => {
+                                            console.log(
+                                                '[notificationDB] Notification inserted',
+                                            )
+                                        },
+                                        error => {
+                                            console.log(
+                                                '[notificationDB] Error inserting notification:',
+                                                error,
+                                            )
+                                        },
+                                    )
+                                },
+                                error => {
+                                    console.log(
+                                        '[notificationDB] Error creating table:',
+                                        error,
+                                    )
+                                },
+                            )
+                        },
+                        error => {
+                            console.log(
+                                '[notificationDB] Transaction error:',
+                                error,
+                            )
+                        },
+                    )
+                },
+                error => {
+                    console.log(
+                        '[notificationDB] Error opening database:',
+                        error,
+                    )
+                },
+            )
         }
 
-        const backgroundHandler = async (
+        const foregroundHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
             const data = remoteMessage.data as unknown as FcmMessageData
-            var addToDB = true
-
+            var addFlag = true
             switch (data.type) {
                 case 'CHAT':
+                    addFlag = false
                     if (!(await getGlobalChatNotificationEnabled())) return
                     break
                 case 'COMMENT':
@@ -115,73 +177,36 @@ const initializeFcm = async () => {
                     break
             }
 
-            if (addToDB)
-                openDatabase(
-                    { name: 'database.db', location: 'default' },
-                    DB => {
-                        console.log('[notificationDB] Database opened')
-                        DB.transaction(
-                            tx => {
-                                // notification 테이블 생성 (없으면 생성)
-                                tx.executeSql(
-                                    `CREATE TABLE IF NOT EXISTS notification (
-                                        tupleId INTEGER PRIMARY KEY AUTOINCREMENT,
-                                        title TEXT,
-                                        content TEXT,
-                                        type TEXT,
-                                        id TEXT
-                                    );`,
-                                    [],
-                                    () => {
-                                        console.log(
-                                            '[notificationDB] Table created or already exists',
-                                        )
+            if (addFlag) addToDB(data)
+        }
 
-                                        // notification 테이블에 데이터 삽입
-                                        tx.executeSql(
-                                            `INSERT INTO notification (id, title, content, type) VALUES (?, ?, ?, ?)`,
-                                            [
-                                                data.id,
-                                                data.title,
-                                                data.body,
-                                                data.type,
-                                            ],
-                                            (tx, results) => {
-                                                console.log(
-                                                    '[notificationDB] Notification inserted',
-                                                )
-                                            },
-                                            error => {
-                                                console.log(
-                                                    '[notificationDB] Error inserting notification:',
-                                                    error,
-                                                )
-                                            },
-                                        )
-                                    },
-                                    error => {
-                                        console.log(
-                                            '[notificationDB] Error creating table:',
-                                            error,
-                                        )
-                                    },
-                                )
-                            },
-                            error => {
-                                console.log(
-                                    '[notificationDB] Transaction error:',
-                                    error,
-                                )
-                            },
-                        )
-                    },
-                    error => {
-                        console.log(
-                            '[notificationDB] Error opening database:',
-                            error,
-                        )
-                    },
-                )
+        const backgroundHandler = async (
+            remoteMessage: FirebaseMessagingTypes.RemoteMessage,
+        ) => {
+            const data = remoteMessage.data as unknown as FcmMessageData
+            var addFlag = true
+
+            switch (data.type) {
+                case 'CHAT':
+                    addFlag = false
+                    if (!(await getGlobalChatNotificationEnabled())) return
+                    break
+                case 'COMMENT':
+                    const [global, local] = await Promise.all([
+                        getGlobalCommentNotificationEnabled(),
+                        getPostNotificationEnabled(data.id),
+                    ])
+                    if (!global || !local) return
+                    break
+                case 'TRADE':
+                    break
+                case 'ALL':
+                    break
+                case 'WARNING':
+                    break
+            }
+
+            if (addFlag) addToDB(data)
 
             // 알림 표시
             displayNotification(remoteMessage)
@@ -191,9 +216,7 @@ const initializeFcm = async () => {
 
         requestNotificationPermission()
         messaging().subscribeToTopic(TOPIC_ALL)
-        messaging().onMessage(() => {
-            console.log('onMessage')
-        })
+        messaging().onMessage(() => {})
         messaging().setBackgroundMessageHandler(backgroundHandler)
     }
 
