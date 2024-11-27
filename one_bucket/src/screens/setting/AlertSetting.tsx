@@ -1,8 +1,13 @@
 import { baseColors, Icolor, lightColors } from '@/constants/colors'
 import { useBoundStore } from '@/hooks/useStore/useBoundStore'
 import { stackNavigation } from '@/screens/navigation/NativeStackNavigation'
-import { setGlobalChatNotificationEnabled } from '@/utils/asyncStorageUtils'
-import { useState } from 'react'
+import {
+    getGlobalChatNotificationEnabled,
+    getGlobalCommentNotificationEnabled,
+    setGlobalChatNotificationEnabled,
+    setGlobalCommentNotificationEnabled,
+} from '@/utils/asyncStorageUtils'
+import { useEffect, useState } from 'react'
 import { Dimensions, StyleSheet, Switch, Text, View } from 'react-native'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
@@ -15,11 +20,25 @@ const AlertSetting: React.FC = (): React.JSX.Element => {
     const styles = CreateStyles(themeColor)
     const navigation = stackNavigation()
 
+    const [isScreenReady, setIsScreenReady] = useState(false)
     const [chatNotificationEnabled, setChatNotificationEnabled] =
         useState(false)
     const [commentNotificationEnabled, setCommentNotificationEnabled] =
         useState(false)
 
+    useEffect(() => {
+        const init = async () => {
+            setChatNotificationEnabled(await getGlobalChatNotificationEnabled())
+            setCommentNotificationEnabled(
+                await getGlobalCommentNotificationEnabled(),
+            )
+            setIsScreenReady(true)
+        }
+
+        init()
+    }, [])
+
+    if (!isScreenReady) return <View />
     return (
         <View style={styles.container}>
             <View
@@ -98,7 +117,7 @@ const AlertSetting: React.FC = (): React.JSX.Element => {
                         }
                         value={commentNotificationEnabled}
                         onValueChange={() => {
-                            setGlobalChatNotificationEnabled(
+                            setGlobalCommentNotificationEnabled(
                                 !commentNotificationEnabled,
                             )
                             setCommentNotificationEnabled(

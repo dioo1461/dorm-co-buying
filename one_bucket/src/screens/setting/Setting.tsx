@@ -27,10 +27,6 @@ import { getAnnouncPostList } from '@/apis/boardService'
 const CIRCLE_SIZE = 30
 const CIRCLE_RING_SIZE = 2
 
-interface SettingProps {
-    onValueChange: (value: number) => void
-}
-
 const Setting: React.FC = (): React.JSX.Element => {
     const { themeColor, onLogOut } = useBoundStore(state => ({
         themeColor: state.themeColor,
