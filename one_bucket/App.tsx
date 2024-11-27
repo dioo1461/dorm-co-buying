@@ -19,6 +19,7 @@ import UpdateBoardPost from '@/screens/home/board/UpdateBoardPost'
 import CreateGroupTradePost from '@/screens/home/groupTrade/CreateGroupTradePost'
 import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
 import ImageEnlargement from '@/screens/ImageEnlargement'
+import MyLikedPosts from '@/screens/myPage/MyLikedPosts'
 import MyBoardPosts from '@/screens/myPage/MyBoardPosts'
 import MyGroupTradePosts from '@/screens/myPage/MyGroupTradePosts'
 import ProfileModify from '@/screens/myPage/PofileModify'
@@ -566,6 +567,10 @@ function App(): React.JSX.Element {
                                     fontSize: 18,
                                 },
                             }}
+                        />
+                        <Stack.Screen
+                            name={strings.myLikedPostsScreenName}
+                            component={MyLikedPosts}
                         />
                         <Stack.Screen
                             name={strings.myBoardPostsScreenName}

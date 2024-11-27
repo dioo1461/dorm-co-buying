@@ -78,6 +78,7 @@ export type RootStackParamList = {
     ProfileDetails: undefined
     MyBoardPosts: undefined
     MyGroupTradePosts: undefined
+    MyLikedPosts: undefined
     JoinedGroupTradePosts: undefined
 
     ImageEnlargement: {

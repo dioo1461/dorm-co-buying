@@ -67,7 +67,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     const metaData = useRef<any>(null)
     const [isValidLink, setIsValidLink] = useState(true)
     const [_, forceRefresh] = useState({})
-    // 5초 후에도 metaData를 받아오지 못하면 유효하지 않은 링크로 설정
+    const [time, setTime] = useState(5000)
 
     const userLiked = useRef<boolean>(true)
     const likeLock = useRef<boolean>(false)
@@ -76,18 +76,20 @@ const GroupTradePost: React.FC = (): JSX.Element => {
     useEffect(() => {
         const timeout = setTimeout(() => {
             // 3초 후에도 metaData가 없으면 유효하지 않은 링크로 설정
+                
             if (!metaData.current) {
                 setIsValidLink(false)
                 console.log('invalid link')
             } else [setIsValidLink(true), console.log('valid link')]
-        }, 5000)
+        }, time)
 
         return () => clearTimeout(timeout)
-    }, [])
+    }, [time])
 
     const onSuccessCallback = (data: GetGroupTradePostResponse) => {
         userLiked.current = data.userAlreadyLikes
         const parseMetaData = async (url: string) => {
+            
             OpenGraphParser.extractMeta(url)
                 .then(data => {
                     const hostname = data[0].url.split('/')[2]
@@ -108,10 +110,12 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                     console.log('error occurred while parsing url -' + error)
                 })
         }
-
+        
         if (data?.trade_linkUrl) {
             parseMetaData(data.trade_linkUrl)
         }
+        else setTime(0)
+        
         /*
         const onModifyPostButtonPress = () => {
             navigation.navigate('UpdateBoardPost', {
@@ -159,6 +163,7 @@ const GroupTradePost: React.FC = (): JSX.Element => {
         onSuccessCallback,
     )
     useEffect(()=>{console.log("queryGroupTradePost:", data)})
+    
 
     const onJoinButtonPress = async () => {
         await joinTrade(data!.trade_id).then(() => {
@@ -590,7 +595,7 @@ const createStyles = (theme: Icolor) =>
         },
         invalidLinkText: {
             color: theme.TEXT_TERTIARY,
-            fontSize: 10,
+            fontSize: 12,
             fontFamily: 'NanumGothic',
             marginVertical: 10,
         },

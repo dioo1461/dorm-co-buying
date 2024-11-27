@@ -103,7 +103,13 @@ const Search: React.FC = (): React.JSX.Element => {
     const [option, setOption] = useState(0)
 
     const RecommendationItem = (name: string, key: number) => (
-        <TouchableOpacity key={key}>
+        <TouchableOpacity 
+            key={key}
+            onPress={()=>{
+                setKeyword(name)
+                setOption(0)
+                onSearchSubmit(name, 0)
+            }}>
             <View
                 style={{
                     borderColor: baseColors.GRAY_2,

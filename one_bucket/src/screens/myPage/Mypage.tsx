@@ -179,7 +179,9 @@ const Mypage = (): React.JSX.Element => {
             </View>
             <View style={styles.activityContainer}>
                 <Text style={styles.activityTitle}>나의 활동</Text>
-                <TouchableOpacity style={styles.activityItem}>
+                <TouchableOpacity 
+                    style={styles.activityItem}
+                    onPress={()=> navigation.navigate('MyLikedPosts')}>
                     {/* <Icon name='favorite' size={24} color='black' /> */}
                     <Text style={styles.activityText}>좋아요 누른 글</Text>
                 </TouchableOpacity>
@@ -187,7 +189,7 @@ const Mypage = (): React.JSX.Element => {
                     style={styles.activityItem}
                     onPress={() => navigation.navigate('MyBoardPosts')}>
                     {/* <Icon name='description' size={24} color='black' /> */}
-                    <Text style={styles.activityText}>내가 쓴 글</Text>
+                    <Text style={styles.activityText}>내가 쓴 게시글</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.activityItem}
