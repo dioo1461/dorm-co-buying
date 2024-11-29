@@ -119,7 +119,18 @@ const SignUp6: React.FC = (): React.JSX.Element => {
         if (!birthMonth || birthMonth < 1 || birthMonth > 12) {
             return false
         }
-        if (!birthDay || birthDay < 1 || birthDay > 31) {
+        const birthString = `${year}-${month.padStart(2, '0')}-${day.padStart(
+            2,
+            '0',
+        )}` // YYYY-MM-DD 형식
+        const birthDate = new Date(birthString)
+
+        // 날짜 유효성 확인 (잘못된 날짜는 자동으로 무효 처리됨)
+        if (
+            birthDate.getFullYear() !== parseInt(year) ||
+            birthDate.getMonth() + 1 !== parseInt(month) || // getMonth는 0부터 시작
+            birthDate.getDate() !== parseInt(day)
+        ) {
             return false
         }
 
