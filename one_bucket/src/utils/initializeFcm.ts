@@ -68,9 +68,9 @@ const initializeFcm = async () => {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
                     },
-                    data: {
-                        link: 'app://board/12345', // Deep Linking URL 설정
-                    },
+                    // data: {
+                    //     link: 'app://board/12345', // Deep Linking URL 설정
+                    // },
                 })
             } else {
                 notifee.displayNotification({
@@ -80,9 +80,9 @@ const initializeFcm = async () => {
                         channelId: channelIdAll,
                         smallIcon: 'ic_launcher',
                     },
-                    data: {
-                        link: deepLink, // Deep Linking URL 설정
-                    },
+                    // data: {
+                    //     link: deepLink, // Deep Linking URL 설정
+                    // },
                 })
             }
         }
@@ -194,6 +194,7 @@ const initializeFcm = async () => {
         const checkWouldAddToDB = async (
             data: FcmMessageData,
         ): Promise<boolean> => {
+            console.log('data.type:', data.type)
             switch (data.type) {
                 case 'CHAT':
                     return false
@@ -211,7 +212,6 @@ const initializeFcm = async () => {
         const foregroundHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
-            useBoundStore.getState().increaseNewNotificationCount()
             const data = remoteMessage.data as unknown as FcmMessageData
             const [addFlag] = await Promise.all([checkWouldAddToDB(data)])
 
@@ -224,7 +224,6 @@ const initializeFcm = async () => {
         const backgroundHandler = async (
             remoteMessage: FirebaseMessagingTypes.RemoteMessage,
         ) => {
-            useBoundStore.getState().increaseNewNotificationCount()
             const data = remoteMessage.data as unknown as FcmMessageData
             const [displayFlag, addFlag] = await Promise.all([
                 checkWouldDisplayNotification(data),
@@ -244,29 +243,29 @@ const initializeFcm = async () => {
         messaging().subscribeToTopic(TOPIC_ALL)
         messaging().onMessage(foregroundHandler)
         messaging().setBackgroundMessageHandler(backgroundHandler)
-        notifee.onForegroundEvent(({ type, detail }) => {
-            if (type === EventType.PRESS) {
-                console.log('Notification Pressed:', detail.notification)
-                const link = detail.notification?.data?.link as string // 알림의 데이터에서 Deep Linking URL 가져오기
-                if (link) {
-                    Linking.openURL(link) // Deep Linking URL로 이동
-                }
-            }
-        })
+        // notifee.onForegroundEvent(({ type, detail }) => {
+        //     if (type === EventType.PRESS) {
+        //         console.log('Notification Pressed:', detail.notification)
+        //         const link = detail.notification?.data?.link as string // 알림의 데이터에서 Deep Linking URL 가져오기
+        //         if (link) {
+        //             Linking.openURL(link) // Deep Linking URL로 이동
+        //         }
+        //     }
+        // })
 
-        // Background 알림 이벤트 처리
-        notifee.onBackgroundEvent(async ({ type, detail }) => {
-            if (type === EventType.PRESS) {
-                console.log(
-                    'Notification Pressed in Background:',
-                    detail.notification,
-                )
-                const link = detail.notification?.data?.link as string
-                if (link) {
-                    Linking.openURL(link)
-                }
-            }
-        })
+        // // Background 알림 이벤트 처리
+        // notifee.onBackgroundEvent(async ({ type, detail }) => {
+        //     if (type === EventType.PRESS) {
+        //         console.log(
+        //             'Notification Pressed in Background:',
+        //             detail.notification,
+        //         )
+        //         const link = detail.notification?.data?.link as string
+        //         if (link) {
+        //             Linking.openURL(link)
+        //         }
+        //     }
+        // })
     }
 
     init()

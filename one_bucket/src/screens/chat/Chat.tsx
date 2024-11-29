@@ -411,7 +411,7 @@ const Chat: React.FC = (): React.JSX.Element => {
             onPress: onReportButtonPress,
         },
         {
-            text: '채팅방 나가기',
+            text: '채팅방 및 거래 나가기',
             style: 'destructive' as const,
             onPress: onLeaveButtonPress,
         },
@@ -653,7 +653,7 @@ const Chat: React.FC = (): React.JSX.Element => {
                     <View style={styles.itemContainer}>
                         <Text style={styles.itemLabel}>총 가격</Text>
                         <Text style={styles.itemText}>
-                            {chatroomInfo?.trade.price} 원
+                            {chatroomInfo?.trade.price.toLocaleString()} 원
                         </Text>
                     </View>
                     <View style={styles.secondaryItemContainer}>
@@ -666,18 +666,22 @@ const Chat: React.FC = (): React.JSX.Element => {
                             원
                         </Text>
                     </View>
-                    <View style={styles.itemContainer}>
-                        <Text style={styles.itemLabel}>총 수량</Text>
-                        <Text style={styles.itemText}>
-                            {chatroomInfo?.trade.count} 개
-                        </Text>
-                    </View>
-                    <View style={styles.itemContainer}>
-                        <Text style={styles.itemLabel}>모집 인원 </Text>
-                        <Text style={styles.itemText}>
-                            {chatroomInfo?.trade.wanted} 명
-                        </Text>
-                    </View>
+                    {chatroomInfo?.trade.count && (
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 수량</Text>
+                            <Text style={styles.itemText}>
+                                {chatroomInfo?.trade.count} 개
+                            </Text>
+                        </View>
+                    )}
+                    {chatroomInfo?.trade.wanted && (
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>모집 인원 </Text>
+                            <Text style={styles.itemText}>
+                                {chatroomInfo?.trade.wanted} 명
+                            </Text>
+                        </View>
+                    )}
                     <View style={styles.itemContainer}>
                         <Text style={styles.itemLabel}>마감 기한</Text>
                         <Text style={styles.itemText}>

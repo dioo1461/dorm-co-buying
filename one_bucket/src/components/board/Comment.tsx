@@ -62,6 +62,22 @@ const Comment: React.FC<{
         }).start()
     }, [highlight])
 
+    const formatDate = (isoString: string) => {
+        const date = new Date(isoString)
+
+        // 월, 일, 시간, 분 추출
+        const month = date.getMonth() + 1 // 월 (0부터 시작하므로 +1)
+        const day = date.getDate() // 일
+        const hours = date.getHours() // 시간
+        const minutes = date.getMinutes() // 분
+
+        // 분이 한 자리일 경우 앞에 '0'을 추가
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
+
+        // 최종 포맷
+        return `${month}/${day} ${hours}:${formattedMinutes}`
+    }
+
     return (
         <View style={{ paddingBottom: 8 }}>
             {!isReply && (
@@ -117,7 +133,7 @@ const Comment: React.FC<{
                             <View style={styles.commentFooter}>
                                 <View style={styles.commentTime}>
                                     <Text style={styles.commentTimeText}>
-                                        9/01 13:32
+                                        {formatDate(data.modifiedDate)}
                                     </Text>
                                 </View>
                                 <View style={styles.commentActions}>
@@ -189,7 +205,7 @@ const createStyles = (theme: Icolor) =>
             marginBottom: 2,
         },
         commentHighlight: {
-            backgroundColor: baseColors.SCHOOL_BG,
+            backgroundColor: 'rgba(0, 44 , 96, 0.4)',
             width: '100%',
             height: '100%',
             position: 'absolute',

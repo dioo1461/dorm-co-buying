@@ -197,7 +197,17 @@ const Mypage = (): React.JSX.Element => {
                     style={styles.activityItem}
                     onPress={() => navigation.navigate('MyGroupTradePosts')}>
                     {/* <Icon name='description' size={24} color='black' /> */}
-                    <Text style={styles.activityText}>내가 쓴 거래글</Text>
+                    <Text style={styles.activityText}>
+                        내가 생성한 공동구매
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.activityItem}
+                    onPress={() => navigation.navigate('MyUsedTradePosts')}>
+                    {/* <Icon name='description' size={24} color='black' /> */}
+                    <Text style={styles.activityText}>
+                        내가 생성한 중고거래
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>

@@ -128,7 +128,7 @@ export const CreateUsedTradePostBottomSheet: React.FC<Props> = ({
                         <View style={styles.itemContainer}>
                             <Text style={styles.itemLabel}>가격</Text>
                             <Text style={styles.itemText}>
-                                {submitForm.trade.price} 원
+                                {submitForm.trade.price.toLocaleString()} 원
                             </Text>
                         </View>
 

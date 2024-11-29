@@ -213,8 +213,7 @@ const ChatList: React.FC = (): React.JSX.Element => {
                                     </Text>
                                     <IcPerson />
                                     <Text style={styles.participantCountText}>
-                                        {(tradeInfo?.joinMember?.length ?? 0) +
-                                            1}
+                                        {chatRoom.memberCount}
                                     </Text>
                                     <Text style={styles.lastChatTimeText}>
                                         {chatRoom.recentMessageTime

@@ -89,19 +89,27 @@ const MyLikedPosts: React.FC = (): JSX.Element => {
             <View>
                 <TouchableNativeFeedback
                     background={touchableNativeFeedbackBg()}
-                    onPress={() => { (data.boardId == 1 || data.boardId == 2) ?
-                        navigation.navigate('BoardPost', {
-                            boardName: boardList[currentBoardIndex].name,
-                            boardId: data.boardId,
-                            postId: data.postId,
-                            performRefresh: false,
-                        })
-                        :
-                        navigation.navigate('GroupTradePost', {
-                            postId: data.postId,
-                        })
+                    onPress={() => {
+                        if (data.boardId == 1 || data.boardId == 2) {
+                            navigation.navigate('BoardPost', {
+                                boardName: boardList[currentBoardIndex].name,
+                                boardId: data.boardId,
+                                postId: data.postId,
+                                performRefresh: false,
+                            })
+                        } else if (data?.boardId == 3) {
+                            navigation.navigate('GroupTradePost', {
+                                postId: data.postId,
+                            })
+                        } else if (data?.boardId == 4) {
+                            navigation.navigate('UsedTradePost', {
+                                postId: data.postId,
+                            })
+                        } else {
+                            // 예외 처리 또는 기본 동작 (필요 시 추가)
+                            return null
                         }
-                    }>
+                    }}>
                     <View
                         style={{
                             marginHorizontal: 10,
@@ -246,7 +254,7 @@ const MyLikedPosts: React.FC = (): JSX.Element => {
             },
             FETCH_SIZE,
         )
-        
+
         refetchCallback = refetch
 
         if (error) return <Text>Error...</Text>
@@ -254,7 +262,7 @@ const MyLikedPosts: React.FC = (): JSX.Element => {
         if (isLoading) return <Loading theme={themeColor} />
 
         const posts = data?.pages?.flatMap(page => page.content)
-        
+
         return (
             <FlatList
                 style={styles.flatList}

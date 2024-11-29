@@ -91,6 +91,7 @@ export type RootStackParamList = {
     ProfileDetails: undefined
     MyBoardPosts: undefined
     MyGroupTradePosts: undefined
+    MyUsedTradePosts: undefined
     MyLikedPosts: undefined
     JoinedGroupTradePosts: undefined
 
@@ -101,6 +102,11 @@ export type RootStackParamList = {
     }
 
     GroupTradeSearch: {
+        keyword: string
+        option: number
+    }
+
+    UsedTradeSearch: {
         keyword: string
         option: number
     }

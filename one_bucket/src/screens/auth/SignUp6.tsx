@@ -53,7 +53,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
 
     const [name, setName] = useState('')
     const [male, setMale] = useState(true)
-    const gender = male == true ? 'man' : 'woman'
+    const [gender, setGender] = useState<'man' | 'woman'>('man')
     const [year, setYear] = useState('')
     const [month, setMonth] = useState('')
     const [day, setDay] = useState('')
@@ -93,6 +93,45 @@ const SignUp6: React.FC = (): React.JSX.Element => {
             })
     }
 
+    const validateForm = () => {
+        // 이름 검사: 최소 2자 이상
+        if (!name || name.trim().length < 1) {
+            return false
+        }
+
+        // 성별 검사: 'man' 또는 'woman'만 허용
+        if (gender !== 'man' && gender !== 'woman') {
+            return false
+        }
+
+        // 생년월일 검사: 연, 월, 일이 숫자이며 형식이 올바른지 확인
+        const birthYear = parseInt(year, 10)
+        const birthMonth = parseInt(month, 10)
+        const birthDay = parseInt(day, 10)
+
+        if (
+            !birthYear ||
+            birthYear < 1900 ||
+            birthYear > new Date().getFullYear()
+        ) {
+            return false
+        }
+        if (!birthMonth || birthMonth < 1 || birthMonth > 12) {
+            return false
+        }
+        if (!birthDay || birthDay < 1 || birthDay > 31) {
+            return false
+        }
+
+        // 자기소개 검사: 최대 200자
+        if (bio && bio.length > 200) {
+            return false
+        }
+
+        // 모든 유효성 검사를 통과하면 true 반환
+        return true
+    }
+
     useEffect(() => {
         onSignUpSuccess()
     }, [])
@@ -108,7 +147,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                     {`이용자님의 프로필 정보를\n입력해 주세요.`}
                 </Text>
             </View>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.label}>이름</Text>
                     <Text style={styles.accent}>*</Text>
@@ -126,12 +165,12 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                 </View>
                 <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
-                        onPress={() => setMale(true)}
+                        onPress={() => setGender('man')}
                         style={styles.dormContainer}>
                         <CheckBox
+                            value={gender === 'man'}
                             disabled={false}
-                            value={male}
-                            onValueChange={newVal => setMale(newVal)}
+                            onValueChange={() => setGender('man')}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,
@@ -140,12 +179,12 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                         <Text style={styles.dormText}>남성</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => setMale(false)}
+                        onPress={() => setGender('woman')}
                         style={styles.dormContainer}>
                         <CheckBox
+                            value={gender === 'woman'}
                             disabled={false}
-                            value={!male}
-                            onValueChange={newVal => setMale(!newVal)}
+                            onValueChange={() => setGender('woman')}
                             tintColors={{
                                 true: baseColors.SCHOOL_BG,
                                 false: baseColors.GRAY_1,
@@ -203,7 +242,7 @@ const SignUp6: React.FC = (): React.JSX.Element => {
                 <TouchableOpacity
                     style={{
                         ...styles.button,
-                        backgroundColor: !name
+                        backgroundColor: !validateForm()
                             ? baseColors.GRAY_2
                             : baseColors.SCHOOL_BG,
                     }}

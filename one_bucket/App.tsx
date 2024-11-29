@@ -77,6 +77,7 @@ import UpdateGroupTradePost from '@/screens/home/groupTrade/UpdateGroupTradePost
 import CreateUsedTradePost from '@/screens/home/usedTrade/CreateUsedTradePost'
 import UpdateUsedTradePost from '@/screens/home/usedTrade/UpdateUsedTradePost'
 import GroupTradePost from '@/screens/home/groupTrade/GroupTradePost'
+import MyUsedTradePosts from '@/screens/myPage/MyUsedTradePosts'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -633,6 +634,10 @@ function App(): React.JSX.Element {
                         <Stack.Screen
                             name={strings.myGroupTradePostsScreenName}
                             component={MyGroupTradePosts}
+                        />
+                        <Stack.Screen
+                            name={strings.myUsedTradePostsScreenName}
+                            component={MyUsedTradePosts}
                         />
                     </Stack.Navigator>
                 ) : (

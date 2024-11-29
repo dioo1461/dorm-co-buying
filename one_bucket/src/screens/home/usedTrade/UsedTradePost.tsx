@@ -5,6 +5,7 @@ import {
     createUsedTradeChat,
     deleteLike,
     deleteUsedTradePost,
+    setUsedTradeFinish,
 } from '@/apis/usedTradeService'
 import IcAngleLeft from '@/assets/drawable/ic-angle-left.svg'
 import IcHeart from '@/assets/drawable/ic-heart.svg'
@@ -48,6 +49,7 @@ import {
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import ProfileImage from '@/components/ProfileImage'
+import { getDDays } from '@/utils/dateUtils'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -77,6 +79,7 @@ const UsedTradePost: React.FC = (): JSX.Element => {
     const imageScrollViewRef = useRef<ScrollView>(null)
     const [imageScrollPos, setImageScrollPos] = useState(0)
     const [commentPosition, setCommentPosition] = useState(0)
+    const [fin, setFin] = useState(false)
 
     const commentLayouts = useRef<{
         [key: string]: { yPos: number; height: number }
@@ -195,27 +198,10 @@ const UsedTradePost: React.FC = (): JSX.Element => {
         params.postId,
         onSuccessCallback,
     )
+
     useEffect(() => {
-        console.log('queryUsedTradePost:', data)
-    })
-
-    const onJoinButtonPress = async () => {
-        await joinTrade(data!.trade_id).then(() => {
-            navigation.goBack()
-        })
-    }
-
-    const onQuitButtonPress = async () => {
-        await quitTrade(data!.trade_id).then(() => {
-            navigation.goBack()
-        })
-    }
-
-    const buttonText = (buttonMode: any) => {
-        if (buttonMode == '0') return `참여하기`
-        if (buttonMode == '1' || '2') return `참여 취소`
-        if (buttonMode == '3') return `마감`
-    }
+        setFin(data?.trade_fin!)
+    }, [data])
 
     const onLikeButtonPress = async () => {
         if (data!.authorNickname)
@@ -246,6 +232,30 @@ const UsedTradePost: React.FC = (): JSX.Element => {
             likeLock.current = false
             return
         }
+    }
+
+    const onJoinButtonPress = async () => {
+        setLoadingBackdropEnabled(true)
+        // 아래 코드 실행 시, sse get chatlist 400 bad request 에러 발생
+        createUsedTradeChat(data!.trade_id)
+            .then(res => {
+                navigation.navigate('ChatList')
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const onFinishTradeButtonPress = async (flag: boolean) => {
+        setLoadingBackdropEnabled(true)
+        await setUsedTradeFinish({ tradeId: data!.trade_id, fin: flag })
+            .then(res => {
+                setFin(flag)
+                setLoadingBackdropEnabled(false)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     const likeButtonFill = (liked: boolean) => {
@@ -488,6 +498,36 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                             {data?.trade_linkUrl}
                         </Text>
                     )}
+                    {/* ###### 거래 정보 ###### */}
+                    <View style={styles.tradeInfoContainer}>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>상품명</Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_item}
+                            </Text>
+                        </View>
+                        <View style={styles.secondaryItemContainer}>
+                            <Text style={styles.secondaryItemLabel}>
+                                카테고리
+                            </Text>
+                            <Text style={styles.secondaryItemText}>
+                                {data?.trade_tag}
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 가격</Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_price.toLocaleString()} 원
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>마감 기한</Text>
+                            <Text style={styles.itemText}>
+                                D - {getDDays(new Date(data?.trade_dueDate!))}
+                            </Text>
+                        </View>
+                    </View>
+
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
@@ -513,28 +553,18 @@ const UsedTradePost: React.FC = (): JSX.Element => {
                 </View>
                 {/* ### 참여 버튼 ### */}
                 <TouchableOpacity
-                    style={[
-                        styles.joinButton,
+                    style={styles.joinButton}
+                    onPress={
                         checkIfMyPost()
-                            ? {
-                                  backgroundColor:
-                                      themeColor.BUTTON_SECONDARY_BG,
-                              }
-                            : { backgroundColor: themeColor.BUTTON_BG },
-                    ]}
-                    onPress={() => {
-                        // 아래 코드 실행 시, sse get chatlist 400 bad request 에러 발생
-                        // createUsedTradeChat(data!.trade_id)
-                        //     .then(res => {
-                        //         navigation.navigate('ChatList')
-                        //     })
-                        //     .catch(err => {
-                        //         console.log(err)
-                        //     })
-                    }}
-                    disabled={checkIfMyPost()}>
+                            ? () => onFinishTradeButtonPress(!fin)
+                            : () => onJoinButtonPress()
+                    }>
                     <Text style={styles.joinButtonText}>
-                        {checkIfMyPost() ? '내 게시글' : '판매자에게 채팅하기'}
+                        {checkIfMyPost()
+                            ? fin
+                                ? '거래 재개하기'
+                                : '거래 종료하기'
+                            : '판매자에게 채팅하기'}
                     </Text>
                 </TouchableOpacity>
                 {/* ### 댓글 ### */}
@@ -748,6 +778,47 @@ const createStyles = (theme: Icolor) =>
             fontFamily: 'NanumGothic',
             fontSize: 12,
         },
+        tradeInfoContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            borderRadius: 18,
+            paddingHorizontal: 16,
+            marginBottom: 32,
+        },
+        itemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingVertical: 16,
+            borderRadius: 5,
+        },
+        itemLabel: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        itemText: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: 6,
+            marginBottom: 10,
+            borderRadius: 5,
+        },
+        secondaryItemLabel: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+        },
         locationLabel: {
             color: theme.TEXT,
             fontFamily: 'NanumGothic-Bold',
@@ -816,6 +887,7 @@ const createStyles = (theme: Icolor) =>
             paddingHorizontal: 10,
         },
         joinButton: {
+            backgroundColor: theme.BUTTON_BG,
             flex: 1,
             paddingVertical: 16,
             marginHorizontal: 36,

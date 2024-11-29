@@ -47,6 +47,7 @@ import {
 import Comment from '@/components/board/Comment'
 import LoadingBackdrop from '@/components/LoadingBackdrop'
 import ProfileImage from '@/components/ProfileImage'
+import { getDDays } from '@/utils/dateUtils'
 
 // link preview 보안 문제 ? (악의적 스크립트 삽입)
 
@@ -504,6 +505,59 @@ const GroupTradePost: React.FC = (): JSX.Element => {
                             {data?.trade_linkUrl}
                         </Text>
                     )}
+                    {/* ###### 거래 정보 ###### */}
+                    <View style={styles.tradeInfoContainer}>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>상품명</Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_item}
+                            </Text>
+                        </View>
+                        <View style={styles.secondaryItemContainer}>
+                            <Text style={styles.secondaryItemLabel}>
+                                카테고리
+                            </Text>
+                            <Text style={styles.secondaryItemText}>
+                                {data?.trade_tag}
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 가격</Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_price.toLocaleString()} 원
+                            </Text>
+                        </View>
+                        <View style={styles.secondaryItemContainer}>
+                            <Text style={styles.secondaryItemLabel}>
+                                개당 가격
+                            </Text>
+                            <Text style={styles.secondaryItemText}>
+                                {Math.round(
+                                    (data?.trade_price ?? 0) /
+                                        (data?.trade_count ?? 1),
+                                ).toLocaleString()}{' '}
+                                원
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>총 수량</Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_count} 개
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>모집 인원 </Text>
+                            <Text style={styles.itemText}>
+                                {data?.trade_wanted} 명
+                            </Text>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.itemLabel}>마감 기한</Text>
+                            <Text style={styles.itemText}>
+                                D - {getDDays(new Date(data?.trade_dueDate!))}
+                            </Text>
+                        </View>
+                    </View>
                     {/* ### 거래 희망 장소 ### */}
                     <View>
                         <Text style={styles.locationLabel}>거래 희망 장소</Text>
@@ -776,6 +830,47 @@ const createStyles = (theme: Icolor) =>
             color: theme.TEXT_SECONDARY,
             fontFamily: 'NanumGothic',
             fontSize: 12,
+        },
+        tradeInfoContainer: {
+            backgroundColor: theme.BG_SECONDARY,
+            borderRadius: 18,
+            paddingHorizontal: 16,
+            marginBottom: 32,
+        },
+        itemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingVertical: 16,
+            borderRadius: 5,
+        },
+        itemLabel: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        itemText: {
+            color: theme.TEXT,
+            fontSize: 14,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: 6,
+            marginBottom: 10,
+            borderRadius: 5,
+        },
+        secondaryItemLabel: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
+        },
+        secondaryItemText: {
+            color: theme.TEXT_SECONDARY,
+            fontSize: 12,
+            fontFamily: 'NanumGothic',
         },
         locationLabel: {
             color: theme.TEXT,

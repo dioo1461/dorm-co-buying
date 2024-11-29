@@ -36,6 +36,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
 
     const [loadingBackdropEnabled, setLoadingBackdropEnabled] = useState(false)
 
+    const [title, setTitle] = useState('')
     const [imageUriList, setImageUriList] = useState<string[]>([])
     const [siteLink, setSiteLink] = useState('')
     const [itemName, setItemName] = useState('')
@@ -147,7 +148,7 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
         const submitForm: CreateGroupTradePostRequestBody = {
             post: {
                 boardId: findGroupTradeBoardId(),
-                title: itemName,
+                title: title,
                 text: descriptionTextInput,
             },
             trade: {
@@ -248,6 +249,17 @@ const CreateGroupTradePost: React.FC = (): React.JSX.Element => {
                         value={siteLink}
                         onChangeText={setSiteLink}
                         keyboardType='url'
+                    />
+                    <View style={styles.labelContainer}>
+                        <Text style={styles.label}>게시글 제목</Text>
+                        <Text style={styles.accent}> *</Text>
+                    </View>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder='제목'
+                        placeholderTextColor={themeColor.TEXT_TERTIARY}
+                        value={title}
+                        onChangeText={setTitle}
                     />
                     <View style={styles.labelContainer}>
                         <Text style={styles.label}>품목명</Text>

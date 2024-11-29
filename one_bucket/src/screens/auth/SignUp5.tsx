@@ -177,19 +177,31 @@ const SignUp5: React.FC = (): React.JSX.Element => {
         passwordConfirmRef.current?.focus()
     }
 
+    const checkFormValid = () => {
+        return (
+            !emailError &&
+            !passwordError &&
+            !passwordConfirmError &&
+            !nicknameError &&
+            email &&
+            password &&
+            passwordConfirm &&
+            nickname
+        )
+    }
+
     return (
-        <ScrollView style={signUpStyles.container}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'position'}>
-                <View>
-                    <TouchableOpacity
-                        onPress={() => {
-                            navigation.goBack()
-                        }}
-                        style={signUpStyles.backButton}>
-                        <IcArrowLeft />
-                    </TouchableOpacity>
-                </View>
+        <ScrollView
+            style={signUpStyles.container}
+            showsVerticalScrollIndicator={false}>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.goBack()
+                }}
+                style={signUpStyles.backButton}>
+                <IcArrowLeft />
+            </TouchableOpacity>
+            <KeyboardAvoidingView>
                 <View>
                     <View style={signUpStyles.headerContainer}>
                         <Text style={signUpStyles.currentStep}>
@@ -363,31 +375,12 @@ const SignUp5: React.FC = (): React.JSX.Element => {
                         </View>
 
                         <TouchableOpacity
-                            disabled={
-                                !!(
-                                    emailError ||
-                                    passwordError ||
-                                    nicknameError ||
-                                    passwordConfirmError ||
-                                    !email ||
-                                    !password ||
-                                    !nickname ||
-                                    !passwordConfirm
-                                )
-                            }
+                            disabled={!checkFormValid()}
                             style={[
                                 {
-                                    backgroundColor:
-                                        emailError ||
-                                        passwordError ||
-                                        nicknameError ||
-                                        passwordConfirmError ||
-                                        !email ||
-                                        !password ||
-                                        !nickname ||
-                                        !passwordConfirm
-                                            ? baseColors.GRAY_2
-                                            : baseColors.SCHOOL_BG,
+                                    backgroundColor: !checkFormValid()
+                                        ? baseColors.GRAY_2
+                                        : baseColors.SCHOOL_BG,
                                 },
                                 styles.button,
                             ]}
@@ -447,7 +440,7 @@ const createStyles = (theme: Icolor) =>
             paddingVertical: 15,
             borderRadius: 5,
             alignItems: 'center',
-            marginTop: 30,
+            marginBottom: 20,
         },
         buttonText: {
             color: theme.BUTTON_TEXT,

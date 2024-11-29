@@ -6,6 +6,7 @@ import { View } from 'react-native'
 import { useQueryClient } from 'react-query'
 import GroupTradeSearch from '../search/GroupTradeSearch'
 import BoardPostSearch from '../search/BoardPostSearch'
+import UsedTradeSearch from '../search/UsedTradeSearch'
 
 interface Props {
     keyword: string
@@ -58,7 +59,7 @@ const SearchTab: React.FC<Props> = ({ keyword, option }): JSX.Element => {
             />
             <Tab.Screen
                 name='중고거래'
-                component={View}
+                component={UsedTradeSearch}
                 initialParams={{ keyword: keyword, option: option }}
             />
             {boardList.map(board => {

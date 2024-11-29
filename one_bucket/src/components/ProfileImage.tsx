@@ -17,7 +17,7 @@ const ProfileImage: React.FC<{
             isLoading={imageUrl === undefined}>
             {imageUrl ? (
                 <CachedImage
-                    imageUrl={imageUrl + '.png'}
+                    imageUrl={imageUrl + 'png'}
                     imageStyle={
                         {
                             width: size,

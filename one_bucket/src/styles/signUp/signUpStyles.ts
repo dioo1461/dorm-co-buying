@@ -12,8 +12,9 @@ export const createSignUpStyles = (theme: Icolor) =>
             marginTop: 10,
         },
         backButton: {
-            paddingVertical: 24,
-            paddingHorizontal: 18,
+            marginTop: 6,
+            paddingVertical: 10,
+            paddingHorizontal: 0,
             // position: 'absolute',
         },
         title: {

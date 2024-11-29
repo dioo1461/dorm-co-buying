@@ -45,6 +45,7 @@ const strings = {
     myLikedPostsScreenName: 'MyLikedPosts',
     myBoardPostsScreenName: 'MyBoardPosts',
     myGroupTradePostsScreenName: 'MyGroupTradePosts',
+    myUsedTradePostsScreenName: 'MyUsedTradePosts',
     joinedGroupTradePostsScreenName: 'JoinedGroupTradePosts',
 
     settingScreenName: '설정',
@@ -98,7 +99,8 @@ const strings = {
     profileModifyScreenTitle: '프로필 수정',
     myLikedPostsScreenTitle: '좋아요 누른 글',
     myBoardPostsScreenTitle: '내가 쓴 게시글',
-    myGroupTradePostsScreenTitle: '내가 쓴 거래글',
+    myGroupTradePostsScreenTitle: '내가 생성한 공동구매',
+    myUsedTradePostsScreenTitle: '내가 생성한 중고거래',
     joinedGroupTradePostsScreenTitle: '내가 참여한 공동구매',
 
     // alertSettingScreenTitle: 'AlertSetting',

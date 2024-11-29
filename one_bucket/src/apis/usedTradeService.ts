@@ -278,6 +278,25 @@ export const createUsedTradeChat = async (usedTradePostId: number) => {
         })
 }
 
+export const setUsedTradeFinish = async ({
+    fin,
+    tradeId,
+}: {
+    fin: boolean
+    tradeId: number
+}) => {
+    const authAxios = await createAuthAxios()
+    return authAxios
+        .post(`${USED_TRADE_ENDPOINT_PREFIX}/finish`, { fin, tradeId })
+        .then(res => {
+            return res.data
+        })
+        .catch(err => {
+            console.log('terminateUsedTrade - ' + err)
+            throw err
+        })
+}
+
 // ########## DELETE ##########
 
 export const deleteUsedTradePost = async (postId: number): Promise<any> => {
